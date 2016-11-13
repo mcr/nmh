@@ -243,7 +243,8 @@ decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
     charstring_t decoded_c = charstring_create (strlen (encoded));
     MD5_CTX mdContext;
 
-    if (digest) { MD5Init (&mdContext); }
+    if (digest)
+        MD5Init (&mdContext);
 
     bitno = 18;
     bits = 0L;
@@ -274,19 +275,22 @@ test_end:
                     if (! skip_crs  ||  b != '\r') {
                         charstring_push_back (decoded_c, b);
                     }
-                    if (digest) { MD5Update (&mdContext, (unsigned char *) &b, 1); }
+                    if (digest)
+                        MD5Update (&mdContext, (unsigned char *) &b, 1);
                     if (skip < 2) {
                         b = (bits >> 8) & 0xff;
                         if (! skip_crs  ||  b != '\r') {
                             charstring_push_back (decoded_c, b);
                         }
-                        if (digest) { MD5Update (&mdContext, (unsigned char *) &b, 1); }
+                        if (digest)
+                            MD5Update (&mdContext, (unsigned char *) &b, 1);
                         if (skip < 1) {
                             b = bits & 0xff;
                             if (! skip_crs  ||  b != '\r') {
                                 charstring_push_back (decoded_c, b);
                             }
-                            if (digest) { MD5Update (&mdContext, (unsigned char *) &b, 1); }
+                            if (digest)
+                                MD5Update (&mdContext, (unsigned char *) &b, 1);
                         }
                     }
 

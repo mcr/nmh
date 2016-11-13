@@ -432,7 +432,8 @@ read_more (m_getfld_state_t s) {
     ssize_t retain = s->edelimlen;
     size_t num_read;
 
-    if (retain < s->end - s->readpos) retain = s->end - s->readpos;
+    if (retain < s->end - s->readpos)
+        retain = s->end - s->readpos;
     assert (retain <= s->readpos - s->msg_buf);
 
     /* Move what we want to retain at end of the buffer to the beginning. */
@@ -620,10 +621,12 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 	    n = 0;
 	    for (finished = 0; ! finished; ) {
 		while (c != '\n'  &&  c != EOF  &&  n++ < max) {
-		    if ((c = Getc (s)) != EOF) { *cp++ = c; }
+		    if ((c = Getc (s)) != EOF)
+                        *cp++ = c;
 		}
 
-		if (c != EOF) c = Peek (s);
+		if (c != EOF)
+                    c = Peek (s);
 		if (max < n) {
 		    /* The dest buffer is full.  Need to back the read
 		       pointer up by one because when m_getfld() is
