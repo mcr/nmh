@@ -735,7 +735,7 @@ parse (int fd)
 	switch (state = m_getfld (&gstate, name, field, &fieldsz, in)) {
 	    case FLD: 
 	    case FLDPLUS: 
-		lp = add (field, NULL);
+		lp = mh_xstrdup(field);
 		while (state == FLDPLUS) {
 		    fieldsz = sizeof field;
 		    state = m_getfld (&gstate, name, field, &fieldsz, in);
@@ -1432,7 +1432,7 @@ suppress_duplicates (int fd, char *file)
 		    continue;
 		}
 
-		cp = add (buf, NULL);
+		cp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
 		    state = m_getfld (&gstate, name, buf, &bufsz, in);

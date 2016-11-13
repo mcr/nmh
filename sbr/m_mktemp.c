@@ -155,7 +155,7 @@ m_mktemps(
 
     if (suffix == NULL) {
         if ((tmpfil = m_mktemp2(NULL, pfx_in, fd_ret, fp_ret))) {
-            return add(tmpfil, NULL);
+            return mh_xstrdup(tmpfil);
         }
         return NULL;
     }

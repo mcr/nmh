@@ -539,7 +539,7 @@ show_text (CT ct, int alternate, int concatsw, struct format *fmt)
 	} else
 	    snprintf (buffer, sizeof(buffer), "%%l%s %%F", progsw ? progsw :
 		      moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
-	cp = (ct->c_showproc = add (buffer, NULL));
+	cp = (ct->c_showproc = mh_xstrdup(buffer));
 	return show_content_aux (ct, alternate, cp, NULL, fmt);
     }
 
@@ -747,7 +747,7 @@ show_message_rfc822 (CT ct, int alternate, struct format *fmt)
 
     /* default method for message/rfc822 */
     if (ct->c_subtype == MESSAGE_RFC822) {
-	cp = (ct->c_showproc = add ("%pshow -file %F", NULL));
+	cp = (ct->c_showproc = mh_xstrdup("%pshow -file %F"));
 	return show_content_aux (ct, alternate, cp, NULL, fmt);
     }
 
@@ -1094,7 +1094,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
             adios (NULL, "unable to create temporary file in %s",
                    get_temp_dir());
         }
-        dest = add (tempfile, NULL);
+        dest = mh_xstrdup(tempfile);
 
         if (ct->c_cefile.ce_file) {
             file = &ct->c_cefile.ce_file;

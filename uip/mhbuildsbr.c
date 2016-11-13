@@ -204,8 +204,8 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 	    }
 
 	    /* get copies of the buffers */
-	    np = add (name, NULL);
-	    vp = add (buf, NULL);
+	    np = mh_xstrdup(name);
+	    vp = mh_xstrdup(buf);
 
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
@@ -704,7 +704,7 @@ user_content (FILE *in, char *buf, CT *ctp, const char *infilename)
 	}
 
 	/* use a temp file to collect the plain text lines */
-	ce->ce_file = add (cp, NULL);
+	ce->ce_file = mh_xstrdup(cp);
 	ce->ce_unlink = 1;
 
 	if (do_direct() && (buf[0] == '#' && buf[1] == '<')) {
@@ -931,7 +931,7 @@ use_forw:
 		    continue;
 		if (!*cp)
 		    adios (NULL, "empty pipe command for #%s directive", ci->ci_type);
-		cp = add (cp, NULL);
+		cp = mh_xstrdup(cp);
 		free (ci->ci_magic);
 		ci->ci_magic = cp;
 	    } else {
@@ -955,7 +955,7 @@ use_forw:
 	    content_error (NULL, ct, "don't know how to compose content");
 	    done (1);
 	}
-	ci->ci_magic = add (cp, NULL);
+	ci->ci_magic = mh_xstrdup(cp);
 	return OK;
     }
 
@@ -1038,7 +1038,7 @@ use_forw:
 		    p->c_subtype = MESSAGE_RFC822;
 
 		    snprintf (buffer, sizeof(buffer), "%s/%d", mp->foldpath, msgnum);
-		    pe->ce_file = add (buffer, NULL);
+		    pe->ce_file = mh_xstrdup(buffer);
 		    if (listsw && stat (pe->ce_file, &st) != NOTOK)
 			p->c_end = (long) st.st_size;
 
@@ -1057,7 +1057,7 @@ use_forw:
 
 	    msgnum = mp->lowsel;
 	    snprintf (buffer, sizeof(buffer), "%s/%d", mp->foldpath, msgnum);
-	    ce->ce_file = add (buffer, NULL);
+	    ce->ce_file = mh_xstrdup(buffer);
 	    if (listsw && stat (ce->ce_file, &st) != NOTOK)
 		ct->c_end = (long) st.st_size;
 	}
@@ -1186,7 +1186,7 @@ compose_content (CT ct, int verbose)
 	    CT p = part->mp_part;
 
 	    sprintf (pp, "%d", partnum);
-	    p->c_partno = add (partnam, NULL);
+	    p->c_partno = mh_xstrdup(partnam);
 	    if (compose_content (p, verbose) == NOTOK)
 		return NOTOK;
 	}
@@ -1252,7 +1252,7 @@ compose_content (CT ct, int verbose)
 		adios("mhbuildsbr", "unable to create temporary file in %s",
 		      get_temp_dir());
 	    }
-	    ce->ce_file = add (tfile, NULL);
+	    ce->ce_file = mh_xstrdup(tfile);
 	    ce->ce_unlink = 1;
 
 	    xstdout = 0;

@@ -946,7 +946,7 @@ plist
 	    case FLD: 
 	    case FLDPLUS: 
                 mh_xfree(bp);
-		bp = add (buf, NULL);
+		bp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
 		    state = m_getfld (&gstate, name, buf, &bufsz, fp);

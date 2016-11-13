@@ -623,7 +623,7 @@ main (int argc, char **argv)
 	    case FLD: 
 	    case FLDPLUS: 
                 compnum++;
-		cp = add (buf, NULL);
+		cp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
 		    state = m_getfld (&gstate, name, buf, &bufsz, in);

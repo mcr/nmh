@@ -743,7 +743,7 @@ do_reformat:
 	groupflag = mn->m_ingrp;
 
 	if (mn->m_gname) {
-	    cp = add(mn->m_gname, NULL);
+	    cp = mh_xstrdup(mn->m_gname);
 	}
 
 	if (reformat) {

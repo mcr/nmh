@@ -388,7 +388,7 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
 		if (state != FLDPLUS)
 		    cp = buf;
 		else {
-		    cp = add (buf, NULL);
+		    cp = mh_xstrdup(buf);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;
 			state = m_getfld (&gstate, name, buf, &bufsz, fp);

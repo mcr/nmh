@@ -292,7 +292,7 @@ store_multi (CT ct, mhstoreinfo_t info)
 		/* Support mhstore -outfile.  The MIME parser doesn't
 		   load c_storage, so we know that p->c_storage is
 		   NULL here. */
-		p->c_storage = add (ct->c_storage, NULL);
+		p->c_storage = mh_xstrdup(ct->c_storage);
 	    }
 	    result = store_switch (p, info);
 
@@ -438,9 +438,9 @@ store_external (CT ct, mhstoreinfo_t info)
 	    && *cp != '!'
 	    && !strchr (cp, '%')) {
 	    if (!ct->c_storeproc)
-		ct->c_storeproc = add (cp, NULL);
+		ct->c_storeproc = mh_xstrdup(cp);
 	    if (!p->c_storeproc)
-		p->c_storeproc = add (cp, NULL);
+		p->c_storeproc = mh_xstrdup(cp);
 	}
     }
 
@@ -456,7 +456,7 @@ store_external (CT ct, mhstoreinfo_t info)
     if (ct->c_storage) {
 	/* Support mhstore -outfile.  The MIME parser doesn't load
 	   c_storage, so we know that p->c_storage is NULL here. */
-	p->c_storage = add (ct->c_storage, NULL);
+	p->c_storage = mh_xstrdup(ct->c_storage);
     }
     result = store_switch (p, info);
 
@@ -537,7 +537,7 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 
 		/* record the folder name */
 		if (p->c_folder) {
-		    ct->c_folder = add (p->c_folder, NULL);
+		    ct->c_folder = mh_xstrdup(p->c_folder);
 		}
 	    }
 	    goto got_filename;
@@ -575,7 +575,7 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 		adios(NULL, "unable to create temporary file in %s",
 		      get_temp_dir());
 	    }
-	    ct->c_storage = add (tmpfilenam, NULL);
+	    ct->c_storage = mh_xstrdup(tmpfilenam);
 
 	    /* Get the folder name */
 	    if (cp[1])
@@ -609,7 +609,7 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 	    return show_content_aux (ct, 0, buffer + 1, info->dir, NULL);
 
         /* record the filename */
-	if ((ct->c_storage = clobber_check (add (buffer, NULL), info)) ==
+	if ((ct->c_storage = clobber_check (mh_xstrdup(buffer), info)) ==
 	    NULL) {
 	    return NOTOK;
 	}
@@ -1074,7 +1074,7 @@ get_storeproc (CT ct)
 		&& *cp != '|'
 		&& *cp != '!'
 		&& !strchr (cp, '%')) {
-		ct->c_storeproc = add (cp, NULL);
+		ct->c_storeproc = mh_xstrdup(cp);
 		free(cp);
 		return;
 	}
@@ -1093,7 +1093,7 @@ get_storeproc (CT ct)
 	  && *cp != '|'
 	  && *cp != '!'
 	  && !strchr (cp, '%')) {
-	    ct->c_storeproc = add (cp, NULL);
+	    ct->c_storeproc = mh_xstrdup(cp);
 
     }
     mh_xfree(cp);
@@ -1239,7 +1239,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
     /* Save cwd for possible use in loop below. */
     char *slash;
 
-    cwd = add (original_file, NULL);
+    cwd = mh_xstrdup(original_file);
     slash = strrchr (cwd, '/');
 
     if (slash) {
@@ -1316,10 +1316,10 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
 
               if (buf[0] == '/') {
                 /* Full path, use it. */
-                file = add (buf, NULL);
+                file = mh_xstrdup(buf);
               } else {
                 /* Relative path. */
-                file = cwd  ?  concat (cwd, "/", buf, NULL)  :  add (buf, NULL);
+                file = cwd  ?  concat (cwd, "/", buf, NULL)  :  mh_xstrdup(buf);
               }
 
               check_again = 1;

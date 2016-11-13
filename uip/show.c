@@ -386,7 +386,7 @@ is_nontext (char *msgnam)
 		int passno;
 		char c;
 
-		cp = add (buf, NULL);
+		cp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
 		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
@@ -491,7 +491,7 @@ out:
 	     * Check Content-Transfer-Encoding field
 	     */
 	    if (!strcasecmp (name, ENCODING_FIELD)) {
-		cp = add (buf, NULL);
+		cp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
 		    state = m_getfld (&gstate, name, buf, &bufsz, fp);

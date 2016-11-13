@@ -222,7 +222,7 @@ parse_mime (char *file)
 		   get_temp_dir());
             return NULL;
         }
-	file = add (tfile, NULL);
+	file = mh_xstrdup(tfile);
 
 	while ((n = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
 	    if (fwrite(buffer, 1, n, fp) != n) {
@@ -317,8 +317,8 @@ get_content (FILE *in, char *file, int toplevel)
 	    compnum++;
 
 	    /* get copies of the buffers */
-	    np = add (name, NULL);
-	    vp = add (buf, NULL);
+	    np = mh_xstrdup(name);
+	    vp = mh_xstrdup(buf);
 
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
@@ -654,7 +654,7 @@ get_ctinfo (char *cp, CT ct, int magic)
     for (dp = cp; istoken (*dp); dp++)
 	continue;
     c = *dp, *dp = '\0';
-    ci->ci_type = add (cp, NULL);	/* store content type */
+    ci->ci_type = mh_xstrdup(cp);	/* store content type */
     *dp = c, cp = dp;
 
     if (!*ci->ci_type) {
@@ -673,7 +673,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 
     if (*cp != '/') {
 	if (!magic)
-	    ci->ci_subtype = add ("", NULL);
+	    ci->ci_subtype = mh_xstrdup("");
 	goto magic_skip;
     }
 
@@ -688,7 +688,7 @@ get_ctinfo (char *cp, CT ct, int magic)
     for (dp = cp; istoken (*dp); dp++)
 	continue;
     c = *dp, *dp = '\0';
-    ci->ci_subtype = add (cp, NULL);	/* store the content subtype */
+    ci->ci_subtype = mh_xstrdup(cp);	/* store the content subtype */
     *dp = c, cp = dp;
 
     if (!*ci->ci_subtype) {
@@ -836,7 +836,7 @@ magic_skip:
      */
     if (*cp) {
         if (magic) {
-	    ci->ci_magic = add (cp, NULL);
+	    ci->ci_magic = mh_xstrdup(cp);
 
             /* If there is a Content-Disposition header and it doesn't
                have a *filename=, extract it from the magic contents.
@@ -903,7 +903,7 @@ get_dispo (char *cp, CT ct, int buildflag)
     for (dp = cp; istoken (*dp); dp++)
 	continue;
     c = *dp, *dp = '\0';
-    ct->c_dispo_type = add (cp, NULL);	/* store disposition type */
+    ct->c_dispo_type = mh_xstrdup(cp);	/* store disposition type */
     *dp = c, cp = dp;
 
     if (*cp == '(' && get_comment (ct->c_file, DISPO_FIELD, &cp, NULL) == NOTOK)
@@ -980,7 +980,7 @@ invalid:
 	    *commentp = concat (dp, " ", buffer, NULL);
 	    free (dp);
 	} else {
-	    *commentp = add (buffer, NULL);
+	    *commentp = mh_xstrdup(buffer);
 	}
     }
 
@@ -1092,7 +1092,7 @@ InitMultiPart (CT ct)
         ct->c_encoding != CE_8BIT  &&  ct->c_encoding != CE_BINARY) {
 	/* Copy the Content-Transfer-Encoding header field body so we can
 	   remove any trailing whitespace and leading blanks from it. */
-	char *cte = add (ct->c_celine ? ct->c_celine : "(null)", NULL);
+	char *cte = mh_xstrdup(ct->c_celine ? ct->c_celine : "(null)");
 
 	bp = cte + strlen (cte) - 1;
 	while (bp >= cte && isspace ((unsigned char) *bp)) *bp-- = '\0';
@@ -1257,7 +1257,7 @@ last_part:
 	    p = part->mp_part;
 
 	    sprintf (pp, "%d", partnum);
-	    p->c_partno = add (partnam, NULL);
+	    p->c_partno = mh_xstrdup(partnam);
 
 	    /* initialize the content of the subparts */
 	    if (p->c_ctinitfnx && (*p->c_ctinitfnx) (p) == NOTOK) {
@@ -1764,7 +1764,7 @@ openBase64 (CT ct, char **file)
     if (*file == NULL) {
 	ce->ce_unlink = 1;
     } else {
-	ce->ce_file = add (*file, NULL);
+	ce->ce_file = mh_xstrdup(*file);
 	ce->ce_unlink = 0;
     }
 
@@ -1786,7 +1786,7 @@ openBase64 (CT ct, char **file)
 	    adios(NULL, "unable to create temporary file in %s",
 		  get_temp_dir());
 	}
-	ce->ce_file = add (tempfile, NULL);
+	ce->ce_file = mh_xstrdup(tempfile);
     }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
@@ -1948,7 +1948,7 @@ openQuoted (CT ct, char **file)
     if (*file == NULL) {
 	ce->ce_unlink = 1;
     } else {
-	ce->ce_file = add (*file, NULL);
+	ce->ce_file = mh_xstrdup(*file);
 	ce->ce_unlink = 0;
     }
 
@@ -1970,7 +1970,7 @@ openQuoted (CT ct, char **file)
 	    adios(NULL, "unable to create temporary file in %s",
 		  get_temp_dir());
 	}
-	ce->ce_file = add (tempfile, NULL);
+	ce->ce_file = mh_xstrdup(tempfile);
     }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
@@ -2168,7 +2168,7 @@ open7Bit (CT ct, char **file)
     if (*file == NULL) {
 	ce->ce_unlink = 1;
     } else {
-	ce->ce_file = add (*file, NULL);
+	ce->ce_file = mh_xstrdup(*file);
 	ce->ce_unlink = 0;
     }
 
@@ -2190,7 +2190,7 @@ open7Bit (CT ct, char **file)
 	    adios(NULL, "unable to create temporary file in %s",
 		  get_temp_dir());
 	}
-	ce->ce_file = add (tempfile, NULL);
+	ce->ce_file = mh_xstrdup(tempfile);
     }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
@@ -2533,16 +2533,16 @@ openFTP (CT ct, char **file)
     }
 
     if (*file)
-	ce->ce_file = add (*file, NULL);
+	ce->ce_file = mh_xstrdup(*file);
     else if (caching)
-	ce->ce_file = add (cachefile, NULL);
+	ce->ce_file = mh_xstrdup(cachefile);
     else {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
 	    adios(NULL, "unable to create temporary file in %s",
 		  get_temp_dir());
 	}
-	ce->ce_file = add (tempfile, NULL);
+	ce->ce_file = mh_xstrdup(tempfile);
     }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
@@ -2731,10 +2731,10 @@ openMail (CT ct, char **file)
 	    adios(NULL, "unable to create temporary file in %s",
 		  get_temp_dir());
 	}
-	ce->ce_file = add (tempfile, NULL);
+	ce->ce_file = mh_xstrdup(tempfile);
 	ce->ce_unlink = 1;
     } else {
-	ce->ce_file = add (*file, NULL);
+	ce->ce_file = mh_xstrdup(*file);
 	ce->ce_unlink = 0;
     }
 
@@ -2746,7 +2746,7 @@ openMail (CT ct, char **file)
     /* showproc is for mhshow and mhstore, though mhlist -debug
      * prints it, too. */
     mh_xfree(ct->c_showproc);
-    ct->c_showproc = add ("true", NULL);
+    ct->c_showproc = mh_xstrdup("true");
 
     fseek (ce->ce_fp, 0L, SEEK_SET);
     *file = ce->ce_file;
@@ -2813,16 +2813,16 @@ openURL (CT ct, char **file)
     }
 
     if (*file)
-    	ce->ce_file = add(*file, NULL);
+        ce->ce_file = mh_xstrdup(*file);
     else if (caching)
-    	ce->ce_file = add(cachefile, NULL);
+        ce->ce_file = mh_xstrdup(cachefile);
     else {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
 	    adios(NULL, "unable to create temporary file in %s",
 		  get_temp_dir());
 	}
-	ce->ce_file = add (tempfile, NULL);
+	ce->ce_file = mh_xstrdup(tempfile);
     }
 
     if ((ce->ce_fp = fopen(ce->ce_file, "w+")) == NULL) {

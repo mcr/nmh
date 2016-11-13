@@ -284,7 +284,7 @@ do_cache:
 	if ((ct = parse_mime (file))) {
 	    *ctp++ = ct;
 	    if (outfile) {
-		ct->c_storage = add (outfile, NULL);
+		ct->c_storage = mh_xstrdup(outfile);
 	    }
         }
     } else {
@@ -325,7 +325,7 @@ do_cache:
 		if ((ct = parse_mime (msgnam))) {
 		    *ctp++ = ct;
 		    if (outfile) {
-			ct->c_storage = add (outfile, NULL);
+			ct->c_storage = mh_xstrdup(outfile);
 		    }
                 }
 	    }

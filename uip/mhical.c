@@ -140,12 +140,12 @@ main (int argc, char *argv[]) {
             case INFILESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
                     adios (NULL, "missing argument to %s", argp[-2]);
-                infile = *cp == '-'  ?  add (cp, NULL)  :  path (cp, TFILE);
+                infile = *cp == '-'  ?  mh_xstrdup(cp)  :  path (cp, TFILE);
                 continue;
             case OUTFILESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
                     adios (NULL, "missing argument to %s", argp[-2]);
-                outfile = *cp == '-'  ?  add (cp, NULL)  :  path (cp, TFILE);
+                outfile = *cp == '-'  ?  mh_xstrdup(cp)  :  path (cp, TFILE);
                 continue;
 
             case CONTENTTYPESW:

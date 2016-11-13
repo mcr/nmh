@@ -58,7 +58,7 @@ cpytrim (const char *sp) {
     /* skip over leading whitespace */
     while (isspace ((unsigned char) *sp)) ++sp;
 
-    dp = add (sp, NULL);
+    dp = mh_xstrdup(sp);
 
     /* start at the end and zap trailing whitespace */
     for (cp = dp + strlen (dp) - 1;
