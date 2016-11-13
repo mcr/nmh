@@ -136,9 +136,9 @@ AM_DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1 \
 ## Stuff that should be cleaned via "make clean"
 ## automake 1.12.6 on FreeBSD 9 needs the sbr/dtimep.c.
 ##
-CLEANFILES = config/version.c sbr/sigmsg.h sbr/dtimep.c etc/mts.conf \
-	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS) \
-	     *.plist
+CLEANFILES = config/version.c sbr/dtimep.c \
+	     etc/bash_completion_nmh etc/mhn.defaults etc/mts.conf \
+	     man/man.sed man/mh-chart.man $(man_MANS) *.plist
 clean-local:
 	@rm -rf RPM a.out.dSYM uip/a.out.dSYM
 	@rm -rf test/testdir
@@ -221,14 +221,14 @@ dist_nmhetc_DATA = etc/MailAliases etc/components etc/digestcomps \
 ## The same as above, but we don't include these in the distribution
 ## (because they're generated at compile time)
 ##
-nmhetc_DATA = etc/mhn.defaults etc/mts.conf
+nmhetc_DATA = etc/bash_completion_nmh etc/mhn.defaults etc/mts.conf
 
 ##
 ## Documentation that gets installed in docdir
 ##
 dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
-		docs/COMPLETION-BASH docs/COMPLETION-TCSH \
-		docs/COMPLETION-ZSH docs/DIFFERENCES docs/FAQ \
+		docs/COMPLETION-TCSH docs/COMPLETION-ZSH \
+		docs/DIFFERENCES docs/FAQ \
 		docs/MAIL.FILTERING docs/MAILING-LISTS docs/README-ATTACHMENTS \
 		docs/README-HOOKS docs/README-components docs/README.about \
 		docs/README.SASL docs/README.developers docs/README.manpages \
@@ -289,7 +289,8 @@ man_SRCS = man/MH.man man/ali.man man/anno.man man/ap.man man/burst.man  \
 ## Automake using the automatic rules
 ##
 EXTRA_DIST = autogen.sh build_nmh config/version.sh sbr/icalparse.h \
-	     etc/mts.conf.in etc/mhn.defaults.sh etc/sendfiles \
+	     etc/bash_completion_nmh-gen etc/mhn.defaults.sh etc/mts.conf.in \
+	     etc/sendfiles \
 	     $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
@@ -516,6 +517,10 @@ test_getcwidth_LDADD = $(POSTLINK)
 ## distcheck uses VPATH, causes that make to prepend the VPATH to $@.
 config/version.c: Makefile $(srcdir)/config/version.sh
 	env srcdir="$(srcdir)" sh $(srcdir)/config/version.sh $(VERSION) > ./config/version.c
+
+etc/bash_completion_nmh: $(srcdir)/etc/bash_completion_nmh-gen
+	$(MKDIR_P) $(@D) # FIXME: A better way?
+	$(srcdir)/etc/bash_completion_nmh-gen > $@
 
 etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 	@rm -f $@

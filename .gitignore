@@ -51,6 +51,7 @@
 a.out.dSYM/
 /config/version.c
 /docs/contrib/sendfrom
+/etc/bash_completion_nmh
 /etc/gen-ctype-checked
 /etc/gen-ctype-checked.exe
 /etc/mhn.defaults
