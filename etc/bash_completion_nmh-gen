@@ -9,8 +9,8 @@
 mhchart=man/mh-chart.man
 
 #### Extract switches for nmh program.
-switches() {
-    local program=$1
+prog_switches() {
+    program=$1
 
     #### Extract lines from just after .B program-name to just before
     #### blank line, and then only those that start with .RB, e.g.,
@@ -51,7 +51,7 @@ EOF
 programs=`egrep '\.B [^\-]' "$mhchart" | \
           sed -e 's/^\.B //' -e 's/ .*//' -e 's|%[^%]*%/||' -e 's/\\-/-/'`
 for program in $programs; do
-    switches=`switches "$program"`
+    switches=`prog_switches "$program"`
     # Support mime as alias for mhbuild.
     [ "$program" = mhbuild ]  &&  program='mhbuild|mime'
     printf '      %s) switches=(%s) ;;\n' "$program" "$switches"
