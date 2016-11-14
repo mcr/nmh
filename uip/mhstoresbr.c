@@ -40,6 +40,8 @@ struct mhstoreinfo {
     enum clobber_policy_t clobber_policy;  /* -clobber selection */
 };
 
+static bool use_param_as_filename(const char *p);
+
 mhstoreinfo_t
 mhstoreinfo_create (CT *ct, char *pwd, const char *csw, int asw, int vsw) {
     mhstoreinfo_t info;
@@ -431,12 +433,7 @@ store_external (CT ct, mhstoreinfo_t info)
     if (info->autosw) {
 	char *cp;
 
-	if ((cp = e->eb_name)
-	    && *cp != '/'
-	    && *cp != '.'
-	    && *cp != '|'
-	    && *cp != '!'
-	    && !strchr (cp, '%')) {
+	if ((cp = e->eb_name) && use_param_as_filename(cp)) {
 	    if (!ct->c_storeproc)
 		ct->c_storeproc = mh_xstrdup(cp);
 	    if (!p->c_storeproc)
@@ -1068,12 +1065,8 @@ get_storeproc (CT ct)
      * use that (RFC-2183).
      */
     if (ct->c_dispo) {
-	if ((cp = get_param(ct->c_dispo_first, "filename", '_', 0))
-		&& *cp != '/'
-		&& *cp != '.'
-		&& *cp != '|'
-		&& *cp != '!'
-		&& !strchr (cp, '%')) {
+	if ((cp = get_param(ct->c_dispo_first, "filename", '_', 0)) &&
+            use_param_as_filename(cp)) {
 		ct->c_storeproc = mh_xstrdup(cp);
 		free(cp);
 		return;
@@ -1087,12 +1080,8 @@ get_storeproc (CT ct)
      * the storeproc.
      */
     ci = &ct->c_ctinfo;
-    if ((cp = get_param(ci->ci_first_pm, "name", '_', 0))
-	  && *cp != '/'
-	  && *cp != '.'
-	  && *cp != '|'
-	  && *cp != '!'
-	  && !strchr (cp, '%')) {
+    if ((cp = get_param(ci->ci_first_pm, "name", '_', 0)) &&
+        use_param_as_filename(cp)) {
 	    ct->c_storeproc = mh_xstrdup(cp);
 
     }
@@ -1347,6 +1336,13 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
   free (cwd);
 
   return file;
+}
+
+static bool use_param_as_filename(const char *p)
+{
+    /* Preserve result of original test that considered an empty string
+     * OK. */
+    return !*p || (!strchr("/.|!", *p) && !strchr(p, '%'));
 }
 
 /* -clobber support */
