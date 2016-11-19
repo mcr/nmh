@@ -262,6 +262,7 @@ mhshow-suffix-image/jpeg: .jpg
 mhshow-suffix-image/png: .png
 mhshow-suffix-image/tiff: .tif
 mhshow-suffix-image/tiff: .tiff
+mhshow-suffix-text: .txt
 mhshow-suffix-text/calendar: .ics
 mhshow-suffix-text/css: .css
 mhshow-suffix-text/html: .html
