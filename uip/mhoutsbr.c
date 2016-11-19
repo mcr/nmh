@@ -21,7 +21,6 @@
 /*
  * prototypes
  */
-int output_message (CT, char *);
 int output_message_fp (CT, FILE *, char *);
 
 /*
@@ -52,23 +51,6 @@ output_message_fp (CT ct, FILE *fp, char *file)
 	return NOTOK;
     }
     return OK;
-}
-
-int
-output_message (CT ct, char *file)
-{
-    FILE *fp;
-    int status;
-
-    if (! strcmp (file, "-")) {
-	fp = stdout;
-    } else if ((fp = fopen (file, "w")) == NULL) {
-	advise (file, "unable to open for writing");
-	return NOTOK;
-    }
-    status = output_message_fp(ct, fp, file);
-    if (strcmp (file, "-")) fclose(fp);
-    return status;
 }
 
 

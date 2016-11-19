@@ -63,7 +63,7 @@ extern int bogus_mp_content;                  /* flag from InitMultiPart */
 extern int suppress_extraneous_trailing_semicolon_warning;
 
 /* mhoutsbr.c */
-int output_message (CT, char *);
+int output_message_fp (CT, FILE *, char *);
 
 /* mhmisc.c */
 void flush_errors (void);
@@ -87,9 +87,9 @@ typedef struct fix_transformations {
     char *textcharset;
 } fix_transformations;
 
-int mhfixmsgsbr (CT *, char *, const fix_transformations *, char *);
+int mhfixmsgsbr (CT *, char *, const fix_transformations *, char *, FILE **);
 static int fix_boundary (CT *, int *);
-static int copy_input_to_output (const char *, const char *);
+static int copy_input_to_output (const char *, const char *, FILE *);
 static int get_multipart_boundary (CT, char **);
 static int replace_boundary (CT, char *, char *);
 static int fix_types (CT, svector_t, int *);
@@ -121,7 +121,7 @@ static int convert_charsets (CT, char *, int *);
 static int fix_always (CT, int *);
 static int fix_filename_param (char *, char *, PM *, PM *);
 static int fix_filename_encoding (CT);
-static int write_content (CT, const char *, char *, int, int);
+static int write_content (CT, const char *, char *, FILE *, int, int);
 static void set_text_ctparams(CT, char *, int);
 static int remove_file (const char *);
 static void report (char *, char *, char *, char *, ...);
@@ -137,7 +137,7 @@ main (int argc, char **argv) {
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp = NULL;
     CT *ctp;
-    FILE *fp;
+    FILE *fp, *outfp = NULL;
     int using_stdin = 0;
     int chgflag = 1;
     int status = OK;
@@ -323,6 +323,16 @@ main (int argc, char **argv) {
         adios (NULL, "cannot specify msg and file at same time!");
     }
 
+    if (outfile) {
+        /* Open the outfile now, so we don't have to risk opening it
+           after running out of fds. */
+        if (strcmp (outfile, "-") == 0) {
+            outfp = stdout;
+        } else if ((outfp = fopen (outfile, "w")) == NULL) {
+            adios (outfile, "unable to open for writing");
+        }
+    }
+
     /*
      * check if message is coming from file
      */
@@ -369,7 +379,7 @@ main (int argc, char **argv) {
             if (outfile) {
                 /* Something went wrong.  Output might be expected, such as if this were run
                    as a filter.  Just copy the input to the output. */
-                if (copy_input_to_output (file, outfile) != OK) {
+                if (copy_input_to_output (file, outfile, outfp) != OK) {
                     advise (NULL, "unable to copy message to %s, it might be lost\n", outfile);
                 }
             }
@@ -438,9 +448,11 @@ main (int argc, char **argv) {
                         char *input_filename =
                             concat (maildir, "/", msgnam, NULL);
 
-                        if (copy_input_to_output (input_filename, outfile) != OK) {
+                        if (copy_input_to_output (input_filename, outfile,
+                                                  outfp) != OK) {
                             advise (NULL,
-                                    "unable to copy message to %s, it might be lost\n",
+                                    "unable to copy message to %s, "
+                                    "it might be lost\n",
                                     outfile);
                         }
                         free (input_filename);
@@ -459,7 +471,7 @@ main (int argc, char **argv) {
 
     if (*cts) {
         for (ctp = cts; *ctp; ++ctp) {
-            status += mhfixmsgsbr (ctp, maildir, &fx, outfile);
+            status += mhfixmsgsbr (ctp, maildir, &fx, outfile, &outfp);
             free_content (*ctp);
 
             if (using_stdin) {
@@ -478,6 +490,7 @@ main (int argc, char **argv) {
     free (cts);
 
     if (fx.fixtypes != NULL) { svector_free (fx.fixtypes); }
+    if (outfp) { fclose (outfp); }  /* even if stdout */
     free (outfile);
     free (file);
     free (folder);
@@ -493,7 +506,7 @@ main (int argc, char **argv) {
  */
 int
 mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
-             char *outfile) {
+             char *outfile, FILE **outfp) {
     /* Store input filename in case one of the transformations, i.e.,
        fix_boundary(), rewrites to a tmp file. */
     char *input_filename = maildir
@@ -508,7 +521,8 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
 
         if ((*ctp)->c_file) {
             char *tempfile;
-            if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
+            if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, outfp)) ==
+                NULL) {
                 adios (NULL, "unable to create temporary file in %s",
                        get_temp_dir());
             }
@@ -516,7 +530,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
         } else {
             adios (NULL, "missing both input and output filenames\n");
         }
-    }
+    } /* else *outfp was defined by caller */
 
     reverse_alternative_parts (*ctp);
     status = fix_always (*ctp, &message_mods);
@@ -558,13 +572,13 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
      * Write the content to a file
      */
     if (status == OK) {
-        status = write_content (*ctp, input_filename, outfile, modify_inplace,
-                                message_mods);
+        status = write_content (*ctp, input_filename, outfile, *outfp,
+                                modify_inplace, message_mods);
     } else if (! modify_inplace) {
         /* Something went wrong.  Output might be expected, such
            as if this were run as a filter.  Just copy the input
            to the output. */
-        if (copy_input_to_output (input_filename, outfile) != OK) {
+        if (copy_input_to_output (input_filename, outfile, *outfp) != OK) {
             advise (NULL, "unable to copy message to %s, it might be lost\n", outfile);
         }
     }
@@ -586,11 +600,10 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
  * might be running as part of a pipeline.
  */
 static int
-copy_input_to_output (const char *input_filename, const char *output_filename) {
+copy_input_to_output (const char *input_filename, const char *output_filename,
+                      FILE *outfp) {
     int in = open (input_filename, O_RDONLY);
-    int out = strcmp (output_filename, "-")
-        ?  open (output_filename, O_WRONLY | O_CREAT, m_gmprot ())
-        :  STDOUT_FILENO;
+    int out = fileno (outfp);
     int status = OK;
 
     if (in != -1  &&  out != -1) {
@@ -599,7 +612,6 @@ copy_input_to_output (const char *input_filename, const char *output_filename) {
         status = NOTOK;
     }
 
-    close (out);
     close (in);
 
     return status;
@@ -1574,16 +1586,17 @@ static int
 decode_part (CT ct) {
     char *tmp_decoded;
     int status;
+    FILE *file;
     char *tempfile;
 
-    if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
+    if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, &file)) == NULL) {
         adios (NULL, "unable to create temporary file in %s", get_temp_dir());
     }
     tmp_decoded = mh_xstrdup (tempfile);
     /* The following call will load ct->c_cefile.ce_file with the tmp
        filename of the decoded content.  tmp_decoded will contain the
        encoded output, get rid of that. */
-    status = output_message (ct, tmp_decoded);
+    status = output_message_fp (ct, file, tmp_decoded);
     (void) m_unlink (tmp_decoded);
     free (tmp_decoded);
 
@@ -2631,13 +2644,13 @@ fix_filename_encoding (CT ct) {
  * Output content in input file to output file.
  */
 static int
-write_content (CT ct, const char *input_filename, char *outfile, int modify_inplace,
-               int message_mods) {
+write_content (CT ct, const char *input_filename, char *outfile, FILE *outfp,
+               int modify_inplace, int message_mods) {
     int status = OK;
 
     if (modify_inplace) {
         if (message_mods > 0) {
-            if ((status = output_message (ct, outfile)) == OK) {
+            if ((status = output_message_fp (ct, outfp, outfile)) == OK) {
                 char *infile = input_filename
                     ?  mh_xstrdup (input_filename)
                     :  mh_xstrdup (ct->c_file ? ct->c_file : "-");
@@ -2696,7 +2709,7 @@ write_content (CT ct, const char *input_filename, char *outfile, int modify_inpl
     } else {
         /* Output is going to some file.  Produce it whether or not
            there were modifications. */
-        status = output_message (ct, outfile);
+        status = output_message_fp (ct, outfp, outfile);
     }
 
     flush_errors ();
