@@ -540,7 +540,7 @@ contains
 .B nmh
 library commands
 .TP
-$HOME/\&.mh\-profile
+$HOME/\&.mh_profile
 The user's nmh profile
 .ne 4
 .SH "SEE ALSO"
