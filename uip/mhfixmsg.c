@@ -87,9 +87,10 @@ typedef struct fix_transformations {
     char *textcharset;
 } fix_transformations;
 
-int mhfixmsgsbr (CT *, char *, const fix_transformations *, char *, FILE **);
+int mhfixmsgsbr (CT *, char *, const fix_transformations *, FILE **, char *,
+                 FILE **);
 static int fix_boundary (CT *, int *);
-static int copy_input_to_output (const char *, const char *, FILE *);
+static int copy_input_to_output (const char *, FILE *, const char *, FILE *);
 static int get_multipart_boundary (CT, char **);
 static int replace_boundary (CT, char *, char *);
 static int fix_types (CT, svector_t, int *);
@@ -137,7 +138,7 @@ main (int argc, char **argv) {
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp = NULL;
     CT *ctp;
-    FILE *fp, *outfp = NULL;
+    FILE *fp, *infp = NULL, *outfp = NULL;
     int using_stdin = 0;
     int chgflag = 1;
     int status = OK;
@@ -374,14 +375,23 @@ main (int argc, char **argv) {
             advise (NULL, "unable to parse message from file %s", file);
             status = NOTOK;
 
-            /* If there's an outfile, pass the input message unchanged, so the message won't
-               get dropped from a pipeline. */
+            /* If there's an outfile, pass the input message unchanged, so the
+               message won't get dropped from a pipeline. */
             if (outfile) {
-                /* Something went wrong.  Output might be expected, such as if this were run
-                   as a filter.  Just copy the input to the output. */
-                if (copy_input_to_output (file, outfile, outfp) != OK) {
-                    advise (NULL, "unable to copy message to %s, it might be lost\n", outfile);
+                /* Something went wrong.  Output might be expected, such as if
+                   this were run as a filter.  Just copy the input to the
+                   output. */
+                if ((infp = fopen (file, "r")) == NULL) {
+                    adios (file, "unable to open for reading");
                 }
+
+                if (copy_input_to_output (file, infp, outfile, outfp) != OK) {
+                    advise (NULL, "unable to copy message to %s, "
+                            "it might be lost\n", outfile);
+                }
+
+                fclose (infp);
+                infp = NULL;
             }
         }
     } else {
@@ -448,13 +458,21 @@ main (int argc, char **argv) {
                         char *input_filename =
                             concat (maildir, "/", msgnam, NULL);
 
-                        if (copy_input_to_output (input_filename, outfile,
-                                                  outfp) != OK) {
+                        if ((infp = fopen (input_filename, "r")) == NULL) {
+                            adios (input_filename,
+                                   "unable to open for reading");
+                        }
+
+                        if (copy_input_to_output (input_filename, infp,
+                                                  outfile, outfp) != OK) {
                             advise (NULL,
                                     "unable to copy message to %s, "
                                     "it might be lost\n",
                                     outfile);
                         }
+
+                        fclose (infp);
+                        infp = NULL;
                         free (input_filename);
                     }
                 }
@@ -471,7 +489,7 @@ main (int argc, char **argv) {
 
     if (*cts) {
         for (ctp = cts; *ctp; ++ctp) {
-            status += mhfixmsgsbr (ctp, maildir, &fx, outfile, &outfp);
+            status += mhfixmsgsbr (ctp, maildir, &fx, &infp, outfile, &outfp);
             free_content (*ctp);
 
             if (using_stdin) {
@@ -490,6 +508,7 @@ main (int argc, char **argv) {
     free (cts);
 
     if (fx.fixtypes != NULL) { svector_free (fx.fixtypes); }
+    if (infp) { fclose (infp); }    /* even if stdin */
     if (outfp) { fclose (outfp); }  /* even if stdout */
     free (outfile);
     free (file);
@@ -506,7 +525,7 @@ main (int argc, char **argv) {
  */
 int
 mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
-             char *outfile, FILE **outfp) {
+             FILE **infp, char *outfile, FILE **outfp) {
     /* Store input filename in case one of the transformations, i.e.,
        fix_boundary(), rewrites to a tmp file. */
     char *input_filename = maildir
@@ -515,6 +534,13 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
     int modify_inplace = 0;
     int message_mods = 0;
     int status = OK;
+
+    /* Though the input file won't need to be opened if everything goes
+       well, do it here just in case there's a failure, and that failure is
+       running out of file descriptors. */
+    if ((*infp = fopen (input_filename, "r")) == NULL) {
+        adios (input_filename, "unable to open for reading");
+    }
 
     if (outfile == NULL) {
         modify_inplace = 1;
@@ -578,8 +604,10 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
         /* Something went wrong.  Output might be expected, such
            as if this were run as a filter.  Just copy the input
            to the output. */
-        if (copy_input_to_output (input_filename, outfile, *outfp) != OK) {
-            advise (NULL, "unable to copy message to %s, it might be lost\n", outfile);
+        if (copy_input_to_output (input_filename, *infp, outfile,
+                                  *outfp) != OK) {
+            advise (NULL, "unable to copy message to %s, it might be lost\n",
+                    outfile);
         }
     }
 
@@ -589,6 +617,8 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
         outfile = NULL;
     }
 
+    fclose (*infp);
+    *infp = NULL;
     free (input_filename);
 
     return status;
@@ -600,9 +630,9 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
  * might be running as part of a pipeline.
  */
 static int
-copy_input_to_output (const char *input_filename, const char *output_filename,
-                      FILE *outfp) {
-    int in = open (input_filename, O_RDONLY);
+copy_input_to_output (const char *input_filename, FILE *infp,
+                      const char *output_filename, FILE *outfp) {
+    int in = fileno (infp);
     int out = fileno (outfp);
     int status = OK;
 
@@ -611,8 +641,6 @@ copy_input_to_output (const char *input_filename, const char *output_filename,
     } else {
         status = NOTOK;
     }
-
-    close (in);
 
     return status;
 }
