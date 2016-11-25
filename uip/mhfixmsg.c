@@ -547,6 +547,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
 
         if ((*ctp)->c_file) {
             char *tempfile;
+            /* outfp will be closed by the caller */
             if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, outfp)) ==
                 NULL) {
                 adios (NULL, "unable to create temporary file in %s",
@@ -1489,6 +1490,7 @@ build_text_plain_part (CT encoded_part) {
            be unlinked by free_content (). */
         char *tempfile;
 
+        /* This m_mktemp2() call closes the temp file. */
         if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
             advise (NULL, "unable to create temporary file in %s",
                     get_temp_dir());
@@ -1627,6 +1629,9 @@ decode_part (CT ct) {
     status = output_message_fp (ct, file, tmp_decoded);
     (void) m_unlink (tmp_decoded);
     free (tmp_decoded);
+    if (fclose (file)) {
+        admonish (NULL, "unable to close temporary file %s", tempfile);
+    }
 
     return status;
 }
