@@ -587,13 +587,15 @@ dnl ----------------
 dnl CHECK STRUCTURES
 dnl ----------------
 
-dnl FIXME: This test could work on Linux if _BSD_SOURCE was #define'd
-dnl according to localtime(3).
-dnl
 dnl For platforms such as FreeBSD that have tm_gmtoff in struct tm.
 dnl (FreeBSD has a timezone() function but not a timezone global
 dnl variable that is visible).
-AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[#include <time.h>])
+dnl On Linux, $AM_CPPFLAGS contains -D_GNU_SOURCE, which makes
+dnl tm_gmtoff visible.
+nmh_saved_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$AM_CPPFLAGS $CPPFLAGS"
+AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[[#include <time.h>]])
+CPPFLAGS="$nmh_saved_CPPFLAGS"
 
 AC_STRUCT_DIRENT_D_TYPE
 
