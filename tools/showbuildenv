@@ -5,13 +5,10 @@
 # build environment on machines they can't login on.  It also provides
 # a history in the build logs that might be useful in catching
 # regressions.
-# 
+#
 # This script should *only* report basic information about the build
 # environment, and only that necessary to reproduce the build
 # environment.
-#
-# FIXME: Document meaning of script's exit status, if any.
-# It jumps through hoops with `|| true' despite not using `set -e'.
 
 offset () {
     sed -e '/./s/^/    /' "$@"
@@ -63,6 +60,7 @@ case ${os} in
 	cc -v 2>&1 | offset
 
   	header Installed packages:
+        #### pkg(7) or pkg_info(1) might not always be available.
 	(pkg info 2>/dev/null | offset) || true
 	(pkg_info 2>/dev/null | offset) || true
 	;;

@@ -71,5 +71,61 @@ run_prog mhshow $msgnum > $actual 2>&1
 check "$expected" "$actual" : locale profile component
 
 
+start_test 'Encoded parameter value'
+msgfile=`mhpath new`
+msgnum=`basename $msgfile`
+cat > $msgfile <<EOF
+From: foo@example.edu
+To: bar@example.edu
+Subject: test
+MIME-Version: 1.0
+Content-Type: text/plain; charset*=EBCDIC-US''%e4%e3%c6%60%f8
+Content-Transfer-Encoding: quoted-printable
+Content-Description: bogus quoted-printable data
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+4 =C3=B7 2 =3D 2
+EOF
+
+cat > $expected <<EOF
+[ Message inbox:12 ]
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test
+
+MIME-Version: 1.0
+Content-Description: bogus quoted-printable data
+
+[ part  - text/plain - bogus quoted-printable data  ${text_size}B  ]
+4 ÷ 2 = 2
+EOF
+
+run_prog mhshow $msgnum > $actual 2>&1
+check "$expected" "$actual" : encoded parameter value
+
+
+start_test 'replacement character in parameter value'
+#### The output of this test doesn't show it, but it covers the
+#### noiconv: portion of get_param_value().
+cat > $msgfile <<'EOF'
+Subject: invalid parameter value charset
+MIME-Version: 1.0
+Content-Type: text/plain; charset*=invalid''%0Dus-ascii
+EOF
+
+cat > $expected <<EOF
+[ Message inbox:12 ]
+Subject: invalid parameter value charset
+
+MIME-Version: 1.0
+
+[ part  - text/plain -   0B  ]
+EOF
+
+run_prog mhshow $msgnum > $actual 2>&1
+check "$expected" "$actual"
+
+
 finish_test
 exit $failed
