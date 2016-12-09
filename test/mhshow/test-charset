@@ -74,12 +74,15 @@ check "$expected" "$actual" : locale profile component
 start_test 'Encoded parameter value'
 msgfile=`mhpath new`
 msgnum=`basename $msgfile`
+#### The encoded charset name is really UTF-8 encoded,
+#### but say it's UTF-16 to exercise the iconv code,
+#### if it's available, in get_param_value().
 cat > $msgfile <<EOF
 From: foo@example.edu
 To: bar@example.edu
 Subject: test
 MIME-Version: 1.0
-Content-Type: text/plain; charset*=EBCDIC-US''%e4%e3%c6%60%f8
+Content-Type: text/plain; charset*=UTF-16''%55%54%46%2d%38
 Content-Transfer-Encoding: quoted-printable
 Content-Description: bogus quoted-printable data
 Date: Sun, 18 Dec 2005 00:52:39 +0100
@@ -97,7 +100,7 @@ Subject: test
 MIME-Version: 1.0
 Content-Description: bogus quoted-printable data
 
-[ part  - text/plain - bogus quoted-printable data  ${text_size}B  ]
+[ part  - text/plain - bogus quoted-printable data  11B  ]
 4 ÷ 2 = 2
 EOF
 
