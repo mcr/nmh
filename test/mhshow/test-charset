@@ -23,6 +23,8 @@ require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 skip_param_value_checks=0
 if test "$ICONV_ENABLED" -eq 0; then
     text_size=10
+else
+    text_size=11
     if ! iconv -l | grep EBCDIC-US >/dev/null; then
         #### For unknown reasons, the parameter values checks
         #### fail on the FreeBSD10 buildbot.  It doesn't
@@ -30,8 +32,6 @@ if test "$ICONV_ENABLED" -eq 0; then
         #### so use that to detect whether to skip the check.
         skip_param_value_checks=1
     fi
-else
-    text_size=11
 fi
 
 expected=$MH_TEST_DIR/$$.expected
