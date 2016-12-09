@@ -23,7 +23,7 @@ require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 skip_param_value_checks=0
 if test "$ICONV_ENABLED" -eq 0; then
     text_size=10
-    if iconv -l | grep EBCDIC-US >/dev/null; then
+    if ! iconv -l | grep EBCDIC-US >/dev/null; then
         #### For unknown reasons, the parameter values checks
         #### fail on the FreeBSD10 buildbot.  It doesn't
         #### support EBCDIC-US, which is used by the checks,
