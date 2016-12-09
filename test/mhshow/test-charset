@@ -104,6 +104,12 @@ Content-Description: bogus quoted-printable data
 4 ÷ 2 = 2
 EOF
 
+#### for debugging:
+echo locales:
+locale -a | cat
+echo charsets:
+iconv -l | cat
+####
 run_prog mhshow $msgnum > $actual 2>&1
 check "$expected" "$actual" : encoded parameter value
 
