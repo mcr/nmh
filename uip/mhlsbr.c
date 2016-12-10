@@ -307,13 +307,6 @@ static char delim4[] = "\n------------------------------\n\n";
 static FILE *(*mhl_action) () = (FILE *(*) ()) 0;
 
 /*
- * Redefine a couple of functions.
- * These are undefined later in the code.
- */
-#define	adios mhladios
-#define	done  mhldone
-
-/*
  * prototypes
  */
 static void mhl_format (char *, int, int);
@@ -367,17 +360,17 @@ mhl (int argc, char **argv)
 	    switch (smatch (++cp, mhlswitches)) {
 		case AMBIGSW: 
 		    ambigsw (cp, mhlswitches);
-		    done (1);
+		    mhldone (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown\n", cp);
+		    mhladios (NULL, "-%s unknown\n", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] [files ...]", invo_name);
 		    print_help (buf, mhlswitches, 1);
-		    done (0);
+		    mhldone (0);
 		case VERSIONSW:
 		    print_version(invo_name);
-		    done (0);
+		    mhldone (0);
 
 		case BELLSW: 
 		    bellflg = 1;
@@ -395,23 +388,23 @@ mhl (int argc, char **argv)
 
 		case FOLDSW: 
 		    if (!(folder = *argp++) || *folder == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 
 		case SLEEPSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    else
 			sleepsw = atoi (cp);/* ZERO ok! */
 		    continue;
 
 		case PROGSW:
 		    if (!(moreproc = *argp++) || *moreproc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 		case NPROGSW:
 		    nomore++;
@@ -419,7 +412,7 @@ mhl (int argc, char **argv)
 
 		case FMTPROCSW:
 		    if (!(formatproc = *argp++) || *formatproc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 		case NFMTPROCSW:
 		    formatproc = NULL;
@@ -427,32 +420,32 @@ mhl (int argc, char **argv)
 
 		case LENSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    else if ((length = atoi (cp)) < 1)
-			adios (NULL, "bad argument %s %s", argp[-2], cp);
+			mhladios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 		case WIDTHSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    else if ((width = atoi (cp)) < 1)
-			adios (NULL, "bad argument %s %s", argp[-2], cp);
+			mhladios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 
 		case DGSTSW: 
 		    if (!(digest = *argp++) || *digest == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 		case ISSUESW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    else if ((issue = atoi (cp)) < 1)
-			adios (NULL, "bad argument %s %s", argp[-2], cp);
+			mhladios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 		case VOLUMSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    else if ((volume = atoi (cp)) < 1)
-			adios (NULL, "bad argument %s %s", argp[-2], cp);
+			mhladios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 
 		case FORW2SW: 
@@ -530,7 +523,7 @@ mhl (int argc, char **argv)
 
     fflush(stdout);
     if(ferror(stdout)){
-	    adios("output", "error writing");
+	    mhladios("output", "error writing");
     }
     
     if (clearflg > 0 && ontty == NOTTY)
@@ -566,7 +559,7 @@ mhl_format (char *file, int length, int width)
     }
 
     if ((fp = fopen (etcpath (file), "r")) == NULL)
-	adios (file, "unable to open format file");
+	mhladios (file, "unable to open format file");
 
     if (fstat (fileno (fp), &st) != NOTOK) {
 	mtime = st.st_mtime;
@@ -629,7 +622,7 @@ mhl_format (char *file, int length, int width)
 		parptr = bp;
 		while (*parptr) {
 		    if (evalvar (&global))
-			adios (NULL, "format file syntax error: %s", bp);
+			mhladios (NULL, "format file syntax error: %s", bp);
 		    if (*parptr)
 			parptr++;
 		}
@@ -640,7 +633,7 @@ mhl_format (char *file, int length, int width)
 		while (*parptr == ':' || *parptr == ',') {
 		    parptr++;
 		    if (evalvar (c1))
-			adios (NULL, "format file syntax error: %s", bp);
+			mhladios (NULL, "format file syntax error: %s", bp);
 		}
 		if (!c1->c_nfs && global.c_nfs) {
 		    if (c1->c_flags & DATEFMT) {
@@ -660,7 +653,7 @@ mhl_format (char *file, int length, int width)
 		continue;
 
 	    default: 
-		adios (NULL, "format file syntax error: %s", bp);
+		mhladios (NULL, "format file syntax error: %s", bp);
 	}
     }
     fclose (fp);
@@ -1107,7 +1100,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		return;
 
 	    default: 
-		adios (NULL, "getfld() returned %d", state);
+		mhladios (NULL, "getfld() returned %d", state);
 	}
     }
 }
@@ -1310,7 +1303,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     if ((ovtxt = c1->c_ovtxt ? c1->c_ovtxt : global.c_ovtxt) == NULL)
 	ovtxt = "";
     if (wid < ovoff + strlen (ovtxt) + 5)
-	adios (NULL, "component: %s width(%d) too small for overflow(%d)",
+	mhladios (NULL, "component: %s width(%d) too small for overflow(%d)",
 		c1->c_name, wid, ovoff + strlen (ovtxt) + 5);
     onelp = NULL;
 
@@ -1624,7 +1617,7 @@ pipeser (int i)
 {
     NMH_UNUSED (i);
 
-    done (NOTOK);
+    mhldone (NOTOK);
 }
 
 
@@ -1635,12 +1628,9 @@ quitser (int i)
 
     putchar ('\n');
     fflush (stdout);
-    done (NOTOK);
+    mhldone (NOTOK);
 }
 
-
-#undef adios
-#undef done
 
 static void
 mhladios (char *what, char *fmt, ...)
