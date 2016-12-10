@@ -395,9 +395,9 @@ bool has_suffix(const char *s, const char *suffix)
 }
 
 
-/* HasSuffixC returns true if non-NULL string s ends with a c before the
+/* has_suffix_c returns true if non-NULL string s ends with a c before the
  * terminating NUL. */
-bool HasSuffixC(const char *s, int c)
+bool has_suffix_c(const char *s, int c)
 {
     return *s && s[strlen(s) - 1] == c;
 }
