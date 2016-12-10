@@ -65,3 +65,6 @@ case ${os} in
 	(pkg_info 2>/dev/null | offset) || true
 	;;
 esac
+
+# Temporary test.  Does anything care if the exit status is non-zero?
+exit 42
