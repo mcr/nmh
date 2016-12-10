@@ -815,7 +815,7 @@ again: ;
     						 &errstr)) != NULL ; ) {
 
 	if (doingEHLO
-	        && HasPrefix(buffer, "250")
+	        && has_prefix(buffer, "250")
 	        && (buffer[3] == '-' || doingEHLO == 2)
 	        && buffer[4]) {
 	    if (doingEHLO == 2) {
@@ -954,7 +954,7 @@ EHLOset (char *s)
 
     for (ehlo = EHLOkeys; *ehlo; ehlo++) {
 	ep = *ehlo;
-	if (HasPrefix(ep, s)) {
+	if (has_prefix(ep, s)) {
 	    for (ep += len; *ep == ' '; ep++)
 		continue;
 	    return ep;
@@ -1032,7 +1032,7 @@ sm_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    return NOTOK;
 	}
 
-	if (!HasPrefix(line, "334 ")) {
+	if (!has_prefix(line, "334 ")) {
 	    netsec_err(errstr, "Improper SASL protocol response: %s", line);
 	    return NOTOK;
 	}
@@ -1081,7 +1081,7 @@ sm_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	if (line == NULL)
 	    return NOTOK;
 
-	if (!HasPrefix(line, "235 ")) {
+	if (!has_prefix(line, "235 ")) {
 	    if (len > 4)
 		netsec_err(errstr, "Authentication failed: %s", line + 4);
 	    else

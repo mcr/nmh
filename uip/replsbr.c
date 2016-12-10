@@ -532,7 +532,7 @@ fix_addresses (char *str) {
                 const char *no_at_sign = "no at-sign after local-part";
 
                 adr_nodep->escape_local_part =
-                    HasPrefix(error, no_at_sign);
+                    has_prefix(error, no_at_sign);
             } else {
                 mnfree (mp);
             }

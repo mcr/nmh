@@ -99,7 +99,7 @@ folder_read (char *name, int lockflag)
 
 		default: 
 		    /* skip any files beginning with backup prefix */
-		    if (HasPrefix(dp->d_name, BACKUP_PREFIX))
+		    if (has_prefix(dp->d_name, BACKUP_PREFIX))
 			continue;
 
 		    /* skip the LINK file */

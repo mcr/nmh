@@ -26,8 +26,8 @@ static int my_lex (char *);
 int
 isfrom(const char *string)
 {
-    return (HasPrefix(string, "From ")
-	    || HasPrefix(string, ">From "));
+    return (has_prefix(string, "From ")
+	    || has_prefix(string, ">From "));
 }
 
 
@@ -52,8 +52,8 @@ lequal (const char *a, const char *b)
 static int
 isat (const char *p)
 {
-    return HasPrefix(p, " AT ") || HasPrefix(p, " At ") ||
-        HasPrefix(p, " aT ") || HasPrefix(p, " at ");
+    return has_prefix(p, " AT ") || has_prefix(p, " At ") ||
+        has_prefix(p, " aT ") || has_prefix(p, " at ");
 }
 
 

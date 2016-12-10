@@ -171,7 +171,7 @@ rmf (char *folder)
 		if (m_atoi (dp->d_name))
 		    break;
 		if (strcmp (dp->d_name, LINK) == 0
-			|| HasPrefix(dp->d_name, BACKUP_PREFIX))
+			|| has_prefix(dp->d_name, BACKUP_PREFIX))
 		    break;
 
 		admonish (NULL, "file \"%s/%s\" not deleted",

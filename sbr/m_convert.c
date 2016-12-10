@@ -360,7 +360,7 @@ attr (struct msgs *mp, char *cp)
     /* hack for "cur-name", "cur-n", etc. */
     if (!strcmp (cp, "cur"))
 	return 0;
-    if (HasPrefix(cp, "cur")) {
+    if (has_prefix(cp, "cur")) {
 	if (cp[3] == ':' || cp[3] == '=')
 	    return 0;
     }

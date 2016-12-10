@@ -2589,7 +2589,7 @@ static int
 fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm) {
     int fixed = 0;
 
-    if (HasPrefix(value, "=?") && HasSuffix(value, "?=")) {
+    if (has_prefix(value, "=?") && HasSuffix(value, "?=")) {
         /* Looks like an RFC 2047 encoded parameter. */
         char decoded[PATH_MAX + 1];
 

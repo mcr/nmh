@@ -371,8 +371,8 @@ void trunccpy(char *dst, const char *src, size_t size)
 }
 
 
-/* HasPrefix returns true if non-NULL s starts with non-NULL prefix. */
-bool HasPrefix(const char *s, const char *prefix)
+/* has_prefix returns true if non-NULL s starts with non-NULL prefix. */
+bool has_prefix(const char *s, const char *prefix)
 {
     while (*s && *s == *prefix) {
         s++;
@@ -527,7 +527,7 @@ nmh_version_changed (int older) {
            break for versions with multiple decimal points, etc. */
         const float current_version = strtof (VERSION, NULL);
         const float old_version =
-            context_version  &&  HasPrefix(context_version, "nmh-")
+            context_version  &&  has_prefix(context_version, "nmh-")
             ?  strtof (context_version + 4, NULL)
             :  99999999;
 

@@ -1253,7 +1253,7 @@ you_lose:
     while (fgets (buffer, sizeof(buffer), qfp)) {
 	if (first) {
 	    first = 0;
-	    if (HasPrefix(buffer, "From ")) {
+	    if (has_prefix(buffer, "From ")) {
 		/* get copy of envelope information ("From " line) */
 		envelope = mh_xstrdup(buffer);
 

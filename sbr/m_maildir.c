@@ -44,10 +44,10 @@ m_mailpath (char *folder)
     char maildir[BUFSIZ];
 
     if (*folder != '/'
-	    && !HasPrefix(folder, CWD)
+	    && !has_prefix(folder, CWD)
 	    && strcmp (folder, DOT)
 	    && strcmp (folder, DOTDOT)
-	    && !HasPrefix(folder, PWD)) {
+	    && !has_prefix(folder, PWD)) {
 	strncpy (maildir, mailfold, sizeof(maildir));	/* preserve... */
 	cp = getcpy (m_maildir (folder));
 	strncpy (mailfold, maildir, sizeof(mailfold));
@@ -69,10 +69,10 @@ exmaildir (char *folder)
 	folder = getfolder(1);
 
     if (!(*folder != '/'
-	    && !HasPrefix(folder, CWD)
+	    && !has_prefix(folder, CWD)
 	    && strcmp (folder, DOT)
 	    && strcmp (folder, DOTDOT)
-	    && !HasPrefix(folder, PWD))) {
+	    && !has_prefix(folder, PWD))) {
 	strncpy (mailfold, folder, sizeof(mailfold));
 	return mailfold;
     }
