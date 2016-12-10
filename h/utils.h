@@ -68,7 +68,7 @@ void trunccpy(char *dst, const char *src, size_t size);
 #define TRUNCCPY(dst, src) trunccpy(dst, src, sizeof (dst))
 
 bool has_prefix(const char *s, const char *prefix);
-bool HasSuffix(const char *s, const char *suffix);
+bool has_suffix(const char *s, const char *suffix);
 bool HasSuffixC(const char *s, int c);
 void TrimSuffixC(char *s, int c);
 void ToLower(char *s);

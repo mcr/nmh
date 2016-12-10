@@ -383,8 +383,8 @@ bool has_prefix(const char *s, const char *prefix)
 }
 
 
-/* HasSuffix returns true if non-NULL s ends with non-NULL suffix. */
-bool HasSuffix(const char *s, const char *suffix)
+/* has_suffix returns true if non-NULL s ends with non-NULL suffix. */
+bool has_suffix(const char *s, const char *suffix)
 {
     size_t ls, lsuf;
 
