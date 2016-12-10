@@ -72,7 +72,7 @@ bool has_suffix(const char *s, const char *suffix);
 bool has_suffix_c(const char *s, int c);
 void trim_suffix_c(char *s, int c);
 void to_lower(char *s);
-void ToUpper(char *s);
+void to_upper(char *s);
 
 /*
  * See if a string contains 8 bit characters (use isascii() for the test).

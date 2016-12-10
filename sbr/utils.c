@@ -426,8 +426,8 @@ void to_lower(char *s)
 }
 
 
-/* ToUpper runs all of s through toupper(3). */
-void ToUpper(char *s)
+/* to_upper runs all of s through toupper(3). */
+void to_upper(char *s)
 {
     unsigned char *b;
 
@@ -553,7 +553,7 @@ char *
 upcase (const char *str) {
     char *up = cpytrim (str);
 
-    ToUpper(up);
+    to_upper(up);
 
     return up;
 }
