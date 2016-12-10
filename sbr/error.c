@@ -29,7 +29,9 @@ advise (const char *what, const char *fmt, ...)
 /* adios calls advertise() with no tail to print fmt, and perhaps what,
  * to stderr, and "ends" the program with an error exit status.  The
  * route to exit is via the done function pointer and may not be
- * straightforward. */
+ * straightforward, e.g. longjmp(3), but it must not return to adios().
+ * If it does then it's a bug and adios() will abort(3) as callers do
+ * not expect execution to continue. */
 void
 adios (const char *what, const char *fmt, ...)
 {
@@ -38,9 +40,8 @@ adios (const char *what, const char *fmt, ...)
     va_start(ap, fmt);
     advertise (what, NULL, fmt, ap);
     va_end(ap);
-    /* done(), by default, calls exit(). So this function, with that
-       default, will never return. */
     done (1);
+    abort();
 }
 
 
