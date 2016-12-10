@@ -9,6 +9,10 @@
 # This script should *only* report basic information about the build
 # environment, and only that necessary to reproduce the build
 # environment.
+#
+# The script's exit status must be zero if all went acceptably well as
+# buildbot checks for this and marks the `environment' stage as failed
+# otherwise.
 
 offset () {
     sed -e '/./s/^/    /' "$@"
