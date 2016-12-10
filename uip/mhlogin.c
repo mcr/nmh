@@ -40,7 +40,7 @@ geta (void)
 
     if (fgets(line, sizeof(line), stdin) == NULL)
 	done (1);
-    TrimSuffixC(line, '\n');
+    trim_suffix_c(line, '\n');
 
     return line;
 }

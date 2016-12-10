@@ -452,7 +452,7 @@ usr_delivery (int fd, char *delivery, int su)
 	if (*buffer == '#' || *buffer == '\n')
 	    continue;
 
-        TrimSuffixC(buffer, '\n');
+        trim_suffix_c(buffer, '\n');
 
 	/* split buffer into fields */
 	vecp = split (buffer, vec);

@@ -825,7 +825,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	       should never have reached this point.  Warn about any
 	       that are non-empty. */
 	    if (strcmp (str, "\n")) {
-                TrimSuffixC(str, '\n');
+                trim_suffix_c(str, '\n');
 		if (! whomsw) {
 		    advise (NULL, "ignoring header line -- %s: %s", name, str);
 		}

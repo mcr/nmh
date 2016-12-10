@@ -1298,7 +1298,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
                 file = NULL;
                 ++info->files_not_clobbered;
               } else {
-                TrimSuffixC(buf, '\n');
+                trim_suffix_c(buf, '\n');
               }
 
               free (file);

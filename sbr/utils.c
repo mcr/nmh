@@ -403,9 +403,9 @@ bool has_suffix_c(const char *s, int c)
 }
 
 
-/* TrimSuffixC deletes c from the end of non-NULL string s if it's
+/* trim_suffix_c deletes c from the end of non-NULL string s if it's
  * present, shortening s by 1.  Only one instance of c is removed. */
-void TrimSuffixC(char *s, int c)
+void trim_suffix_c(char *s, int c)
 {
     if (!*s)
         return;

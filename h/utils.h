@@ -70,7 +70,7 @@ void trunccpy(char *dst, const char *src, size_t size);
 bool has_prefix(const char *s, const char *prefix);
 bool has_suffix(const char *s, const char *suffix);
 bool has_suffix_c(const char *s, int c);
-void TrimSuffixC(char *s, int c);
+void trim_suffix_c(char *s, int c);
 void ToLower(char *s);
 void ToUpper(char *s);
 

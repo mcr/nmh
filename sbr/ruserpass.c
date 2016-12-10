@@ -150,7 +150,7 @@ ruserpass(const char *host, char **aname, char **apass, int flags)
 	if (fgets(tmp, sizeof tmp, stdin) == NULL) {
 	    advise ("tmp", "fgets");
 	}
-        TrimSuffixC(tmp, '\n');
+        trim_suffix_c(tmp, '\n');
 	if (*tmp != '\0' || myname == NULL) {
 	    myname = tmp;
 	}

@@ -9,7 +9,7 @@ read_line(void)
     fflush(stdout);
     if (fgets(line, sizeof(line), stdin) == NULL)
             return NULL;
-    TrimSuffixC(line, '\n');
+    trim_suffix_c(line, '\n');
 
     return line; /* May not be a complete line. */
 }

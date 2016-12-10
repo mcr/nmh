@@ -585,7 +585,7 @@ mhl_format (char *file, int length, int width)
 	if (*bp == ';')
 	    continue;
 
-        TrimSuffixC(bp, '\n');
+        trim_suffix_c(bp, '\n');
 
 	if (*bp == ':') {
 	    (void) add_queue (&fmthd, &fmttl, NULL, bp + 1, CLEARTEXT);

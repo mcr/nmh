@@ -328,7 +328,7 @@ WhatNow (int argc, char **argv)
 		if (fgets(cwd, sizeof (cwd), f) == NULL) {
 		    advise (buf, "fgets");
 		}
-                TrimSuffixC(cwd, '\n');
+                trim_suffix_c(cwd, '\n');
 		pclose(f);
 	    }
 	    else {
@@ -435,7 +435,7 @@ WhatNow (int argc, char **argv)
 		while (fgets(shell, sizeof (shell), f) != NULL) {
 		    char *ctype;
 
-                    TrimSuffixC(shell, '\n');
+                    trim_suffix_c(shell, '\n');
 
 		    if (*shell == '/') {
 		    	strncpy(file, shell, sizeof(file));
@@ -520,7 +520,7 @@ WhatNow (int argc, char **argv)
 	    writelscmd(buf, sizeof(buf), "-d --", argp);
 	    if ((f = popen_in_dir(cwd, buf, "r")) != NULL) {
 		while (fgets(shell, sizeof (shell), f) != NULL) {
-                    TrimSuffixC(shell, '\n');
+                    trim_suffix_c(shell, '\n');
 		    annotate(drft, ATTACH_FIELD, shell, 1, 0, 0, 1);
 		}
 		pclose(f);
