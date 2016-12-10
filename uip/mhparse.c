@@ -662,7 +662,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 		TYPE_FIELD, ct->c_file);
 	return NOTOK;
     }
-    ToLower(ci->ci_type);
+    to_lower(ci->ci_type);
 
     while (isspace ((unsigned char) *cp))
 	cp++;
@@ -697,7 +697,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 		TYPE_FIELD, ct->c_file, ci->ci_type);
 	return NOTOK;
     }
-    ToLower(ci->ci_subtype);
+    to_lower(ci->ci_subtype);
 
 magic_skip:
     while (isspace ((unsigned char) *cp))

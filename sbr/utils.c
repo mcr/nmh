@@ -416,8 +416,8 @@ void trim_suffix_c(char *s, int c)
 }
 
 
-/* ToLower runs all of s through tolower(3). */
-void ToLower(char *s)
+/* to_lower runs all of s through tolower(3). */
+void to_lower(char *s)
 {
     unsigned char *b;
 
