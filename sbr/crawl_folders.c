@@ -15,7 +15,6 @@ struct crawl_context {
     int max;			/* how many folders we currently can hold in
 				 * the array `folders', increased by
 				 * CRAWL_NUMFOLDERS at a time */
-    int total;			/* how many `folders' actually has */
     char **folders;		/* the array of folders */
     int start;
     int foldp;
@@ -47,7 +46,6 @@ add_folder (char *fold, struct crawl_context *crawl)
 	    return;
 	}
 
-    crawl->total++;
     crawl->folders[crawl->foldp++] = fold;
 }
 
@@ -138,7 +136,7 @@ crawl_folders (char *dir, crawl_callback_t *callback, void *baton)
     struct crawl_context *crawl;
     NEW(crawl);
     crawl->max = CRAWL_NUMFOLDERS;
-    crawl->total = crawl->start = crawl->foldp = 0;
+    crawl->start = crawl->foldp = 0;
     crawl->folders = mh_xmalloc (crawl->max * sizeof(*crawl->folders));
 
     crawl_folders_body (crawl, dir, callback, baton);
