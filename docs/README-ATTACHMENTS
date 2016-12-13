@@ -156,7 +156,7 @@ listed.
 
 	prompt% anno -list -draft -comp Nmh-Attachment -text /
 	/export/home/jon/foo
-v	/export/home/jon/bar
+	/export/home/jon/bar
 	/export/home/jon/test/foo
 
 	prompt% anno -list -draft -comp Nmh-Attachment -number

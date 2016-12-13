@@ -1,4 +1,4 @@
-.TH ANNO %manext1% "December 7, 2005" "%nmhversion%"
+.TH ANNO %manext1% "December 13, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -107,7 +107,9 @@ The field body is treated as if it is a file name, and only the final
 path name component is listed.
 The complete field body is listed if the
 .B -text
-switch is used, the contents of the text are ignored.
+switch is used; the argument to the
+.B -text
+switch is required but ignored.
 .PP
 The
 .B -delete
