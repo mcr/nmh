@@ -35,15 +35,15 @@ Header fields consist of a field name and an optional field body
 as defined by RFC 2822.
 The
 .B -component
-option specifies the field name, and the
+switch specifies the field name, and the
 .B -text
-option specifies the field body.
+switch specifies the field body.
 .PP
 The messages are either the
 .I msgs
 in the named folder, or the draft if invoked with the
 .B -draft
-option.
+switch.
 .PP
 Usually, annotation is performed by the commands
 .BR dist ,
@@ -73,7 +73,7 @@ By default,
 prepends the annotations to the message.
 Annotations are instead appended if the
 .B -append
-option is specified.
+switch is specified.
 .PP
 If a
 .B \-component
@@ -82,57 +82,57 @@ is not specified when
 .B anno
 is invoked,
 .B anno
-will prompt the user for the name of field for the annotation.
+will prompt the user for a field name.
 .PP
 The field specified must be a valid RFC 2822-style message field name,
-which means that it may only consist of alphanumerics and dashes.
-The body specified is arbitrary text.
+consisting only of alphanumeric characters and dashes.
+The body may consist of arbitrary text.
 .PP
 Normally
 .B anno
-does the annotation inplace in order to preserve
+does the annotation in place in order to preserve
 any links to the message.  You may change this by using the
 .B \-noinplace
 switch.
 .PP
 The
 .B -list
-option produces a listing of the field bodies for header fields with
+switch produces a listing of the field bodies for header fields with
 names matching the specified component, one per line.
 The listing is numbered, starting at 1, if the
 .B -number
-option is also used.
+switch is also used.
 A tab character separates the number and the field body.
 The field body is treated as if it is a file name, and only the final
 path name component is listed.
 The complete field body is listed if the
 .B -text
-option is used, the contents of the text are ignored.
+switch is used, the contents of the text are ignored.
 .PP
 The
 .B -delete
-option removes header fields from messages.
+switch removes header fields from messages.
 The first header field whose name matches the component is deleted if
 no other options are specified.
 If the
 .B -text
-option is used in conjunction with the
+switch is used in conjunction with the
 .B -delete
-option, the first header field whose name matches the component and
+switch, the first header field whose name matches the component and
 whose body matches the text is deleted.
 The text is treated as if it was a file name; if it begins with a
 slash, the entire field body must match the text, otherwise just the
 last path name component of the field body must match.
 If the
 .B -number
-option is used in conjunction with the
+switch is used in conjunction with the
 .B -delete
-option, header field
+switch, header field
 .I num
 whose name matches the component is deleted.
 The number matches that which is produced by the
 .B -list
-option.
+switch.
 The special value
 .B all
 can be used for the number, and causes all components that match the
@@ -140,15 +140,15 @@ name to be deleted.
 .PP
 By default,
 .B anno
-changes the last-accessed and last-modified times on annotate messages
-to the time at which the annotation occurs.
+changes the last-accessed and last-modified times on annotated messages
+to the time of the annotation.
 .B anno
 preserves the original times if the
 .B -preserve
-option is used.
+switch is used.
 A matching
 .B -nopreserve
-option exists that allows time preservation to be turned off if enabled
+switch allows time preservation to be turned off, if enabled
 in the profile.
 .SH FILES
 .TP 20
