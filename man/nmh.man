@@ -1,4 +1,4 @@
-.TH NMH %manext7% "September 26, 2016" "%nmhversion%"
+.TH NMH %manext7% "December 15, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -30,8 +30,10 @@ to find the answer to someone's question before answering their mail.
 The rest of this manual entry is a quick tutorial which will teach you
 the basics of
 .BR nmh .
-You should read the manual entries for the
-individual programs for complete documentation.
+You should read the manual entries for the individual programs for
+complete documentation (see the section on
+.I COMMANDS
+below).
 .PP
 To get started using
 .BR nmh ,
@@ -53,8 +55,8 @@ moves mail from your system maildrop into your
 folder, breaking it up into separate files and converting it
 to
 .B nmh
-format as it goes.  It prints one line for each message it
-processes, containing the from field, the subject field and as much of
+format.  It prints one line for each message it processes,
+containing the from field, the subject field and as much of
 the first line of the message as will fit.  It leaves the first message
 it processes as your current message.  You'll need to run
 .B inc
@@ -74,10 +76,8 @@ and
 are used to read
 specific messages from the current folder.
 .B show
-displays the
-current message, or a specific message, which may be specified by its
-number, which you pass as an argument to
-.BR show .
+displays the current message, or a specific message specified by its
+number which is passed as an argument.
 .B next
 and
 .B prev
@@ -92,7 +92,7 @@ may be used to advance to the
 first message.
 .PP
 .B rmm
-(remove message) deletes the current message.  It may be called
+(remove message) deletes the current message.  It may be called,
 with message numbers passed as arguments, to delete specific messages.
 .PP
 .B repl
@@ -355,7 +355,7 @@ show the next message
 show the previous message
 .TP
 .IR show (1)
-show(display) messages
+show (display) messages
 .TP
 .IR scan (1)
 produce a one line per message scan listing
@@ -401,7 +401,7 @@ Across folders:
 list folders with new messages
 .TP
 .IR unseen (1)
-list new messages in a give set of folders
+list new messages in a given set of folders
 .TP
 .IR flist (1)
 list folders with messages in given sequence(s)
@@ -577,4 +577,4 @@ the version of
 the host it was compiled on, and the date the
 program was linked.
 .PP
-New releases and other information of potential interest are announced at http://www.nongnu.org/nmh/ .
+New releases, and other information of potential interest, are announced at http://www.nongnu.org/nmh/
