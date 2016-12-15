@@ -178,8 +178,11 @@ Indicates all messages, i.e.,
 .TP
 .IR <num> :\-N
 Up to
+.IR N ,
+where
 .I N
-messages beginning with (or ending with) message
+must be a positive number, messages beginning with (or ending with)
+message
 .IR num .
 .I Num
 may be any of the pre-defined symbols
@@ -189,6 +192,7 @@ may be any of the pre-defined symbols
 .B next
 or
 .BR last .
+The + can be omitted.
 .PD
 .TP
 .RI first: N
@@ -199,8 +203,9 @@ or
 .RI next: N
 .TP
 .RI last: N
-The first, previous, next or last
-messages, if they exist.
+As many of the first, previous, next, or last N messages that exist.
+As above, N can be preceded with - to end the listing at the specified
+message, or with an optional +.
 .PD
 .PP
 Commands that take a folder name
