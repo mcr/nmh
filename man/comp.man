@@ -1,4 +1,4 @@
-.TH COMP %manext1% "May 21, 2012" "%nmhversion%"
+.TH COMP %manext1% "December 16, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -219,14 +219,13 @@ initial edit.  Upon exiting from the editor,
 .B comp
 will invoke the
 .B whatnow
-program.  See
+program (see
 .IR whatnow (1)
 for a discussion of
-available options.  The invocation of this program can be inhibited
+available options).  The invocation of this program can be inhibited
 by using the
 .B \-nowhatnowproc
-switch.  (In truth of fact, it is
-the
+switch.  (In fact, it is the
 .I whatnow
 program which starts the initial edit.  Hence,
 .B \-nowhatnowproc
