@@ -1,4 +1,4 @@
-.TH FLIST %manext1% "January 1, 2001" "%nmhversion%"
+.TH FLIST %manext1% "December 17, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -56,11 +56,11 @@ then all these folders are searched for the given sequence(s).
 will display for each folder searched, the number of messages in each of the
 specified sequences, and the total number of messages.
 .PP
-The option
+The
 .B \-sequence
-is used to specify the name of a sequence in
-which to search for.  This option may be used multiple times to specify
-multiple sequences.  If this is not given, then the default is to search
+switch specifies the sequence to which messages should belong.
+This switch may be given multiple times to specify multiple sequences.
+If it is not given, then the default is to search
 for all the sequences specified by the
 .RI \*(lq Unseen-Sequence \*(rq
 profile component.  For more details about sequences, read the
@@ -69,18 +69,18 @@ man page.
 .PP
 Typically,
 .B flist
-will produce a line for each sequence, for every
-folder that is searched, even those which do not contain any messages in
-the given sequence.  Specifying
+will produce a line for each sequence, for every folder that is searched,
+even those which do not contain any messages in the given sequence.
+Specifying
 .B \-noshowzero
 will cause
 .B flist
-to print only those folder/sequence combinations such the folder has a non-zero
-number of messages in the given specified sequence.
+to print only those folder/sequence combinations where the folder has a
+non-zero number of messages in the given sequence.
 .PP
 If
 .B \-recurse
-is given, then for each folder that is search,
+is given, then for each folder that is searched,
 .B flist
 will also recursively descend into those folders to search subfolders
 for the given sequence.
@@ -94,10 +94,11 @@ will suppress all other output.  If this option is used in conjunction with
 then
 .B flist
 will only print the names of those folders searched that contain messages in
-in at least one of the specified sequences..SS "Multiple Folders"
-If the option
+in at least one of the specified sequences.
+.SS "Multiple Folders"
+If the
 .B \-all
-is given (and no folders are specified with
+switch is given (and no folders are specified with
 .IR +folder ),
 then
 .B flist
