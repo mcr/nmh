@@ -1,4 +1,4 @@
-.TH DIST %manext1% "June 18, 2012" "%nmhversion%"
+.TH DIST %manext1% "December 17, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -152,7 +152,7 @@ If the message is not sent immediately from
 .BR \-use \*(rq
 may be used to re\-edit and send the constructed
 message, but the annotations won't take place.  Normally annotations are
-done inplace in order to preserve any links to the message.  You may use
+done in place in order to preserve any links to the message.  You may use
 the
 .B \-noinplace
 switch to change this.
@@ -202,7 +202,7 @@ program.  See
 for a discussion of available options.  The invocation of this
 program can be inhibited by using the
 .B \-nowhatnowproc
-switch.  (In truth of fact, it is the
+switch.  (In fact, it is the
 .B whatnow
 program which starts the initial edit.  Hence,
 .B \-nowhatnowproc
