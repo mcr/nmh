@@ -293,7 +293,6 @@ putstr	expr		print \fIstr\fR
 putstrf	expr		print \fIstr\fR in a fixed width
 putnum	expr		print \fInum\fR
 putnumf	expr		print \fInum\fR in a fixed width
-.\" addtoseq literal    add msg to sequence (LBL option)
 putlit	expr		print \fIstr\fR without space compression
 zputlit	expr		print \fIstr\fR without space compression;
 			\fIstr\fR must occupy no width on display

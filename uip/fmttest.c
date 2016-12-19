@@ -1084,9 +1084,6 @@ f_typestr(int t)
 	case FT_MYMBOX: return("MYMBOX");
 	case FT_GETMYMBOX: return("GETMYMBOX");
 	case FT_GETMYADDR: return("GETMYADDR");
-#ifdef	FT_ADDTOSEQ
-	case FT_ADDTOSEQ: return("ADDTOSEQ");
-#endif
 	case FT_SAVESTR: return("SAVESTR");
 #ifdef	FT_PAUSE
 	case FT_PAUSE: return ("PAUSE");
