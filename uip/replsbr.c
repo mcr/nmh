@@ -104,9 +104,6 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
      *
      * This prevents the component from being found via fmt_findcomp(),
      * which makes sure no text gets added to it when the message is processed.
-     *
-     * getcpy(NULL) returns a malloc'd zero-length string, so it can safely
-     * be free()'d later.
      */
     if (!ccto) {
 	cptr = fmt_findcomp ("to");
@@ -139,8 +136,8 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 	int msg_count = sizeof tmpbuf;
 	state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
 	switch (state) {
-	    case FLD: 
-	    case FLDPLUS: 
+	    case FLD:
+	    case FLDPLUS:
 		/*
 		 * if we're interested in this component, save a pointer
 		 * to the component text, then start using our next free
@@ -165,13 +162,13 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 		}
 		break;
 
-	    case LENERR: 
-	    case FMTERR: 
-	    case BODY: 
+	    case LENERR:
+	    case FMTERR:
+	    case BODY:
 	    case FILEEOF:
 		goto finished;
 
-	    default: 
+	    default:
 		adios (NULL, "m_getfld() returned %d", state);
 	}
     }
@@ -438,10 +435,10 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
     arglist = argsplit(mhlproc, &mhl, &argnum);
 
     switch (pid = fork()) {
-	case NOTOK: 
+	case NOTOK:
 	    adios ("fork", "unable to");
 
-	case OK: 
+	case OK:
 	    dup2 (fileno (in), fileno (stdin));
 	    dup2 (fileno (out), fileno (stdout));
 	    closefds (3);
@@ -478,7 +475,7 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 	    }
 	    _exit (-1);
 
-	default: 
+	default:
 	    if (pidXwait (pid, mhl))
 		done (1);
 	    fseek (out, 0L, SEEK_END);
