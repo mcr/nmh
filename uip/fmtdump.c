@@ -420,9 +420,7 @@ f_typestr(int t)
 	case FT_GETMYMBOX: return("GETMYMBOX");
 	case FT_GETMYADDR: return("GETMYADDR");
 	case FT_SAVESTR: return("SAVESTR");
-#ifdef	FT_PAUSE
 	case FT_PAUSE: return ("PAUSE");
-#endif
 	case FT_DONE: return("DONE");
 	case FT_NOP: return("NOP");
 	case FT_GOTO: return("GOTO");
