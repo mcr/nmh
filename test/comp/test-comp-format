@@ -69,6 +69,7 @@ fcc1="+nosuchmailbox"
 fcc2="+nosuchmailbox2"
 subject="Totally bogus subject"
 
+start_test 'check -from, -to, -cc, -fcc, and -subject switches'
 cat > $expected <<EOF
 From: ${from}
 To: ${to1},
@@ -81,14 +82,42 @@ Fcc: ${fcc1}, ${fcc2}
 Subject: ${subject}
 --------
 EOF
+run_prog \
+comp -editor true -form "${form}" -from "${from}" -to "${to1}" -to "${to2}" \
+    -cc "${cc1}" -cc "${cc2}" -cc "${cc3}" -cc "${cc4}" -fcc "${fcc1}" \
+    -fcc "${fcc2}" -subject "${subject}" -width 60 -nowhatnowproc || exit 1
+check "${expected}" "${actual}"
+
+
+start_test 'check -fcc with no fcc in components'
+cat > $form <<EOF
+%<{from}%|%(void(localmbox))%>%(void(width))%(putaddr From: )
+%<{to}%(void(width))%(putaddr To: )%|To:%>
+%<{cc}%(void(width))%(putaddr cc: )%|cc:%>
+Subject:%<{subject} %(putstr)%>
+--------
+EOF
+#### There won't be an Fcc: header because there isn't one in the components.
+cat > $expected <<EOF
+From: ${from}
+To: ${to1},
+    ${to2}
+cc: ${cc1},
+    ${cc2},
+    ${cc3},
+    ${cc4}
+Subject: ${subject}
+--------
+EOF
 
 run_prog \
 comp -editor true -form "${form}" -from "${from}" -to "${to1}" -to "${to2}" \
     -cc "${cc1}" -cc "${cc2}" -cc "${cc3}" -cc "${cc4}" -fcc "${fcc1}" \
     -fcc "${fcc2}" -subject "${subject}" -width 60 -nowhatnowproc || exit 1
-
 check "${expected}" "${actual}"
+
 
 test "${failed:-0}" -eq 0 && rm "${form}"
 
+finish_test
 exit $failed
