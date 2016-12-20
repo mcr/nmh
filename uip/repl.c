@@ -452,14 +452,16 @@ try_it_again:
     fclose (in);
 
     {
-	char *filename = concat (mp->foldpath, "/", msg, NULL);
+        char *filename = file ? file : concat (mp->foldpath, "/", msg, NULL);
 
         for (n = 0; n < svector_size (convert_types); ++n) {
             add_convert_header (svector_at (convert_types, n),
                                 svector_at (convert_args, n),
                                 filename, drft);
         }
-	free (filename);
+        if (! file) {
+            free (filename);
+        }
     }
 
     if (nwhat)
