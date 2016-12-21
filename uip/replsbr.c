@@ -115,17 +115,6 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 	if (cptr)
 	    cptr->c_name = mh_xstrdup("");
     }
-    /* set up the "fcc" pseudo-component */
-    if (fcc) {
-	cptr = fmt_findcomp ("fcc");
-	if (cptr)
-	    cptr->c_text = mh_xstrdup(fcc);
-    }
-    if ((cp = getenv("USER"))) {
-	cptr = fmt_findcomp ("user");
-	if (cptr)
-	    cptr->c_text = mh_xstrdup(cp);
-    }
     if (!ccme)
 	ismymbox (NULL);
 
@@ -178,6 +167,24 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
      */
 finished:
     m_getfld_state_destroy (&gstate);
+
+    /* set up the "fcc" pseudo-component */
+    cptr = fmt_findcomp ("fcc");
+    if (cptr) {
+	mh_xfree(cptr->c_text);
+	if (fcc)
+	    cptr->c_text = mh_xstrdup(fcc);
+	else
+	    cptr->c_text = NULL;
+    }
+    cptr = fmt_findcomp ("user");
+    if (cptr) {
+	mh_xfree(cptr->c_text);
+	if ((cp = getenv("USER")))
+	    cptr->c_text = mh_xstrdup(cp);
+	else
+	    cptr = NULL;
+    }
 
     /*
      * if there's a "Subject" component, strip any "Re:"s off it

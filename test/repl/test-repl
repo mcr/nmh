@@ -26,6 +26,7 @@ actual=$MH_TEST_DIR/Mail/draft
 
 
 # check -help
+start_test -help
 cat >$expected <<EOF
 Usage: repl: [+folder] [msg] [switches]
   switches are:
@@ -62,6 +63,7 @@ run_prog repl -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
+start_test -version
 case `repl -v` in
   repl\ --*) ;;
   *        ) printf '%s: repl -v generated unexpected output\n' "$0" >&2
@@ -69,15 +71,18 @@ case `repl -v` in
 esac
 
 # check unknown switch
+start_test 'unknown switch'
 run_test "repl -nonexistent" 'repl: -nonexistent unknown'
 
 # check with no switches
+start_test 'with no switches'
 run_test "repl" 'repl: no cur message'
 
 
 printf 'Local-Mailbox: mymailbox@localhost\n' >> "$MH"
 
 # check -cc me
+start_test '-cc me'
 cat >$expected <<EOF
 From: mymailbox@localhost
 To: Test1 <test1@example.com>
@@ -95,6 +100,7 @@ run_prog repl -cc me -editor true -nowhatnowproc 1
 check $expected $actual
 
 # check -nocc me
+start_test '-nocc me'
 cat >$expected <<EOF
 From: mymailbox@localhost
 To: Test1 <test1@example.com>
@@ -111,7 +117,8 @@ EOF
 run_prog repl -cc me -nocc me -editor true -nowhatnowproc 1
 check $expected $actual
 
-# check -cc me with Local- and Alternate-Mailbox addtions, Bug #36635:
+# check -cc me with Local- and Alternate-Mailbox addtions, Bug #36635
+start_test '-cc me with Local- and Alternate-Mailbox addtions, Bug #36635'
 # -nocc me doesn't account for Alternate-Mailboxes.
 printf 'Alternate-Mailboxes: user@example.com\n' >> "$MH"
 
@@ -132,7 +139,8 @@ run_prog repl -cc me -editor true -nowhatnowproc 1
 check $expected $actual
 
 
-# check -nocc me with Local- and Alternate-Mailbox addtions, Bug #36635:
+# check -nocc me with Local- and Alternate-Mailbox addtions, Bug #36635
+start_test '-nocc me with Local- and Alternate-Mailbox addtions, Bug #36635'
 # -nocc me doesn't account for Alternate-Mailboxes.
 cat >$expected <<EOF
 From: mymailbox@localhost
@@ -152,6 +160,7 @@ check $expected $actual
 
 
 # check quoting of local part of invalid address, Bug #26780
+start_test 'quoting of local part of invalid address, Bug #26780'
 cat >`mhpath new` <<EOF
 From: Test11 <test11@example.com>
 To: before_auser@example.com, A. User <auser@example.com>,
@@ -182,4 +191,51 @@ run_prog repl -cc to -editor true -nowhatnowproc 11
 check $expected $actual
 
 
+# check that Fcc: header isn't propagated
+start_test "Fcc: header isn't propagated"
+form="${MH_TEST_DIR}/$$.components"
+cat > $form <<'EOF'
+From: sender@example.com
+%<{from}%(void(width))%(putaddr To: )%>
+Fcc:%<{fcc} %{fcc}%>
+Subject: %<{subject}Re: %(void{subject})%(trim)%(putstr)%>
+--------
+EOF
+cat > $expected <<EOF
+From: sender@example.com
+To: recipient@example.com
+Fcc:
+Subject: Re: suppress Fcc:
+--------
+EOF
+cat > `mhpath new`<<EOF
+From: recipient@example.com
+To: sender@example.com
+Fcc: +mischievous
+Subject: suppress Fcc:
+--------
+EOF
+
+run_prog repl -form "${form}" -nowhatnowproc last
+check "${expected}" "${actual}"
+
+
+# check -fcc with Fcc: in replied-to message
+start_test '-fcc with Fcc: in replied-to message'
+form="${MH_TEST_DIR}/$$.components"
+cat > $expected <<EOF
+From: sender@example.com
+To: recipient@example.com
+Fcc: +myoutbox
+Subject: Re: suppress Fcc:
+--------
+EOF
+
+run_prog repl -fcc +myoutbox -form "${form}" -nowhatnowproc last
+check "${expected}" "${actual}"
+
+test "${failed:-0}" -eq 0 && rm "${form}"
+
+
+finish_test
 exit ${failed:-0}
