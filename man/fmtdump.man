@@ -1,4 +1,4 @@
-.TH FMTDUMP %manext8% "January 1, 2001" "%nmhversion%"
+.TH FMTDUMP %manext8% "December 21, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -17,9 +17,9 @@ fmtdump \- decode nmh format files
 .ad
 .SH DESCRIPTION
 .B fmtdump
-is a program that parses an
+parses an
 .B nmh
-format file and produces a pseudo-language listing of the how
+format file and produces a pseudo-language listing of how
 .B nmh
 interprets the file.  This is useful when debugging a complicated format file.
 .PP
@@ -30,11 +30,10 @@ and
 .B \-form
 .I formatfile
 switches may be
-used to specify a format string or format file to read.  The string
-is simply a format string and the file is simply a format file.
+used to specify a format string or format file to read.
 See
 .IR mh-format (5)
-for the details.
+for details.
 .SH FILES
 .PD 0
 .TP 20
@@ -49,6 +48,7 @@ The default format file.
 Path:
 To determine the user's nmh directory.
 .SH "SEE ALSO"
+.IR fmttest (1),
 .IR mh-format (5),
 .IR mh-sequences (8)
 .SH CONTEXT
