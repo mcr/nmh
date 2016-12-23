@@ -1,9 +1,9 @@
-.TH RCVPACK %manext1% "January 18, 2001" "%nmhversion%"
+.TH RCVPACK %manext1% "December 23, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
 .SH NAME
-rcvpack \- append message to file
+rcvpack \- append a message to a file
 .SH SYNOPSIS
 .HP 5
 .na
@@ -15,34 +15,34 @@ rcvpack \- append message to file
 .RB [ \-mmdf ]
 .ad
 .SH DESCRIPTION
-The
 .B rcvpack
-program will append a copy of the message to the file
-listed on its command line.
+appends a copy of a message to the file specified
+on its command line.
 .PP
 If the
 .B \-mbox
-switch is given (the default), then the messages are
-separated using mbox (uucp) style delimiters.  This is the format used
+switch is given (the default), messages are separated by
+mbox (uucp) style delimiters.  This is the format used
 by most mail clients (elm, mailx, etc.).
 .PP 
-If the
+Alternatively, if the
 .B \-mmdf
-switch is given, then the messages are separated by
-mmdf style delimiters.  Each message in the file is separated by four
+switch is given, messages are separated by mmdf style
+delimiters, each message being separated by four
 CTRL\-A's and a newline.
 .PP
 .B rcvpack
 will correctly lock and unlock the file to serialize
-access to the file, when running multiple copies of
+access when running multiple copies of
 .BR rcvpack .
 .PP
-In general, its use is obsoleted by the
+In general,
+.B rcvpack
+has been rendered obsolete by the
 .B file
 action of
 .BR slocal ,
-although it might still have occasional uses in various
-shell scripts.
+although it may still have some use in shell scripts.
 .SH FILES
 .fc ^ ~
 .nf
