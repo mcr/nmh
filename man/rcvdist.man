@@ -1,4 +1,4 @@
-.TH RCVDIST %manext1% "January 18, 2001" "%nmhversion%"
+.TH RCVDIST %manext1% "December 31, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -18,22 +18,17 @@ rcvdist \- asynchronously redistribute new mail
 \&...
 .ad
 .SH DESCRIPTION
-The
 .B rcvdist
-program will accept a message on its standard input
-and resend a copy of this message to all of the addresses listed on its
-command line.
+accepts a message on its standard input and resends a copy of
+the message to all of the addresses listed on its command line.
 .PP
-When a message is redistributed with the
-.B rcvdist
-command, the
-format of the Resent-xxx header fields is controlled by the forms files
+The format of the Resent-xxx header fields is specified by the form file
 .RI \*(lq rcvdistcomps \*(rq.
 If a file named
 .RI \*(lq rcvdistcomps \*(rq
-exists in the user's nmh
-directory, it will be used instead of the default one.  You may specify
-an alternate forms file with the switch
+exists in the user's nmh directory, it will be used instead of the
+default file.
+You may specify an alternate forms file with
 .B \-form
 .IR formfile .
 .PP
@@ -43,7 +38,7 @@ file uses the format string facility described in
 .IR mh\-format (5).
 In addition to the standard format escapes,
 .B rcvdist
-also recognizes the following additional
+also recognizes the following
 .I component
 escape:
 .PP
@@ -57,10 +52,10 @@ addresses	string	the addresses to distribute to
 .PP
 By default,
 .B rcvdist
-uses the program
+uses the
 .B post
-to do the actual
-delivery of the message, although this can be changed by defining the
+program to deliver the message, although this can be changed by
+defining the
 .I postproc
 profile component.
 .SH FILES
@@ -68,14 +63,14 @@ profile component.
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^%nmhetcdir%/rcvdistcomps~^Default message skeleton
-^or <mh\-dir>/rcvdistcomps~^Rather than standard message skeleton
+^or <mh\-dir>/rcvdistcomps~^User's message skeleton
 ^%nmhetcdir%/mts.conf~^nmh mts configuration file
-^$HOME/\&.maildelivery~^The file controlling local delivery
-^%nmhetcdir%/maildelivery~^Rather than the standard file
+^%nmhetcdir%/maildelivery~^Default delivery file
+^$HOME/\&.maildelivery~^User's delivery file
 .fi
 .SH "SEE ALSO"
 .IR rcvpack (1),
 .IR rcvstore (1),
-.IR rcvtty (1), 
+.IR rcvtty (1),
 .IR slocal (1),
 .IR mh\-format (5)
