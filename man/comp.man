@@ -1,4 +1,4 @@
-.TH COMP %manext1% "December 16, 2016" "%nmhversion%"
+.TH COMP %manext1% "December 31, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -244,10 +244,10 @@ No mail is actually sent.
 .PD 0
 .TP 20
 %nmhetcdir%/components
-The standard message skeleton.
+The default message skeleton.
 .TP
 <mh\-dir>/components
-An alternative to the standard skeleton.
+The user's message skeleton.
 .TP
 $HOME/.mh_profile
 The user's profile.

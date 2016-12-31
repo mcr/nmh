@@ -1,4 +1,4 @@
-.TH DIST %manext1% "December 17, 2016" "%nmhversion%"
+.TH DIST %manext1% "December 31, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -211,10 +211,10 @@ will prevent any edit from occurring.)
 .PD 0
 .TP 20
 %nmhetcdir%/distcomps
-The standard message skeleton.
+The default message skeleton.
 .TP 20
 <mh\-dir>/distcomps
-An alternative to the standard skeleton.
+The user's message skeleton.
 .TP 20
 $HOME/\&.mh\(ruprofile
 The user's profile.

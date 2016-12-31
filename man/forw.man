@@ -1,4 +1,4 @@
-.TH FORW %manext1% "October 10, 2016" "%nmhversion%"
+.TH FORW %manext1% "December 31, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -47,7 +47,6 @@ forw \- forward messages
 .RB [ \-build ]
 .RB [ \-file
 .IR msgfile ]
-.PP
 .HP 5
 .B forw
 .RB [ \-help ]
@@ -373,7 +372,6 @@ function	cur	integer	Argument to `\-volume'
 function	msg	integer	Argument to `\-issue'
 .fi
 .RE
-.PP
 .SH FILES
 .B forw
 looks for format and filter files in multiple locations: absolute
@@ -387,24 +385,26 @@ is checked.
 .PD 0
 .TP 25
 %nmhetcdir%/forwcomps
-The standard message skeleton.
+The default message skeleton.
 .TP
 <mh\-dir>/forwcomps
-Rather than the standard skeleton.
+The user's message skeleton.
 .TP
 %nmhetcdir%/digestcomps
-The message skeleton if
+The default message skeleton if
 .B \-digest
 is given.
 .TP
 <mh\-dir>/digestcomps
-Rather than the standard skeleton.
+The user's
+.B \-digest
+skeleton.
 .TP
 ^%nmhetcdir%/mhl.forward
-The standard message filter.
+The default message filter.
 .TP
 <mh\-dir>/mhl.forward
-Rather than the standard filter.
+The user's message filter.
 .TP
 ^$HOME/.mh_profile
 The user's profile.
