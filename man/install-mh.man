@@ -1,4 +1,4 @@
-.TH INSTALL-MH %manext1% "June 10, 2012" "%nmhversion%"
+.TH INSTALL-MH %manext1% "December 31, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -14,27 +14,24 @@ install-mh \- initialize the nmh environment
 .RB [ \-check ]
 .ad
 .SH DESCRIPTION
-.B Install\-mh
-is the
-.B nmh
-program to create the initial setup
-for a first\-time
+.B install\-mh
+creates the initial setup for a first-time
 .B nmh
 user.
-.B Install\-mh
-lives in two places for historical reasons.
+.B install\-mh
+is installed in two locations for historical reasons.
 .PP
-The \fB\-auto\fP option does things as automatically as possible and
+The \fB\-auto\fP switch does things as automatically as possible and
 makes \fBinstall\-mh\fP less chatty.
 .PP
-The user is asked
-for the name of the directory that will be designated as the user's
+The user is prompted for the name of the directory to be
+designated as the user's
 .B nmh
-directory.  If this directory does not exist, the user is
-asked if it should be created.  Normally, this directory should be
-under the user's home directory, and has the default name of
-\fI``Mail''\fP.
-.B Install\-mh
+directory.  If this directory does not exist, the user is asked if
+it should be created.  Normally, this directory should be under
+the user's home directory, and has the default name of
+\fI`Mail'\fP.
+.B install\-mh
 writes an initial
 .I \&.mh\(ruprofile
 for the user.
@@ -43,8 +40,8 @@ As with all
 .B nmh
 commands,
 .B install\-mh
-first checks for the existence of the \fB$MH\fP environment variable
-since that gives the profile path if set.
+first checks for the existence of the \fB$MH\fP environment variable,
+since that, if set, gives the profile path.
 If it isn't set, the
 .B $HOME
 environment variable is consulted to determine the user's home directory.
@@ -54,18 +51,20 @@ is not set, then the
 .I /etc/passwd
 file is consulted.
 .PP
-When creating the users initial
+When creating the user's
 .IR \&.mh\(ruprofile ,
 .B install\-mh
-will check for the existence of a global profile
+will check for the existence of a global profile at
 .IR %nmhetcdir%/mh.profile .
 If found, this will be used to initialize the new
 .IR \&.mh\(ruprofile .
 .PP
-The \fB\-check\fP option can be used to check whether or not nmh has
-been installed.
-This can be used by other programs to determine whether or not nmh has
-been installed without their having to know the internals of nmh.
+The \fB\-check\fP switch checks if
+.B nmh
+is installed.
+(This can be used by other programs to determine if
+.B nmh
+has been installed.)
 .SH FILES
 .PD 0
 .TP 20
