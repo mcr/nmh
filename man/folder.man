@@ -1,4 +1,4 @@
-.TH FOLDER %manext1% "August 29, 2016" "%nmhversion%"
+.TH FOLDER %manext1% "January 1, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -23,7 +23,6 @@ folder, folders \- set/list current folder/message
 .RB [ \-pack " | " \-nopack ]
 .RB [ \-print ]
 .RB [ \-verbose " | " \-noverbose ]
-.PP
 .HP 5
 .B folders
 is equivalent to
@@ -31,19 +30,14 @@ is equivalent to
 .B \-all
 .ad
 .SH DESCRIPTION
-Since the
-.B nmh
-environment is the shell, it is easy to lose track
-of the current folder from day to day.  When
+When
 .B folder
 is given the
 .B \-print
-switch (the default),
-.B folder
-will list the current folder,
-the number of messages in it, the range of the messages (low\-high),
-and the current message within the folder, and will flag extra files if
-they exist.  An example of this summary is:
+switch (the default), it lists: the current folder, the number
+of messages in it and their range (low-high), the folder's
+current message, and an indication of extra files, if any.
+For example:
 .PP
 .RS 5
 .nf
@@ -56,53 +50,53 @@ If a
 .I +folder
 and/or
 .I msg
-are specified, they will become the current
-folder and/or message.  By comparison, when a
+are specified, they will become the current folder and/or message.
+(When a
 .I +folder
 argument is given, this corresponds to a \*(lqcd\*(rq operation
 in the shell; when no
 .I +folder
 argument is given, this corresponds roughly to a \*(lqpwd\*(rq
-operation in the shell.
+operation in the shell.)
 .PP
-If the specified (or default) folder doesn't exist, the default action
-is to query the user as to whether the folder should be created; when
-standard input is not a tty, the answer to the query is assumed to be
-\*(lqyes\*(rq.
-.PP
-Specifying
-.B \-create
-will cause
+If the specified (or default) folder doesn't exist,
 .B folder
-to create new folders
-without any query.  (This is the easy way to create an empty folder for
-use later.)  Specifying
+will ask the user if the folder should be created; when
+standard input is not a tty, the answer is assumed to be
+\*(lqyes\*(rq.
+The
+.B \-create
+switch tells
+.B folder
+to create new folders without query.
+(This is an easy way to create an empty folder for later use.)
+Specifying
 .B \-nocreate
 will cause
 .B folder
-to print an error message and exit
-without creating a non-existent folder.
+to print an error message and exit without creating a folder.
 .\"
 .\" note - this doesn't work at present
-.\" If `\-noprint' is specified, 
+.\" If `\-noprint' is specified,
 .\" a `+folder' and/or `msg' may still be specified
 .\" to set the current folder and/or message,
-.\" but the folder summary will not be printed..SS "Multiple Folders"
+.\" but the folder summary will not be printed.
+.SS "Multiple Folders"
 Specifying
 .B \-all
-will produce a summary line for each top-level folder
-in the user's nmh directory, sorted alphabetically.  (If
+will produce a summary line for each top-level folder in the user's
+.B nmh
+directory, sorted alphabetically.  (If
 .B folder
 is invoked by a name ending with \*(lqs\*(rq (e.g.
 .BR folders ),
 .B \-all
-is assumed).  Specifying
+is assumed.)  Specifying
 .B \-recurse
 with
 .B \-all
-will also
-produce a line for all sub-folders.  These folders are all preceded by
-the read\-only folders, which occur as
+will include a line for all sub-folders.
+These folders are all preceded by any read-only folders, which occur as
 .RI \*(lq atr\-cur\- \*(rq
 entries in the user's
 .B nmh
@@ -129,39 +123,41 @@ The \*(lq+\*(rq after
 indicates that it is the current folder.
 The \*(lq(others)\*(rq indicates that the folder
 .I ucom
-has files which
-aren't messages.  These files may either be sub\-folders, or files that
-don't belong under the nmh file naming scheme.
+contains files which aren't messages;
+these may either be sub-folders, or files that
+don't belong under the
+.B nmh
+file naming scheme.
 .PP
-The header is output if either a
+The header is output if either the
 .B \-all
-or a
+or
 .B \-header
-switch is specified.  It is suppressed by
+switches are specified.  It is suppressed by
 .BR \-noheader .
 .PP
-The folder and message totals are output if either a
+The folder and message totals are output if either the
 .B \-all
-or a
+or
 .B \-total
-switch is specified.  It is suppressed by
+switches are specified.  They are suppressed by
 .BR \-nototal .
 .PP
 If
 .B \-fast
-is given, only the folder name (or names in the case of
+is given, only the folder name (or names, in the case of
 .BR \-all )
-will be listed.  (This is faster because the folders need not
-be read.)
+will be listed.
+(This is faster because the folders need not be read.)
 .PP
 If a
 .I +folder
-is given along with the
+is given with the
 .B \-all
 switch,
 .B folder
-will, in addition to setting the current folder, list the top\-level subfolders
-for the current folder (with
+will, in addition to setting the current folder, list the top-level
+sub-folders for the current folder (with
 .BR \-norecurse )
 or list all sub-folders under the current folder recursively (with
 .BR \-recurse ).
@@ -169,34 +165,30 @@ or list all sub-folders under the current folder recursively (with
 If
 .I msg
 is supplied, together with
-.IR +folder
+.I +folder
 or without
 .BR \-all ,
 it will become the current message of
-.IR +folder
+.I +folder
 (if it had been supplied)
 or the current folder.
 .PP
 The
 .B \-recurse
-switch lists each folder recursively, so use of this
-option effectively defeats the speed enhancement of the
-.B \-fast
-option,
-since each folder must be searched for subfolders.  Nevertheless, the
-combination of these options is useful.
-.PP
+switch lists each folder recursively, so its use effectively
+defeats the speed enhancement of
+.BR \-fast ,
+since each folder must be searched for sub-folders.
+Nevertheless, the combination of these options is useful.
 .SS "Compacting a Folder"
 The
 .B \-pack
-switch will compress the message names in the designated
-folders, removing holes in message numbering.  The
+switch will compress the message names in the designated folders,
+removing holes in message numbering.  The
 .B \-verbose
 switch directs
 .B folder
-to tell the user the general actions that it is
-taking to compress the folder.
-.PP
+to tell the user the general actions it is taking to compress the folder.
 .SS "The Folder Stack"
 The
 .B \-push
@@ -227,20 +219,19 @@ No
 argument is allowed.  This corresponds to the \*(lqpopd\*(rq
 operation in the shell.  The
 .B \-push
-switch and the
+and
 .B \-pop
-switch
-are mutually exclusive: the last occurrence of either one overrides
-any previous occurrence of the other.  Both of these switches also set
-.B \-list
+switches are mutually exclusive: the last occurrence of either one
+overrides any previous occurrence of the other.
+The use of either of these switches also sets
+.BR \-list ,
 by default.
 .PP
 The
 .B \-list
 switch directs
 .B folder
-to list the contents of
-the
+to list the
 .IR folder\-stack .
 No
 .I +folder
@@ -258,7 +249,7 @@ to the \*(lqdirs\*(rq operation in the shell.  The
 .BR \-pop ,
 and
 .B \-list
-switches turn off
+switches all disable
 .BR \-print .
 .SH FILES
 .TP 20
@@ -327,7 +318,7 @@ and/or
 .I msg
 are given, they will become the current folder and/or message.
 .SH BUGS
-There is no way to restore the default behavior 
+There is no way to restore the default behavior
 (to ask the user whether to create a non-existent folder)
 after
 .B \-create
