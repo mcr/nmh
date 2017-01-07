@@ -212,6 +212,7 @@ AC_CACHE_CHECK([whether linker supports -Qunused-arguments],
                        [nmh_cv_has_q_unused_arguments=no])])
 test "$nmh_cv_has_q_unused_arguments" = "yes"  &&  \
   AM_LDFLAGS="${AM_LDFLAGS:+$AM_LDFLAGS }-Qunused-arguments"
+AC_SUBST([AM_LDFLAGS])
 
 dnl This hack turns off assertions by default, assuming
 dnl that configure still uses this shell variable.  Without
