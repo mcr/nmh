@@ -25,13 +25,12 @@ if test "$ICONV_ENABLED" -eq 0; then
     text_size=10
 else
     text_size=11
-    if ! printf '\xe4' | iconv -f EBCDIC-US -t UTF-8 >/dev/null 2>&1; then
-        #### For unknown reasons, the parameter values checks fail on the
-        #### FreeBSD10 buildbot.  It doesn't support EBCDIC-US, which is used
-        #### by the checks, so check for that.  Though that doesn't seem to be
-        #### the reason.
+    #### For unknown reasons, the parameter values checks fail on the
+    #### FreeBSD10 buildbot.  It doesn't support EBCDIC-US, which is used
+    #### by the checks, so check for that.  Though that doesn't seem to be
+    #### the reason.
+    printf '\xe4' | iconv -f EBCDIC-US -t UTF-8 >/dev/null 2>&1  &&
         skip_param_value_checks=1
-    fi
 fi
 
 expected=$MH_TEST_DIR/$$.expected
