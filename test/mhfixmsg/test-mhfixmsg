@@ -28,8 +28,7 @@ actual_err="$MH_TEST_DIR/test-mhfixmsg$$.actual_err"
 
 mhn_defaults="$MH_INST_DIR${nmhetcdir}/mhn.defaults"
 
-if grep mhfixmsg-format-text/html "${mhn_defaults}" \
-  >/dev/null; then
+if grep mhfixmsg-format-text/html "${mhn_defaults}" >/dev/null; then
   can_reformat_texthtml=1
   if grep 'mhfixmsg-format-text/html.*w3m' "${mhn_defaults}" \
     >/dev/null; then
@@ -1349,27 +1348,29 @@ run_test 'mhfixmsg last -outfile '"$actual" ''
 check "$expected" "$actual"
 
 
-# check rmmproc
-start_test "rmmproc"
-cat >"$MH_TEST_DIR/Mail/rmmproc" <<'EOF'
+if [ $can_reformat_texthtml -eq 1 ]; then
+  # check rmmproc
+  start_test "rmmproc"
+  cat >"$MH_TEST_DIR/Mail/rmmproc" <<'EOF'
 mv "$1" "$1.backup"
 EOF
-chmod a+x "${MH_TEST_DIR}/Mail/rmmproc"
-echo "rmmproc: ${MH_TEST_DIR}/Mail/rmmproc" >>"$MH"
-cp "${MH_TEST_DIR}/Mail/inbox/16" "${MH_TEST_DIR}/Mail/inbox/16.original"
+  chmod a+x "${MH_TEST_DIR}/Mail/rmmproc"
+  echo "rmmproc: ${MH_TEST_DIR}/Mail/rmmproc" >>"$MH"
+  cp "${MH_TEST_DIR}/Mail/inbox/16" "${MH_TEST_DIR}/Mail/inbox/16.original"
 
-run_test 'mhfixmsg 16' ''
-check "${MH_TEST_DIR}/Mail/inbox/16.backup" \
-      "${MH_TEST_DIR}/Mail/inbox/16.original"
+  run_test 'mhfixmsg 16' ''
+  check "${MH_TEST_DIR}/Mail/inbox/16.backup" \
+        "${MH_TEST_DIR}/Mail/inbox/16.original"
 
 
-# check -normmproc
-start_test "-normmproc"
-cp "${MH_TEST_DIR}/Mail/inbox/21" "${MH_TEST_DIR}/Mail/inbox/22"
+  # check -normmproc
+  start_test "-normmproc"
+  cp "${MH_TEST_DIR}/Mail/inbox/21" "${MH_TEST_DIR}/Mail/inbox/22"
 
-run_test 'mhfixmsg 21 -normmproc'
-check "${MH_TEST_DIR}/Mail/inbox/22" \
-      "${MH_TEST_DIR}/Mail/inbox/,21" 'keep first'
+  run_test 'mhfixmsg 21 -normmproc'
+  check "${MH_TEST_DIR}/Mail/inbox/22" \
+        "${MH_TEST_DIR}/Mail/inbox/,21" 'keep first'
+fi
 
 
 # check -rmmproc
