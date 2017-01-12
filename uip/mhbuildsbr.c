@@ -1725,9 +1725,11 @@ build_headers (CT ct, int header_encoding)
     add_header (ct, np, vp);
 
     /*
-     * output the Content-ID, unless disabled by -nocontentid
+     * output the Content-ID, unless disabled by -nocontentid.  Note that
+     * RFC 2045 always requires a Content-ID header for message/external-body
+     * entities.
      */
-    if (contentidsw && ct->c_id) {
+    if ((contentidsw || ct->c_ctexbody) && ct->c_id) {
 	np = mh_xstrdup(ID_FIELD);
 	vp = concat (" ", ct->c_id, NULL);
 	add_header (ct, np, vp);

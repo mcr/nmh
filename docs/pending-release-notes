@@ -109,3 +109,5 @@ BUG FIXES
 - repl now make sure that any Fcc header in a replied-to message is not
   copied into the outgoing draft by default, and that the -fcc switch
   actually works in the absence of a Fcc header in the replied-to message.
+- A Content-ID is generated for message/external-body entities as required
+  by RFC 2045, even if -nocontentid is supplied to mhbuild.

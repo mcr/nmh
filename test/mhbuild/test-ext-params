@@ -241,13 +241,16 @@ Content-Type: message/external-body; access-type="url";
 	url*1="/that-should-be-wrapped/name.tar.gz"
 
 Content-Type: application/octet-stream
+Content-ID:
 Content-Description: Test of a long URL
 Content-Disposition: attachment; filename="test.tar.gz"
 
 ------- =_aaaaaaaaaa0--
 EOF
 
-check "$draft" "$expected"
+sed -e 's/^Content-ID:.*/Content-ID:/' "$draft" > "${draft}.nocontentid"
+
+check "${draft}.nocontentid" "$expected"
 
 [ ${failed:=0} -eq 0 ]  &&  rm -f ${backup}
 

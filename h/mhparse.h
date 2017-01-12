@@ -90,6 +90,26 @@ struct cefile {
  * A struct multipart contains (among other things) a linked list
  * of struct part elements, and THOSE contain a pointer to the sub-part's
  * Content structure.
+ *
+ * An extra note for message/external-body parts.  The enclosing
+ * content structure is marked as a message/external-body; the c_ctparams
+ * contains a pointer to a struct exbody, which contains a pointer to
+ * (among other things) the "real" content (e.g., application/octet-stream).
+ * The "real" content structure has the c_ctexbody pointer back to the
+ * same struct exbody sees in the enclosing content structure (the struct
+ * exbody contains parent pointers if you need to traverse up the content
+ * structure).  Hopefully this makes it clearer:
+ *
+ * Enclosing content:
+ *   Type: message/external-body
+ *   c_ctparams: pointer to "struct exbody"
+ *   c_ctexbody: NULL
+ *
+ * "Real" content:
+ *   Type: application/octet-stream (or whatever)
+ *   c_ctparams: NULL
+ *   c_ctexbody: pointer to "struct exbody"
+ *
  */
 struct Content {
     /* source (read) file */
