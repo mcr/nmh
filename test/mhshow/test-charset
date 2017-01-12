@@ -82,6 +82,12 @@ run_prog mhshow $msgnum > $actual 2>&1
 check "$expected" "$actual" : locale profile component
 
 
+if test $skip_param_value_checks -eq 1; then
+    finish_test
+    exit $failed
+fi
+
+
 start_test 'Encoded parameter value'
 msgfile=`mhpath new`
 msgnum=`basename $msgfile`
@@ -115,10 +121,8 @@ Content-Description: bogus quoted-printable data
 4 ÷ 2 = 2
 EOF
 
-if test $skip_param_value_checks -eq 0; then
-    run_prog mhshow $msgnum > $actual 2>&1
-    check "$expected" "$actual" : encoded parameter value
-fi
+run_prog mhshow $msgnum > $actual 2>&1
+check "$expected" "$actual" : encoded parameter value
 
 
 start_test 'replacement character in parameter value'
@@ -139,10 +143,8 @@ MIME-Version: 1.0
 [ part  - text/plain -   0B  ]
 EOF
 
-if test $skip_param_value_checks -eq 0; then
-    run_prog mhshow $msgnum > $actual 2>&1
-    check "$expected" "$actual"
-fi
+run_prog mhshow $msgnum > $actual 2>&1
+check "$expected" "$actual"
 
 
 finish_test
