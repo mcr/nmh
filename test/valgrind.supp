@@ -45,3 +45,27 @@
    fun:si_addrinfo
    fun:getaddrinfo
 }
+
+{
+   dyld libraryLocator on MacOS 10.11.6 (El Capitan)
+   Memcheck:Cond
+   fun:bcmp
+   ...
+   fun:_ZN4dyldL14libraryLocator*
+}
+
+{
+   dyld libraryLocator on MacOS 10.11.6 (El Capitan)
+   Memcheck:Value8
+   fun:bcmp
+   ...
+   fun:_ZN4dyldL14libraryLocator*
+}
+
+{
+   dyld ImageLoader on MacOS 10.11.6 (El Capitan)
+   Memcheck:Cond
+   fun:_ZN16ImageLoaderMachO18validateFirstPagesEPK21linkedit_data_commandiPKhmxRKN11ImageLoader11LinkContextE
+   ...
+   fun:_ZN4dyldL14libraryLocator*
+}
