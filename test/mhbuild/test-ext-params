@@ -249,6 +249,7 @@ Content-Disposition: attachment; filename="test.tar.gz"
 EOF
 
 sed -e 's/^Content-ID:.*/Content-ID:/' "$draft" > "${draft}.nocontentid"
+rm "$draft"
 
 check "${draft}.nocontentid" "$expected"
 
