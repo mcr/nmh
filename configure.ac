@@ -464,8 +464,8 @@ dnl -----------------
 dnl Enable SASL?
 dnl -----------------
 dnl By default (with_cyrus_sasl=''), enable SASL if header and lib are found.
-dnl If SASL requested (--with-sasl with_cyrus_sasl=yes), error if header or lib not found.
-dnl If SASL disabled (--without-sasl with_cyrus_sasl=no), don't enable it.
+dnl If SASL requested (--with-cyrus-sasl with_cyrus_sasl=yes), error if header or lib not found.
+dnl If SASL disabled (--without-cyrus-sasl with_cyrus_sasl=no), don't enable it.
 sasl_support=no
 CYRUS_SASL=0
 AC_SUBST([CYRUS_SASL])
