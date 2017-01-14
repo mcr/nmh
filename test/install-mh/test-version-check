@@ -24,6 +24,21 @@ context="${MH_TEST_DIR}"/Mail/context
 version="Version: nmh-${MH_VERSION}"
 cmd="${MH_TEST_DIR}/Mail/cmd"
 
+#### Hack:  especially on multicore/multiprocessor machines, need
+#### to allow time for the output file to be closed.  If the output
+#### file never reaches a size greater than zero after waiting for
+#### a short while, let a subsequent check fail to find what it needs.
+#### $1: pid to wait for
+#### $2: output file that must eventually have non-zero size
+wait_for_script() {
+    wait $1
+
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        test -s "$2"  &&  break  ||  sleep 1
+    done
+}
+
+
 if script -S /bin/sh 'echo OK' /dev/null 2>&1 | egrep 'OK' >/dev/null; then
     #### script(1) uses -S to set the shell that it runs.
     use_dash_S=1
@@ -35,7 +50,7 @@ EOF
     chmod +x "${cmd}"
 
     (SHELL="${cmd}"; export SHELL; script "${actual}" >/dev/null &
-     wait $!)
+     wait_for_script $! "${actual}")
     if grep OK "${actual}" >/dev/null; then
         #### script(1) supports SHELL environment variable.
         use_dash_S=0
@@ -61,7 +76,7 @@ EOF
         SHELL="${cmd}" script "${actual}" >/dev/null &
     fi
 
-    wait $!
+    wait_for_script $! "${actual}"
 }
 
 #### Ensure that script(1) makes the program look like it's connected to a
