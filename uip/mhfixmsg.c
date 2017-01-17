@@ -406,7 +406,7 @@ main (int argc, char **argv) {
         if (! folder) {
             folder = getfolder (1);
         }
-        maildir = m_maildir (folder);
+        maildir = mh_xstrdup(m_maildir (folder));
 
         /* chdir so that error messages, esp. from MIME parser, just
            refer to the message and not its path. */
@@ -505,6 +505,7 @@ main (int argc, char **argv) {
         status = 1;
     }
 
+    mh_xfree(maildir);
     free (cts);
 
     if (fx.fixtypes != NULL) { svector_free (fx.fixtypes); }
