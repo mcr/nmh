@@ -165,6 +165,17 @@ mhparam path context nonexistent1 nonexistent2 nonexistent3 >/dev/null
 run_test "echo $?" 3
 set -e
 
+# And clips their numbers to avoid a misleading exit value.
+while read use want; do
+    r=0
+    mhparam `yes nonexistent | sed ${use}q` || r=$?
+    run_test "echo $r" $want
+done <<\E
+119 119
+120 120
+121 120
+E
+
 # mhparam -debug
 # Some of its output depends on configure options, so don't bother to
 # check for correctness here.

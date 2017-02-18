@@ -250,7 +250,7 @@ main(int argc, char **argv)
 		    printf("%s: ", comps[i]);
 
 		puts(value);
-	    } else
+	    } else if (missed < 120)
 	        missed++;
 	}
     }
