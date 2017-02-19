@@ -81,7 +81,7 @@ static int smtp_init (char *, char *, char *, int, int, int, int, const char *,
 static int sendmail_init (char *, int, int, int, int, const char *,
 			  const char *);
 
-static int rclient (char *, char *);
+static int rclient (char *, char *, char **);
 static int sm_ierror (const char *fmt, ...);
 static int sm_nerror (char *);
 static int smtalk (int time, char *fmt, ...);
@@ -111,7 +111,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
            const char *oauth_svc, int tls)
 {
     int result, sd1;
-    char *errstr;
+    char *errstr, *chosen_server;
 
     if (watch)
 	verbose = TRUE;
@@ -141,7 +141,14 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     if (user)
 	netsec_set_userid(nsc, user);
 
-    netsec_set_hostname(nsc, server);
+    if ((sd1 = rclient (server, port, &chosen_server)) == NOTOK)
+	return RP_BHST;
+
+    SIGNAL (SIGPIPE, SIG_IGN);
+
+    netsec_set_fd(nsc, sd1, sd1);
+
+    netsec_set_hostname(nsc, chosen_server);
 
     if (sm_debug)
 	netsec_set_snoop(nsc, 1);
@@ -156,13 +163,6 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	if (netsec_set_oauth_service(nsc, oauth_svc) != OK)
 	    return sm_ierror("OAuth2 not supported");
     }
-
-    if ((sd1 = rclient (server, port)) == NOTOK)
-	return RP_BHST;
-
-    SIGNAL (SIGPIPE, SIG_IGN);
-
-    netsec_set_fd(nsc, sd1, sd1);
 
     if (tls & S_TLSENABLEMASK) {
 	if (netsec_set_tls(nsc, 1, tls & S_NOVERIFY, &errstr) != OK)
@@ -426,10 +426,15 @@ sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
 }
 
 static int
-rclient (char *server, char *service)
+rclient (char *server, char *service, char **chosen_server)
 {
     int sd;
     char response[BUFSIZ];
+
+    if (server == NULL)
+	server = servers;
+
+    *chosen_server = server;
 
     if ((sd = client (server, service, response, sizeof(response),
 		      sm_debug)) != NOTOK)

@@ -68,6 +68,7 @@ NEW FEATURES
 - configure now defaults to enabling each of TLS and Cyrus SASL if the
   necessary headers and libraries are found.
 - Moved build_nmh to top-level directory.
+- Better error reporting for connections to network services
 
 -----------------
 OBSOLETE FEATURES
@@ -80,6 +81,8 @@ OBSOLETE FEATURES
 - msh(1) was deprecated in nmh 1.6, and was removed in this release.
 - Support in alias files for the the "*" address-group (everyone) was
   deprecated in nmh 1.6, and was removed in this release.
+- Support for multiple hostnames in the "servers" entry of mts.conf has
+  been removed.
 
 -------------------
 DEPRECATED FEATURES

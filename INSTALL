@@ -260,7 +260,7 @@ Options for configure
      is not given, then the configuration process will search for the
      command `more' and use it as the default.
 
---with-smtpservers='SMTPSERVER1[ SMTPSERVER2...]'    (DEFAULT is localhost)
+--with-smtpserver='SMTPSERVER'    (DEFAULT is localhost)
      If this option is not specified, the mts.conf file will contain
      the line "servers: localhost", which may be manually edited later.
      You may find it convenient to specify a value at configure-time,

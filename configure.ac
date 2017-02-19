@@ -59,13 +59,13 @@ AS_IF([test x"$with_mts" = x"smtp"], [MTS="smtp"],
       [MTS="smtp"])
 AC_SUBST([MTS])dnl
 
-dnl What should be the default mail server(s)?
-AC_ARG_WITH([smtpservers],
-  [AS_HELP_STRING([--with-smtpservers='SMTPSERVER1@<:@ SMTPSERVER2...@:>@'],
-  [specify the default SMTP server(s) @<:@localhost@:>@])])
-AS_IF([test -n "$with_smtpservers"], [smtpservers="$with_smtpservers"],
-      [smtpservers="localhost"])
-AC_SUBST([smtpservers])dnl
+dnl What should be the default mail server?
+AC_ARG_WITH([smtpserver],
+  [AS_HELP_STRING([--with-smtpserver='SMTPSERVER'],
+  [specify the default SMTP server @<:@localhost@:>@])])
+AS_IF([test -n "$with_smtpserver"], [smtpserver="$with_smtpserver"],
+      [smtpserver="localhost"])
+AC_SUBST([smtpserver])dnl
 
 dnl -------------------------------------------------------------------
 dnl Default location is /usr/local/nmh/{bin,etc,libexec,man}, unless we
@@ -645,7 +645,7 @@ RPM build root             : ${nmhrpm}
 backup prefix              : ${backup_prefix}
 transport system           : ${MTS}
 spool default locking type : ${with_locking}
-default smtp servers       : ${smtpservers}
+default smtp server        : ${smtpserver}
 SASL support               : ${sasl_support}
 TLS support                : ${tls_support}
 OAuth support              : ${oauth_support}

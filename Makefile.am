@@ -526,7 +526,7 @@ etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 	@rm -f $@
 	$(SED) -e 's,%mts%,$(MTS),' \
 	       -e 's,%mailspool%,$(mailspool),' \
-	       -e 's,%smtpservers%,$(smtpservers),' \
+	       -e 's,%smtpserver%,$(smtpserver),' \
 	       -e 's,%default_locking%,$(default_locking),' \
 	       -e 's,%supported_locks%,$(supported_locks),' \
 				< $(srcdir)/etc/mts.conf.in > $@

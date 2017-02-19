@@ -222,7 +222,7 @@ fi
 config_prefix=/usr/local/nmh
 config_locking=
 config_mts=smtp
-config_smtpservers=localhost
+config_smtpserver=localhost
 config_sasl='determined by configure'
 config_tls='determined by configure'
 config_debug=n
@@ -252,9 +252,8 @@ if install-mh -check >/dev/null 2>&1; then
 
     mtsconfservers=`grep '^servers:' "$mtsconf"`
     if [ "$mtsconfservers" ]; then
-      servers=`echo "$mtsconfservers" | \
-               sed -e 's/^servers: *//' -e 's/ /\\\ /g'`
-      [ "$servers" ]  &&  config_smtpservers="$servers"
+      servers=`echo "$mtsconfservers" | sed -e 's/^servers: *//'`
+      [ "$servers" ]  &&  config_smtpserver="$servers"
     fi
   fi
 
@@ -294,9 +293,9 @@ if [ $yes -eq 0 ]; then
   [ "$mts" ]  &&  config_mts="$mts"
 
   if [ "$config_mts" = smtp ]; then
-    printf 'SMTP server(s), space separated [%s]: ' $config_smtpservers >&3
-    read response
-    [ "$response" ]  &&  config_smtpservers="$response"
+    printf 'SMTP server [%s]: ' $config_smtpserver >&3
+    read server
+    [ "$server" ]  &&  config_smtpserver="$servers"
   fi
 
   printf 'Cyrus SASL support (y|n) [%s]: ' "$config_sasl" >&3
@@ -314,8 +313,8 @@ config_opts="--prefix=$config_prefix"
   config_opts="$config_opts --with-locking=$config_locking"
 [ "$config_mts"  -a  "$config_mts" != smtp ]  &&
   config_opts="$config_opts --with-mts=$config_mts"
-[ "$config_smtpservers"  -a  "$config_smtpservers" != localhost ]  &&
-  config_opts="$config_opts --with-smtpservers=\"$config_smtpservers\""
+[ "$config_smtpserver"  -a  "$config_smtpserver" != localhost ]  &&
+  config_opts="$config_opts --with-smtpserver=$config_smtpserver"
 [ "$config_sasl" = y ]  &&  config_opts="$config_opts --with-cyrus-sasl"
 [ "$config_tls" = y ]  &&  config_opts="$config_opts --with-tls"
 [ $config_debug = y ]  &&  config_opts="$config_opts --enable-assert"
@@ -374,9 +373,8 @@ if [ -z "$CFLAGS" ]; then
   fi
 fi
 
-printf "\n./configure CFLAGS=\"${CFLAGS}\" $config_opts\n"
-#### Use eval to handle space-separated smtpservers.
-eval ./configure CFLAGS=\""${CFLAGS}"\" $config_opts
+printf '\n./configure %s\n' "$config_opts"
+./configure CFLAGS="${CFLAGS}" $config_opts
 status=$?
 
 if [ $status -eq 0 ]; then

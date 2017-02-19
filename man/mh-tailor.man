@@ -212,12 +212,25 @@ to
 .BR servers :
 localhost
 .RS 5
-A lists of hosts and networks which to look for SMTP servers when
-posting non\-local mail.  It turns out this is a major win for hosts
-which don't run an message transport system.  The value of
+A SINGLE hostname to be used when performing mail submission via SMTP.  Previous
+versions of
+.B nmh
+supported multiple hostnames for
+.BR servers ,
+but the current version of
+.B nmh
+only supports a single entry (the name is kept for backwards compatibility
+reasons).  This can be overridden via the
+.B \-server
+option to
+.IR send (1).
+It is not possible to change the mail submission port number in the
 .B servers
-should be one or more items.  Each item is the name of a host which
-is (hopefully) running a SMTP server.
+entry; see the
+.B \-port
+option to
+.BR send (1)
+for this functionality.
 .SS "SendMail"
 This option is only available if you set
 .B mts
