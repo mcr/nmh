@@ -207,7 +207,9 @@ main(int argc, char **argv)
 	for (np = m_defs; np; np = np->n_next)
 	    printf("%s: %s\n", np->n_name, np->n_field);
 
-    } else if (debug) {
+    }
+
+    if (debug) {
 	struct proc *ps;
 
 	/* In case datalocking was set in profile. */
@@ -230,7 +232,9 @@ main(int argc, char **argv)
 	for (ps = procs; ps->p_name; ps++)
 	    printf ("%s: %s\n", ps->p_name, *ps->p_field ? *ps->p_field : "");
 
-    } else {
+    }
+
+    if (! all) {
         if (components < 0)
 	    components = compp > 1;
 
