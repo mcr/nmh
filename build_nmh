@@ -214,8 +214,7 @@ else
 fi
 
 ####
-#### Set up configure options.  Handle options that can have embedded
-#### spaces (currently just smtpservers) specially.
+#### Set up configure options.
 ####
 
 #### Here are the config options that we will try to detect, then
@@ -297,8 +296,7 @@ if [ $yes -eq 0 ]; then
   if [ "$config_mts" = smtp ]; then
     printf 'SMTP server(s), space separated [%s]: ' $config_smtpservers >&3
     read response
-    servers=`echo $response | sed -e 's/ /\\\ /g'`
-    [ "$servers" ]  &&  config_smtpservers="$servers"
+    [ "$response" ]  &&  config_smtpservers="$response"
   fi
 
   printf 'Cyrus SASL support (y|n) [%s]: ' "$config_sasl" >&3
@@ -310,7 +308,6 @@ if [ $yes -eq 0 ]; then
   [ "$response" = y  -o  "$response" = Y ]  &&  config_tls=y
 fi
 
-smtpservers=
 config_opts="--prefix=$config_prefix"
 
 [ "$config_locking" ]  &&
@@ -318,7 +315,7 @@ config_opts="--prefix=$config_prefix"
 [ "$config_mts"  -a  "$config_mts" != smtp ]  &&
   config_opts="$config_opts --with-mts=$config_mts"
 [ "$config_smtpservers"  -a  "$config_smtpservers" != localhost ]  &&
-  smtpservers="--with-smtpservers=$config_smtpservers"
+  config_opts="$config_opts --with-smtpservers=\"$config_smtpservers\""
 [ "$config_sasl" = y ]  &&  config_opts="$config_opts --with-cyrus-sasl"
 [ "$config_tls" = y ]  &&  config_opts="$config_opts --with-tls"
 [ $config_debug = y ]  &&  config_opts="$config_opts --enable-assert"
@@ -377,8 +374,9 @@ if [ -z "$CFLAGS" ]; then
   fi
 fi
 
-printf '\n./configure %s\n' "$config_opts${smtpservers:+ $smtpservers}"
-./configure CFLAGS="${CFLAGS}" $config_opts${smtpservers:+" $smtpservers"}
+printf "\n./configure CFLAGS=\"${CFLAGS}\" $config_opts\n"
+#### Use eval to handle space-separated smtpservers.
+eval ./configure CFLAGS=\""${CFLAGS}"\" $config_opts
 status=$?
 
 if [ $status -eq 0 ]; then
