@@ -18,7 +18,9 @@ setup_test
 #### suite, or the user's login name.  ap will escape (quote) it if
 #### needed.
 user=`run_prog ${MH_LIBEXEC_DIR}/ap -format '%(me)' 0`
+set +e
 host=`${MH_OBJ_DIR}/test/getcanon`
+set -e
 
 output=`run_prog ${MH_LIBEXEC_DIR}/ap -format '%(mymbox{text})' "${user}"`
 run_test "echo $output" 1 "Basic user test"
