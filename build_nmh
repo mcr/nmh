@@ -373,8 +373,8 @@ if [ -z "$CFLAGS" ]; then
   fi
 fi
 
-printf '\n./configure %s\n' "$config_opts"
-./configure CFLAGS="${CFLAGS}" $config_opts
+printf "\n./configure ${CFLAGS:+CFLAGS=\"${CFLAGS}\" }$config_opts\n"
+./configure ${CFLAGS:+CFLAGS="${CFLAGS}" }$config_opts
 status=$?
 
 if [ $status -eq 0 ]; then
