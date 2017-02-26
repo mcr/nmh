@@ -26,6 +26,7 @@ actual_err=$MH_TEST_DIR/$$.actual_err
 
 
 # check -help
+start_test "-help"
 cat >$expected <<EOF
 Usage: mhparam [profile-components] [switches]
   switches are:
@@ -41,6 +42,7 @@ mhparam -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
+start_test "-version"
 case `mhparam -v` in
   mhparam\ --*) ;;
   *           ) echo "$0: mhparam -v generated unexpected output" 1>&2
@@ -48,9 +50,11 @@ case `mhparam -v` in
 esac
 
 # check unknown option
+start_test "unknown option"
 run_test 'mhparam -nonexistent' 'mhparam: -nonexistent unknown'
 
 # check -all
+start_test "-all"
 cp "$MH" $expected
 # -all adds current folder and Version
 echo 'Current-Folder: '`folder -f` >>$expected
@@ -59,26 +63,31 @@ run_prog mhparam -all >$actual
 check $expected $actual 'keep first'
 
 # check -all with a component
+start_test "-all with a component"
 echo 'mhparam: profile-components ignored with -all' >$expected_err
 run_prog mhparam -all path >$actual 2>$actual_err
 check $expected $actual 'keep first'
 check $expected_err $actual_err
 
 # check -all with -components
+start_test "-all with -components"
 echo 'mhparam: -components ignored with -all' >$expected_err
 run_prog mhparam -all -components >$actual 2>$actual_err
 check $expected $actual
 check $expected_err $actual_err
 
 # check one component
+start_test "one component"
 run_test 'mhparam path' "$MH_TEST_DIR/Mail"
 
 # check more than one component, which enables -component
+start_test "more than one component, which enables -component"
 echo 'AliasFile: aliases' >>"$MH"
 run_test 'mhparam path AliasFile' "path: $MH_TEST_DIR/Mail
 AliasFile: aliases"
 
 # check each component in procs array in uip/mhparam.c
+start_test "each component in procs array in uip/mhparam.c"
 # The tests don't override these, so they're default or configured values.
 # Note that cat is hardcoded here because the testsuite uses it for moreproc.
 cat >$expected <<EOF
@@ -145,30 +154,39 @@ case `mhparam sbackup` in
 esac
 
 # check -component
+start_test "-component"
 run_test 'mhparam -component Path' "Path: $MH_TEST_DIR/Mail"
 
 # check -component, note that component name of argument is echoed exactly
+start_test "-component, note that component name of argument is echoed exactly"
 run_test 'mhparam -component path' "path: $MH_TEST_DIR/Mail"
 run_test 'mhparam -component PATH' "PATH: $MH_TEST_DIR/Mail"
 
 # check -nocomponent
+start_test "-nocomponent"
 run_test 'mhparam -component -nocomponent path' "$MH_TEST_DIR/Mail"
 run_test 'mhparam -nocomponent path AliasFile' "$MH_TEST_DIR/Mail
 aliases"
 
 # check nonexistent component
+start_test "nonexistent component"
 run_test 'mhparam nonexistent' ''
 
 # check that return status counts nonexistent components
+start_test "return status counts nonexistent components"
 set +e
 mhparam path context nonexistent1 nonexistent2 nonexistent3 >/dev/null
 run_test "echo $?" 3
 set -e
 
 # And clips their numbers to avoid a misleading exit value.
+start_test "clips their numbers to avoid a misleading exit value"
 while read use want; do
     r=0
-    mhparam `yes nonexistent | sed ${use}q` || r=$?
+    #### Heirloom shell can't handle the backquote expression as the
+    #### argument:   with set -e, it exits immediately.
+    textlines=`yes nonexistent | sed ${use}q`
+    mhparam $textlines || r=$?
     run_test "echo $r" $want
 done <<\E
 119 119
@@ -177,12 +195,16 @@ done <<\E
 E
 
 # mhparam -debug
+start_test "-debug"
 # Some of its output depends on configure options, so don't bother to
 # check for correctness here.
 mhparam -debug >/dev/null
 
 # check with text file that does not end with newline
+start_test "with text file that does not end with newline"
 printf 'Editor: emacs' >>"$MH"
 run_test 'mhparam -nocomponent editor' 'emacs'
 
+
+finish_test
 exit $failed
