@@ -484,7 +484,8 @@ usr_delivery (int fd, char *delivery, int su)
 		 * do this - else fall through
 		 */
  		if (!next)
-		    continue;	/* else fall */
+		    continue;
+		/* FALLTHRU */
 
 	    case '?': 
 		/*
@@ -492,7 +493,8 @@ usr_delivery (int fd, char *delivery, int su)
 		 * consider delivered if action is successful.
 		 */
 		if (won)
-		    continue;	/* else fall */
+		    continue;
+		/* FALLTHRU */
 
 	    case 'A': 
 	    case 'a': 
@@ -538,7 +540,8 @@ usr_delivery (int fd, char *delivery, int su)
 		    if (won)
 			continue;
 		    break;
-		}		/* else fall */
+		}
+		/* FALLTHRU */
 
 	    default: 
 		/* parse message and build lookup table */
@@ -565,7 +568,8 @@ usr_delivery (int fd, char *delivery, int su)
 	    case 'q':
 		/* deliver to quoted pipe */
 		if (strcasecmp (action, "qpipe"))
-		    continue;	/* else fall */
+		    continue;
+		/* FALLTHRU */
 	    case '^':
 		expand (tmpbuf, string, fd);
 		if (split (tmpbuf, vec) < 1)
@@ -576,7 +580,8 @@ usr_delivery (int fd, char *delivery, int su)
 	    case 'p': 
 		/* deliver to pipe */
 		if (strcasecmp (action, "pipe"))
-		    continue;	/* else fall */
+		    continue;
+		/* FALLTHRU */
 	    case '|': 
 		vec[2] = "sh";
 		vec[3] = "-c";
@@ -594,7 +599,8 @@ usr_delivery (int fd, char *delivery, int su)
 		}
 		/* deliver to nmh folder */
 		else if (strcasecmp (action, "folder"))
-		    continue;	/* else fall */
+		    continue;
+		/* FALLTHRU */
 	    case '+':
 		status = usr_folder (fd, string);
 		break;
@@ -607,7 +613,8 @@ usr_delivery (int fd, char *delivery, int su)
 		}
 		/* mbox format */
 		else if (strcasecmp (action, "mbox"))
-		    continue;	/* else fall */
+		    continue;
+		/* FALLTHRU */
 
 	    case '>': 
 		/* mbox format */

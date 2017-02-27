@@ -844,7 +844,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
 	    case 'F':
 		/* %f, and stdin is terminal not content */
 		*xstdin = 1;
-		/* and fall... */
+		/* FALLTHRU */
 
 	    case 'f':
 		if (multipart) {
@@ -898,7 +898,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
 
 	    case 'p':
 		/* No longer supported */
-		/* and fall... */
+		/* FALLTHRU */
 
 	    case 'l':
 		/* display listing prior to displaying content */

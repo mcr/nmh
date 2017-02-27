@@ -522,6 +522,7 @@ alert (char *file, int out)
 	case NOTOK:
 	    /* oops -- fork error */
 	    advise ("fork", "unable to");
+	    /* FALLTHRU */
 
 	case OK:
 	    /* child process -- send it */
@@ -621,6 +622,7 @@ anno (int fd, struct stat *st)
 			    "unable to fork, so doing annotations by hand...");
 	    if (cwd == NULL)
 		cwd = mh_xstrdup(pwd ());
+	    /* FALLTHRU */
 
 	case OK:
 	    /* block a few signals */

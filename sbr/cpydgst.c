@@ -51,8 +51,8 @@ cpydgst (int in, int out, char *ifile, char *ofile)
 			output ('-');
 			output (' ');
 		    }
-		    state = S2;	/* fall */
-
+		    state = S2;
+		    /* FALLTHRU */
 		case S2: 
 		    output (*cp);
 		    if (*cp == '\n')

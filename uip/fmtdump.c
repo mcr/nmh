@@ -266,6 +266,7 @@ dumpone(struct format *fmt)
 	case FT_IF_MATCH:
 	case FT_IF_AMATCH:
 		printf(" continue else goto");
+		/* FALLTHRU */
 	case FT_GOTO:
 		i = findlabel(fmt + fmt->f_skip);
 		printf(" L%d", i);

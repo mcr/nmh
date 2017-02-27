@@ -361,16 +361,20 @@ mhl (int argc, char **argv)
 		case AMBIGSW: 
 		    ambigsw (cp, mhlswitches);
 		    mhldone (1);
+		    /* FALLTHRU */
 		case UNKWNSW: 
 		    mhladios (NULL, "-%s unknown\n", cp);
+		    /* FALLTHRU */
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] [files ...]", invo_name);
 		    print_help (buf, mhlswitches, 1);
 		    mhldone (0);
+		    /* FALLTHRU */
 		case VERSIONSW:
 		    print_version(invo_name);
 		    mhldone (0);
+		    /* FALLTHRU */
 
 		case BELLSW: 
 		    bellflg = 1;
@@ -449,7 +453,8 @@ mhl (int argc, char **argv)
 		    continue;
 
 		case FORW2SW: 
-		    forwall++;	/* fall */
+		    forwall++;
+		    /* FALLTHRU */
 		case FORW1SW: 
 		    forwflg++;
 		    clearflg = -1;/* XXX */
@@ -900,7 +905,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 	    cp = folder ? concat (folder, ":", fname2, NULL) : mh_xstrdup(fname2);
 	    if (ontty != PITTY)
 		SIGNAL (SIGINT, intrser);
-	    mhlfile (fp, cp, ofilen, ofilec);  /* FALL THROUGH! */
+	    mhlfile (fp, cp, ofilen, ofilec);
             free (cp);
 
 	    for (ap = arglist_head; ap; ap = ap->a_next) {
@@ -909,7 +914,8 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 	    }
 
 	    if (arglist_head)
-	    	fmt_free(NULL, 1);
+		fmt_free(NULL, 1);
+	    /* FALLTHRU */
 
 	default:
 	    if (ontty != PITTY)

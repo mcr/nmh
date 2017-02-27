@@ -343,7 +343,7 @@ finish_field:
 
 	case BODY:
 	    fseek (in, (long) (-strlen (buf)), SEEK_CUR);
-	    /* fall through */
+	    /* FALLTHRU */
 	case FILEEOF:
 	    break;
 
@@ -809,7 +809,7 @@ rock_and_roll:
 		ct->c_encoding = CE_7BIT;
 		goto call_init;
 	    }
-	    /* else fall... */
+	    /* FALLTHRU */
 	case CT_MULTIPART:
 	    adios (NULL, "it doesn't make sense to define an in-line %s content",
 		   ct->c_type == CT_MESSAGE ? "message" : "multipart");
@@ -1288,7 +1288,7 @@ compose_content (CT ct, int verbose)
 		    case 'F':
 			/* %f, and stdout is not-redirected */
 			xstdout = 1;
-			/* and fall... */
+			/* FALLTHRU */
 
 		    case 'f':
 			/*
@@ -2017,7 +2017,7 @@ setup_attach_content(CT ct, char *filename)
 	if (strcasecmp(ct->c_ctinfo.ci_subtype, "external-body") == 0)
 	    adios(NULL, "external-body messages must be specified "
 		"by mhbuild directives");
-	/* Fall through */
+	/* FALLTHRU */
 
     default:
 	/*

@@ -243,7 +243,8 @@ main (int argc, char **argv)
 		    continue;
 
 		case DEBUGSW: 
-		    debugsw++;	/* fall */
+		    debugsw++;
+		    /* FALLTHRU */
 		case NFILTSW: 
 		case FRMTSW: 
 		case NFRMTSW: 
@@ -283,7 +284,7 @@ main (int argc, char **argv)
 		case SASLMECHSW:
 		    if (!(saslmech = *argp) || *saslmech == '-')
 			adios (NULL, "missing argument to %s", argp[-1]);
-		    /* Fall through */
+		    /* FALLTHRU */
 
 		case ALIASW: 
 		case FILTSW: 
@@ -483,8 +484,10 @@ go_to_it:
         switch (sendsbr (vec, vecp, program, msgs[msgnum], &st, 1, auth_svc)) {
 	    case DONE: 
 		done (++status);
+		/* FALLTHRU */
 	    case NOTOK: 
-		status++;	/* fall */
+		status++;
+		/* FALLTHRU */
 	    case OK:
 		break;
 	}

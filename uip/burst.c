@@ -521,6 +521,7 @@ cpybrst (FILE *in, FILE *out, char *ifile, char *ofile, int len, int mime)
 
 		    default: 
 			state = S2;
+			/* FALLTHRU */
 		    case '\n': 
 			fputc (c, out);
 			break;
@@ -531,6 +532,7 @@ cpybrst (FILE *in, FILE *out, char *ifile, char *ofile, int len, int mime)
 		switch (c) {
 		    case '\n': 
 			state = S1;
+			/* FALLTHRU */
 		    default: 
 			fputc (c, out);
 			break;

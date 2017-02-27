@@ -178,7 +178,7 @@ get_msgnums(char *folder, char *sequences[])
 
             case BODY:
                 adios (NULL, "no blank lines are permitted in %s", seqfile);
-                /* fall */
+		/* FALLTHRU */
 
             case FILEEOF:
                 break;

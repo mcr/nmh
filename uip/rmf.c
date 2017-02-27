@@ -133,7 +133,8 @@ rmf (char *folder)
     switch (i = chdir (maildir = m_maildir (folder))) {
 	case OK: 
 	    if (access (".", W_OK) != NOTOK && access ("..", W_OK) != NOTOK)
-		break;		/* fall otherwise */
+		break;
+	    /* FALLTHRU */
 
 	case NOTOK: 
 	    snprintf (cur, sizeof(cur), "atr-%s-%s",
@@ -162,7 +163,8 @@ rmf (char *folder)
 	    case '.': 
 		if (strcmp (dp->d_name, ".") == 0
 			|| strcmp (dp->d_name, "..") == 0)
-		    continue;	/* else fall */
+		    continue;
+		/* FALLTHRU */
 
 	    case ',': 
 		break;

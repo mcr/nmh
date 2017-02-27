@@ -606,7 +606,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 	    while (isspace ((unsigned char) *--cp) && cp >= name) continue;
 	    *++cp = 0;
 	    /* readpos points to the first character of the field body. */
-	    /* fall through */
+	    /* FALLTHRU */
 
 	case FLDPLUS: {
 	    /*

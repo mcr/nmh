@@ -102,7 +102,8 @@ normalize (char *cp)
 		    break;
 
 		case 0: 
-		    cp--;	/* fall */
+		    cp--;
+		    /* FALLTHRU */
 		default: 
 		    *dp++ = *cp;
 		    break;

@@ -63,7 +63,8 @@ etcpath (char *file)
 		*--cp = '/';
 
 	    if (access (epath, R_OK) != NOTOK)
-		return epath;	/* else fall */
+		return epath;
+		/* FALLTHRU */
 try_it:
 
 	default: 

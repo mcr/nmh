@@ -202,7 +202,7 @@ alias (char *file)
 		    fclose (fp);
 		    return i;
 		}
-
+		/* FALLTHRU */
 	    case ':': 		/* comment */
 	    case ';': 
 	    case '#':

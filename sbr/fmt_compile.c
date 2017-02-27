@@ -578,7 +578,7 @@ do_name(char *sp, int preprocess)
 	    ismymbox ((struct mailname *) 0);
 	    primed++;
 	}
-	/* fall through */
+	/* FALLTHRU */
     case FT_PARSEADDR:
 	if (cm->c_type & CT_DATE) {
 	    CERROR("component used as both date and address");
@@ -740,7 +740,7 @@ do_func(char *sp)
 
     case TF_EXPR_SV:
 	LV(FT_SAVESTR, 0);
-	/* fall through */
+	/* FALLTHRU */
     case TF_EXPR:
 	*--cp = c;
 	cp = do_expr(cp, t->extra);

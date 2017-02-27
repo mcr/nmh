@@ -690,7 +690,7 @@ go_to_it:
 		trnflag = 0;
 		noisy++;
 		/* advise (cp, "unable to read"); already advised */
-		/* fall thru */
+		/* FALLTHRU */
 
 	    case SCNERR:
 	    case SCNNUM:
@@ -851,7 +851,7 @@ go_to_it:
 		trnflag = 0;
 		noisy++;
 		/* advise (cp, "unable to read"); already advised */
-		/* fall thru */
+		/* FALLTHRU */
 
 	    case SCNERR:
 	    case SCNNUM:

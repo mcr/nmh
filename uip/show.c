@@ -96,6 +96,7 @@ main (int argc, char **argv)
 		    goto non_mhl_switches;
 		case NHEADSW:
 		    headersw = 0;
+		    /* FALLTHRU */
 		case CONCATSW:
 		case NCONCATSW:
 non_mhl_switches:
@@ -413,7 +414,7 @@ invalid:
 			    continue;
 			case '(':
 			    i++;
-			    /* and fall... */
+			    /* FALLTHRU */
 			default:
 			    continue;
 			case ')':

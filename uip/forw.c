@@ -163,7 +163,8 @@ main (int argc, char **argv)
 		    nwhat = 0;
 		    continue;
 		case BILDSW:
-		    buildsw++;	/* fall... */
+		    buildsw++;
+		    /* FALLTHRU */
 		case NWHATSW: 
 		    nwhat++;
 		    continue;

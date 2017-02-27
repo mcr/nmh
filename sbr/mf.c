@@ -288,6 +288,7 @@ again: ;
 		strcpy (err, "extraneous semi-colon");
 		return NOTOK;
 	    }
+	    /* FALLTHRU */
 	case LX_COMA: 
             mh_xfree(note);
             note = NULL;
@@ -391,6 +392,7 @@ again: ;
 			strcpy (err, "extraneous semi-colon");
 			return NOTOK;
 		    }
+		    /* FALLTHRU */
 		case LX_COMA: 
 		case LX_END: 
 		    return OK;
@@ -623,6 +625,7 @@ my_lex (char *buffer)
 		    continue;
 		case '(': 
 		    i++;
+		    /* FALLTHRU */
 		default: 
 		    ADDCHR(c);
 		    continue;
@@ -650,6 +653,7 @@ my_lex (char *buffer)
 			cp = NULL;
 			return (last_lex = LX_ERR);
 		    }
+		    /* FALLTHRU */
 		default: 
 		    ADDCHR(c);
 		    continue;
@@ -673,6 +677,7 @@ my_lex (char *buffer)
 			cp = NULL;
 			return (last_lex = LX_ERR);
 		    }
+		    /* FALLTHRU */
 		default: 
 		    ADDCHR(c);
 		    continue;
@@ -781,7 +786,8 @@ mfgets (FILE *in, char **bp)
 		    case '\t': 
 			*cp++ = '\n';
 			break;
-		}		/* fall into default case */
+		}
+		/* FALLTHRU */
 
 	    default: 
 		*cp++ = i;

@@ -649,7 +649,7 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
 
 		fmt_addcomptext("body", rbuf);
 	    }
-	    /* fall through */
+	    /* FALLTHRU */
 
 	default:
 	    goto finished;
@@ -894,6 +894,7 @@ dumpone(struct format *fmt)
 	case FT_IF_MATCH:
 	case FT_IF_AMATCH:
 		printf(" continue else goto");
+		/* FALLTHRU */
 	case FT_GOTO:
 		i = findlabel(fmt + fmt->f_skip);
 		printf(" L%d", i);

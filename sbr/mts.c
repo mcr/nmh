@@ -182,6 +182,7 @@ tailor_value (char *s)
 		case 't': *bp = '\t'; break;
 
 		case 0: s--;
+		    /* FALLTHRU */
 		case QUOTE: 
 		    *bp = QUOTE;
 		    break;

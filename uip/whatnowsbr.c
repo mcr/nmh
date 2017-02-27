@@ -834,6 +834,7 @@ sendfile (char **arg, char *file, int pushsw)
     switch (child_id) {
 	case NOTOK:
 	    advise (NULL, "unable to fork, so sending directly...");
+	    /* FALLTHRU */
 	case OK:
 	    vec = argsplit(sendproc, &program, &vecp);
 	    if (pushsw)
@@ -1119,7 +1120,8 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    continue;
 
 		case DEBUGSW:
-		    debugsw++;	/* fall */
+		    debugsw++;
+		    /* FALLTHRU */
 		case NFILTSW:
 		case FRMTSW:
 		case NFRMTSW:
@@ -1159,7 +1161,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 
 		case SASLMECHSW:
                     saslmech = *argp;
-		    /* fall thru */
+		    /* FALLTHRU */
 		case ALIASW:
 		case FILTSW:
 		case WIDTHSW:
@@ -1185,6 +1187,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 			advise (NULL, "missing argument to %s", argp[-2]);
 			return;
 		    }
+		    /* FALLTHRU */
 		case SNDRFSW:
 		    continue;
 

@@ -633,6 +633,7 @@ gcompile (struct nexus *n, char *astr)
 	    case '\\': 
 		if ((c = *sp++) == '\0')
 		    goto cerror;
+		/* FALLTHRU */
 	defchar: 
 	    default: 
 		*ep++ = CCHR;

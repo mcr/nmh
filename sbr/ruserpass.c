@@ -80,7 +80,7 @@ ruserpass(const char *host, char **aname, char **apass, int flags)
 	    switch(t) {
 	    case DEFAULT:
 		usedefault = 1;
-		/* FALL THROUGH */
+		/* FALLTHRU */
 
 	    case MACH:
 		if (!usedefault) {

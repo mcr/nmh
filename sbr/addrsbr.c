@@ -385,7 +385,8 @@ ismymbox (struct mailname *np)
 
 	    case UUCPHOST:
 		if (strcasecmp (np->m_host, SystemName()))
-		    break;		/* fall */
+		    break;
+		    /* FALLTHRU */
 	    case LOCALHOST:
 local_test: ;
 		if (!strcasecmp (np->m_mbox, mq.m_mbox))

@@ -623,7 +623,8 @@ sm_end (int type)
 	case NOTOK: 
 	    sm_note.code = sm_reply.code;
 	    sm_note.length = sm_reply.length;
-	    memcpy (sm_note.text, sm_reply.text, sm_reply.length + 1);/* fall */
+	    memcpy (sm_note.text, sm_reply.text, sm_reply.length + 1);
+	    /* FALLTHRU */
 	case DONE: 
 	    if (smtalk (SM_RSET, "RSET") == 250 && type == DONE)
 		return RP_OK;
@@ -764,7 +765,8 @@ sm_wstream (char *buffer, int len)
 		    if (netsec_write(nsc, ".", 1, &errstr) != OK) {
 		    sm_nerror(errstr);
 		    return NOTOK;
-		} /* FALL THROUGH */
+		}
+		/* FALLTHRU */
 
 	    default: 
 		sm_nl = FALSE;

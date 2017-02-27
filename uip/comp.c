@@ -123,7 +123,7 @@ main (int argc, char **argv)
 
 		case BILDSW:
 		    build++;
-		    /* fall through */
+		    /* FALLTHRU */
 		case NWHATSW: 
 		    nwhat++;
 		    continue;

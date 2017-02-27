@@ -272,7 +272,7 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 	    strncpy (buffer, response, sizeof(buffer));
 	    command ("QUIT");
 	    strncpy (response, buffer, sizeof(response));
-				/* and fall */
+	    /* FALLTHRU */
 
 	case NOTOK: 
 	case DONE: 

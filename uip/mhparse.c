@@ -960,7 +960,7 @@ invalid:
 
 	case '(':
 	    i++;
-	    /* and fall... */
+	    /* FALLTHRU */
 	default:
 	    *bp++ = c;
 	    continue;
@@ -1531,7 +1531,7 @@ no_body:
 		    case CT_MESSAGE:
 			if (p->c_subtype != MESSAGE_RFC822)
 			    break;
-			/* else fall... */
+			/* FALLTHRU */
 		    default:
 			e->eb_partno = ct->c_partno;
 			if (p->c_ctinitfnx)
@@ -3479,7 +3479,7 @@ bad_quote:
 		    case '\\':
 			if (*++cp == '\0')
 			    goto bad_quote;
-			/* FALL THROUGH */
+			/* FALLTHRU */
 		    default:
 			len++;
 			continue;
@@ -3931,7 +3931,7 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
 	    case '\\':
 	    	len++;
 		maxfit--;
-	    /* FALL THROUGH */
+	    /* FALLTHRU */
 	    default:
 		len++;
 		maxfit--;
@@ -4039,6 +4039,7 @@ normal_param(PM pm, char *output, size_t len, size_t valuelen,
 	case '"':
 	    *output++ = '\\';
 	    outlen++;
+	    /* FALLTHRU */
 	default:
 	    *output++ = *p++;
 	    outlen++;

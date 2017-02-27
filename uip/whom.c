@@ -182,7 +182,8 @@ main (int argc, char **argv)
 
     switch (distsw ? child_id : OK) {
 	case NOTOK:
-    	    advise (NULL, "unable to fork, so checking directly...");
+	    advise (NULL, "unable to fork, so checking directly...");
+	    /* FALLTHRU */
 	case OK:
 	    execvp (postproc, vec);
 	    fprintf (stderr, "unable to exec ");

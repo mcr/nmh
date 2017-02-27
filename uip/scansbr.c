@@ -273,7 +273,7 @@ body:;
 		    state = BODY;
 		    goto body;
 		}
-		/* fall through */
+		/* FALLTHRU */
 
 	    case FILEEOF:
 		goto finished;
