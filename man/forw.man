@@ -1,4 +1,4 @@
-.TH FORW %manext1% "December 31, 2016" "%nmhversion%"
+.TH FORW %manext1% "March 16, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -64,14 +64,10 @@ forw \- forward messages
 .ad
 .SH DESCRIPTION
 .B forw
-may be used to prepare a message containing other messages.
-.PP
-It constructs the new message from a forms (components) file, with a
-body composed of the message(s) to be forwarded.  An editor is invoked
-as in
-.BR comp ,
-and after editing is complete, the user is prompted
-before the message is sent.
+constructs a new message from a forms (components) file, with a body
+composed of the message(s) to be forwarded.  An editor is invoked
+and, after editing is complete, the user is prompted before the
+message is sent.
 .PP
 The default message template will direct
 .B forw
@@ -102,7 +98,7 @@ for details.  Components from the first forwarded message are available
 as standard component escapes in the forms file.
 .PP
 In addition to the standard
-.IR mh\-format (5)
+.I mh\-format
 escapes, the following
 .I component
 escapes are also supported:
@@ -119,7 +115,7 @@ nmh\-subject	string	Any text specified with `\-subject\ text'
 .fi
 .RE
 .PP
-By default the \*(lqTo:\*(rq and \*(lqcc:\*(rq fields are empty.  You may
+By default, the \*(lqTo:\*(rq and \*(lqcc:\*(rq fields are empty.  You may
 add addresses to these fields with the
 .B \-to
 .I address
@@ -129,10 +125,10 @@ and
 switches.  You may give these switches multiple times to add multiple
 addresses.
 .PP
-By default the \*(lqFrom:\*(rq field has either the value of the
+By default, the \*(lqFrom:\*(rq field contains either the value of the
 .B Local\-Mailbox
-profile entry a system default email address.  This default can be overridden
-by using the
+profile entry, or a system default email address.
+This default can be overridden by using the
 .B \-from
 .I address
 switch.  The default mailbox in the \*(lqFcc:\*(rq field is
@@ -141,14 +137,13 @@ This can be overridden by the
 .B \-fcc
 switch.
 .PP
-Any text you give to the
+Any text given to the
 .B \-subject
 switch will be placed in the \*(lqSubject:\*(rq field in the draft.
 .PP
 If the draft already exists,
 .B forw
-will ask you as to the disposition
-of the draft.  A reply of
+will ask you as to the disposition of the draft.  A reply of
 .B quit
 will abort
 .BR forw ,
@@ -160,8 +155,8 @@ will display the draft.
 .PP
 If the
 .B \-annotate
-switch is given, each message being forwarded will
-be annotated with the lines:
+switch is given, each message being forwarded will be annotated
+with the lines:
 .PP
 .RS 5
 .nf
@@ -170,17 +165,17 @@ Forwarded:\ addrs
 .fi
 .RE
 .PP
-where each address list contains as many lines as required.  This
-annotation will be done only if the message is sent directly from
+where each address list contains as many lines as required.
+This annotation will be done only if the message is sent directly from
 .BR forw .
 If the message is not sent immediately from
 .BR forw ,
 .RB \*(lq comp
 .BR \-use \*(rq
-may be used to re\-edit and send the constructed
-message, but the annotations won't take place.  Normally annotations
-are done inplace in order to preserve any links to the message.  You may
-change this by using the
+may be used to re-edit and send the constructed message, but the
+annotations won't take place.  Normally, annotations are done in place
+in order to preserve any links to the message.
+You may change this by using the
 .B \-noinplace
 switch.
 .PP
@@ -194,17 +189,16 @@ switches.
 .PP
 Although
 .B forw
-uses a forms (components) file to direct it how to
-construct the beginning of the draft, it uses a message filter file to
-direct it as to how each forwarded message should be formatted in the
-body of the draft.  The filter file for \fIforw\fR should be a standard
-form file for
-.BR mhl ,
+uses a forms (components) file to construct the initial draft,
+a message filter file is used to format each forwarded message in the
+body of the draft.
+The filter file for \fIforw\fR should be a standard form file for
+.IR mhl (1),
 as
 .B forw
 will invoke
 .B mhl
-to filter (re\-format) the forwarded messages prior to being output to
+to filter (re-format) the forwarded messages prior to being output to
 the body of the draft.
 .PP
 The switches
@@ -213,22 +207,16 @@ The switches
 and
 .B \-filter
 .I filterfile
-specify which message filter file to use.
-.PP
-If
+specify which message filter file to use.  If
 .B \-noformat
 is specified (this is the default), then each forwarded
-message is output into the draft exactly as it appears with no
+message is output into the draft exactly as it appears, with no
 .B mhl
-filtering.
-.PP
-If
+filtering.  If
 .B \-format
-is specified, then a default message filter file is used.
-This default message filter should be adequate for most users.
-This default filter
-.RI \*(lq mhl.forward \*(rq
-is:
+is specified, then the following default message filter file,
+.RI \*(lq mhl.forward \*(rq ,
+which should be adequate for most users, is used:
 .PP
 .RS 5
 .nf
@@ -239,7 +227,7 @@ is:
 If a file named
 .RI \*(lq mhl.forward \*(rq
 exists in the user's nmh
-directory, it will be used instead of this form.  You may specify an
+directory, it will be used instead.  You may specify an
 alternate message filter file with the switch
 .B \-filter
 .IR filterfile .
@@ -248,21 +236,19 @@ Each forwarded message is separated with an encapsulation delimiter.
 By default, any dashes in the first column of the forwarded messages
 will be prepended with `\-\ ' so that when received, the message is
 suitable for bursting by
-.BR burst .
-This follows the Internet RFC 934 guidelines.  You may use the flag
+.IR burst (1).
+This follows the guidelines in RFC 934.  You may use the
 .B \-nodashstuffing
-in order
-to suppress this form of quoting to the forwarded messages.
+switch to suppress this form of quoting.
 .PP
-For users of
-.BR prompter ,
-by specifying
+Users of
+.IR prompter (1)
+can, by specifying
 .BR prompter 's
 .B \-prepend
 switch in the
 .I \&.mh\(ruprofile
-file, any commentary text is entered
-before the forwarded messages.  (A major win!)
+file, prepend any commentary text before the forwarded messages.
 .PP
 To use the MIME rules for encapsulation, specify the
 .B \-mime
@@ -292,27 +278,26 @@ and
 .I msg
 switches invoke the
 .B nmh
-draft folder facility.  This is an advanced (and highly
-useful) feature.  Consult the
+draft folder facility.  This is an advanced (and highly useful) feature.
+Consult the
 .IR mh-draft (5)
 man page for more information.
 .PP
 The
 .B \-editor
 .I editor
-switch indicates the editor to use for the
-initial edit.  Upon exiting from the editor,
+switch indicates the editor to use for the initial edit.
+Upon exiting from the editor,
 .B comp
 will invoke the
 .B whatnow
 program.  See
 .IR whatnow (1)
 for a discussion of
-available options.  The invocation of this program can be inhibited
-by using the
+available options.
+The invocation of this program can be inhibited by using the
 .B \-nowhatnowproc
-switch.  (In truth of fact, it is
-the
+switch.  (In fact, it is the
 .I whatnow
 program which starts the initial edit.  Hence,
 .B \-nowhatnowproc
@@ -325,28 +310,25 @@ switch is intended to be used by the Emacs mh-e interface to
 It implies
 .BR \-nowhatnowproc .
 It causes a file <mh\-dir>/draft
-to be created, containing the draft message that would normally be presented
-to the user for editing.
-No mail is actually sent.
+to be created, containing the draft message that would normally be
+presented to the user for editing.  No mail is actually sent.
 .PP
 The
 .B \-file
 .I msgfile
-switch specifies the message to be forwarded as an
-exact filename rather than as an
+switch specifies the message to be forwarded as an exact filename
+rather than as an
 .B nmh
-folder and message number.
-This switch implies
+folder and message number.  This switch implies
 .BR \-noannotate .
-The forwarded message is simply
-copied verbatim into the draft; the processing implied by
-the
+The forwarded message is simply copied verbatim into the draft;
+the processing implied by the
 .BR \-filter ,
 .BR \-mime ,
 and
 .B \-digest
-switches is bypassed, and the usual leading and
-trailing 'Forwarded Message' delimiters are not added.
+switches is bypassed, and the usual leading and trailing
+'Forwarded Message' delimiters are not added.
 The same caveats apply to this option as to the
 .B \-build
 switch.
@@ -437,12 +419,15 @@ whatnowproc:
 Program to ask the \*(lqWhat now?\*(rq questions.
 .PD
 .SH "SEE ALSO"
+.IR burst (1),
 .IR comp (1),
+.IR mh\-format (5)
 .IR mhbuild (1),
+.IR mhl (1),
+.IR prompter (1),
 .IR repl (1),
 .IR send (1),
 .IR whatnow (1),
-.IR mh\-format (5)
 .PP
 .I
 Proposed Standard for Message Encapsulation
@@ -478,7 +463,7 @@ is
 .BR whatnow ,
 then
 .B forw
-uses a built\-in
+uses a built-in
 .BR whatnow ,
 it does not actually run the
 .B whatnow
@@ -493,17 +478,17 @@ won't run it.
 .PP
 When
 .B forw
-is told to annotate the messages it forwards, it
-doesn't actually annotate them until the draft is successfully sent.
-If from the
+is told to annotate the messages it forwards, it doesn't actually
+annotate them until the draft is successfully sent.
+If, from the
 .IR whatnowproc ,
 you
 .B push
 instead of
 .BR send ,
-it's possible to confuse
+it is possible to confuse
 .B forw
-by re\-ordering the file (e.g.\& by using
+by re-ordering the file (e.g.\& by using
 .RB \*(lq folder
 .BR \-pack \*(rq)
 before the message is successfully sent.
