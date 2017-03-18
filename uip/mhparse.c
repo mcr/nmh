@@ -209,6 +209,7 @@ parse_mime (char *file)
     FILE *fp;
     CT ct;
     size_t n;
+    struct stat statbuf;
 
     bogus_mp_content = 0;
 
@@ -244,6 +245,13 @@ parse_mime (char *file)
 	    return NULL;
 	}
 	fseek (fp, 0L, SEEK_SET);
+    } else if (lstat (file, &statbuf) == NOTOK) {
+	advise (file, "unable to lstat");
+	return NULL;
+    } else if (S_ISDIR(statbuf.st_mode)) {
+	/* Don't try to parse a directory. */
+	advise (NULL, "%s is a directory", file);
+	return NULL;
     } else if ((fp = fopen (file, "r")) == NULL) {
 	advise (file, "unable to read");
 	return NULL;
