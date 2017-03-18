@@ -327,8 +327,8 @@ the processing implied by the
 .BR \-mime ,
 and
 .B \-digest
-switches is bypassed, and the usual leading and trailing
-'Forwarded Message' delimiters are not added.
+switches is bypassed, and the usual leading and
+trailing 'Forwarded Message' delimiters are not added.
 The same caveats apply to this option as to the
 .B \-build
 switch.
