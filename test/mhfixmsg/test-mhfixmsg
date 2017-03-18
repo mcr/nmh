@@ -199,6 +199,12 @@ check "$MH_TEST_DIR"/Mail/inbox/11 "$expected" 'keep first'
 check "$MH_TEST_DIR"/Mail/inbox/,11 "$MH_TEST_DIR"/Mail/inbox/11.original
 
 
+# check -file with directory
+start_test "-file with directory"
+run_test 'mhfixmsg -file /tmp' 'mhfixmsg: /tmp is a directory
+mhfixmsg: unable to parse message from file /tmp'
+
+
 # check -reformat (enabled by default):  addition of text/plain part
 # to solitary text/html part
 start_test "-reformat (enabled by default):  addition of text/plain part"
