@@ -1,4 +1,4 @@
-.TH INC %manext1% "October 9, 2016" "%nmhversion%"
+.TH INC %manext1% "March 18, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -48,8 +48,7 @@ inc \- incorporate new mail
 .ad
 .SH DESCRIPTION
 .B inc
-incorporates mail from the user's incoming mail drop into
-an
+incorporates mail from the user's incoming mail drop into an
 .B nmh
 folder.
 If the mail drop is a file, it can be in
@@ -57,15 +56,15 @@ If the mail drop is a file, it can be in
 or
 .B MMDF
 format.
-If the mail drop is a directory it will considered to be a
+If the mail drop is a directory it is considered to be in
 .B Maildir
-format mail drop.
+format.
 .PP
 You may specify which folder to use with
 .IR +folder .
 If no folder is specified, then
 .B inc
-will use either the folder given by a (non\-empty)
+will use either the folder given by a (non-empty)
 .RI \*(lq Inbox \*(rq
 entry in the user's profile, or the folder named
 .RI \*(lq inbox \*(rq.
@@ -73,28 +72,26 @@ If the specified (or default) folder doesn't
 exist, the user will be queried prior to its creation.
 .PP
 When the new messages are incorporated into the folder, they are assigned
-numbers starting with the next highest number for the folder.  As the
-messages are processed, a
+numbers starting with the next highest number for the folder.
+As the messages are processed, a
 .B scan
 listing of the new mail is produced.
 .PP
-If the user's profile contains a
+The newly created messages will have a mode of 0600, see chmod(1),
+on filesystems that support it.
+Alternatively, a
 .RI \*(lq "Msg\-Protect: nnn" \*(rq
-entry, it will be used as the protection on the newly created
-messages, otherwise the
-.B nmh
-default of 0600 will be used (on filesystems that support it).  For
-all subsequent operations on these messages, this initially assigned
-protection will be preserved.
+profile entry gives the mode to use, in octal.
+For all subsequent operations on these messages, this initially assigned
+mode will be preserved.
 .PP
 If the switch
 .B \-audit
 .I audit\-file
-is specified (usually as a default
-switch in the profile), then
+is specified (usually as a default switch in the user's profile), then
 .B inc
-will append a header line and a
-line per message to the end of the specified audit\-file with the format:
+will append a header line and a line per message to the specified
+audit-file with the format:
 .PP
 .RS 5
 .nf
@@ -112,28 +109,30 @@ Eventually,
 .BR comp ,
 and
 .B dist
-may also produce audits to this (or another) file, perhaps with
+may also output audit information to this (or another) file, perhaps with
 .RI \*(lq Message\-Id \*(rq
-information to keep an exact correspondence
-history.
+information to keep an exact correspondence history.
 .RI \*(lq Audit\-file \*(rq
-will be in the user's nmh directory unless a full path is specified.
+is assumed to be in the user's nmh directory unless a full path is specified.
 .PP
 .B inc
-will incorporate even improperly formatted messages into the
-user's nmh folder, inserting a blank line prior to the offending component
+will incorporate even improperly formatted messages into the user's
+nmh folder, inserting a blank line prior to the offending component
 and printing a comment identifying the bad message.
 .PP
-In all cases, the user's mail drop will be zeroed, unless the
+In all cases, except the use of
+.B \-file
+.I name
+(see below), the user's mail drop will be zeroed, unless the
 .B \-notruncate
 switch is given.
 .PP
 If the profile entry
 .RI \*(lq Unseen\-Sequence \*(rq
-is present and non\-empty, then
+is present and non-empty, then
 .B inc
-will add each of the newly incorporated messages to
-each sequence named by the profile entry.
+will add each of the newly incorporated messages to each sequence
+named in the profile entry.
 .B inc
 will not zero each sequence prior to adding messages.
 .PP
@@ -146,22 +145,22 @@ and
 .B \-width
 .I columns
 switches is the same as in
-.BR scan .
+.IR scan (1).
 .PP
 By using the
 .B \-file
 .I name
 switch, one can direct
 .B inc
-to incorporate messages from a file other than the user's maildrop.
-Note that the name file will NOT be zeroed, unless the
+to incorporate messages from a file other than the user's mail drop.
+Note that the named file will NOT be zeroed, unless the
 .B \-truncate
 switch is given.
 .PP
 The
 .B \-file
-switch does not support use of standard input.  Instead,
-the
+switch does not support the use of standard input.
+Instead, the
 .B rcvstore
 command can be used to incorporate mail from the standard input stream.
 .PP
@@ -169,21 +168,21 @@ If the environment variable
 .B $MAILDROP
 is set, then
 .B inc
-uses it as the location of the user's maildrop instead of the default
+uses it as the location of the user's mail drop instead of the default
 (the
 .B -file
 .I name
-switch still overrides this, however).  If this
-environment variable is not set, then
+switch still overrides this, however).
+If this environment variable is not set, then
 .B inc
 will consult the profile entry
 .RI \*(lq MailDrop \*(rq
-for this information.  If the value found is
-not absolute, then it is interpreted relative to the user's
+for this information.  If the value found is not absolute, then it is
+interpreted relative to the user's
 .B nmh
 directory.  If the value is not found, then
 .B inc
-will look in the standard system location for the user's maildrop.
+will look in the standard system location for the user's mail drop.
 .PP
 The
 .B \-silent
@@ -192,11 +191,10 @@ switch directs
 to be quiet and not ask any questions at all.  This is useful for putting
 .B inc
 in the background and going on to other things.
-.PP
 .SS "Using POP"
 .B inc
-will normally check local mail drops for mail, as covered above.  But
-if the option
+will normally check local mail drops for mail, as covered above.
+But if the option
 .RI \*(lq pophost \*(rq
 is set in
 .RI \*(lq mts.conf \*(rq,
@@ -215,12 +213,13 @@ is specified as well, the command-line switch will override
 the environment variable.  The
 .B \-port
 switch specifies the port name or number used to connect to the POP
-server.  If unspecified the default is \*(lqpop3\*(rq.
+server.  If unspecified, the default is \*(lqpop3\*(rq.
 .PP
 To specify a username for authentication with the POP server, use the
 .B \-user
 .I username
-switch.  The credentials profile entry in the mh\-profile(5) man page
+switch.  The credentials profile entry in
+.IR mh\-profile (5)
 describes the ways to supply a username and password.
 .PP
 If passed the
@@ -230,24 +229,21 @@ switch,
 .B inc
 will use the specified command to establish the connection to the POP
 server.  The string
-.IR %h
+.I %h
 in the command will be substituted by the hostname to connect to.
 .PP
-If
-.B inc
-uses POP, then the
+When using POP, if the
 .B \-pack
 .I file
-switch is considered.  If given, then
+switch is given then
 .B inc
-simply uses the POP to
-.B packf
-the user's maildrop from the POP service host to the named file.
+will
+.IR packf (1)
+the user's mail drop from the POP service host to the named file.
 .PP
 For debugging purposes, you may give the switch
 .BR \-snoop ,
-which will allow you to watch the POP transaction take place
-between you and the POP server.  If
+which will allow you to monitor the POP transaction.  If
 .B \-sasl \-saslmech xoauth2
 is used, the HTTP transaction is also shown.
 .PP
@@ -255,12 +251,13 @@ If
 .B nmh
 has been compiled with SASL support, the
 .B \-sasl
-switch will enable
-the use of SASL authentication.  Depending on the SASL mechanism used, this
-may require an additional password prompt from the user (but the
+switch will enable the use of SASL authentication.
+Depending on the SASL mechanism used, this may require an
+additional password prompt from the user (but the
 .I netrc
-file can be used to store this password, as described in the
-mh-profile(5) man page).  The
+file can be used to store this password, as described in
+.IR mh\-profile (5)).
+The
 .B \-saslmech
 switch can be used to select a particular SASL mechanism.
 .PP
@@ -292,20 +289,20 @@ be specified with the
 .I service
 switch.  Before using this, the user must authorize nmh by running
 .B mhlogin
-and grant authorization to that account.  See the
-.B mhlogin
-man page for more details.
+and granting authorization to that account.  See
+.IR mhlogin (1)
+for more details.
 .PP
 If
 .B nmh
 has been compiled with TLS support, the
 .B \-initialtls
 switch will require the negotiation of TLS when connecting
-to the remote POP server.  The
-.B \-initialtls
-switch will negotiate TLS immediately after the connection has taken place,
+to the remote POP server.
+.B inc
+will negotiate TLS immediately after the connection has taken place,
 before any POP commands are sent or received.  Data encrypted by TLS is
-labeled `(tls-encrypted)' and `(tls-decrypted)` with viewing the POP
+labeled `(tls-encrypted)' and `(tls-decrypted)` when viewing the POP
 transaction with the
 .B \-snoop
 switch.  The
@@ -348,7 +345,7 @@ Folder\-Protect:
 To set mode when creating a new folder.
 .TP
 Msg\-Protect:
-To set mode when creating a new message and audit\-file.
+To set mode when creating a new message and audit-file.
 .TP
 Unseen\-Sequence:
 To name sequences denoting unseen messages.
@@ -378,12 +375,11 @@ As described above.
 .TP
 \-nosasl
 .TP
-\-truncate
-If
+\-notruncate
+Unless
 .B \-file
 .I name
-not given,
-\-notruncate otherwise.
+is given.
 .TP
 \-width
 The width of the terminal.
