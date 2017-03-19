@@ -92,7 +92,7 @@ The
 .I filename
 switch allows the user to obtain a
 .B scan
-listing of a maildrop file as produced by
+listing of a mail drop file as produced by
 .BR packf .
 This listing
 includes every message in the file (you can't scan individual messages).

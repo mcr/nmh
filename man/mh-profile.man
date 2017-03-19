@@ -359,7 +359,7 @@ the last volume sent for the digest
 .RS 5
 Tells
 .B inc
-your maildrop, if different from the default.  This is
+your mail drop, if different from the default.  This is
 superseded by the environment variable
 MAILDROP.
 (profile, default: %mailspool%/$USER)
@@ -822,7 +822,8 @@ The \*(lqlocale\*(rq profile entry supersedes these.
 MAILDROP
 This variable tells
 .B inc
-the default maildrop.  This supersedes the \*(lqMailDrop\*(rq profile entry.
+the default mail drop.
+This supersedes the \*(lqMailDrop\*(rq profile entry.
 .TP
 MAILHOST
 This variable tells
@@ -947,7 +948,7 @@ This variable tells
 .B repl
 your user name and
 .B inc
-your default maildrop:  see the \*(lqMailDrop\*(rq profile entry.
+your default mail drop:  see the \*(lqMailDrop\*(rq profile entry.
 .TP
 USERNAME_EXTENSION
 This variable is for use with username_extension masquerading.  See the

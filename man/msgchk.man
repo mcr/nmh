@@ -51,12 +51,12 @@ should produce a message.  The default is
 which says that
 .B msgchk
 should always report the status of the
-users maildrop.  Other values for `type' include `mail' which says that
+users mail drop.  Other values for `type' include `mail' which says that
 .B msgchk
 should report the status of waiting mail; and, `nomail'
 which says that
 .B msgchk
-should report the status of empty maildrops.
+should report the status of empty mail drops.
 The
 .B \-nonotify
 .I type
@@ -66,7 +66,7 @@ switch has the inverted sense, so
 directs
 .B msgchk
 to never report the status of
-maildrops.  This is useful if the user wishes to check
+mail drops.  This is useful if the user wishes to check
 .BR msgchk 's
 exit status.  A non\-zero exit status indicates that mail was
 .B not

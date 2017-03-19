@@ -67,7 +67,7 @@ be used instead to send messages.
 .PP
 When invoked without arguments, it simply invokes
 .B inc
-to incorporate new messages from the user's maildrop.
+to incorporate new messages from the user's mail drop.
 .PP
 When one or more addresses are specified, a message is read from the
 standard input and spooled to a temporary file.
@@ -227,7 +227,7 @@ is used.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^%bindir%/inc~^Program to incorporate maildrop into folder
+^%bindir%/inc~^Program to incorporate mail drop into folder
 ^%nmhlibexecdir%/post~^Program to deliver a message
 ^/tmp/mhmail*~^Temporary copy of message
 .fi

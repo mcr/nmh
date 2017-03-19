@@ -49,7 +49,7 @@ before, it will create the necessary default files and directories after
 asking you if you wish it to do so.
 .PP
 .B inc
-moves mail from your system maildrop into your
+moves mail from your system mail drop into your
 .B nmh
 \*(lq+inbox\*(rq
 folder, breaking it up into separate files and converting it

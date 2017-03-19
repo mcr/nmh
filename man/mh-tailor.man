@@ -156,14 +156,14 @@ file.
 .BR mmdfldir :
 %mailspool%
 .RS 5
-The directory where maildrops are kept.  If this option is set, but empty,
+The directory where mail drops are kept.  If this option is set, but empty,
 the user's home directory is used.  This overrides the default value
 chosen at the time of compilation.
 .RE
 .PP
 .BR mmdflfil :
 .RS 5
-The name of the maildrop file in the directory where maildrops are kept.
+The name of the mail drop file in the directory where mail drops are kept.
 If this is empty, the user's login name is used.  This overrides the default
 value (which is empty).
 .RE
@@ -171,19 +171,19 @@ value (which is empty).
 .BR mmdelim1 :
 \&\\001\\001\\001\\001\\n
 .RS 5
-The beginning-of-message delimiter for maildrops.
+The beginning-of-message delimiter for mail drops.
 .RE
 .PP
 .BR mmdelim2 :
 \&\\001\\001\\001\\001\\n
 .RS 5
-The end-of-message delimiter for maildrops.
+The end-of-message delimiter for mail drops.
 .RE
 .PP
 .BR spoollocking :
 %default_locking%
 .RS 5
-The locking algorithm to use when opening the maildrop.  Can be any one of
+The locking algorithm to use when opening the mail drop.  Can be any one of
 the following:
 .PP
 .RS 5
@@ -249,7 +249,7 @@ program.
 .RS 5
 The name of the default POP service host.  If this is not set, then
 .B nmh
-looks in the standard maildrop areas for waiting mail, otherwise
+looks in the standard mail drop areas for waiting mail, otherwise
 the named POP service host is consulted.
 .RE
 .\"  .SS "BBoards Delivery"

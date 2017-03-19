@@ -80,7 +80,7 @@ whom it is delivering mail.  It must exist on the local system.  The
 .B \-mailbox
 switch tells
 .B slocal
-the name of the user's maildrop file.
+the name of the user's mail drop file.
 .PP
 .B slocal
 is able to detect and suppress duplicate messages.
@@ -292,7 +292,7 @@ owned by root and must be writable only by root.
 .PP
 If a global delivery file cannot be found or does not perform an
 action which delivers the message, then standard delivery to the
-user's maildrop is performed.
+user's mail drop is performed.
 .SS "Example Delivery File"
 To summarize, here's an example delivery file:
 .PP
@@ -360,7 +360,7 @@ value immediately, and the child could continue on, doing whatever it
 wanted for as long as it wanted.  This approach is somewhat risky if
 the parent is going to return an exit status of zero.  If the parent is
 going to return a non-zero exit status, then this approach can lead to
-quicker delivery into your maildrop.
+quicker delivery into your mail drop.
 .SH FILES
 .fc ^ ~
 .nf
@@ -368,7 +368,7 @@ quicker delivery into your maildrop.
 ^%nmhetcdir%/mts.conf~^nmh mts configuration file
 ^$HOME/\&.maildelivery~^The file controlling local delivery
 ^%nmhetcdir%/maildelivery~^Rather than the standard file
-^%mailspool%/$USER~^The default maildrop
+^%mailspool%/$USER~^The default mail drop
 .fi
 .SH "SEE ALSO"
 .IR rcvdist (1),
@@ -420,7 +420,7 @@ interpreted as the
 value
 .B RP_MECH
 (200), which means
-\*(lquse an alternate route\*(rq (deliver the message to the maildrop).
+\*(lquse an alternate route\*(rq (deliver the message to the mail drop).
 .SH BUGS
 Only two return codes are meaningful, others should be.
 .PP
