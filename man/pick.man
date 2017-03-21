@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-pick \- search for messages by content
+pick \- search for nmh messages by content
 .SH SYNOPSIS
 .HP 5
 .na

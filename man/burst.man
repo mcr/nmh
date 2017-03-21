@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-burst \- explode digests into messages
+burst \- explode digests into nmh messages
 .SH SYNOPSIS
 .HP 5
 .na

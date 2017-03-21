@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-prev \- show the previous message
+prev \- show the previous nmh message
 .SH SYNOPSIS
 .HP 5
 .na

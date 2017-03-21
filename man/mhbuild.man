@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-mhbuild \- translate MIME composition draft
+mhbuild \- translate MIME composition draft for nmh messages
 .SH SYNOPSIS
 .na
 .HP 5

@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH FMTTEST
-fmttest \- test tool for the
+fmttest \- test tool for the nmh
 .IR mh-format (5)
 language
 .SH SYNOPSIS

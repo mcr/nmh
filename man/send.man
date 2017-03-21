@@ -3,7 +3,7 @@
 .\"
 .TH SEND %manext1% "October 10, 2016" "%nmhversion%"
 .SH NAME
-send \- send a message
+send \- send an nmh message
 .SH SYNOPSIS
 .HP 5
 .na

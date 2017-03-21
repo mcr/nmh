@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-sortm \- sort messages
+sortm \- sort nmh messages
 .SH SYNOPSIS
 .HP 5
 .na

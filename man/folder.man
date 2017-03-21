@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-folder, folders \- set/list current folder/message
+folder, folders \- set/list current nmh folder/message
 .SH SYNOPSIS
 .HP 5
 .na

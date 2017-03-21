@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-whatnow \- prompting front-end for sending messages
+whatnow \- prompting front-end for sending nmh messages
 .SH SYNOPSIS
 .HP 5
 .na

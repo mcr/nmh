@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-mhshow \- display MIME messages
+mhshow \- display nmh MIME messages
 .SH SYNOPSIS
 .HP 5
 .na

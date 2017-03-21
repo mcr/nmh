@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-rmm \- remove messages
+rmm \- remove nmh messages
 .SH SYNOPSIS
 .HP 5
 .na

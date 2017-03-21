@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-rcvstore \- asynchronously incorporate mail into a folder
+rcvstore \- asynchronously incorporate mail into an nmh folder
 .SH SYNOPSIS
 .HP 5
 .na

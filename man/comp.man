@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-comp \- compose a message
+comp \- compose an nmh message
 .SH SYNOPSIS
 .HP 5
 .na

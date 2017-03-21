@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-ali \- list mail aliases
+ali \- list nmh mail aliases
 .SH SYNOPSIS
 .HP 5
 .na

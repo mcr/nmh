@@ -3,7 +3,7 @@
 .\"
 .TH MHLOGIN %manext1% "October 10, 2016" "%nmhversion%"
 .SH NAME
-mhlogin \- login to external (OAuth) services
+mhlogin \- nmh login to external (OAuth) services
 .SH SYNOPSIS
 .HP 5
 .na

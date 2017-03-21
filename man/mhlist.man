@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-mhlist \- list information about MIME messages
+mhlist \- list information about nmh MIME messages
 .SH SYNOPSIS
 .HP 5
 .na

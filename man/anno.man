@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-anno \- annotate messages
+anno \- annotate nmh messages
 .SH SYNOPSIS
 .HP 5
 .na

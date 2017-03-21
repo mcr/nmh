@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-whom \- report to whom a message would go
+whom \- report to whom an nmh message would go
 .SH SYNOPSIS
 .HP 5
 .na
