@@ -1,4 +1,4 @@
-.TH MH-DRAFT %manext5% "November 6, 2012" "%nmhversion%"
+.TH MH-DRAFT %manext5% "March 21, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -7,37 +7,29 @@ mh-draft \- draft folder facility for nmh message system
 .SH DESCRIPTION
 There are a number of interesting advanced facilities for the composition of
 outgoing mail.
-.PP
 .SS "The Draft Folder"
 The
 .BR comp ,
 .BR dist ,
 .BR forw ,
 .BR repl ,
+.BR send ,
 and
 .B whom
-commands have two additional switches,
+commands each take the switches
 .B \-draftfolder
 .I +folder
 and
 .B \-draftmessage
-.I msg
+.IR msg ,
 which allow you to manipulate the various draft messages you are composing.
 .PP
 If
 .B \-draftfolder
 .I +folder
-is used, these commands are
-directed to construct a draft message in the indicated folder.
-(The
+is used, draft messages will be constructed in the indicated folder.  The
 .RI \*(lq Draft\-Folder \*(rq
-profile entry may be used to declare a default draft folder for use with
-.BR comp ,
-.BR dist ,
-.BR forw ,
-.BR repl ,
-and
-.B whom ).
+profile entry may be used to specify a default draft folder.
 .PP
 If the switch
 .B \-draftmessage
@@ -45,8 +37,8 @@ If the switch
 is given, the specified draft is used to compose the message.  If
 .B \-draftmessage
 .I msg
-is not used, then the
-draft defaults to `new' (create a new draft) unless the user invokes
+is not used, then the draft defaults to `new' (create a new draft)
+unless the user invokes
 .B comp
 with
 .BR \-use ,
@@ -62,26 +54,24 @@ tools are available on each of the user's message drafts (e.g.
 and so on).  If the folder does not exist, the user is asked if it should be
 created (just like with
 .BR refile ).
-Also, the last draft message
-the user was composing is known as `cur' in the draft folder.
+The last draft message the user was composing is known as `cur'
+in the draft folder.
 .PP
-Furthermore, the
-.B send
-command has these switches as well.  Hence,
-from the shell, the user can send off whatever drafts desired using the
-standard
+Using
+.BR send ,
+the user can send drafts using the standard
 .B nmh
 `msgs' convention with
 .B \-draftmessage
 .IR msgs .
 If no `msgs' are given, it defaults to `cur'.
 .PP
-In addition, all five programs have a
+In addition, all of these programs have a
 .B \-nodraftfolder
 switch, which undoes the last occurrence of
 .B \-draftfolder
 .I folder
-(useful if the latter occurs in the user's
+(useful if a default is specified in the user's
 .B nmh
 profile).
 .PP
@@ -102,10 +92,10 @@ or
 .BR send ,
 the user needn't prefix the draft `msg' or `msgs' with
 .BR \-draftmessage .
-Both of these
-commands accept a `file' or `files' argument, and they will, if given
+Both of these commands accept a `file' or `files' argument and they will,
+if given
 .B \-draftfolder
-.I +folder
+.IR +folder ,
 treat these arguments as `msg' or `msgs'.  (This may appear to be
 inconsistent, at first, but it saves a lot of typing.)  Hence,
 .PP
@@ -130,7 +120,7 @@ profile:
 .PP
 .RS 5
 .nf
-Draft\-Folder: +drafts
+Draft\-Folder: drafts
 sendf: \-draftfolder +drafts
 .fi
 .RE
@@ -141,7 +131,7 @@ is a (symbolic) link in the user's
 .I $HOME/bin/
 directory to
 .BR send .
-Then, any of the commands
+Now,
 .PP
 .RS 5
 .nf
@@ -152,11 +142,11 @@ repl
 .fi
 .RE
 .PP
-constructs the message draft in the `draft' folder using the `new'
+will construct the message draft in the `draft' folder using the `new'
 message number.  Furthermore, they each define `cur' in this folder to
 be that message draft.  If the user were to use the
 .B quit
-option at `What now?' level, then later on, if no other draft composition
+option at the `What now?' prompt, then later on, if no other draft composition
 was done, the draft could be sent with simply
 .PP
 .RS 5
@@ -173,13 +163,12 @@ comp -use
 .fi
 .RE
 .PP
-Instead, if other drafts had been composed in the meantime, so that this
-message draft was no longer known as `cur' in the `draft' folder, then
+If other drafts had been composed in the meantime, so that this message
+draft was no longer known as `cur' in the `draft' folder, then
 the user could
 .B scan
-the folder to see which message draft in the
-folder should be used for editing or sending.  Clever users could even
-employ a backquoted
+the folder to see which message draft should be used for editing or sending.
+Clever users could even employ a backquoted
 .B pick
 to do the work:
 .PP
@@ -221,9 +210,7 @@ et al, invoke
 .B send
 directly, they supply
 .B send
-with the UNIX pathname of the message draft, and
-.B not
-a
+with the UNIX pathname of the message draft; NOT a
 .B \-draftmessage
 .I msg
 argument.  As far as
@@ -240,7 +227,6 @@ First, under no circumstances will the
 .B \-draftfolder
 .I folder
 switch cause the named folder to become the current folder.
-.PP
 Obviously, if the folder appeared in the context of a standard
 .I +folder
 argument to an
@@ -309,7 +295,7 @@ to the command, then one other response will be accepted:
 .PD 0
 .TP 10
 .B new
-finds a new draft
+creates a new draft
 .PD
 .RE
 .PP
@@ -332,5 +318,17 @@ re-uses the draft
 just as if
 .B \-use
 had been given.
+.SH FILES
+.PP
+.TP 20
+$HOME/.mh_profile
+The user's profile.
+.SH "PROFILE COMPONENTS"
+.PP
+.PD 0
+.TP 20
+Draft\-Folder:
+For a default draft folder
+.PD
 .SH CONTEXT
 None
