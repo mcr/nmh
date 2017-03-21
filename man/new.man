@@ -1,9 +1,9 @@
-.TH NEW %manext1% "January 17, 2009" "%nmhversion%"
+.TH NEW %manext1% "March 21, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
 .SH NAME
-new \- report on folders with new messages
+new \- report on nmh folders with new messages
 .PP
 fnext \- set current folder to next folder with new messages
 .PP
@@ -38,14 +38,15 @@ is equivalent to
 .B new \-mode unseen
 .ad
 .SH DESCRIPTION
-.B new
-in its default mode produces a one\-line\-per\-folder listing of all
-folders containing messages in the listed
-.IR sequences
-or in the sequences listed in the profile entry
+.BR new ,
+in its default mode, produces a one-line-per-folder listing of all
+folders which contain messages in the specified
+.IR sequences ,
+or in the sequence(s) listed in the profile entry
 .RI \*(lq Unseen-Sequence \*(rq.
-Each line contains the folder, the number of messages in the desired
-sequences, and the message lists from the .mh_sequences file.  For example:
+Each line consists of the folder name, the total number of messages
+in the specified sequences, and a list of messages derived from the
+.mh_sequence file.  For example:
 .PP
 .RS 5
 .nf
@@ -60,9 +61,9 @@ the total number of messages in the desired sequences.
 .PP
 .B new
 crawls the folder hierarchy recursively to find all folders, and prints them
-in lexicographic order.  Override this behavior by providing
-.IR foldersfile
-containing the pre-sorted list of folders
+in lexicographic order.  Override this behavior by providing a
+.I foldersfile
+containing the pre-sorted list of folders which
 .B new
 should check, one per line.
 .PP
@@ -72,7 +73,7 @@ and
 .B fprev
 modes,
 .B new
-instead changes to the next or previous matching folder, respectively.
+changes to the next or previous matching folder, respectively.
 .PP
 In
 .B unseen
