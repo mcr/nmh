@@ -1,4 +1,4 @@
-.TH MH-MAIL %manext5% "January 8, 2014" "%nmhversion%"
+.TH MH-MAIL %manext5% "March 21, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -12,17 +12,16 @@ in the format that
 .B nmh
 prefers,
 .B nmh
-can read message files in that antiquated format.
+can read message files in that format.
 .PP
-Each user possesses a mail drop box which initially receives all messages
+Each user possesses a mail drop which initially receives all messages
 processed by
 .BR post .
 .B inc
-will read from that drop
-box and incorporate the new messages found there into the user's own
-mail folders (typically
+will read from that mail drop and incorporate new messages found there
+into the user's own mail folders (typically
 .RI \*(lq +inbox \*(rq).
-The mail drop box consists of one or more messages.
+The mail drop consists of one or more messages.
 .PP
 Messages are expected to consist of lines of text.  Graphics and binary
 data are not handled.  No data compression is accepted.  All text is
@@ -82,8 +81,7 @@ programs.
 .RS 5
 Added by
 .BR post ,
-contains date and time of the message's entry
-into the mail transport system.
+contains date and time of the message's entry into the mail transport system.
 .RE
 .PP
 .BR From :
@@ -91,16 +89,14 @@ into the mail transport system.
 This header is filled in by default with the system's idea of the user's local
 mailbox.  This can be changed with the
 .B Local\-Mailbox
-profile entry.  It
-contains the address of the author or authors
-(may be more than one if a \*(lqSender:\*(rq field is present).  For a
-standard reply (using
+profile entry.
+It contains the address of the author or authors (may be more than one if a
+\*(lqSender:\*(rq field is present).  For a standard reply (using
 .BR repl ),
-the reply address is constructed by
-checking the following headers (in this order): \*(lqMail-Reply\-To:\*(rq,
-\*(lqReply\-To:\*(rq, \*(lqFrom:\*(rq, \*(lqSender:\*(rq.
-A \*(lqFrom:\*(rq
-header MUST exist when the message is sent to
+the reply address is constructed by checking the following headers (in this
+order): \*(lqMail-Reply\-To:\*(rq, \*(lqReply\-To:\*(rq, \*(lqFrom:\*(rq,
+\*(lqSender:\*(rq.  A \*(lqFrom:\*(rq header MUST exist when the message is
+sent to
 .BR post,
 otherwise the message will be rejected.
 .RE
@@ -110,7 +106,7 @@ otherwise the message will be rejected.
 Used by
 .B post
 to specify a value for the sender's envelope address to the mail transport
-system.  If omitted, 
+system.  If omitted,
 .B post
 will use the value of the \*(lqSender:\*(rq or the \*(lqFrom:\*(rq header.
 See
@@ -122,10 +118,9 @@ for more details.
 .RS 5
 For a standard reply (using
 .BR repl ),
-the reply address is
-constructed by checking the following headers (in this order):
-\*(lqMail-Reply\-To:\*(rq, \*(lqReply\-To:\*(rq, \*(lqFrom:\*(rq,
-\*(lqSender:\*(rq.
+the reply address is constructed by checking the following headers
+(in this order): \*(lqMail-Reply\-To:\*(rq, \*(lqReply\-To:\*(rq,
+\*(lqFrom:\*(rq, \*(lqSender:\*(rq.
 .RE
 .PP
 .BR Mail\-Followup\-To :
@@ -157,8 +152,7 @@ Required by
 .B post
 in the event that the message has multiple addresses on the
 \*(lqFrom:\*(rq line.  It is otherwise optional.  This line should
-contain the address of the actual
-sender.
+contain the address of the actual sender.
 .RE
 .PP
 .BR To :
@@ -234,9 +228,8 @@ Added when redistributing a message by
 .BR Resent\-From :
 .RS 5
 Used instead of the \*(lqFrom:\*(rq header when
-.B post 
-redistributes a message.  See \*(lqFrom:\*(rq for more information about
-this header is used.
+.B post
+redistributes a message.  See \*(lqFrom:\*(rq.
 .RE
 .PP
 .BR Resent\-To:
