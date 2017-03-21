@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-scan \- produce a one line per message scan listing
+scan \- produce a one line per nmh message scan listing
 .SH SYNOPSIS
 .HP 5
 .na

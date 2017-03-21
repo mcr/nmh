@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-inc \- incorporate new mail
+inc \- incorporate new mail to an nmh folder
 .SH SYNOPSIS
 .HP 5
 .na
