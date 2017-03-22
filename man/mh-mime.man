@@ -1,15 +1,13 @@
-.TH MH\-MIME %manext7% "September 25, 2016" "%nmhversion%"
+.TH MH\-MIME %manext7% "March 22, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
 .SH NAME
-mh\-mime \- Overview of
-.IR nmh (7)
-MIME message composition and display
+mh\-mime \- Overview of nmh MIME message composition and display
 .\"
 .SH DESCRIPTION
 The acronym MIME stands for Multipurpose Internet Mail Extensions, the
-format of Internet messages used to send multi\-media content.
+format of Internet messages used to send multi-media content.
 The
 .B nmh
 command suite has support for the display and composition of MIME messages, but
@@ -20,7 +18,7 @@ storage, and composition.
 Local Character Set Conversion
 All of the
 .B nmh
-commands convert non\-native character sets to the local character set,
+commands convert non-native character sets to the local character set,
 as specified by the operating system locale settings.  See
 .IR locale (1)
 for more details on the environment variables used to set the
@@ -30,7 +28,7 @@ was built with
 .IR iconv (3)
 support.  See the
 .IR mhparam (1)
-man page for how determine whether your
+man page for how to determine whether your
 .B nmh
 installation includes
 .IR iconv (3)
@@ -52,8 +50,7 @@ distribution (found in the
 .RI \*(lq %nmhetcdir% \*(rq
 directory) and
 .IR mh\-format (5)
-for details on how to make sure your MIME headers are properly
-decoded.
+for details on how to make sure your MIME headers are properly decoded.
 .PP
 By default, if
 .B show
@@ -91,13 +88,14 @@ for message submission.
 will use the locale settings to mark text content with the appropriate
 character set and apply any necessary encoding.  If you wish to include
 text in your message using a character set that does not match your
-locale, you will need to specify the character set using a
+locale, you will need to specify the character set using an
 .B mhbuild
 directive; see
 .IR mhbuild (1)
 for more information.
 .PP
-For attaching files or composing other non-text content, there are two options: the attach system and
+For attaching files or composing other non-text content, there are two options:
+the attach system and
 .B mhbuild
 directives.
 .PP
@@ -107,9 +105,9 @@ using the
 .B attach
 command at the \*(lqWhat now?\*(rq prompt, or by inserting an \*(lqAttach:\*(rq
 header in the message draft containing the name of the file you wish to
-attach to the message (it should be noted all that the
+attach to the message (note that all the
 .B attach
-command does is place an \*(lqAttach\*(rq header in the message draft).
+command does is place an \*(lqAttach:\*(rq header in the message draft).
 .B mhbuild
 will then automatically include the specified file(s) in the outgoing
 message.  See
