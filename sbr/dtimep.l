@@ -14,6 +14,12 @@
   /* Since we're looking at a string at a time, don't worry about
    *  wrapping to the next buffer.
    */
+#if YY_FLEX_MAJOR_VERSION == 2 && \
+    YY_FLEX_MINOR_VERSION == 6 && \
+    YY_FLEX_SUBMINOR_VERSION == 3
+/* https://github.com/westes/flex/issues/162 */
+#undef yywrap
+#endif
 #define yywrap() 1
 #define YY_SKIP_YYWRAP
 
