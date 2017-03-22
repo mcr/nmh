@@ -29,7 +29,7 @@ refile (char **arg, char *file)
 
     if (arg) {
 	while (*arg)
-	    vec[vecp++] = *arg++;
+	    vec[vecp++] = mh_xstrdup(*arg++);
     }
     vec[vecp] = NULL;
 
