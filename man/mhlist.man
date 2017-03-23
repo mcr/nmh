@@ -1,4 +1,4 @@
-.TH MHLIST %manext1% "February 6, 2015" "%nmhversion%"
+.TH MHLIST %manext1% "March 23, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -37,35 +37,32 @@ mhlist \- list information about nmh MIME messages
 .SH DESCRIPTION
 The
 .B mhlist
-command allows you to list information (essentially
-a table of contents) about the various parts of a collection of
-MIME (multi-media) messages.
+command allows you to list information (a table of contents, essentially)
+about the various parts of a collection of MIME (multi-media) messages.
 .PP
 .B mhlist
-manipulates MIME (multi-media messages) as specified
-in RFC 2045 to RFC 2049 (See
+manipulates MIME messages as specified in RFC 2045 to RFC 2049 (See
 .IR mhbuild (1)).
 .PP
 The
 .B \-headers
-switch indicates that a one-line banner should be
-displayed above the listing.
+switch indicates that a one-line banner should be displayed above the
+listing (the default).
 .PP
 The
 .B \-realsize
 switch tells
 .B mhlist
-to evaluate the
-\*(lqnative\*(rq (decoded) format of each content prior to listing.
-This provides an accurate count at the expense of a small delay.
+to evaluate the \*(lqnative\*(rq (decoded) format of each content prior
+to listing.  This provides an accurate count at the expense of a small delay.
 In either case, sizes will be expressed using SI prefix abbreviations
 (K/M/G/T), which are based on factors of 1000.
 .PP
 If the
 .B \-verbose
-switch is present, then the listing will show
-any \*(lqextra\*(rq information that is present in the message,
-such as comments in the \*(lqContent-Type\*(rq header.
+switch is present, then the listing will show any \*(lqextra\*(rq
+information that is present in the message, such as comments in the
+\*(lqContent-Type\*(rq header.
 .PP
 If the
 .B \-disposition
@@ -77,27 +74,23 @@ The option
 .I file
 directs
 .B mhlist
-to use the specified
-file as the source message, rather than a message from a folder.
-If you specify this file as \*(lq-\*(rq, then
+to use the specified file as the source message, rather than a message
+from a folder.  If you specify this file as \*(lq-\*(rq, then
 .B mhlist
-will
-accept the source message on the standard input.  Note that the
+will accept the source message on the standard input.  Note that the
 file, or input from standard input should be a validly formatted
 message, just like any other
 .B nmh
-message.  It should
-.B NOT
-be in mail drop format (to convert a file in mail drop format to
-a folder of
+message.  It should NOT be in mail drop format (to convert a file in
+mail drop format to a folder of
 .B nmh
 messages, see
 .IR inc (1)).
 .PP
 By default,
 .B mhlist
-will list information about the entire
-message (all of its parts).  By using the
+will list information about the entire message (all of its parts).
+By using the
 .BR \-part ,
 .BR \-type ,
 and
@@ -111,7 +104,7 @@ these would be named as 1, 2, and 3, respectively.  If part 2 was also
 a multipart content containing two parts, these would be named as 2.1
 and 2.2, respectively.  Note that the
 .B \-part
-switch is effective for only messages containing a multipart content. 
+switch is effective only for messages containing a multipart content.
 If a message has some other kind of content, or if the part is itself
 another multipart content, the
 .B \-part
@@ -124,19 +117,18 @@ switch can also be used to restrict (or, when used in conjunction with
 to further restrict) the selection of parts according to content type.
 One or more
 .B \-type
-switches part will only select the first match
-from a multipart/alternative, even if there is more than one
-subpart that matches (one of) the given content type(s).
+switches part will only select the first match from a multipart/alternative,
+even if there is more than one subpart that matches (one of) the given
+content type(s).
 .PP
 Using either
 .B \-part
 or
 .B -type
-switches alone will cause either to select
-the part(s) they match.  Using them together will select only
-the part(s) matched by both (sets of) switches.  In other
-words, the result is the intersection, and not the union, of their
-separate match results.
+switches alone will cause either to select the part(s) they match.
+Using them together will select only the part(s) matched by both
+(sets of) switches.  In other words, the result is the intersection,
+and not the union, of their separate match results.
 .PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes can
@@ -166,20 +158,18 @@ name of the content, e.g., \*(lqaudio\*(rq.  To specify a specific
 subtype, separate the two with a slash, e.g., \*(lqaudio/basic\*(rq.
 Note that regardless of the values given to the
 .B \-type
-switch, a
-multipart content (of any subtype listed above) is always acted upon.
-Further note that if the
+switch, a multipart content (of any subtype listed above) is always
+acted upon.  Further note that if the
 .B \-type
-switch is used, and it is desirable to
-act on a message/external-body content, then the
+switch is used, and it is desirable to act on a message/external-body
+content, then the
 .B \-type
-switch must
-be used twice: once for message/external-body and once for the content
-externally referenced.
+switch must be used twice: once for message/external-body and once
+for the content externally referenced.
 .PP
 By default, the parts of a multipart/alternative part are listed in
-the reverse order of their placement in the message.  The listing
-therefore is in decreasing order of preference, as defined in RFC
+the reverse order of their placement in the message.  The listing,
+therefore, is in decreasing order of preference, as defined in RFC
 2046.  The
 .B \-prefer
 switch can be used (one or more times, in order of descending
@@ -205,12 +195,10 @@ The
 .B \-check
 switch tells
 .B mhlist
-to check each content for an
-integrity checksum.  If a content has such a checksum (specified as a
-Content-MD5 header field), then
+to check each content for an integrity checksum.  If a content has
+such a checksum (specified as a Content-MD5 header field), then
 .B mhlist
-will attempt to verify the
-integrity of the content.
+will attempt to verify the integrity of the content.
 .SH FILES
 .fc ^ ~
 .nf
