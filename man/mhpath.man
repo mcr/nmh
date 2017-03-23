@@ -1,4 +1,4 @@
-.TH MHPATH %manext1% "January 20, 2014" "%nmhversion%"
+.TH MHPATH %manext1% "March 23 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -16,26 +16,25 @@ mhpath \- print full pathnames of nmh messages and folders
 .SH DESCRIPTION
 .B mhpath
 expands and sorts the message list `msgs' and writes the full
-pathnames of the messages to the standard output separated by newlines.
+pathnames of the messages to the standard output, separated by newlines.
 If no `msgs' are specified,
 .B mhpath
-outputs the current mail folder's pathname
-instead.  If the only argument is `+', your
+outputs the current mail folder's pathname instead.
+If the only argument is `+', your
 .B nmh
 \*(lqPath\*(rq is output; this can be useful in shell scripts.
 .PP
-Contrasted with other
+In contrast with other
 .B nmh
 commands, a message argument to
 .B mhpath
 may often be intended for writing.  Because of this:
-.PP
 .IP 1) 4
 the name \*(lqnew\*(rq has been added to
 .BR mhpath 's
-list of
-reserved message names (the others are \*(lqfirst\*(rq, \*(lqlast\*(rq,
-\*(lqprev\*(rq, \*(lqnext\*(rq, \*(lqcur\*(rq, and \*(lqall\*(rq).
+list of reserved message names (the others are \*(lqfirst\*(rq,
+\*(lqlast\*(rq, \*(lqprev\*(rq, \*(lqnext\*(rq, \*(lqcur\*(rq,
+and \*(lqall\*(rq).
 The new message is equivalent to the message after the last message
 in a folder (and equivalent to 1 in a folder without messages).
 The \*(lqnew\*(rq message may not be used as part of a message range.
@@ -46,7 +45,7 @@ that do not exist: a single numeric message name, the single message name
 All other message designations must refer to at least one existing
 message, if the folder contains messages.
 .IP 3) 4
-An empty folder is not in itself an error.
+An empty folder is not, in itself, an error.
 .PP
 A message number less than that of the smallest existing message in a
 folder is treated as if the message already exists.  A message number
@@ -128,8 +127,7 @@ mv `mhpath 501 500`
 .fi
 .RE
 .PP
-to will not move 501 to 500.
-Quite the reverse.  But
+to will not move 501 to 500; quite the reverse.  But
 .PP
 .RS 5
 .nf
