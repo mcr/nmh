@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "March 24, 2016" "%nmhversion%"
+.TH MHSHOW %manext1% "March 23, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -40,21 +40,20 @@ mhshow \- display nmh MIME messages
 .SH DESCRIPTION
 The
 .B mhshow
-command display contents of a MIME (multi-media)
-message or collection of messages.
+command displays contents of a MIME (multi-media) message, or collection
+of messages.
 .PP
 .B mhshow
-manipulates multi-media messages as specified in
-RFC 2045 to RFC 2049.  Currently
+manipulates multi-media messages as specified in RFC 2045 to RFC 2049.
+Currently
 .B mhshow
-only supports
-encodings in message bodies, and does not support the encoding of
-message headers as specified in RFC 2047.
+only supports encodings in message bodies, and does not support the
+encoding of message headers as specified in RFC 2047.
 .PP
-By default
+By default,
 .B mhshow
-will display only text parts of a message that are not marked as attachments.
-This behavior can be changed by the
+will display only the text parts of a message that are not marked as
+attachments.  This behavior can be changed by the
 .B \-notextonly
 and
 .B \-noinlineonly
@@ -77,42 +76,39 @@ and
 .PP
 The
 .B \-header
-switch control whether
+switch controls whether
 .B mhshow
 will print a message separator header before each message that it
 displays.  The header format can be controlled using
-.B \-headerform
+.BR \-headerform ,
 to specify a file containing
 .IR mh\-format (5)
-instructions.  A copy of the built-in default
-headerform can be found in %nmhetcdir%/mhshow.header, for reference.
+instructions.  A copy of the built-in default headerform can be found
+in %nmhetcdir%/mhshow.header, for reference.
 In addition to the normal set of
 .IR mh\-format (5)
-instructions, a "%{folder}" escape provides a
-string representing the current folder.
+instructions, a "%{folder}" escape provides a string representing
+the current folder.
 .PP
-By default
+By default,
 .B mhshow
 will concatenate all content under one pager.  If you want each part to
-displayed separately, you can override the default behavior with
+be displayed separately, you can override the default behavior with
 .B \-noconcat.
 .PP
-The option
+The
 .B \-file
 .I file
-directs
+switch directs
 .B mhshow
-to use the specified file as
-the source message, rather than a message from a folder.  If you specify
-this file as \*(lq-\*(rq, then
+to use the specified file as the source message, rather than a message
+from a folder.  If you specify this file as \*(lq-\*(rq, then
 .B mhshow
-will accept the source message
-on the standard input.  Note that the file, or input from standard input
-should be a validly formatted message, just like any other
+will accept the source message on the standard input.  Note that the
+file, or input from standard input, should be a validly formatted message,
+just like any other
 .B nmh
-message.  It should
-.B NOT
-be in mail drop format (to convert a file in
+message.  It should NOT be in mail drop format (to convert a file in
 mail drop format to a folder of
 .B nmh
 messages, see
@@ -120,8 +116,8 @@ messages, see
 .PP
 The
 .B \-part
-switch can be used (one or more times) to restrict the
-set of subparts that will be displayed.  (Obviously with no
+switch can be given (one or more times) to restrict the set of
+subparts that will be displayed.  (Obviously with no
 .B \-part
 switches, all parts will be considered.)  If a
 .B \-part
@@ -139,9 +135,9 @@ would be named as 1, 2, and 3, respectively.  If part 2 was also a
 multipart content containing two parts, these would be named as 2.1 and
 2.2, respectively.  Note that the
 .B \-part
-switch is effective only for
-messages containing a multipart content.  If a message has some other
-kind of content, or if the part is itself another multipart content, the
+switch is effective only for messages containing a multipart content.
+If a message has some other kind of content, or if the part is itself
+another multipart content, the
 .B \-part
 switch will not prevent the content from being acted upon.
 .PP
@@ -152,19 +148,18 @@ switch can also be used to restrict (or, when used in conjunction with
 to further restrict) the display of parts according to content type.
 One or more
 .B \-type
-switches part will only select the first match
-from a multipart/alternative, even if there is more than one
-subpart that matches (one of) the given content type(s).
+switches part will only select the first match from a multipart/alternative,
+even if there is more than one subpart that matches (one of) the given
+content type(s).
 .PP
 Using either
 .B \-part
 or
 .B -type
-switches alone will cause either to select
-the part(s) they match.  Using them together will select only
-the part(s) matched by both (sets of) switches.  In other
-words, the result is the intersection, and not the union, of their
-separate match results.
+switches alone will cause either switch to select the part(s) they match.
+Using them together will select only the part(s) matched by both (sets of)
+switches.  In other words, the result is the intersection, and not the union,
+of their separate match results.
 .PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes can
@@ -194,22 +189,20 @@ name of the content, e.g., \*(lqaudio\*(rq.  To specify a specific
 subtype, separate the two with a slash, e.g., \*(lqaudio/basic\*(rq.
 Note that regardless of the values given to the
 .B \-type
-switch, a
-multipart content (of any subtype listed above) is always acted upon.
-Further note that if the
+switch, a multipart content (of any subtype listed above) is always
+acted upon.  Further note that if the
 .B \-type
-switch is used, and it is desirable to
-act on a message/external-body content, then the
+switch is used, and it is desirable to act on a message/external-body
+content, then the
 .B \-type
-switch must
-be used twice: once for message/external-body and once for the content
-externally referenced.
+switch must be used twice: once for message/external-body and once
+for the content externally referenced.
 .PP
 In the absence of
 .BR \-prefer ,
 .B mhshow
-will select the "best" displayable subpart from
-multipart/alternative content.  The
+will select the "best" displayable subpart from multipart/alternative
+content.  The
 .B \-prefer
 switch can be used (one or more times, in order of descending
 preference) to let MH know which content types from a
@@ -238,35 +231,32 @@ invoked with or without various
 switches.
 .SS "Unseen Sequence"
 If the profile entry \*(lqUnseen\-Sequence\*(rq is present and
-non\-empty, then
+non-empty, then
 .B mhshow
-will remove each of the messages shown
-from each sequence named by the profile entry.
+will remove each of the messages shown from each sequence named by
+the profile entry.
 .SS "Checking the Contents"
 The
 .B \-check
 switch tells
 .B mhshow
-to check each content for an
-integrity checksum.  If a content has such a checksum (specified as a
-Content-MD5 header field), then
+to check each content for an integrity checksum.  If a content has such
+a checksum (specified as a Content-MD5 header field), then
 .B mhshow
-will attempt to verify the
-integrity of the content.
+will attempt to verify the integrity of the content.
 .SS "Showing the Contents"
 The headers of each message are displayed with the
 .I mhlproc
 (usually
 .BR mhl ),
-using the standard format file
+using the standard format file,
 .IR mhl.headers .
-You may specify an alternate format file with the
+You may specify an alternative format file with the
 .B \-form
 .I formfile
 switch.  If the format file
 .I mhl.null
-is specified, then the display
-of the message headers is suppressed.
+is specified, then the display of the message headers is suppressed.
 .PP
 Next, the contents are extracted from the message and are stored in
 a temporary file.  Usually, the name of the temporary file is the
@@ -279,9 +269,8 @@ Microsoft Word content, but it uses the suffix to determine how to display
 the file.  If no suffix is present, the file is not correctly loaded.
 Similarly, older versions of the
 .B gs
-command append a \*(lq.ps\*(rq suffix to
-the filename if one was missing.  As a result, these cannot be used to read
-the default temporary file.
+command append a \*(lq.ps\*(rq suffix to the filename if one was missing.
+As a result, these cannot be used to read the default temporary file.
 .PP
 To get around this, your profile can contain lines of the form:
 .PP
@@ -319,7 +308,7 @@ will first search your profile for an entry of the form:
 mhshow-show-<type>/<subtype>
 .RE
 .PP
-to determine the display string.  If this isn't found,
+If this isn't found,
 .B mhshow
 will search for an entry of the form:
 .PP
@@ -330,8 +319,7 @@ mhshow-show-<type>
 to determine the display string.
 .PP
 If a display string is found, any escapes (given below) will be expanded.
-The result will be executed under
-\*(lq/bin/sh\*(rq, with the standard input
+The result will be executed under \*(lq/bin/sh\*(rq, with the standard input
 set to the content.
 .PP
 The display string may contain the following escapes:
@@ -351,10 +339,9 @@ The display string may contain the following escapes:
 .RE
 .PP
 .B mhshow
-will
-execute at most one display string at any given time, and wait for the
-current display string to finish execution before executing the next
-display string.
+will execute at most one display string at any given time, and wait
+for the current display string to finish execution before executing
+the next display string.
 .PP
 The {parameter} escape is typically used in a command line argument
 that should only be present if it has a non-null value.  Its value
@@ -378,7 +365,7 @@ of the text, rather than the original character set in the message.
 .PP
 Note that if the content being displayed is multipart, but not one of
 the subtypes listed above, then the f- and F-escapes expand to multiple
-filenames, one for each subordinate content.  Further, stdin is not
+filenames, one for each subordinate content.  Furthermore, stdin is not
 redirected from the terminal to the content.
 .PP
 If a display string is not found,
@@ -405,8 +392,8 @@ multipart (without a profile entry), will be treated as multipart/mixed.
 .PP
 If none of these apply, then
 .B mhshow
-will check to see if the message
-has an application/octet-stream content with parameter \*(lqtype=tar\*(rq.
+will check to see if the message has an application/octet-stream content
+with parameter \*(lqtype=tar\*(rq.
 If so,
 .B mhshow
 will use an appropriate command.  If not,
@@ -428,9 +415,9 @@ will be wrapped with single quotes.
 .PP
 Finally,
 .B mhshow
-will process each message serially\0--\0it won't start
-showing the next message until all the commands executed to display the
-current message have terminated.
+will process each message serially\0--\0it won't start showing the next
+message until all the commands executed to display the current message
+have terminated.
 .SS "Showing Alternate Character Sets"
 If
 .B mhshow
@@ -439,12 +426,11 @@ was built with
 then all text/plain parts of the message(s) will be displayed using
 the character set of the current locale.  See the
 .IR mhparam (1)
-man page for how determine whether your
+man page for how to determine whether your
 .B nmh
 installation includes
 .IR iconv (3)
-support.  To convert text parts other
-than text/plain, or if
+support.  To convert text parts other than text/plain, or if
 .B mhshow
 was not built with
 .IR iconv ,
@@ -453,14 +439,12 @@ an external program can be used, as described next.
 Because a content of type text might be in a non-ASCII character
 set, when
 .B mhshow
-encounters a \*(lqcharset\*(rq parameter for
-this content, it checks if your terminal can display this character
-set natively.
+encounters a \*(lqcharset\*(rq parameter for this content, it checks
+if your terminal can display this character set natively.
 .B mhshow
 checks this by examining the current character set defined by the
 .IR locale (1)
-environment variables.
-If the value of the locale character set is equal
+environment variables.  If the value of the locale character set is equal
 to the value of the charset parameter, then
 .B mhshow
 assumes it can
@@ -497,19 +481,19 @@ The first example tells
 .B mhshow
 to start
 .B xterm
-and load the
-appropriate character set for that message content.  The second example
+and load the appropriate character set for that message content.
+The second example
 tells
 .B mhshow
-that your pager (or other program handling that content
-type) can handle that character set, and that no special processing is
+that your pager (or other program handling that content type) can
+handle that character set, and that no special processing is
 needed beforehand.
 .PP
-Note that many pagers strip off the high-order bit or have problems
+Note that many pagers strip off the high-order bit, or have problems
 displaying text with the high-order bit set.  However, the pager
 .B less
 has support for single-octet character sets.  For example, messages
-encoded in the ISO-8859-1 character set can be view using
+encoded in the ISO-8859-1 character set can be viewed using
 .BR less ,
 with these environment variable settings:
 .PP
@@ -523,36 +507,31 @@ LESS        -f
 .PP
 The first setting tells
 .B less
-to use the ISO-8859-1 definition for
-determining whether a character is \*(lqnormal\*(rq, \*(lqcontrol\*(lq,
-or \*(lqbinary\*(rq.  The second setting tells
+to use the ISO-8859-1 definition to determine whether a character is
+\*(lqnormal\*(rq, \*(lqcontrol\*(lq, or \*(lqbinary\*(rq.
+The second setting tells
 .B less
-not to warn you
-if it encounters a file that has non-ASCII characters.  Then, simply
-set the
+not to warn you if it encounters a file that has non-ASCII characters.
+Then, simply set the
 .I moreproc
 profile entry to
 .BR less ,
-and it will get
-called automatically.  (To handle other single-octet character sets,
-look at the
+and it will get called automatically.  (To handle other single-octet
+character sets, look at the
 .IR less (1)
-manual entry for information about the
-.B $LESSCHARDEF
-environment variable.)
+manual entry for information about the LESSCHARDEF environment variable.)
 .SS "Messages of Type message/partial"
 .B mhshow
 cannot directly display messages of type partial.
-You must reassemble them first into a normal message using
+You must first reassemble them into a normal message using
 .BR mhstore .
-Check the man page for
+Check
 .IR mhstore (1)
 for details.
 .SS "External Access"
 For contents of type message/external-body,
 .B mhshow
 supports these access-types:
-.PP
 .IP \(bu 4
 afs
 .IP \(bu 4
@@ -568,8 +547,7 @@ url
 .PP
 For the \*(lqanon-ftp\*(rq and \*(lqftp\*(rq access types,
 .B mhshow
-will look for the \*(lqnmh-access-ftp\*(rq
-profile entry, e.g.,
+will look for the \*(lqnmh-access-ftp\*(rq profile entry, e.g.,
 .PP
 .RS 5
 nmh-access-ftp: myftp.sh
@@ -596,17 +574,14 @@ retrieval is successful, and a non-zero exit status otherwise.
 .PP
 For the \*(lqurl\*(rq access\-type,
 .B mhshow
-will look for the \*(lqnmh-access-url\*(rq
-profile entry.  See
+will look for the \*(lqnmh-access-url\*(rq profile entry.  See
 .IR mhstore (1)
 for more details.
-.PP
 .SS "The Content Cache"
 When
 .B mhshow
-encounters an external content containing a
-\*(lqContent-ID:\*(rq field, and if the content allows caching, then
-depending on the caching behavior of
+encounters an external content containing a \*(lqContent-ID:\*(rq field,
+and if the content allows caching, then depending on the caching behavior of
 .BR mhshow ,
 the content might be read from or written to a cache.
 .PP
@@ -616,27 +591,24 @@ is controlled with the
 .B \-rcache
 and
 .B \-wcache
-switches, which define the policy for reading from,
-and writing to, the cache, respectively.  One of four policies may be
-specified: \*(lqpublic\*(rq, indicating that
+switches, which define the policy for reading from, and writing to, the cache,
+respectively.  One of four policies may be specified: \*(lqpublic\*(rq,
+indicating that
 .B mhshow
-should make use
-of a publicly-accessible content cache; \*(lqprivate\*(rq, indicating
-that
+should make use of a publicly-accessible content cache; \*(lqprivate\*(rq,
+indicating that
 .B mhshow
 should make use of the user's private content cache;
 \*(lqnever\*(rq, indicating that
 .B mhshow
-should never make use of
-caching; and, \*(lqask\*(rq, indicating that
+should never make use of caching; and, \*(lqask\*(rq, indicating that
 .B mhshow
 should ask the user.
 .PP
 There are two directories where contents may be cached: the profile entry
 \*(lqnmh-cache\*(rq names a directory containing world-readable contents, and,
 the profile entry \*(lqnmh-private-cache\*(rq names a directory containing
-private contents.  The former should be an absolute (rooted) directory
-name.
+private contents.  The former should be an absolute (rooted) directory name.
 .PP
 For example,
 .PP
@@ -656,15 +628,13 @@ nmh-private-cache: .cache
 .SS "User Environment"
 Because the display environment in which
 .B mhshow
-operates may vary for
-different machines,
+operates may vary for different machines,
 .B mhshow
-will look for the environment variable
-.BR $MHSHOW .
-If present, this specifies the name of an additional
-user profile which should be read.  Hence, when a user logs in on a
-particular display device, this environment variable should be set to
-refer to a file containing definitions useful for the given display device.
+will look for the environment variable MHSHOW.  If present, this specifies
+the name of an additional user profile which should be read.
+Hence, when a user logs in on a particular display device, this environment
+variable should be set to refer to a file containing definitions useful
+for the given display device.
 Normally, only entries that deal with the methods to display different
 content type and subtypes
 .PP
@@ -690,7 +660,7 @@ installation.
 See "Profile Lookup" in
 .IR mh-profile (5)
 for the profile search order, and for how duplicate entries are treated.
-.SS Content\-Type Marker
+.SS Content-Type Marker
 .B mhshow
 will display a marker containing information about the part being displayed
 next.  The default marker can be changed using the
@@ -728,16 +698,14 @@ or
 switches.
 .RE
 All MIME parameters and the \*(lqContent-Description\*(rq header will have
-RFC 2231 decoding applied and be converted
-to the local character set.
-.PP
+RFC 2231 decoding applied and be converted to the local character set.
 .SH FILES
 .B mhshow
 looks for all format files and mhn.defaults in multiple locations:
 absolute pathnames are accessed directly, tilde expansion is done on
 usernames, and files are searched for in the user's
 .I Mail
-directory as specified in their profile.  If not found there, the directory
+directory, as specified in their profile.  If not found there, the directory
 .RI \*(lq %nmhetcdir% \*(rq
 is checked.
 .PP
