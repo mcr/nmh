@@ -1,4 +1,4 @@
-.TH MH-TAILOR %manext5% "April 18, 2014" "%nmhversion%"
+.TH MH-TAILOR %manext5% "March 23, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -34,14 +34,13 @@ and
 .PP
 If you use
 .BR smtp ,
-this will enable a direct SMTP
-interface in
+this will enable a direct SMTP interface in
 .BR nmh .
-When sending mail, instead of passing the
-message to the mail transport agent,
+When sending mail, instead of passing the message to the mail
+transport agent,
 .B post
-will open a socket connection
-to the mail port on the machine specified in the
+will open a socket connection to the mail port on the machine
+specified in the
 .B servers
 entry.
 .PP
@@ -49,8 +48,7 @@ If you use
 .BR sendmail/smtp ,
 then
 .B post
-will send messages by forking a
-local copy of
+will send messages by forking a local copy of
 .BR sendmail .
 It will still speak SMTP with this local copy of
 .BR sendmail .
@@ -71,24 +69,21 @@ This replaces the old, undocumented
 mechanism and retains some of its limitations, such as lack of
 support for the
 .B \-whom
-switch and
-\*(lqDcc:\*(rq header field.
+switch and \*(lqDcc:\*(rq header field.
 .RE
 .PP
 .BR localname :
 .RS 5
 The hostname
 .B nmh
-considers local.  It should typically be a fully
-qualified hostname.  If this is not set, depending on the version of
-UNIX you're running,
+considers local.  It should typically be a fully qualified hostname.
+If this is not set, depending on the version of UNIX you're running,
 .B nmh
-will query the system for this value
-(e.g.\& uname, gethostname, etc.), and attempt to fully qualify this
-value.
+will query the system for this value (e.g.\& uname, gethostname, etc.),
+and attempt to fully qualify this value.
 .PP
 If you are using POP to retrieve new messages, you may want to set this
-value to the name of the POP server, so that outgoing message appear to
+value to the name of the POP server, so that outgoing messages appear to
 have originated on the POP server.
 .RE
 .PP
@@ -99,25 +94,22 @@ hostname.
 .PP
 This should only be needed, if for some reason
 .B nmh
-is not able to
-fully qualify the hostname returned by the system (e.g.\& uname,
-gethostname, etc.).
+is not able to fully qualify the hostname returned by the system
+(e.g.\& uname, gethostname, etc.).
 .RE
 .PP
 .BR clientname :
 .RS 5
 This option specifies the host name that
 .B nmh
-will give in the
-SMTP
+will give in the SMTP
 .B HELO
 (and
 .BR EHLO )
-command, when posting mail.  If not
-set, the default is to use the host name that
+command, when posting mail.  If not set, the default is to use the
+host name that
 .B nmh
-considers local
-(see
+considers local (see
 .B localname
 above).  If this option is set, but empty, no
 .B HELO
@@ -125,11 +117,10 @@ command will be given.
 .PP
 Although the
 .B HELO
-command is required by RFC 821, many SMTP servers
-do not require it.  Early versions of
+command is required by RFC 821, many SMTP servers do not require it.
+Early versions of
 .I SendMail
-will fail if the hostname
-given in the
+will fail if the hostname given in the
 .B HELO
 command is the local host.  Later versions of
 .I SendMail
@@ -212,8 +203,8 @@ to
 .BR servers :
 localhost
 .RS 5
-A SINGLE hostname to be used when performing mail submission via SMTP.  Previous
-versions of
+A single hostname to be used when performing mail submission via SMTP.
+Previous versions of
 .B nmh
 supported multiple hostnames for
 .BR servers ,
@@ -222,13 +213,13 @@ but the current version of
 only supports a single entry (the name is kept for backwards compatibility
 reasons).  This can be overridden via the
 .B \-server
-option to
+switch to
 .IR send (1).
 It is not possible to change the mail submission port number in the
 .B servers
 entry; see the
 .B \-port
-option to
+switch to
 .BR send (1)
 for this functionality.
 .SS "SendMail"
@@ -312,19 +303,17 @@ If no entry is given, the
 .B fcntl
 lock method will be chosen.
 .PP
-If you do not wish to use kernel\-based locking,
+If you do not wish to use kernel-based locking,
 .I dot
-locking is an option available.
-If \*(lq--enable-lockdir=directory\*(rq
-is not specified at build time, lock files will be created
-in the directory where the file being locked resides.  Otherwise, lock
+locking is an option available.  If \*(lq--enable-lockdir=directory\*(rq
+is not specified at build time, lock files will be created in the
+directory where the file being locked resides.  Otherwise, lock
 files will be created in the directory specified by
 \*(lq--enable-lockdir\*(rq.
 .PP
 Prior to installing
 .BR nmh ,
-you should see how locking is done at
-your site, and set the appropriate values.
+you should see how locking is done at your site, and set the appropriate values.
 .SH FILES
 .TP 20
 %nmhetcdir%/mts.conf
@@ -335,19 +324,13 @@ None
 .IR mh\-mts (8),
 .IR post (8)
 .SH DEFAULTS
-As listed above.  The path of the mail transport configuration
-file can be changed with the
-MHMTSCONF
-environment variable and augmented with the
-MHMTSUSERCONF
-environment variable, see
+As listed above.  The path of the mail transport configuration file can
+be changed with the MHMTSCONF environment variable and augmented with the
+MHMTSUSERCONF environment variable, see
 .IR mh\-profile (5).
 .SH BUGS
 Failure to open any mail transport configuration file is silently
 ignored.  Therefore, it's best to avoid dynamic creation of such
-a file with the intent of use via the
-MHMTSCONF
-or
-MHMTSUSERCONF
+a file with the intent of use via the MHMTSCONF or MHMTSUSERCONF
 environment variables.  If such use is necessary, the ability
 to successfully open the file should first be verified.
