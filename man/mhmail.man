@@ -1,9 +1,9 @@
-.TH MHMAIL %manext1% "October 16, 2012" "%nmhversion%"
+.TH MHMAIL %manext1% "March 23, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
 .SH NAME
-mhmail \- send or read mail
+mhmail \- send or read mail - part of the nmh message system
 .SH SYNOPSIS
 .HP 5
 .na
@@ -35,7 +35,6 @@ mhmail \- send or read mail
 .I send
 \&...]]
 .RB [ \-send " | " \-nosend ]
-.PP
 .HP 5
 .B mhmail
 with no arguments is equivalent to
@@ -43,29 +42,28 @@ with no arguments is equivalent to
 .ad
 .SH DESCRIPTION
 .B mhmail
-is intended as a replacement for the standard Berkeley
-mail program
+is intended as a replacement, compatible with
+.BR nmh ,
+for the standard Berkeley mail program
 .RB ( mail
 or
-.BR mailx ),
-which is compatible with
-.BR nmh .
-This program is intended for the use of programs such as
-.BR cron ,
-which expect to send mail automatically to various addresses.  It is
-also used by various
+.BR mailx ).
 .B nmh
-commands to mail various
-error notifications.  Although
+is intended for the use of programs such as
+.BR cron ,
+which expect to send mail automatically.  It is also used by some
+.B nmh
+commands to mail error notifications.  Although
 .B mhmail
-can be used interactively,
-it is recommended that
+can be used interactively, it is recommended that
 .B comp
 and
 .B send
-be used instead to send messages.
+be used instead, to send messages.
 .PP
-When invoked without arguments, it simply invokes
+When invoked without arguments,
+.B mhmail
+simply invokes
 .B inc
 to incorporate new messages from the user's mail drop.
 .PP
@@ -73,14 +71,13 @@ When one or more addresses are specified, a message is read from the
 standard input and spooled to a temporary file.
 .B mhmail
 then invokes
-.BR post ,
+by default, with the name of the temporary file as its argument, to
 by default, with the name of the temporary file as its argument to
 deliver the message to the specified address.
 .PP
 The
 .B \-subject
-.I subject
-switch can be used to specify the
+switch can be used to specify the \*(lqSubject:\*(rq field of the message.
 \*(lqSubject:\*(rq field of the message.
 .PP
 The
@@ -98,13 +95,12 @@ mhmail u2@example.com -resent < `mhpath cur`
 .PP
 By default,
 .B mhmail
-will read the message to be sent from the
-standard input.  You can specify the text of the message at the command
+will read the message to be sent from the standard input.
+You can specify the text of the message at the command
 line with the
 .B \-body
 .I text
-switch.  If the standard input has zero
-length,
+switch.  If the standard input has zero length,
 .B mhmail
 will not send the message and return with status 1.  You can use the switch
 .B \-body
@@ -129,8 +125,7 @@ switches may be given multiple times.
 By using
 .B \-from
 .IR addr ,
-you can specify the \*(lqFrom:\*(rq header of
-the draft.  If no
+you can specify the \*(lqFrom:\*(rq header of the draft.  If no
 .B \-from
 switch is used when sending,
 .B mhmail
@@ -141,8 +136,7 @@ in
 .IR mh-format (5).
 Naturally,
 .B post
-will fill\-in the \*(lqSender:\*(rq
-header correctly.
+will fill in the \*(lqSender:\*(rq header correctly.
 .PP
 The
 .B \-headerfield
@@ -214,7 +208,7 @@ can be used to disable
 .BR \-nosend ,
 for example, when using a shell alias.
 .PP
-All other switches are passed on to
+All other switches are passed to
 .B post
 if
 .B \-profile
@@ -233,9 +227,9 @@ is used.
 .fi
 .SH "SEE ALSO"
 .IR dist (1),
-.IR inc (1),
 .IR send (1),
 .IR mh-format (5),
+.IR send (1),
 .IR post (8)
 .SH DEFAULTS
 .nf
