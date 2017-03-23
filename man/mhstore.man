@@ -1,4 +1,4 @@
-.TH MHSTORE %manext1% "October 7, 2016" "%nmhversion%"
+.TH MHSTORE %manext1% "March 23, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -38,18 +38,16 @@ mhstore \- store contents of nmh MIME messages into files
 .SH DESCRIPTION
 The
 .B mhstore
-command allows you to store the contents of a
-collection of MIME (multi-media) messages into files or other
-messages.
+command allows you to store the contents of a collection of MIME
+(multi-media) messages into files or other messages.
 .PP
 .B mhstore
-manipulates multi-media messages as specified in
-RFC 2045 to RFC 2049.
+manipulates multi-media messages as specified in RFC 2045 to RFC 2049.
 .PP
 By default,
 .B mhstore
 will store all the parts of each message.
-Each part will be store in a separate file.  The header fields of
+Each part will be stored in a separate file.  The header fields of
 the message are not stored.  By using the
 .BR \-part ,
 .BR \-type ,
@@ -63,19 +61,15 @@ The
 .I file
 switch directs
 .B mhstore
-to use the specified
-file as the source message, rather than a message from a folder.
-If you specify this file as \*(lq-\*(rq, then
+to use the specified file as the source message, rather than a message
+from a folder.  If you specify this file as \*(lq-\*(rq, then
 .B mhstore
-will
-accept the source message on the standard input.  Note that the
-file, or input from standard input should be a validly formatted
+will accept the source message on the standard input.  Note that the
+file, or input from standard input, should be a validly formatted
 message, just like any other
 .B nmh
-message.  It should
-.B NOT
-be in mail drop format (to convert a file in mail drop format to
-a folder of
+message.  It should NOT be in mail drop format (to convert a file in
+mail drop format to a folder of
 .B nmh
 messages, see
 .IR inc (1)).
@@ -86,7 +80,7 @@ these would be named as 1, 2, and 3, respectively.  If part 2 was also
 a multipart content containing two parts, these would be named as 2.1
 and 2.2, respectively.  Note that the
 .B \-part
-switch is effective for only messages containing a multipart content.
+switch is effective only for messages containing a multipart content.
 If a message has some other kind of content, or if the part is itself
 another multipart content, the
 .B \-part
@@ -99,19 +93,18 @@ switch can also be used to restrict (or, when used in conjunction with
 to further restrict) the selection of parts according to content type.
 One or more
 .B \-type
-switches part will only select the first match
-from a multipart/alternative, even if there is more than one
+switches part will only select the first match from a
+multipart/alternative, even if there is more than one
 subpart that matches (one of) the given content type(s).
 .PP
 Using either
 .B \-part
 or
 .B -type
-switches alone will cause either to select
-the part(s) they match.  Using them together will select only
-the part(s) matched by both (sets of) switches.  In other
-words, the result is the intersection, and not the union, of their
-separate match results.
+switches alone will cause either to select the part(s) they match.
+Using them together will select only the part(s) matched by both
+(sets of) switches.  In other words, the result is the intersection,
+and not the union, of their separate match results.
 .PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes can
@@ -141,19 +134,18 @@ of the content, e.g., \*(lqaudio\*(rq.  To specify a specific
 subtype, separate the two with a slash, e.g., \*(lqaudio/basic\*(rq.
 Note that regardless of the values given to the
 .B \-type
-switch,
-a multipart content (of any subtype listed above) is always acted
+switch, a multipart content (of any subtype listed above) is always acted
 upon.  Further note that if the
 .B \-type
-switch is used, and it is
-desirable to act on a message/external-body content, then the
+switch is used, and it is desirable to act on a message/external-body
+content, then the
 .B \-type
-switch must be used twice: once for message/external-body
-and once for the content externally referenced.
+switch must be used twice: once for message/external-body and once for
+the content externally referenced.
 .PP
 The
 .B \-prefer
-switch will alter the part ordering of multipart/alternative MIME sections
+switch will alter the part-ordering of multipart/alternative MIME sections
 in order to override the sender-imposed default ordering.
 The
 .B \-prefer
@@ -163,7 +155,7 @@ but is also implemented in
 .B mhlist
 and
 .B mhstore
-to make common part numbering possible across all three programs.
+to make common part-numbering possible across all three programs.
 See
 .IR mhlist (1)
 and
@@ -175,26 +167,24 @@ The
 .B \-check
 switch tells
 .B mhstore
-to check each content for
-an integrity checksum.  If a content has such a checksum (specified
-as a Content-MD5 header field), then
+to check each content for an integrity checksum.
+If a content has such a checksum (specified as a Content-MD5 header
+field), then
 .B mhstore
-will attempt to
-verify the integrity of the content.
+will attempt to verify the integrity of the content.
 .SS "Storing the Contents"
 .B mhstore
 will store the contents of the named messages in
 \*(lqnative\*(rq (decoded) format.  Two things must be determined:
-the directory to store the content, and the filenames.  Files are
-written in the directory given by the \*(lqnmh-storage\*(rq profile
-entry, e.g.,
+the directory in which to store the content, and the filenames.
+Files are written in the directory given by the
+\*(lqnmh-storage\*(rq profile entry, e.g.,
 .PP
 .RS 5
 nmh-storage: /tmp
 .RE
 .PP
-If this entry isn't present,
-the current working directory is used.
+If this entry isn't present, the current working directory is used.
 .PP
 If the
 .B \-outfile
@@ -218,15 +208,12 @@ overwriting existing files.
 .PP
 If the
 .B \-auto
-switch is not given (or is being ignored for security
-reasons) then
+switch is not given (or is being ignored for security reasons) then
 .B mhstore
-will look in the user's profile for a
-\*(lqformatting string\*(rq to determine how the different contents
-should be stored.  First,
+will look in the user's profile for a \*(lqformatting string\*(rq to
+determine how the different contents should be stored.  First,
 .B mhstore
-will look for an entry of
-the form:
+will look for an entry of the form:
 .PP
 .RS 5
 mhstore-store-<type>/<subtype>
@@ -253,16 +240,16 @@ then the content is sent to the standard output.
 If the formatting string starts with a '|', then it represents
 a command for
 .B mhstore
-to execute which should
-ultimately store the content.  The content will be passed to the
-standard input of the command.  Before the command is executed,
+to execute which should ultimately store the content.
+The content will be passed to the standard input of the command.
+Before the command is executed,
 .B mhstore
-will change to the appropriate directory, and any
-escapes (given below) in the formatting string will be expanded.
+will change to the appropriate directory, and any escapes (given below)
+in the formatting string will be expanded.
 The use of the \*(lq%a\*(rq sequence is not recommended because
 the user has no control over the Content-Type parameter data.
 .PP
-Otherwise the formatting string will represent a pathname in which
+Otherwise, the formatting string will represent a pathname in which
 to store the content.  If the formatting string starts with a '/',
 then the content will be stored in the full path given, else the
 file name will be relative to the value of \*(lqnmh-storage\*(rq or
@@ -290,15 +277,13 @@ listed above) content, the p-escapes are ignored.
 .PP
 If no formatting string is found,
 .B mhstore
-will check to see
-if the content is application/octet-stream with parameter
+will check to see if the content is application/octet-stream with parameter
 \*(lqtype=tar\*(rq.  If so,
 .B mhstore
-will choose an appropriate
-filename.  If the content is not application/octet-stream, then
+will choose an appropriate filename.  If the content is not
+application/octet-stream, then
 .B mhstore
-will check to see if the content is a message.  If
-so,
+will check to see if the content is a message.  If so,
 .B mhstore
 will use the value \*(lq+\*(rq.  As a last resort,
 .B mhstore
@@ -325,7 +310,6 @@ to print out the names of files that it stores.  For backward
 compatibility, it is the default.  The
 .B \-noverbose
 switch suppresses these printouts.
-.PP
 .SS "Overwriting Existing Files"
 The
 .B \-clobber
@@ -372,12 +356,12 @@ will be the number of files that were requested but not stored.
 .PP
 With
 .IR ask ,
-if standard input is connected to a terminal,
-the user is prompted to respond
+if standard input is connected to a terminal, the user is prompted to
+respond
 .IR yes ,
 .IR no ,
 or
-.I rename
+.IR rename ,
 to whether the file should be overwritten.  The responses
 can be abbreviated.  If the user responds with
 .IR rename ,
@@ -399,14 +383,14 @@ split into multiple messages of type \*(lqmessage/partial\*(rq.
 .PP
 When asked to store a content containing a partial message,
 .B mhstore
-will try to locate all of the portions and combine
-them accordingly.  The default is to store the combined parts as
-a new message in the current folder, although this can be changed
-using formatting strings as discussed above.  Thus, if someone has
-sent you a message in several parts (such as the output from
+will try to locate all of the portions and combine them accordingly.
+The default is to store the combined parts as a new message in the
+current folder, although this can be changed using formatting
+strings as discussed above.  Thus, if someone has sent you a
+message in several parts (such as the output from
 .BR sendfiles ),
-you can easily reassemble them all into a single
-message in the following fashion:
+you can easily reassemble them into a single message in the
+following fashion:
 .PP
 .RS 5
 .nf
@@ -431,16 +415,14 @@ This will store exactly one message, containing the sum of the
 parts.  It doesn't matter whether the partials are specified in
 order, since
 .B mhstore
-will sort the partials, so that they
-are combined in the correct order.  But if
+will sort the partials, so that they are combined in the correct
+order.  But if
 .B mhstore
-can not
-locate every partial necessary to reassemble the message, it will
-not store anything.
+can not locate every partial necessary to reassemble the message,
+it will not store anything.
 .SS "External Access"
 For contents of type message/external-body,
 \fImhstore\fR supports these access-types:
-.PP
 .IP \(bu 4
 afs
 .IP \(bu 4
@@ -491,8 +473,8 @@ nmh-access-url: curl -L
 .PP
 to determine the program to use to perform the HTTP retrieval.  This program
 is invoked with one argument: the URL of the content to retrieve.  The program
-should write the content to standard out, and should terminate with a status of zero if the retrieval is successful and a non\-zero exit status otherwise.
-.PP
+should write the content to standard out, and should terminate with a status
+of zero if the retrieval is successful and a non\-zero exit status otherwise.
 .SS "The Content Cache"
 When
 .B mhstore
@@ -508,19 +490,17 @@ is controlled with the
 .B \-rcache
 and
 .B \-wcache
-switches, which define the policy for reading from,
-and writing to, the cache, respectively.  One of four policies may be
+switches, which define the policy for reading from, and writing to, the cache,
+respectively.  One of four policies may be
 specified: \*(lqpublic\*(rq, indicating that
 .B mhstore
 should make use
-of a publicly-accessible content cache; \*(lqprivate\*(rq, indicating
-that
+of a publicly-accessible content cache; \*(lqprivate\*(rq, indicating that
 .B mhstore
 should make use of the user's private content cache;
 \*(lqnever\*(rq, indicating that
 .B mhstore
-should never make use of
-caching; and, \*(lqask\*(rq, indicating that
+should never make use of caching; and, \*(lqask\*(rq, indicating that
 .B mhstore
 should ask the user.
 .PP
@@ -548,16 +528,13 @@ nmh-private-cache: .cache
 .SS "User Environment"
 Because the environment in which
 .B mhstore
-operates may vary for
-different machines,
+operates may vary for different machines,
 .B mhstore
-will look for the environment variable
-.BR $MHSTORE .
-If present, this specifies the name of an additional
-user profile which should be read.  Hence, when a user logs in on a
-particular machine, this environment variable should be set to
-refer to a file containing definitions useful for that machine.
-Finally,
+will look for the environment variable MHSTORE .
+If present, this specifies the name of an additional user profile
+which should be read.  Hence, when a user logs in on a particular
+machine, this environment variable should be set to refer to a
+file containing definitions useful for that machine.  Finally,
 .B mhstore
 will attempt to consult
 .PP
