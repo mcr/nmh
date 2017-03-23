@@ -1,4 +1,4 @@
-.TH MHICAL %manext1% "January 4, 2015" "%nmhversion%"
+.TH MHICAL %manext1% "March 23, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -31,10 +31,9 @@ manipulates an iCalendar (.ics) event request, to display it, generate
 a reply to it, or cancel it.  iCalendar event requests and replies are
 defined by RFC 5545.
 .PP
-.SH DISPLAY
 The default operation is to display the iCalendar event request in a
 human-readable format.
-.SS "Format Program Selection"
+.PP
 For the display operation, the
 .B \-format
 .I string
@@ -94,7 +93,7 @@ by the
 environment variable, if it is set, see tzset(3).  If not set, its
 behavior is implementation defined, but may use the user's local
 timezone.
-.SH REPLY
+.SS Reply
 The
 .B \-reply
 switch generates a reply from the event request.  The required
@@ -103,12 +102,12 @@ action parameter must be one of
 .IR "decline" ", or"
 .IR "tentative" .
 Delegation is not supported.
-.SH CANCEL
+.SS Cancel
 The
 .B \-cancel
 switch generates an iCalendar event that can be used to cancel
 the event request.
-.SH INPUT/OUTPUT
+.SS "Input/Output"
 By default,
 .B mhical
 reads from standard input and writes to standard output.  The
@@ -116,8 +115,7 @@ reads from standard input and writes to standard output.  The
 and
 .BR \-outfile ,
 respectively, switches can be used to override these defaults.
-.PP
-.SH MISCELLANEOUS SWITCHES
+.SS "Miscellaneous Switches"
 The
 .B \-contenttype
 switch instructs
@@ -152,7 +150,6 @@ is checked.
 .ta \w'%nmhetcdir%/mhical.24hour  'u
 ^%nmhetcdir%/mhical.24hour~^The default display template
 ^%nmhetcdir%/mhical.12hour~^Display template that uses 12-hour clock
-.fi
 .fi
 .SH "SEE ALSO"
 .IR mhbuild (1),
