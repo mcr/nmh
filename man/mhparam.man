@@ -1,4 +1,4 @@
-.TH MHPARAM %manext1% "May 21, 2016" "%nmhversion%"
+.TH MHPARAM %manext1% "March 23, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -18,31 +18,28 @@ mhparam \- print nmh profile and context components
 .SH DESCRIPTION
 .B mhparam
 writes the value of the specified profile component to the standard
-output separated by newlines.  Component name matching is
+output, separated by newlines.  Component name matching is
 case-insensitive.  If the profile component is not present, the
-default value (or nothing if there is no default) is printed.
+default value (or nothing, if there is no default) is printed.
 .PP
 If the switch
 .B \-component
-is given, then the component name is displayed
-along with the profile components value.  This can be disabled with the
-switch
+is given, then the component name is displayed along with the profile
+components value.  This can be disabled with the switch
 .BR \-nocomponent .
 .PP
 If more than one component is specified in the
 .I components
-list, then
-the switch
+list, then the switch
 .B \-component
-is on by default.  If only one component is
-specified, then the switch
+is on by default.  If only one component is specified, then the switch
 .B \-nocomponent
 is on by default.
 .PP
 If
 .B \-all
-is specified, then all components in the nmh profile are
-displayed and other arguments are ignored.
+is specified, then all components in the nmh profile are displayed
+and other arguments are ignored.
 .PP
 .B mhparam
 can provide other information, such as the
@@ -154,7 +151,7 @@ is also useful in backquoted operations:
 .SH "EXIT STATUS"
 .B mhparam
 returns the number of components that were not found,
-but limits just the return value to 120 to avoid ambiguity,
+but limits the return value to 120 to avoid ambiguity,
 e.g.\& 127 is used by shells to indicate `command not found',
 and 256 would wrap to 0, falsely indicating success.
 .
