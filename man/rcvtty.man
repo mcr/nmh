@@ -1,4 +1,4 @@
-.TH RCVTTY %manext1% "January 18, 2001" "%nmhversion%"
+.TH RCVTTY %manext1% "March 23, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -24,28 +24,26 @@ rcvtty  \- report new mail
 .SH DESCRIPTION
 The
 .B rcvtty
-can be used to report new mail.  It is used primarily
+command can be used to report new mail.  It is used primarily
 in conjunction with mail filtering agents such as
 .B slocal
 or
 .BR procmail .
 .PP
-The
 .B rcvtty
-program executes the named command with the message as
-its standard input, and writes the resulting output on your terminal.
+executes the named command with the message as its standard input,
+and writes the resulting output on your terminal.
 .PP
-Alternately, if no command is specified (or is bogus), then
+Alternatively, if no command is specified (or the command is bogus), then
 .B rcvtty
-will instead write a one\-line scan listing.  The default output format
+will instead write a one-line scan listing.  The default output format
 of this scan listing may be overridden by using either the
 .B \-form
 .I formatfile
 or
 .B \-format
 .I string
-option, similar to the
-equivalent options for
+option, similar to the equivalent options for
 .B scan
 and
 .BR inc .
@@ -58,14 +56,13 @@ rung after the output.  The
 .B \-nonewline
 and
 .B \-nobell
-options will
-inhibit these functions.
+switches will inhibit these functions.
 .PP
 The switch
 .B \-width
 .I columns
-may be given to specify the width of
-the scan line.  The default is to use the width of the terminal.
+may be given to specify the width of the scan line.
+The default is to use the width of the terminal.
 .PP
 In addition to the standard format escapes described in
 .IR mh\-format (5),
@@ -86,16 +83,15 @@ folder	string	the name of the current folder
 .PP
 By default,
 .B rcvtty
-will send its output to every terminal on the
-local machine that is owned by current user, and that has given write
-permission as granted by the command
+will send its output to every terminal on the local machine that
+is owned by current user, and that has given write permission
+as granted by the command
 .IR mesg (1).
 If the option
 .B \-biff
 is given, then
 .B rcvtty
-will obey the notification status
-set by the command
+will obey the notification status set by the command
 .IR biff (1)
 instead.
 .SH FILES
@@ -115,10 +111,10 @@ None
 .RB ` \-bell '
 .fi
 .SH "SEE ALSO"
+.IR mh-format (5),
 .IR rcvdist (1),
 .IR rcvpack (1),
 .IR rcvstore (1),
-.IR mh\-format (5),
-.IR  slocal (1)
+.IR slocal (1)
 .SH BUGS
 Only two return codes are meaningful, others should be.
