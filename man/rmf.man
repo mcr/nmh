@@ -7,7 +7,7 @@ rmf \- remove an nmh folder
 .SH SYNOPSIS
 .HP 5
 .na
-.B rmf 
+.B rmf
 .RB [ \-help ]
 .RB [ \-version ]
 .RI [ +folder ]
@@ -15,40 +15,36 @@ rmf \- remove an nmh folder
 .ad
 .SH DESCRIPTION
 .B rmf
-removes all of the messages (files) within the specified
-(or default) folder, and then removes the folder (directory) itself.
+removes all of the messages (files) within the specified (or default)
+folder, and then removes the folder (directory) itself.
 .PP
 If there are any files within the folder which are not a part of
 .BR nmh ,
 they will
 .B not
 be removed, and an error will be produced.
-If the folder is given explicitly or the
+If the folder is given explicitly, or the
 .B \-nointeractive
-option is
-given, then the folder will be removed without confirmation.  Otherwise,
+option is given, then the folder will be removed without confirmation.
+Otherwise,
 the user will be asked for confirmation.  If
 .B rmf
-can't find the
-current folder, for some reason, the folder to be removed defaults to
-`+inbox' (unless overridden by user's profile entry \*(lqInbox\*(rq)
+can't, for some reason, find the current folder the folder to be removed defaults
+to `+inbox' (unless overridden by the user's profile entry \*(lqInbox\*(rq),
 with confirmation.
 .PP
 If the folder being removed is a subfolder, the parent folder will become
 the new current folder, and
 .B rmf
-will produce a message telling the
-user this has happened.  This provides an easy mechanism for selecting
-a set of messages, operating on the list, then removing the list and
-returning to the current folder from which the list was extracted.
+will produce a message telling the user this has happened.
+This provides an easy mechanism for selecting a set of messages,
+operating on the list, then removing the list and returning to the
+current folder, from which the list was extracted.
 .PP
 If
 .B rmf
-is used on a read\-only folder, it will delete all the
-private sequences
-(i.e.,
-.RI \*(lqatr\- seq \- folder \*(rq
-entries) for this folder
+is used on a read-only folder, it will delete all the private sequences
+(i.e., .RI \*(lqatr\- seq \- folder \*(rq entries) for this folder
 from your context without affecting the folder itself.
 .PP
 .B rmf
@@ -70,8 +66,8 @@ use it with caution.
 ^Inbox:~^To find the default inbox
 .fi
 .SH "SEE ALSO"
-.IR rmm (1),
-.IR folder (1)
+.IR folder (1),
+.IR rmm (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder, usually with confirmation"
@@ -79,16 +75,14 @@ use it with caution.
 .fi
 .SH CONTEXT
 .B rmf
-will set the current folder to the parent folder if a
-subfolder is removed; or if the current folder is removed, it will make
-\*(lqinbox\*(rq current.  Otherwise, it doesn't change the current folder
-or message.
+will set the current folder to the parent folder if a subfolder is removed;
+or if the current folder is removed, it will make \*(lqinbox\*(rq current.
+Otherwise, it doesn't change the current folder or message.
 .SH BUGS
 Although intuitively one would suspect that
 .B rmf
-works recursively,
-it does not.  Hence if you have a sub\-folder within a folder, in order
-to
+works recursively, it does not.
+Hence, if you have a sub-folder within a folder, in order to
 .B rmf
 the parent, you must first
 .B rmf
