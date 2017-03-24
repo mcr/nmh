@@ -49,7 +49,7 @@ pick \- search for nmh messages by content
 .RB [ \-nosequence ]
 .RB [ \-public " | " \-nopublic ]
 .RB [ \-zero " | " \-nozero ]
-.RB [ \-list " | " \-nolist ] 
+.RB [ \-list " | " \-nolist ]
 .RB [ \-debug ]
 .PP
 typical usage:
@@ -71,11 +71,9 @@ operations.
 .PP
 A modified
 .IR grep (1)
-is used to perform the matching, so the
-full regular expression (see
+is used to perform the matching, so the full regular expression (see
 .IR ed (1))
-facility is available
-within
+facility is available within
 .IR pattern .
 With
 .BR \-search ,
@@ -88,9 +86,8 @@ is used directly, and with the others, the grep pattern constructed is:
 .PP
 This means that the pattern specified for a
 .B \-search
-will be found
-everywhere in the message, including the header and the body, while
-the other pattern matching requests are limited to the single specified
+will be found everywhere in the message, including the header and the body,
+while the other pattern matching requests are limited to the single specified
 component.  The expression
 .PP
 .RS 5
@@ -108,17 +105,17 @@ It is used to pick a component which is not one of \*(lqTo:\*(rq,
 An example is
 .RB \*(lq "pick\0\-\|\-reply\-to\0pooh" \*(rq.
 .PP
-Pattern matching is performed on a per\-line basis.  Within the header
+Pattern matching is performed on a per-line basis.  Within the header
 of the message, each component is treated as one long line, but in the
-body, each line is separate.  Lower\-case letters in the search pattern
+body, each line is separate.  Lower-case letters in the search pattern
 will match either lower or upper case in the message, while upper case
 will match only upper case.
 .PP
 Note that since the
 .B \-date
-switch is a pattern matching operation (as
-described above), to find messages sent on a certain date the pattern
-string must match the text of the \*(lqDate:\*(rq field of the message.
+switch is a pattern matching operation (as described above),
+to find messages sent on a certain date the pattern string must match
+the text of the \*(lqDate:\*(rq field of the message.
 .PP
 Independent of any pattern matching operations requested, the switches
 .B \-after
@@ -126,10 +123,10 @@ Independent of any pattern matching operations requested, the switches
 or
 .B \-before
 .I date
-may also be used to introduce date/time
-constraints on all of the messages.  By default, the \*(lqDate:\*(rq
-field is consulted, but if another date yielding field (such as
-\*(lqBB\-Posted:\*(rq or \*(lqDelivery\-Date:\*(rq) should be used, the
+may also be used to introduce date/time constraints on all of the messages.
+By default, the \*(lqDate:\*(rq field is consulted, but if another
+date-yielding field (such as \*(lqBB\-Posted:\*(rq or
+\*(lqDelivery\-Date:\*(rq) should be used, the
 .B \-datefield
 .I field
 switch may be used.
@@ -139,44 +136,38 @@ With
 and
 .BR \-after ,
 .B pick
-will actually parse the date
-fields in each of the messages specified in `msgs' and compare them
-to the date/time specified.  If
+will actually parse the date fields in each of the messages specified in
+`msgs' and compare them to the date/time specified.  If
 .B \-after
-is given, then only those
-messages whose \*(lqDate:\*(rq field value is chronologically after the
-date specified will be considered.  The
+is given, then only those messages whose \*(lqDate:\*(rq field value is
+chronologically after the date specified will be considered.  The
 .B \-before
-switch specifies the
-complimentary action.
+switch specifies the complementary action.
 .PP
 Both the
 .B \-after
 and
 .B \-before
-switches take legal RFC 822\-style date
-specifications as arguments.
+switches take legal RFC 822-style date specifications as arguments.
 .B pick
-will default certain missing
-fields so that the entire date need not be specified.  These fields
-are (in order of defaulting): timezone, time and timezone, date, date
-and timezone.  All defaults are taken from the current date, time,
-and timezone.
+will default certain missing fields so that the entire date need not
+be specified.  These fields are (in order of defaulting): timezone,
+time and timezone, date, date and timezone.
+All defaults are taken from the current date, time, and timezone.
 .PP
-In addition to RFC 822\-style dates,
+In addition to RFC 822-style dates,
 .B pick
-will also recognize any of
-the days of the week (\*(lqsunday\*(rq, \*(lqmonday\*(rq, and so on),
-and the special dates \*(lqtoday\*(rq, \*(lqyesterday\*(rq (24 hours
-ago), and \*(lqtomorrow\*(rq (24 hours from now).  All days of the
-week are judged to refer to a day in the past (e.g., telling \fIpick\fR
-\*(lqsaturday\*(rq on a \*(lqtuesday\*(rq means \*(lqlast\ saturday\*(rq
-not \*(lqthis\ saturday\*(rq).
+will also recognize any of the days of the week (\*(lqsunday\*(rq,
+\*(lqmonday\*(rq, and so on), and the special dates \*(lqtoday\*(rq,
+\*(lqyesterday\*(rq (24 hours ago), and \*(lqtomorrow\*(rq
+(24 hours from now).
+All days of the week are judged to refer to a day in the past
+(e.g., telling \fIpick\fR \*(lqsaturday\*(rq on a \*(lqtuesday\*(rq
+means \*(lqlast\ saturday\*(rq not \*(lqthis\ saturday\*(rq).
 .PP
 Finally, in addition to these special specifications,
 .B pick
-will
-also honor a specification of the form \*(lq\-dd\*(rq, which means
+will also honor a specification of the form \*(lq\-dd\*(rq, which means
 \*(lqdd days ago\*(rq.
 .PP
 Use the
@@ -184,7 +175,7 @@ Use the
 switch to make
 .B pick
 find matching messages in reverse order, working from the highest message
-number down to the lowest.  This can be useful in for searching recent
+number down to the lowest.  This can be useful in searching for recent
 messages in large folders, for example,
 .PP
 .RS 5
@@ -194,8 +185,7 @@ pick\0\-reverse\0\-from\0frated\0|\0xargs\0\-n1\0scan
 .RE
 .PP
 .B pick
-supports complex boolean operations on the searching primitives
-with the
+supports complex boolean operations on the searching primitives with the
 .BR \-and ,
 .BR \-or ,
 .BR \-not ,
@@ -219,8 +209,7 @@ The matching primitives take precedence over the
 .B \-not
 switch, which in turn takes precedence over
 .B \-and
-which in turn takes precedence
-over
+which in turn takes precedence over
 .BR \-or .
 To override the default precedence, the
 .B \-lbrace
@@ -234,15 +223,13 @@ command line are selected (this defaults to \*(lqall\*(rq).
 .PP
 Once the search has been performed, if the
 .B \-list
-switch is given, the
-message numbers of the selected messages are written to the standard
-output separated by newlines.  This is
+switch is given, the message numbers of the selected messages are
+written to the standard output separated by newlines.  This is
 .B extremely
-useful for
-quickly generating arguments for other
+useful for quickly generating arguments for other
 .B nmh
-programs by using the
-\*(lqbackquoting\*(rq syntax of the shell.  For example, the command
+programs by using the \*(lqbackquoting\*(rq syntax of the shell.
+For example, the command
 .PP
 .RS 5
 scan\0`pick\0+todo\0\-after\0\*(lq31 Mar 83 0123 PST\*(rq`
@@ -250,14 +237,12 @@ scan\0`pick\0+todo\0\-after\0\*(lq31 Mar 83 0123 PST\*(rq`
 .PP
 says to
 .B scan
-those messages in the indicated folder which meet the
-appropriate criterion.  Note that since
+those messages in the indicated folder which meet the appropriate
+criterion.  Note that since
 .BR pick 's
-context changes
-are written out prior to
+context changes are written out prior to
 .BR scan 's
-invocation, you need not give
-the folder argument to
+invocation, you need not give the folder argument to
 .B scan
 as well.
 .PP
@@ -284,15 +269,12 @@ those established by a profile component to be overridden.
 .PP
 By default,
 .B pick
-will zero a sequence before adding it.  This
-action can be disabled with the
+will zero a sequence before adding it.  This action can be disabled with the
 .B \-nozero
-switch, which means that the
-messages selected by
+switch, which means that the messages selected by
 .B pick
-will be added to the sequence, if it
-already exists, and any messages already a part of that sequence will
-remain so.
+will be added to the sequence, if it already exists, and any messages
+already a part of that sequence will remain so.
 .PP
 The
 .B \-public
@@ -300,15 +282,13 @@ and
 .B \-nopublic
 switches are used by
 .B pick
-in the
-same way
+in the same way
 .B mark
 uses them.
 .PP
 The
 .B \-debug
-switch causes pick to output a representation of the search
-pattern.
+switch causes pick to output a representation of the search pattern.
 .SS "Output when no messages are matched"
 If
 .B pick
@@ -320,28 +300,25 @@ scan\0`pick\0\-from\0jones`
 .PP
 and
 .B pick
-selects no messages (e.g., no messages are from
-\*(lqjones\*(rq), then the shell will still run the outer command (e.g.,
+selects no messages (e.g., no messages are from \*(lqjones\*(rq),
+then the shell will still run the outer command (e.g.,
 .BR scan ).
 Since no messages were matched,
 .B pick
-produced
-no output, and the argument given to the outer command as a result of
-backquoting
+produced no output, and the argument given to the outer command as a
+result of backquoting
 .B pick
 is empty.  In the case of
 .B nmh
-programs,
-the outer command now acts as if the default `msg' or `msgs' should be
-used (e.g., \*(lqall\*(rq in the case of
+programs, the outer command now acts as if the default `msg' or `msgs'
+should be used (e.g., \*(lqall\*(rq in the case of
 .BR scan ).
-To prevent this
-unexpected behavior, if
+To prevent this unexpected behavior, if
 .B \-list
 was given, and if its standard output is not a tty, then
 .B pick
-outputs the illegal message number \*(lq0\*(rq
-when it fails.  This lets the outer command fail gracefully as well.
+outputs the illegal message number \*(lq0\*(rq when it fails.
+This lets the outer command fail gracefully as well.
 .SH FILES
 .fc ^ ~
 .nf
