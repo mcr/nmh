@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-repl \- reply to a message
+repl \- reply to an nmh message
 .SH SYNOPSIS
 .HP 5
 .na
@@ -54,18 +54,18 @@ all/to/cc/me]
 .ad
 .SH DESCRIPTION
 .B repl
-may be used to produce a reply to an existing message.
+may be used to reply to a message.
 .PP
 In its simplest form (with no arguments),
 .B repl
-will set up a
-message\-form skeleton in reply to the current message in the current
-folder, and invoke the whatnow shell.
+will set up a message-form skeleton in reply to the current message
+in the current folder, and invoke the
+.B whatnow
+shell.
 .PP
-In order to construct the message draft of the reply,
 .B repl
-uses
-a reply template to guide its actions.  A reply template is simply a
+uses a reply template to construct the draft of the reply.
+A reply template is simply an
 .B mhl
 format file (see
 .IR mh\-format (5)
@@ -80,8 +80,7 @@ a draft message that is intended to be sent only to the author of the
 message to which you are replying.  If a file named \*(lqreplcomps\*(rq
 exists in the user's
 .B nmh
-directory, it will be used instead of this
-default forms file.
+directory, it will be used instead of this default forms file.
 .PP
 The default reply template \*(lqreplcomps\*(rq will direct
 .B repl
@@ -110,23 +109,22 @@ By default, the \*(lqcc:\*(rq field is empty.  You may selectively add
 addresses to this default with the
 .B \-cc
 .I type
-switch.  This switch takes an
-argument
+switch.  This switch takes an argument
 .RI ( all / to / cc / me )
 which specifies who gets added to the default
 \*(lqcc:\*(rq list of the reply.  You may give this switch multiple times (with
-different arguments) if you wish to add multiple types of addresses.
+different arguments) if you wish to add multiple types of address.
 .PP
 If the switch
 .B \-group
 is given, then
 .B repl
-will use the
-standard forms file \*(lqreplgroupcomps\*(rq.  This will construct a
-draft message that is intended as a group or followup reply.  If a file
-named \*(lqreplgroupcomps\*(rq exists in the user's nmh directory, it
-will be used instead of this default forms file, unless you specify
-another forms file on the command line or in your profile.
+will use the standard forms file \*(lqreplgroupcomps\*(rq.
+This will construct a draft message that is intended as a group or
+followup reply.  If a file named \*(lqreplgroupcomps\*(rq exists
+in the user's nmh directory, it will be used instead of this default
+forms file, unless you specify another forms file on the command line
+or in your profile.
 .PP
 The default group reply template \*(lqreplgroupcomps\*(rq will direct
 .B repl
@@ -164,12 +162,11 @@ selectively remove addresses from this default with the
 switch.
 This switch takes an argument (
 .IR all / to / cc / me )
-which specifies who gets removed
-from the default \*(lqcc:\*(rq list of the reply.  You may give this switch
-multiple times (with different arguments) if you wish to remove multiple types
-of addresses.
+which specifies who gets removed from the default \*(lqcc:\*(rq list of
+the reply.  You may give this switch multiple times (with different arguments)
+if you wish to remove multiple types of address.
 .PP
-In any case, you may specify an alternate forms file with the switch
+In any case, you may specify an alternative forms file with the switch
 .B \-form
 .IR formfile .
 .PP
@@ -178,16 +175,15 @@ The
 switch modifies the action of
 .B \-nocc
 .I type
-switch by
-interactively asking you if each address that normally would be placed in
-the \*(lqTo:\*(rq and \*(lqcc:\*(rq list should actually be sent a copy.
-This is useful for special\-purpose replies.  Note that the position of
+switch by interactively asking you if each address that normally would be
+placed in the \*(lqTo:\*(rq and \*(lqcc:\*(rq list should actually be sent a copy.
+This is useful for special-purpose replies.  Note that the position of
 the
 .B \-cc
 and
 .B \-nocc
-switches, like all other switches which take a
-positive and negative form, is important.
+switches, like all other switches which take a positive and negative form,
+is important.
 .PP
 Lines beginning with the fields \*(lqTo:\*(rq, \*(lqcc:\*(rq, and
 \*(rqBcc:\*(rq will be standardized and have duplicate addresses removed.
@@ -200,16 +196,14 @@ formatting of these fields.
 .PP
 If the draft already exists,
 .B repl
-will ask you as to the disposition
-of the draft.  A reply of
+will ask you as to the disposition of the draft.  A reply of
 .B quit
 will abort
 .BR repl ,
 leaving the
 draft intact;
 .B replace
-will replace the existing draft with a blank
-skeleton; and
+will replace the existing draft with a blank skeleton; and
 .B list
 will display the draft.
 .PP
@@ -224,11 +218,11 @@ switches.  Note that while in the editor, with
 and if the current directory is writable, the message being replied
 to is available through a link named \*(lq@\*(rq (assuming the default
 .IR whatnowproc ).
-In addition, the actual pathname of the message is
-stored in the environment variable
+In addition, the actual pathname of the message is stored in the
+environment variable
 .BR $editalt ,
-and the pathname of
-the folder containing the message is stored in the environment variable
+and the pathname of the folder containing the message is stored in
+the environment variable
 .BR $mhfolder .
 The creation of the \*(lq@\*(rq file is controlled via the
 .B \-atfile
@@ -251,18 +245,18 @@ must be non-empty while
 can be empty, e.g., '' in a shell command line.  The
 .B \-convertargs
 switch can be used multiple times.
-See the Convert Interface section of the
-.B mhbuild
-man page for description of the convert mechanism, and
+See the Convert Interface section of
+.IR mhbuild (1)
+for a description of the convert mechanism, and
 .I %docdir%/contrib/replaliases
 for examples of its use.
 .PP
 Although
 .B repl
-uses a forms file to direct it how to construct
-the beginning of the draft, it uses a message filter file to direct
-it as to how the message to which you are replying should be filtered
-(re\-formatted) in the body of the draft.  The filter file for
+uses a forms file to direct it how to construct the beginning of the
+draft, it uses a message filter file to direct it as to how the message
+to which you are replying should be filtered (re-formatted) in the body
+of the draft.  The filter file for
 .B repl
 should be a standard form file for
 .BR mhl ,
@@ -278,20 +272,19 @@ The switches
 and
 .B \-filter
 .I filterfile
-specify
-which message filter file to use.
+specify which message filter file to use.
 .PP
 If the switch
 .B \-noformat
 is given (it is the default) and the
 .B \-filter
-switch is not used, then the message
-to which you are replying is not included in the body of the draft.
+switch is not used, then the message to which you are replying is not
+included in the body of the draft.
 .PP
 If the switch
 .B \-format
-is given, then a default message filter file
-is used.  This default message filter should be adequate for most users.
+is given, then a default message filter file is used.
+This default message filter should be adequate for most users.
 This default filter
 .RI \*(lq mhl.reply \*(rq
 is:
@@ -324,8 +317,8 @@ body:nocomponent,compwidth=9,offset=9
 .fi
 .RE
 .PP
-which says to output a blank line and then the body of the message
-being replied\-to, indented by one tab\-stop.  Another popular format
+which says to output a blank line, and then the body of the message
+being replied to, indented by one tab stop.  Another popular format
 is:
 .PP
 .RS 5
@@ -338,7 +331,7 @@ body:component=\*(lq>\*(rq,\|overflowtext=\*(lq>\*(rq,\|overflowoffset=0
 .RE
 .PP
 This message filter file cites the Message-ID and author of the message
-being replied\-to, and then outputs each line of the body prefaced with
+being replied to, and then outputs each line of the body prefaced with
 the \*(lq>\*(rq character.
 .PP
 You can also use an external format program to format the message body.
@@ -354,9 +347,9 @@ body:component=\*(lq>\*(rq,\|nowrap,\|format
 .RE
 .PP
 See the
-.IR mhl(1)
-documentation for more information.  The format program can be changed by
-the
+.IR mhl (1)
+documentation for more information.
+The format program can be changed by the
 .B \-fmtproc
 .I program
 and
@@ -385,8 +378,8 @@ prior to sending the draft.
 .PP
 If the
 .B \-annotate
-switch is given, the message being replied\-to will
-be annotated with the lines
+switch is given, the message being replied to will be annotated with
+the lines
 .PP
 .RS 5
 Replied:\ date
@@ -399,24 +392,22 @@ The annotation will be done only if the message is sent directly from
 If the message is not sent immediately from
 .BR repl ,
 .RB \*(lq "comp\ \-use" \*(rq
-may be used to re\-edit and send the constructed
-message, but the annotations won't take place.  Normally annotations are
-done inplace in order to preserve any links to the message.  You may use
-the
+may be used to re-edit and send the constructed message, but the
+annotations won't take place.
+Normally annotations are done inplace in order to preserve any links
+to the message.
+You may use the
 .B \-noinplace
 switch to change this.
 .PP
 Although the default template specifies that a copy of the reply will be
-put in
-the folder 'outbox',
-if the
+put in the folder 'outbox', if the
 .B \-fcc
 .I +folder
 switch is given it will override the default value.
 More than one folder, each preceded by
 .B \-fcc
-can
-be named.
+can be named.
 .PP
 In addition to the standard
 .IR mh\-format (5)
@@ -436,8 +427,7 @@ fcc	string	Any folders specified with `\-fcc\ folder'
 .PP
 To avoid reiteration,
 .B repl
-strips any leading `Re: ' strings from
-the
+strips any leading `Re: ' strings from the
 .I subject
 component.
 .PP
@@ -447,14 +437,12 @@ The
 and
 .B \-draftmessage
 .I msg
-switches invoke
-the
+switches invoke the
 .B nmh
-draft folder facility.  This is an advanced (and highly
-useful) feature.  Consult the
+draft folder facility.  This is an advanced (and highly useful) feature.
+Consult the
 .IR mh-draft (5)
-man page for more
-information.
+man page for more information.
 .PP
 Upon exiting from the editor,
 .B repl
@@ -465,12 +453,11 @@ program.  See
 for a discussion of available
 options.  The invocation of this program can be inhibited by using the
 .B \-nowhatnowproc
-switch.  (In truth of fact, it is the
+switch.  (In fact, it is the
 .B whatnow
 program which starts the initial edit.  Hence,
 .B \-nowhatnowproc
-will
-prevent any edit from occurring.)
+will prevent any edit from occurring.)
 .PP
 The
 .B \-build
@@ -488,8 +475,8 @@ No mail is actually sent.
 The
 .B \-file
 .I msgfile
-switch specifies the message to be replied to as an
-exact filename rather than as an
+switch specifies the message to be replied to as an exact filename rather
+than as an
 .B nmh
 folder and message number.
 The same caveats apply to this option as to the
@@ -535,10 +522,10 @@ is checked.
 .SH "SEE ALSO"
 .IR comp (1),
 .IR forw (1),
+.IR mh\-format (5),
 .IR mhbuild (1),
 .IR send (1),
-.IR whatnow (1),
-.IR mh\-format (5)
+.IR whatnow (1)
 .PP
 .I %docdir%/contrib/replaliases
 .SH DEFAULTS
@@ -558,7 +545,7 @@ is checked.
 .fi
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The message
-replied\-to will become the current message.
+replied to will become the current message.
 .SH BUGS
 If any addresses occur in the reply template, addresses in the template
 that do not contain hosts are defaulted incorrectly.  Instead of using
@@ -571,8 +558,7 @@ template, include the host portion of the address.
 The
 .B \-width
 .I columns
-switch is only used to do address-folding; other
-headers are not line\-wrapped.
+switch is only used to do address-folding; other headers are not line-wrapped.
 .PP
 If
 .I whatnowproc
@@ -580,7 +566,7 @@ is
 .BR whatnow ,
 then
 .B repl
-uses a built\-in
+uses a built-in
 .BR whatnow ,
 it does not actually run the
 .B whatnow
