@@ -7,7 +7,7 @@ next \- show the next nmh message
 .SH SYNOPSIS
 .HP 5
 .na
-.B next 
+.B next
 .RB [ \-help ]
 .RB [ \-version ]
 .RI [ +folder ]
