@@ -20,38 +20,35 @@ rmm \- remove nmh messages
 .SH DESCRIPTION
 By default,
 .B rmm
-will remove the specified messages by renaming
-each of the message files with a site-dependent prefix (usually a
-comma).  Such files will then need to
-be removed in some manner after a certain amount of time.  Many sites
-arrange for
+will remove the specified messages by renaming each of the message files
+with a site-dependent prefix (usually a comma).
+Such files will then need to be removed in some manner after a period of
+time.
+Many sites arrange for
 .B cron
-to remove these files once a day, so check
-with your system administrator.
+to remove these files once a day, so check with your system administrator.
 .PP
 Alternately, if you wish for
 .B rmm
-to really remove the files
-representing these messages, you can use the
+to really remove the files representing these messages, you can use the
 .B \-unlink
-switch.  But
-messages removed by this method cannot be later recovered.
+switch.
+But messages removed by this method cannot be later recovered.
 .PP
 If you prefer a more sophisticated method of `removing' messages, you
 can define the
 .I rmmproc
-profile component.  For example, you can
-add a profile component such as
+profile component.
+For example, you can add a profile component such as
 .PP
 .RS 5
-rmmproc:	/home/foouser/bin/rmm_msgs
+rmmproc:    /home/foouser/bin/rmm_msgs
 .RE
 .PP
 Then instead of simply renaming the message file,
 .B rmm
-will call
-the named program or script to handle the files that represent the
-messages to be deleted.
+will call the named program or script to handle the files that
+represent the messages to be deleted.
 The
 .B \-rmmproc
 switch may be used to override this profile component.  The
@@ -65,9 +62,9 @@ switches.
 An example of a
 .I rmmproc
 script that saves a message based in its Message-ID is provided in
-%nmhetcdir%/rmmproc.messageid.  To enable it, simply add a
+%nmhetcdir%/rmmproc.messageid.  To enable it, simply add an
 .I rmmproc
-component that names it to your profile.
+component that names it, to your profile.
 .PP
 Some users of
 .B csh
@@ -89,8 +86,7 @@ The current message is not changed by
 .BR rmm ,
 so a
 .B next
-will
-advance to the next message in the folder as expected.
+will advance to the next message in the folder as expected.
 .SH FILES
 .fc ^ ~
 .nf
@@ -123,12 +119,9 @@ and
 .B refile
 use your
 .I rmmproc
-to delete the message,
-the
+to delete the message, the
 .I rmmproc
-must
-.B NOT
-call
+must NOT call
 .B rmm
 or
 .B refile
