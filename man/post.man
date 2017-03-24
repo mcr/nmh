@@ -3,11 +3,11 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-post \- deliver a message
+post \- deliver an nmh message
 .SH SYNOPSIS
 .HP 5
 .na
-.B %nmhlibexecdir%/post 
+.B %nmhlibexecdir%/post
 .RB [ \-help ]
 .RB [ \-version ]
 .RB [ \-alias
@@ -47,11 +47,10 @@ post \- deliver a message
 .B post
 is the default program called by
 .B send
-to deliver
-the message in
+to deliver the message in
 .I file
-to local and remote users.  In fact, most of
-the features attributed to
+to local and remote users.
+In fact, most of the features attributed to
 .B send
 in its manual page are performed by
 .BR post ,
@@ -63,13 +62,15 @@ Thus, it is
 which parses the various header fields, appends a
 \*(lqDate:\*(rq line, and interacts with the mail transport system.
 .B post
-will not normally be called directly by the user,
-but can be replaced by the user with a
+will not normally be called directly by the user, but can be replaced
+by the user with a
 .I postproc
 profile component that will have
 .I file
 as its final argument.
-See the mh-profile(5) man page for more information on postproc.
+See
+.IR mh-profile (5)
+for more information on postproc.
 .PP
 .B post
 searches the \*(lqTo:\*(rq, \*(lqcc:\*(rq, \*(lqBcc:\*(rq,
@@ -94,26 +95,22 @@ message will be a copy of the message sent to the sighted recipients.
 If
 .B \-filter
 .I filterfile
-is specified, then this copy is filtered
-(re\-formatted) by
+is specified, then this copy is filtered (re-formatted) by
 .B mhl
 prior to being sent to the blind recipients.
 Alternately, if the
 .B \-mime
 switch is given, then
 .B post
-will use
-the MIME rules for encapsulation.
+will use the MIME rules for encapsulation.
 .PP
 The
 .B \-alias
 .I aliasfile
-switch can be used to specify a file that post
-should take aliases from.  More than one file can be specified, each
-being preceded with
+switch can be used to specify a file that post should read aliases from.
+More than one file can be specified, with each being preceded by
 .BR \-alias .
-In any event, the primary alias file is
-read first.
+In any event, the primary alias file is read first.
 .PP
 The
 .B \-msgid
@@ -152,7 +149,7 @@ Under normal circumstances,
 .B post
 uses the \*(lqFrom:\*(rq line in the message draft as the identity of
 the originating mailbox.  A \*(lqFrom:\*(rq line is required in
-all message draft.  By default the message composition utilities such
+all message drafts.  By default the message composition utilities such
 as
 .BR comp ,
 .B repl
@@ -184,15 +181,15 @@ have a blank value; if the value is blank, then the mail transport system
 will be instructed to not send any bounces in response to the message.
 Not all mail transport systems support this feature.
 .PP
-The mail transport system default is provided in
+The mail transport system default is defined in
 .I %nmhetcdir%/mts.conf
 but can be overridden here with the
 .B \-mts
 switch.
 .PP
-If nmh is using as its mail transport system
+If nmh is using
 .BR sendmail/pipe ,
-the
+as its mail transport system, the
 .B \-sendmail
 switch can be used to override the default
 .B sendmail
@@ -219,18 +216,19 @@ the use of SASL authentication with the SMTP MTA.  Depending on the
 SASL mechanism used, this may require an additional password prompt from the
 user (but the
 .I netrc
-file can be used to store this password, as described in the
-mh-profile(5) man page).  The
+file can be used to store this password, as described in
+.IR mh-profile (5).
+The
 .B \-saslmech
 switch can be used to select a particular SASL mechanism,
 and the
 .B \-user
-switch can be used to select a authorization userid to provide to SASL
-other than the default.  The credentials profile entry in the
-mh\-profile(5) man page describes the ways to supply a username and
-password.
+switch can be used to select an authorization userid to provide to SASL,
+other than the default.  The credentials profile entry in
+.IR mh-profile (5)
+describes the ways to supply a username and password.
 .PP
-If SASL authentication is successful, 
+If SASL authentication is successful,
 .BR nmh
 will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(sasl-encrypted)' and `(sasl-decrypted)' when
@@ -247,8 +245,8 @@ has been compiled with TLS support, the
 .B \-tls
 and
 .B \-initialtls
-switches will require the negotiation of TLS when
-connecting to the SMTP MTA.  The
+switches will require the negotiation of TLS when connecting to the SMTP MTA.
+The
 .B \-tls
 switch will negotiate TLS as part of the normal SMTP protocol
 using the STARTTLS command.  The
