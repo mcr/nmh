@@ -34,7 +34,7 @@ switch is given, then the messages are separated by
 mmdf style delimiters.  Each message in the file is separated by four
 CTRL\-A's and a newline.
 .PP
-You may specify the name of the file in which to use with the
+You may specify the name of the file in which to pack messages with the
 .B \-file
 .I name
 switch.  If you do not specify the name of the file, it
@@ -50,7 +50,7 @@ makes an mbox-style delimiter by examining the first line
 of the message.  If the first line is a \*(lqReturn-Path\*(rq
 field, its address and the current date and time are used.  Otherwise,
 if the first line has an \*(lqX-Envelope-From\*(rq field, its
-contents (which should already be in the correct format) are used. 
+contents (which should already be in the correct format) are used.
 Otherwise, a dummy address and the current date and time are used.
 .PP
 Messages that are packed by
