@@ -32,16 +32,15 @@ moves (see
 .IR mv (1))
 or links (see
 .IR ln (1))
-messages
-from a source folder into one or more destination folders.
+messages from a source folder into one or more destination folders.
 .PP
 If you think of a message as a sheet of paper, this operation is not
 unlike filing the sheet of paper (or copies) in file cabinet folders.
 When a message is filed, it is linked into the destination folder(s)
 if possible, and is copied otherwise.  As long as the destination
 folders are all on the same file system, multiple filing causes little
-storage overhead.  This facility provides a good way to cross\-file or
-multiply\-index messages.  For example, if a message is received from
+storage overhead.  This facility provides a good way to cross-file or
+multiple-index messages.  For example, if a message is received from
 Jones about the ARPA Map Project, the command
 .PP
 .RS 5
@@ -54,24 +53,21 @@ or `Map'.
 You may specify the source folder using
 .B \-src
 .IR +folder .
-If this is
-not given, the current folder is used by default.  If no message is
-specified, then `cur' is used by default.
+If this is not given, the current folder is used by default.
+If no message is specified, then `cur' is used by default.
 .PP
 The option
 .B \-file
 .I file
 directs
 .B refile
-to use the specified file
-as the source message to be filed, rather than a message from a folder.
+to use the specified file as the source message to be filed, rather
+than a message from a folder.
 Note that the file should be a validly formatted message, just like
 any other
 .B nmh
-message.  It should
-.B NOT
-be in mail drop format
-(to convert a file in mail drop format to a folder of
+message.  It should NOT be in mail drop format (to convert a file in
+mail drop format to a folder of
 .B nmh
 messages,
 see
@@ -79,9 +75,9 @@ see
 .PP
 If a destination folder doesn't exist,
 .B refile
-will ask if you want
-to create it.  A negative response will abort the file operation.  If the
-standard input for
+will ask if you want to create it.
+A negative response will abort the file operation.
+If the standard input for
 .B refile
 is
 .B not
@@ -92,8 +88,7 @@ will not ask any questions and will proceed as if the user answered
 .PP
 The option
 .B \-link
-preserves the source folder copy of the message (i.e.,
-it does a
+preserves the source folder copy of the message (i.e., it does an
 .IR ln (1)
 rather than a
 .IR mv (1)),
@@ -111,12 +106,11 @@ If a conflict for a particular folder occurs when using the
 .B \-preserve
 switch, then
 .B refile
-will use the next available message number
-which is above the message number you wish to preserve.
+will use the next available message number which is above the message
+number you wish to preserve.
 .PP
-As message sequences are folder-specific,
-moving the message from the source folder removes it from all its
-sequences in that folder.
+As message sequences are folder-specific, moving the message from
+the source folder removes it from all its sequences in that folder.
 .B \-retainsequences
 adds it to those same sequences in the destination folder,
 creating any that don't exist.
@@ -126,33 +120,30 @@ If
 .B \-link
 is not specified (or
 .B \-nolink
-is specified), the filed
-messages will be removed from the source folder.  The default is to
-remove these messages by renaming them with a site-dependent prefix
-(usually a comma).  Such files will then need to be removed in some
-manner after a certain amount of time.  Many sites arrange for
+is specified), the filed messages will be removed from the source
+folder.  The default is to remove these messages by renaming them
+with a site-dependent prefix (usually a comma).
+Such files will then need to be removed in some manner after a
+certain amount of time.  Many sites arrange for
 .B cron
-to remove these files once a day, so check with your
-system administrator.
+to remove these files once a day, so check with your system administrator.
 .PP
 Alternately, if you wish for
 .B refile
-to really remove the files
-representing these messages from the source folder, you can use the
-.B -unlink
+to really remove the files representing these messages from the source
+folder, you can use the
+.B \-unlink
 switch (not to be confused with the
 .B \-link
-switch).  But
-messages removed by this method cannot be later recovered.
+switch).  But messages removed by this method cannot be later recovered.
 .PP
 If you prefer a more sophisticated method of `removing' the messages
 from the source folder, you can define the
 .B rmmproc
-profile
-component.  For example, you can add a profile component such as
+profile component.  For example, you can add a profile component such as
 .PP
 .RS 5
-rmmproc:	/home/coleman/bin/rmm_msgs
+rmmproc:    /home/coleman/bin/rmm_msgs
 .RE
 .PP
 then
@@ -163,12 +154,11 @@ handle the message files.
 The user may specify
 .B \-rmmproc
 .I program
-on the command line to
-override this profile specification.  The
+on the command line to override this profile specification.
+The
 .B \-normmproc
-option forces
-the message files to be deleted by renaming or unlinking them as
-described above.
+option forces the message files to be deleted by renaming or
+unlinking them as described above.
 .PP
 The
 .B \-draft
@@ -213,15 +203,15 @@ is given, it will become the current folder.
 If neither
 .B \-link
 nor `all' is specified, the current message in the
-source folder will be set to the last message specified; otherwise, the
-current message won't be changed.
+source folder will be set to the last message specified; otherwise,
+the current message won't be changed.
 .PP
-If the \*(lqPrevious\-Sequence\*(rq profile entry is set, in addition to defining
-the named sequences from the source folder,
+If the \*(lqPrevious\-Sequence\*(rq profile entry is set, in addition
+to defining the named sequences from the source folder,
 .B refile
-will also define
-those sequences for the destination folders.  See
-.B mh\-sequence (5)
+will also define those sequences for the destination folders.
+See
+.IR mh\-sequence (5)
 for information concerning the previous sequence.
 .SH BUGS
 Since
@@ -230,12 +220,9 @@ and
 .B rmm
 use your
 .I rmmproc
-to delete the message,
-the
+to delete the message, the
 .I rmmproc
-must
-.B NOT
-call
+must NOT call
 .B refile
 or
 .B rmm
