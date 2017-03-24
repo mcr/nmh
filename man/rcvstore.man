@@ -34,9 +34,8 @@ You may specify which folder to use with
 .IR +folder .
 If no folder is specified,
 .B rcvstore
-will use the folder given by a non\-empty
-\*(lqInbox:\*(rq entry in the user's profile, else it will use the folder
-named \*(lqinbox\*(rq.
+will use the folder given by a non-empty \*(lqInbox:\*(rq entry in
+the user's profile, else it will use the folder named \*(lqinbox\*(rq.
 .PP
 If the switch
 .B \-create
@@ -52,38 +51,37 @@ When the new message is incorporated into the folder, it is assigned
 the next highest number for that folder.
 .PP
 .B rcvstore
-will incorporate anything except zero length messages
-into the user's
+will incorporate anything except zero length messages into the user's
 .B nmh
-folder.  It will not change the message in any
-way.
+folder.  It will not change the message in any way.
 .PP
 If the user's profile contains a
 .RI \*(lq "Msg\-Protect: nnn" \*(rq
-entry, it will be used as the protection on the newly created
+entry, it will be used as the mode to use, in octal, on the newly created
 message, otherwise the
 .B nmh
-default of 0600 will be used (on filesystems that support it).  For
-all subsequent operations on this message, this initially assigned
-protection will be preserved.
+default mode of 0600, see
+.IR chmod (1),
+will be used (on filesystems that support it).
+For all subsequent operations on this message, this initially assigned
+mode will be preserved.
 .PP
 If the switch
 .B \-unseen
-is given (it is on by default), and if the
-profile entry \*(lqUnseen\-Sequence\*(rq is present and non\-empty, then
+is given (it is on by default), and if the profile entry
+\*(lqUnseen\-Sequence\*(rq is present and non-empty, then
 .B rcvstore
 will add the newly incorporated message to each sequence
 named by this profile entry.  You may use the switch
 .B \-nounseen
-to disable this.  These sequences will not be zero'ed by
+to disable this.  These sequences will not be zeroed by
 .B rcvstore
 prior to adding the new message.
 .PP
-Furthermore, the incoming message may be added to additional sequences
+Furthermore, the incoming messages may be added to additional sequences
 as they arrive by the use of the
 .B \-sequence
-switch.  As with the
-commands
+switch.  As with the commands
 .B pick
 and
 .BR mark ,
@@ -96,19 +94,18 @@ Similarly, use of the
 .B \-public
 and
 .B \-nopublic
-switches may be used
-to force these sequences to be public or private sequences.
-.SS LOCKING AND \-unseen
+switches may be used to force these sequences to be public or
+private sequences.
+.SS Locking and \-unseen
 If you use the \*(lqUnseen-Sequence\*(rq profile entry, rcvstore could
 try to read and update its sequence state while another
 .B nmh
 process is also trying to do so.  This can cause the sequence state to
-lose track.  To avoid this just between asynchronous invocations of
+lose track.  To avoid this, just between asynchronous invocations of
 .BR rcvstore ,
 do not use it without an external locking mechanism, for example, a
 .IR procmailrc (5)
-local lockfile, if you use the \*(lqUnseen-Sequence\*(rq profile
-entry.
+local lockfile, if you use the \*(lqUnseen-Sequence\*(rq profile entry.
 .SH FILES
 .fc ^ ~
 .nf
@@ -127,12 +124,12 @@ entry.
 ^Unseen\-Sequence:~^To name sequences denoting unseen messages
 .fi
 .SH "SEE ALSO"
-.IR rcvdist (1),
-.IR rcvpack (1),
-.IR rcvtty (1),
 .IR mh\-sequence (5),
 .IR procmailex (5),
-.IR procmailrc (5)
+.IR procmailrc (5),
+.IR rcvdist (1),
+.IR rcvpack (1),
+.IR rcvtty (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to \*(lqInbox\*(rq profile entry"
