@@ -1,9 +1,9 @@
-.TH MHFIXMSG %manext1% "November 7, 2016" "%nmhversion%"
+.TH MHFIXMSG %manext1% "March 23, 2017" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
 .SH NAME
-mhfixmsg \- rewrite MIME messages with various transformations
+mhfixmsg \- rewrite nmh MIME messages with various transformations
 .SH SYNOPSIS
 .HP 5
 .na
@@ -60,15 +60,14 @@ can safely be run multiple times on a message.
 .PP
 The
 .B \-decodetext
-switch enables a transformation to decode each base64 and
-quoted-printable text message part to the selected 8bit, 7bit, or
+switch enables a transformation to decode each base64 and quoted-printable
+text message part to the selected 8-bit, 7-bit, or
 binary encoding.
-If 7bit is selected for a base64 part but it will only fit
-8bit, as defined by RFC 2045, then it will be decoded to 8bit
+If 7-bit is selected for a base64 part but it will only fit
+8-bit, as defined by RFC 2045, then it will be decoded to 8-bit
 quoted-printable.
-Similarly, with 8bit, if the decoded text would be binary,
-then the part is not decoded (and a message will be
-displayed if
+Similarly, with 8-bit, if the decoded text would be binary,
+then the part is not decoded (and a message will be displayed if
 .B \-verbose
 is enabled).  Note that
 .B \-decodetext
@@ -106,7 +105,7 @@ switch selects this behavior and is enabled by default.  The
 switch causes carriage return characters to be stripped from, and not
 inserted in, text content when it is decoded and encoded.  Note that
 its use can cause the generation of MIME messages that do not conform
-with RFC 2046, §4.1.1, paragraph 1.
+to RFC 2046, §4.1.1, paragraph 1.
 .PP
 The
 .B \-textcharset
@@ -155,17 +154,17 @@ tries to add one.
 The
 .B \-replacetextplain
 switch broadens the applicability of
-.B \-reformat
+.BR \-reformat ,
 by always replacing a corresponding text/plain part, if one exists.
 If
 .B \-verbose
-if enabled, the replacement will be shown as two steps:  a removal of
-the text/plain part followed by the usual insertion of a new part.
+is enabled, the replacement will be shown as two steps:  a removal of
+the text/plain part, followed by the usual insertion of a new part.
 .PP
 .B \-reformat
 requires a profile entry for each text part subtype to be reformatted.
 The mhfixmsg-format-text/subtype profile entries are based on external
-conversion programs, and are used the same way that
+conversion programs, and are used in the same way that
 .B mhshow
 uses its mhshow-show-text/subtype entries.  When
 .B nmh
@@ -190,7 +189,7 @@ programs that parse MIME messages.
 The
 .B \-fixcte
 switch enables a transformation to change the
-Content-Transfer-Encoding from an invalid value to 8bit in message
+Content-Transfer-Encoding from an invalid value to 8-bit in message
 parts with a Content-Type of multipart and message, as required by
 RFC 2045, §6.4.  That condition is indicated by a \*(lqmust be
 encoded in 7bit, 8bit, or binary\*(rq error message from
@@ -240,17 +239,14 @@ The
 .I file
 switch directs
 .B mhfixmsg
-to use the specified
-file as the source message, rather than a message from a folder.
-Only one file argument may be provided.  The
+to use the specified file as the source message, rather than a message
+from a folder.  Only one file argument may be provided.  The
 .B \-file
 switch is implied if
 .I file
-is an absolute pathname.
-If the file is \*(lq-\*(rq, then
+is an absolute pathname.  If the file is \*(lq-\*(rq, then
 .B mhfixmsg
-accepts the source message on the standard input stream.  If
-the
+accepts the source message on the standard input stream.  If the
 .B \-outfile
 switch is not enabled when using the standard input stream,
 .B mhfixmsg
@@ -310,8 +306,7 @@ content type and/or encoding as follows:
 .fi
 .RE
 .SS "Backup of Original Message/File"
-If it applies any transformations to a message or file,
-and the
+If it applies any transformations to a message or file, and the
 .B \-outfile
 switch is not used,
 .B mhfixmsg
@@ -338,8 +333,7 @@ Note that add-hooks are called from all
 .B nmh
 programs that add a message to a folder, not just
 .BR inc .
-Alternatively, a simple shell alias or function can be used to
-call
+Alternatively, a simple shell alias or function can be used to call
 .B mhfixmsg
 immediately after a successful invocation of
 .BR inc .
@@ -389,7 +383,6 @@ STORE = %nmhlibexecdir%/rcvstore
 .fi
 .RE
 .SH "EXAMPLES"
-.PP
 .SS Basic usage
 To run
 .B mhfixmsg
@@ -416,7 +409,8 @@ mhfixmsg +inbox last:4
 .SS View without modification
 By default,
 .B mhfixmsg
-transforms the message in place.  To view the MIME structure that would result from running
+transforms the message in place.
+To view the MIME structure that would result from running
 .B mhfixmsg
 on the current message, without modifying the message:
 .PP
@@ -426,8 +420,11 @@ mhfixmsg -outfile - | mhlist -file -
 .fi
 .RE
 .SS Search message without modification
-To search the current message, which possibly contains base64 or quoted printable encoded text parts,
-without modifying it, use the -outfile switch:
+To search the current message, which possibly contains base64
+or quoted printable encoded text parts, without modifying it,
+use the
+.B \-outfile
+switch:
 .PP
 .RS
 .nf
@@ -435,7 +432,8 @@ mhfixmsg -outfile - | grep \fIpattern\fR
 .fi
 .RE
 .PP
--outfile can be abbreviated in usual MH fashion, e.g., to -o.  The search will be
+.B \-outfile
+can be abbreviated in usual MH fashion, e.g., to -o.  The search will be
 on the entire message, not just text parts.
 .SS Translate text/plain parts to UTF-8
 To translate all text/plain parts in the current message to UTF-8, in addition
@@ -485,7 +483,8 @@ inc  &&  mhfixmsg -nochangecur unseen
 .PP
 This assumes that the Unseen-Sequence profile entry is set to
 .BR unseen ,
-as shown in the mh\-profile(5) man page.
+as shown in
+.IR mh-profile (5).
 .SH FILES
 .B mhfixmsg
 looks for mhn.defaults in multiple locations: absolute pathnames are
@@ -512,14 +511,14 @@ is checked.
 ^rmmproc:~^Program to delete original messages or files
 .fi
 .SH "SEE ALSO"
-.IR inc (1),
 .IR iconv (3),
+.IR inc (1),
+.IR mh-mkstemp (1),
 .IR mh-profile (5),
 .IR mhbuild (1),
 .IR mhlist (1),
 .IR mhparam (1),
 .IR mhshow (1),
-.IR mh-mkstemp (1),
 .IR procmail (1),
 .IR procmailrc (5),
 .IR rcvstore (1),
