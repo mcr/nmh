@@ -32,12 +32,12 @@ fi
 rt() {
     if [ "$1" = -h ]; then
         shift
-        repl -filter mhl.replywithoutbody -convertargs text/plain '' "$@"
+        \repl -filter mhl.replywithoutbody -convertargs text/plain '' "$@"
     elif [ "$1" = -p ]; then
         shift
-        repl -filter mhl.replywithoutbody -convertargs text/html '' "$@"
+        \repl -filter mhl.replywithoutbody -convertargs text/html '' "$@"
     else
-        repl -filter mhl.replywithoutbody \
+        \repl -filter mhl.replywithoutbody \
              -convertargs text/html '' -convertargs text/plain '' "$@"
     fi
 }
@@ -59,25 +59,25 @@ rtm() {
 
 #### accept a calendar request
 calaccept() {
-    repl -noformat -editor mhbuild \
+    \repl -noformat -editor mhbuild \
          -convertargs text/calendar '-reply accept -contenttype' "$@"
 }
 
 #### decline a calendar request
 caldecline() {
-    repl -noformat -editor mhbuild \
+    \repl -noformat -editor mhbuild \
          -convertargs text/calendar '-reply decline -contenttype' "$@"
 }
 
 #### reply as tentative to a calendar request
 caltentative() {
-    repl -noformat -editor mhbuild \
+    \repl -noformat -editor mhbuild \
          -convertargs text/calendar '-reply tentative -contenttype' "$@"
 }
 
 #### cancel a calendar request
 calcancel() {
-    repl -noformat -editor mhbuild \
+    \repl -noformat -editor mhbuild \
          -convertargs text/calendar '-cancel -contenttype' "$@"
 }
 
