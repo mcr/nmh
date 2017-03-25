@@ -210,7 +210,7 @@ dist_nmhetc_DATA = etc/MailAliases etc/components etc/digestcomps \
 		   etc/mhl.body etc/mhl.digest etc/mhl.format etc/mhl.forward \
 		   etc/mhl.headers etc/mhl.reply etc/mhl.replywithoutbody \
 		   etc/mhshow.marker etc/rcvdistcomps etc/rcvdistcomps.outbox \
-		   etc/replcomps etc/replgroupcomps \
+		   etc/replcomps etc/replgroupcomps etc/rmmproc.messageid \
 		   etc/scan.MMDDYY \
 		   etc/scan.YYYYMMDD etc/scan.curses etc/scan.default \
 		   etc/scan.highlighted \
