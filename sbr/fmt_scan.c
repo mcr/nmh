@@ -299,10 +299,20 @@ cpstripped (charstring_t dest, size_t max, char *str)
 	prevCtrl = 0;
 
 #ifdef MULTIBYTE_SUPPORT
-	charstring_push_back_chars (dest, altstr ? altstr : str, char_len, w);
-        max -= w;
-	str += char_len;
-	altstr = NULL;
+	assert(w >= 0);
+	if (max >= (size_t) w) {
+	    charstring_push_back_chars (dest, altstr ? altstr : str, char_len, w);
+	    max -= w;
+	    str += char_len;
+	    altstr = NULL;
+	} else {
+	    /* Not enough width available for the last character.  Output
+	       space(s) to fill. */
+	    while (max-- > 0) {
+		charstring_push_back (dest, ' ');
+	    }
+	    break;
+	}
 #else /* MULTIBYE_SUPPORT */
 	charstring_push_back (dest, *str++);
         --max;

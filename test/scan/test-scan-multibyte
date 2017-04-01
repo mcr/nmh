@@ -63,6 +63,8 @@ fi
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 
+
+start_test 'RFC 2047 headers'
 if test "$width" -eq 3; then
 cat > "$expected" <<EOF
   11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are looki
@@ -79,6 +81,7 @@ fi
 run_prog scan -width 80 +inbox 11 > $actual || exit 1
 check "$expected" "$actual"
 
+
 #
 # Check decoding with an invalid multibyte sequence.  We skip this test
 # if we don't have iconv support, since it requires converting from one
@@ -86,6 +89,7 @@ check "$expected" "$actual"
 # it's required for the test right after it.
 #
 
+start_test 'invalid multibyte sequence'
 cat >`mhpath new` <<EOF
 From: Test12 <test12@example.com>
 To: Some User <user@example.com>
@@ -120,6 +124,7 @@ if test $? -ne 0; then
 fi
 
 # check scan width with a valid multibyte sequence
+start_test 'scan width with a valid multibyte sequence'
 if test "$width" -eq 1; then
     cat >"$expected" <<EOF
   12  12/31 Test12             2013 New Year’s Deals! Start the year right
@@ -137,6 +142,7 @@ check "$expected" "$actual"
 
 
 if test "$ICONV_ENABLED" -eq 1; then
+  start_test 'encoded single quote'
   cat >"$expected" <<EOF
   13  01/13 sender@example.co  <<The Subject: is an encoded single quote, 0x92. 
 EOF
@@ -159,4 +165,23 @@ EOF
 fi
 
 
+start_test 'insufficient room for multicolumn character'
+#### This multibyte character requires 2 columns for display, but
+#### only 1 is availble.  cpstripped() used to get this wrong.
+
+cat >"$expected" <<EOF
+ 
+EOF
+
+cat >`mhpath new` <<EOF
+Mime-Version: 1.0
+
+在 Should not see any of this text
+EOF
+
+run_prog scan -format '%{body}' -width 1 last >"$actual"
+check "$expected" "$actual"
+
+
+finish_test
 exit $failed
