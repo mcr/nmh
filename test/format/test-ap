@@ -14,19 +14,33 @@ setup_test
 # Use proper program, likely not the first one on PATH.
 ap="${MH_LIBEXEC_DIR}/ap"
 
+start_test 'ambiguous switch'
 check_exit '-eq 1' $ap -
+start_test 'invalid switch'
 check_exit '-eq 1' $ap -xyzzy
+start_test 'help'
 check_exit '-eq 0' $ap -help
+start_test 'version'
 check_exit '-eq 0' $ap -version
+start_test 'missing -form argument'
 check_exit '-eq 1' $ap -format foo -form
+start_test 'missing -format argument'
 check_exit '-eq 1' $ap -form foo -format
+start_test 'missing -width argument'
 check_exit '-eq 1' $ap -width
 x=tendixzehn
 l=$x$x$x$x$x
 c=$l$l
+start_test 'more than 100 addresses'
 check_exit '-eq 1' $ap `echo $c | sed 's/./ &/g'` 101
+start_test 'no addresses'
 check_exit '-eq 1' $ap
+start_test 'success, though alias not found'
 COLUMNS=1 check_exit '-eq 0' $ap foo
+
+#### Make sure that 8-bit character is properly interpreted.
+require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
+start_test 'address with 8-bit character'
 check_exit '-eq 1' $ap -width 0 `printf 'f\357o'`
 
 finish_test
