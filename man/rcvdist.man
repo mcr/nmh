@@ -1,4 +1,4 @@
-.TH RCVDIST %manext1% "December 31, 2016" "%nmhversion%"
+.TH RCVDIST %manext1% 1999-04-30 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

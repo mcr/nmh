@@ -1,4 +1,4 @@
-.TH RCVTTY %manext1% "March 23, 2017" "%nmhversion%"
+.TH RCVTTY %manext1% 1999-04-30 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

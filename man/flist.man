@@ -1,4 +1,4 @@
-.TH FLIST %manext1% "December 17, 2016" "%nmhversion%"
+.TH FLIST %manext1% 1999-04-30 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

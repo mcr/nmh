@@ -1,4 +1,4 @@
-.TH DP %manext8% "November 6, 2012" "%nmhversion%"
+.TH DP %manext8% 1999-04-30 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

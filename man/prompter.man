@@ -1,4 +1,4 @@
-.TH PROMPTER %manext1% "January 18, 2001" "%nmhversion%"
+.TH PROMPTER %manext1% 1999-04-30 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
