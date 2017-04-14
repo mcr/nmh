@@ -46,7 +46,7 @@ or in the sequence(s) listed in the profile entry
 .RI \*(lq Unseen-Sequence \*(rq.
 Each line consists of the folder name, the total number of messages
 in the specified sequences, and a list of messages derived from the
-.mh_sequence file.  For example:
+\&.mh_sequence file.  For example:
 .PP
 .RS 5
 .nf
