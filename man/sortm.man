@@ -1,4 +1,4 @@
-.TH SORTM %manext1% "March 23, 2014" "%nmhversion%"
+.TH SORTM %manext1% 2014-03-23 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

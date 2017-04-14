@@ -1,4 +1,4 @@
-.TH POST %manext8% "October 17, 2016" "%nmhversion%"
+.TH POST %manext8% 2016-10-17 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

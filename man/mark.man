@@ -1,4 +1,4 @@
-.TH MARK %manext1% "March 31, 2013" "%nmhversion%"
+.TH MARK %manext1% 2013-03-31 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
