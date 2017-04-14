@@ -97,7 +97,7 @@ other than the default.  The credentials profile entry in the
 mh\-profile(5) man page describes the ways to supply a username and
 password.
 .PP
-If SASL authentication is successful, 
+If SASL authentication is successful,
 .BR nmh
 will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(encrypted)' and `(decrypted)' when

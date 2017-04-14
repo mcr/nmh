@@ -7,7 +7,7 @@ comp \- compose an nmh message
 .SH SYNOPSIS
 .HP 5
 .na
-.B comp 
+.B comp
 .RB [ \-help ]
 .RB [ \-version ]
 .RI [ +folder ]
@@ -120,7 +120,7 @@ Forms that are selected via the
 .B \-form
 switch are processed via the
 .B nmh
-template system; see 
+template system; see
 .IR mh\-format (5)
 for details.  Drafts constructed from another message or with the
 .B \-use

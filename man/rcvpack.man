@@ -24,7 +24,7 @@ If the
 switch is given (the default), messages are separated by
 mbox (uucp) style delimiters.  This is the format used
 by most mail clients (elm, mailx, etc.).
-.PP 
+.PP
 Alternatively, if the
 .B \-mmdf
 switch is given, messages are separated by mmdf style

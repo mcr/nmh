@@ -8,7 +8,7 @@ dp \- parse dates RFC 822-style
 .HP 5
 .na
 .B %nmhlibexecdir%/dp
-.RB [ \-help ] 
+.RB [ \-help ]
 .RB [ \-version ]
 .RB [ \-form
 .IR formatfile ]

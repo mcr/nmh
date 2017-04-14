@@ -59,7 +59,7 @@ forw \- forward nmh messages
 .IR number ]
 .RB [ \-volume
 .IR number ]
-[other\ switches\ for\ 
+[other\ switches\ for\
 .BR forw ]
 .ad
 .SH DESCRIPTION

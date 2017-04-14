@@ -16,7 +16,7 @@ mark \- manipulate nmh message sequences
 .I name
 \&...]
 .RB [ \-add " | " \-delete ]
-.RB [ \-list ] 
+.RB [ \-list ]
 .RB [ \-public " | " \-nopublic ]
 .RB [ \-zero " | " \-nozero ]
 .ad

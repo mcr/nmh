@@ -149,7 +149,7 @@ if it contains characters outside of the ASCII range.  See
 .IR mhshow (1)
 for more details and example syntax.
 .PP
-Each attached MIME part contains a 
+Each attached MIME part contains a
 \*(lqContent-Description\*(rq header that includes the filename, and
 adds a \*(lqContent-Disposition\*(rq header.
 Here is an example of MIME part headers for an attachment:

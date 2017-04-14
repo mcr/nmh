@@ -8,7 +8,7 @@ ali \- list nmh mail aliases
 .HP 5
 .na
 .B ali
-.RB [ \-help ] 
+.RB [ \-help ]
 .RB [ \-version ]
 .RB [ \-alias
 .IR aliasfile ]

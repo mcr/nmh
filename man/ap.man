@@ -8,7 +8,7 @@ ap \- parse addresses RFC 822-style
 .HP 5
 .na
 .B %nmhlibexecdir%/ap
-.RB [ \-help ] 
+.RB [ \-help ]
 .RB [ \-version ]
 .RB [ \-form
 .IR formatfile ]
