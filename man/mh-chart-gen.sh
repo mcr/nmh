@@ -13,7 +13,7 @@ nmhmandir=`dirname $0`
 # from the local build environment when building distribution packages.
 LC_TIME=C; export LC_TIME
 unset LANG
-datestamp=`date '+%B %d, %Y'`
+datestamp=`date +%Y-%m-%d`
 
 cat <<__HOOPY_FROOD
 .TH MH-CHART %manext7% "${datestamp}" "%nmhversion%"
