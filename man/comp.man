@@ -1,4 +1,4 @@
-.TH COMP %manext1% "December 31, 2016" "%nmhversion%"
+.TH COMP %manext1% 2013-10-18 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

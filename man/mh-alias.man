@@ -1,4 +1,4 @@
-.TH MH-ALIAS %manext5% "November 15, 2014" "%nmhversion%"
+.TH MH-ALIAS %manext5% 2014-04-18 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

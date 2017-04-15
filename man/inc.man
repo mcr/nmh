@@ -1,4 +1,4 @@
-.TH INC %manext1% "March 18, 2017" "%nmhversion%"
+.TH INC %manext1% 2016-11-02 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

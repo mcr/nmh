@@ -1,4 +1,4 @@
-.TH MH-PROFILE %manext5% "March 22, 2017" "%nmhversion%"
+.TH MH-PROFILE %manext5% 2016-10-19 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

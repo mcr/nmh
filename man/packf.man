@@ -1,4 +1,4 @@
-.TH PACKF %manext1% "April 18, 2014" "%nmhversion%"
+.TH PACKF %manext1% 1999-05-13 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

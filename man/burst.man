@@ -1,4 +1,4 @@
-.TH BURST %manext1% "December 15, 2016" "%nmhversion%"
+.TH BURST %manext1% 2013-02-08 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

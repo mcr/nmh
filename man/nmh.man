@@ -1,4 +1,4 @@
-.TH NMH %manext7% "December 15, 2016" "%nmhversion%"
+.TH NMH %manext7% 2016-09-26 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

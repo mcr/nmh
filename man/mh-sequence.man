@@ -1,4 +1,4 @@
-.TH MH-SEQUENCE %manext5% "March 23, 2017" "%nmhversion%"
+.TH MH-SEQUENCE %manext5% 2013-10-17 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

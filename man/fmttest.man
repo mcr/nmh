@@ -1,4 +1,4 @@
-.TH FMTTEST %manext1% "December 29, 2016" "%nmhversion%"
+.TH FMTTEST %manext1% 2014-08-31 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

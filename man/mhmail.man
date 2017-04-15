@@ -1,4 +1,4 @@
-.TH MHMAIL %manext1% "March 23, 2017" "%nmhversion%"
+.TH MHMAIL %manext1% 2012-07-01 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

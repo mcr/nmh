@@ -1,4 +1,4 @@
-.TH MH-DRAFT %manext5% "March 21, 2017" "%nmhversion%"
+.TH MH-DRAFT %manext5% 2012-03-18 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

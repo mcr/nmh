@@ -1,4 +1,4 @@
-.TH MHPARAM %manext1% "March 23, 2017" "%nmhversion%"
+.TH MHPARAM %manext1% 2017-02-18 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

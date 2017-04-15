@@ -1,4 +1,4 @@
-.TH MH-FORMAT %manext5% "December 18, 2016" "%nmhversion%"
+.TH MH-FORMAT %manext5% 2015-01-10 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

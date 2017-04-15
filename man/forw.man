@@ -1,4 +1,4 @@
-.TH FORW %manext1% "March 16, 2017" "%nmhversion%"
+.TH FORW %manext1% 2013-03-22 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

@@ -1,4 +1,4 @@
-.TH MH\-MIME %manext7% "March 22, 2017" "%nmhversion%"
+.TH MH\-MIME %manext7% 2014-12-15 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

@@ -1,4 +1,4 @@
-.TH MHLIST %manext1% "March 23, 2017" "%nmhversion%"
+.TH MHLIST %manext1% 2015-02-06 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
