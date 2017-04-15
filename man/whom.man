@@ -1,4 +1,4 @@
-.TH WHOM %manext1% "August 14, 2016" "%nmhversion%"
+.TH WHOM %manext1% 2016-09-23 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

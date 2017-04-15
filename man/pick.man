@@ -1,4 +1,4 @@
-.TH PICK %manext1% "August 3, 2014" "%nmhversion%"
+.TH PICK %manext1% 2016-03-12 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

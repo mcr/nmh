@@ -1,4 +1,4 @@
-.TH SCAN %manext1% "November 6, 2012" "%nmhversion%"
+.TH SCAN %manext1% 2014-01-20 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

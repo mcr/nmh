@@ -1,4 +1,4 @@
-.TH SENDFILES %manext1% "October 21, 2012" "%nmhversion%"
+.TH SENDFILES %manext1% 2012-11-14 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

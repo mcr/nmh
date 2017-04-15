@@ -1,4 +1,4 @@
-.TH MSGCHK %manext1% "October 9, 2016" "%nmhversion%"
+.TH MSGCHK %manext1% 2016-11-02 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
