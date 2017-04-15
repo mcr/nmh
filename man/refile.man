@@ -1,4 +1,4 @@
-.TH REFILE %manext1% "March 18, 2013" "%nmhversion%"
+.TH REFILE %manext1% 2013-03-19 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

@@ -1,4 +1,4 @@
-.TH RCVSTORE %manext1% "February 18, 2013" "%nmhversion%"
+.TH RCVSTORE %manext1% 2013-02-19 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
