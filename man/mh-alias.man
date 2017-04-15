@@ -42,8 +42,8 @@ where:
 .nf
 .IR address\-group "	:= " address\-list
 .RI "			|  < " file
-.RI "			|  = " UNIX\-group
-.RI "			|  + " UNIX\-group
+.RI "			|  = " Unix\-group
+.RI "			|  + " Unix\-group
 
 .IR address\-list "	:= " address
 .RI "			|  " address\-list ", " address
@@ -59,8 +59,8 @@ that comment line.
 .I Alias\-file
 and
 .I file
-are UNIX file names.
-.I UNIX\-group
+are Unix file names.
+.I Unix\-group
 is a group name or number from
 the system's group database.
 Alias file contents are case-insensitive, with the exception
@@ -81,7 +81,7 @@ If the
 .I address\-group
 starts with an \*(lq=\*(rq, the
 system's group database
-is consulted for the UNIX\-group named after the \*(lq=\*(rq.  Each login name
+is consulted for the Unix\-group named after the \*(lq=\*(rq.  Each login name
 occurring as a member of the group is added to the
 .I address\-list
 for the alias.
@@ -90,7 +90,7 @@ In contrast, if the
 .I address\-group
 starts with a \*(lq+\*(rq, the system's group database
 is consulted to determine the group\-id of the
-UNIX\-group named after the \*(lq+\*(rq.  Each login name occurring in the
+Unix\-group named after the \*(lq+\*(rq.  Each login name occurring in the
 system's password database
 whose group\-id is indicated by this group is
 added to the
@@ -131,7 +131,7 @@ Example Alias File
 sgroup: fred, fear, freida
 fred: frated@UCI.example
 b-people: Blind List: bill, betty
-UNIX\-committee: <unix.aliases
+Unix\-committee: <unix.aliases
 staff: =staff
 wheels: +wheel
 news.*: news
@@ -154,7 +154,7 @@ Note that blind lists are not supported with the
 .B sendmail/pipe
 mail transport method.
 .PP
-The definition of \*(lqUNIX\-committee\*(rq is given by
+The definition of \*(lqUnix\-committee\*(rq is given by
 reading the file
 .I unix.aliases
 in the user's

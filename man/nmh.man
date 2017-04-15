@@ -16,7 +16,7 @@ consists of a collection
 of fairly simple single-purpose programs to send, retrieve, save,
 and manipulate messages.
 .PP
-Unlike most mail clients in UNIX,
+Unlike most mail clients in Unix,
 .B nmh
 is not a closed system which
 must be explicitly run, then exited when you wish to return to the shell.

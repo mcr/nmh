@@ -356,7 +356,7 @@ command would
 or
 .B refile
 the selected messages.  This was rather
-\*(lqinverted logic\*(rq from the UNIX point of view, so
+\*(lqinverted logic\*(rq from the Unix point of view, so
 .B pick
 was changed to define sequences and output those sequences.  Hence,
 .B pick

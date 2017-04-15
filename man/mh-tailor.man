@@ -77,7 +77,7 @@ switch and \*(lqDcc:\*(rq header field.
 The hostname
 .B nmh
 considers local.  It should typically be a fully qualified hostname.
-If this is not set, depending on the version of UNIX you're running,
+If this is not set, depending on the version of Unix you're running,
 .B nmh
 will query the system for this value (e.g.\& uname, gethostname, etc.),
 and attempt to fully qualify this value.
@@ -135,7 +135,7 @@ find out what your system expects and set this field if needed.
 .RS 5
 This option is only used for UUCP mail.  It specifies the name of the
 local host in the UUCP \*(lqdomain\*(rq.  If not set, depending
-on the version of UNIX you're running,
+on the version of Unix you're running,
 .B nmh
 will query the system
 for this value.  This has no equivalent in the
