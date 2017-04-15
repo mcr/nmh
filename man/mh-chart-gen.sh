@@ -21,7 +21,7 @@ cat <<__HOOPY_FROOD
 .\" %nmhwarning%
 .
 .SH NAME
-mh-chart \- Chart of nmh Commands
+mh-chart \- chart of nmh commands and their options
 .SH SYNOPSIS
 .na
 __HOOPY_FROOD
