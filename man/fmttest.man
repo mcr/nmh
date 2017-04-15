@@ -1,7 +1,7 @@
 .TH FMTTEST %manext1% 2014-08-31 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 fmttest \- test tool for the nmh \fImh-format\fP\^(5) language
 .SH SYNOPSIS

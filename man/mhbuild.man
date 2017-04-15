@@ -1,7 +1,7 @@
 .TH MHBUILD %manext1% 2016-10-15 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mhbuild \- translate MIME composition drafts for nmh messages
 .SH SYNOPSIS

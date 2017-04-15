@@ -1,7 +1,7 @@
 .TH MH-DRAFT %manext5% 2012-03-18 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh-draft \- draft folder facility for nmh message system
 .SH DESCRIPTION

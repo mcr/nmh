@@ -1,7 +1,7 @@
 .TH MSGCHK %manext1% 2016-11-02 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 msgchk \- check for messages
 .SH SYNOPSIS

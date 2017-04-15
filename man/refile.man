@@ -1,7 +1,7 @@
 .TH REFILE %manext1% 2013-03-19 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 refile \- file message in other nmh folders
 .SH SYNOPSIS

@@ -1,7 +1,7 @@
 .TH MHFIXMSG %manext1% 2016-11-08 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mhfixmsg \- rewrite nmh MIME messages with various transformations
 .SH SYNOPSIS

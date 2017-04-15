@@ -1,7 +1,7 @@
 .TH SEND %manext1% 2016-11-02 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 send \- send an nmh message
 .SH SYNOPSIS

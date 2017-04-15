@@ -1,7 +1,7 @@
 .TH SLOCAL %manext1% 2016-05-02 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 slocal \- asynchronously filter and deliver new mail
 .SH SYNOPSIS

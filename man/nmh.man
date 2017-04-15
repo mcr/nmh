@@ -1,7 +1,7 @@
 .TH NMH %manext7% 2016-09-26 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .\" Register 'tt' contains the indent for .TP in the COMMANDS section:
 .nr tt \w'\fImh-sequence\fR(5)\0\0'u
 .\"

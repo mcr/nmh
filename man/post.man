@@ -1,7 +1,7 @@
 .TH POST %manext8% 2016-10-17 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 post \- deliver an nmh message
 .SH SYNOPSIS

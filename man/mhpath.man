@@ -1,7 +1,7 @@
 .TH MHPATH %manext1% 2012-02-18 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mhpath \- print full pathnames of nmh messages and folders
 .SH SYNOPSIS

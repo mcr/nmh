@@ -1,7 +1,7 @@
 .TH MARK %manext1% 2013-03-31 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mark \- manipulate nmh message sequences
 .SH SYNOPSIS

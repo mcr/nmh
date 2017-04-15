@@ -1,7 +1,7 @@
 .TH MHPARAM %manext1% 2017-02-18 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mhparam \- print nmh profile and context components
 .SH SYNOPSIS

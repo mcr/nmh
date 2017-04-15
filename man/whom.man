@@ -1,7 +1,7 @@
 .TH WHOM %manext1% 2016-09-23 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 whom \- report to whom an nmh message would go
 .SH SYNOPSIS

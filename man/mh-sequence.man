@@ -1,7 +1,7 @@
 .TH MH-SEQUENCE %manext5% 2013-10-17 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh-sequence \- sequence specification for nmh message system
 .SH DESCRIPTION

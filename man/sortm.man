@@ -1,7 +1,7 @@
 .TH SORTM %manext1% 2014-03-23 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 sortm \- sort nmh messages
 .SH SYNOPSIS

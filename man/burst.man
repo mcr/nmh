@@ -1,7 +1,7 @@
 .TH BURST %manext1% 2013-02-08 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 burst \- explode digests into nmh messages
 .SH SYNOPSIS

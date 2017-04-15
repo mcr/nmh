@@ -1,7 +1,7 @@
 .TH FOLDER %manext1% 2016-08-29 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 folder, folders \- set/list current nmh folder/message
 .SH SYNOPSIS

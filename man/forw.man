@@ -1,7 +1,7 @@
 .TH FORW %manext1% 2013-03-22 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 forw \- forward nmh messages
 .SH SYNOPSIS

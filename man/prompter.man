@@ -1,7 +1,7 @@
 .TH PROMPTER %manext1% 1999-04-30 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 prompter \- prompting editor front-end for nmh
 .SH SYNOPSIS

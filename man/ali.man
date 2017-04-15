@@ -1,7 +1,7 @@
 .TH ALI %manext1% 2013-12-05 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 ali \- list nmh mail aliases
 .SH SYNOPSIS

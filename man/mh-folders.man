@@ -1,7 +1,7 @@
 .TH MH-FOLDERS %manext5% 2016-02-25 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh-folders \- specification of storage format used by nmh message system
 .SH DESCRIPTION

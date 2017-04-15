@@ -1,7 +1,7 @@
 .TH MH-MKSTEMP %manext1% 2014-03-16 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mkstemp \- create a temporary file
 .SH SYNOPSIS

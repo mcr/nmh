@@ -1,7 +1,7 @@
 .TH MHSHOW %manext1% 2015-02-08 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mhshow \- display nmh MIME messages
 .SH SYNOPSIS

@@ -1,7 +1,7 @@
 .TH MHMAIL %manext1% 2012-07-01 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mhmail \- send or read mail - part of the nmh message system
 .SH SYNOPSIS

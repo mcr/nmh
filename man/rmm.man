@@ -1,7 +1,7 @@
 .TH RMM %manext1% 2013-03-19 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 rmm \- remove nmh messages
 .SH SYNOPSIS

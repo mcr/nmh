@@ -1,7 +1,7 @@
 .TH SCAN %manext1% 2014-01-20 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 scan \- produce a one line per nmh message scan listing
 .SH SYNOPSIS

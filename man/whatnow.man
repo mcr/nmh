@@ -1,7 +1,7 @@
 .TH WHATNOW %manext1% 2014-01-23 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 whatnow \- prompting front-end for sending nmh messages
 .SH SYNOPSIS

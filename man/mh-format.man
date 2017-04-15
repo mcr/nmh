@@ -1,7 +1,7 @@
 .TH MH-FORMAT %manext5% 2015-01-10 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh-format \- format file for nmh message system
 .SH DESCRIPTION

@@ -1,7 +1,7 @@
 .TH MH-ALIAS %manext5% 2014-04-18 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh-alias \- format of nmh alias files
 .SH DESCRIPTION

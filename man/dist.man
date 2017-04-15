@@ -1,7 +1,7 @@
 .TH DIST %manext1% 2012-12-04 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 dist \- redistribute an nmh message to additional addresses
 .SH SYNOPSIS

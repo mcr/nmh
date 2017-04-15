@@ -1,7 +1,7 @@
 .TH REPL %manext1% 2014-12-15 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 repl \- reply to an nmh message
 .SH SYNOPSIS

@@ -1,7 +1,7 @@
 .TH MH-TAILOR %manext5% 2017-02-19 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh-tailor, mts.conf \- mail transport configuration for nmh message handler
 .SH DESCRIPTION

@@ -1,7 +1,7 @@
 .TH MH\-MIME %manext7% 2014-12-15 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh\-mime \- Overview of nmh MIME message composition and display
 .\"

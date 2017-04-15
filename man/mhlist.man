@@ -1,7 +1,7 @@
 .TH MHLIST %manext1% 2015-02-06 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mhlist \- list information about nmh MIME messages
 .SH SYNOPSIS

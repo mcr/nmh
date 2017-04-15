@@ -1,7 +1,7 @@
 .TH MH-MAIL %manext5% 2014-01-08 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh-mail \- message format for nmh message system
 .SH DESCRIPTION

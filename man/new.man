@@ -1,7 +1,7 @@
 .TH NEW %manext1% 2009-01-17 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 new \- report on nmh folders with new messages
 .PP

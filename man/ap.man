@@ -1,7 +1,7 @@
 .TH AP %manext8% 2013-12-05 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 ap \- parse addresses RFC 822-style
 .SH SYNOPSIS

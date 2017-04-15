@@ -1,7 +1,7 @@
 .TH RCVSTORE %manext1% 2013-02-19 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 rcvstore \- asynchronously incorporate mail into an nmh folder
 .SH SYNOPSIS

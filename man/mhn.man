@@ -1,7 +1,7 @@
 .TH MHN %manext1% 2013-01-04 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mhn \- display/list/store/cache MIME messages
 .SH SYNOPSIS

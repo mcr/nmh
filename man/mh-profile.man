@@ -1,7 +1,7 @@
 .TH MH-PROFILE %manext5% 2016-10-19 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh-profile \- user profile customization for nmh message handler
 .SH DESCRIPTION

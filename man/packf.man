@@ -1,7 +1,7 @@
 .TH PACKF %manext1% 1999-05-13 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 packf \- pack messages in nmh folder into a single file
 .SH SYNOPSIS

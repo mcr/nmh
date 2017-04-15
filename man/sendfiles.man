@@ -1,7 +1,7 @@
 .TH SENDFILES %manext1% 2012-11-14 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 sendfiles \- send multiple files via a MIME message
 .SH SYNOPSIS

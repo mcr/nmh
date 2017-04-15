@@ -1,7 +1,7 @@
 .TH COMP %manext1% 2013-10-18 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 comp \- compose an nmh message
 .SH SYNOPSIS

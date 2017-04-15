@@ -17,9 +17,9 @@ datestamp=`date +%Y-%m-%d`
 
 cat <<__HOOPY_FROOD
 .TH MH-CHART %manext7% "${datestamp}" "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mh-chart \- Chart of nmh Commands
 .SH SYNOPSIS

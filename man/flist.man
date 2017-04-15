@@ -1,7 +1,7 @@
 .TH FLIST %manext1% 1999-04-30 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 flist, flists \- list the number of nmh messages in given sequence(s)
 .SH SYNOPSIS

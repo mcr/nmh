@@ -1,7 +1,7 @@
 .TH MHL %manext1% 2014-09-15 "%nmhversion%"
-.\"
+.
 .\" %nmhwarning%
-.\"
+.
 .SH NAME
 mhl \- produce formatted listings of nmh messages
 .SH SYNOPSIS
