@@ -2,10 +2,8 @@
 .\"
 .\" %nmhwarning%
 .\"
-.SH FMTTEST
-fmttest \- test tool for the nmh
-.IR mh-format (5)
-language
+.SH NAME
+fmttest \- test tool for the nmh \fImh-format\fP\^(5) language
 .SH SYNOPSIS
 .HP 5
 .na
