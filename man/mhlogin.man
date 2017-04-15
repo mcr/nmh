@@ -1,7 +1,7 @@
+.TH MHLOGIN %manext1% 2016-10-10 "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
-.TH MHLOGIN %manext1% 2016-10-10 "%nmhversion%"
 .SH NAME
 mhlogin \- nmh login to external (OAuth) services
 .SH SYNOPSIS
