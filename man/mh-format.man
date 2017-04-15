@@ -115,7 +115,7 @@ These are combined into the conditional execution construct:
 .nf
 .RI "%< " condition " " "format-text"
 .RI "%? " condition " " "format-text"
-    \&...
+    ...
 .RI "%| " "format-text"
 %>
 .fi

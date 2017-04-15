@@ -579,7 +579,7 @@ is checked.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
+^$HOME/.mh\(ruprofile~^The user profile
 ^$MHSTORE~^Additional profile entries
 ^%nmhetcdir%/mhn.defaults~^System default MIME profile entries
 .fi

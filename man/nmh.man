@@ -157,7 +157,7 @@ Commands which take a message number as an argument
 \*(lqprev\*(rq, \*(lqcur\*(rq, \*(lqnext\*(rq, or \*(lqlast\*(rq to indicate
 (respectively) the first, previous, current, next, or last message in
 the current folder (assuming they are defined).
-As a shorthand, \*(lq\&.\*(rq is equivalent to \*(lqcur\*(rq.
+As a shorthand, \*(lq.\*(rq is equivalent to \*(lqcur\*(rq.
 .PP
 Commands which take a range of message numbers
 .RB ( rmm ,
@@ -545,7 +545,7 @@ contains
 .B nmh
 library commands
 .TP
-$HOME/\&.mh_profile
+$HOME/.mh_profile
 The user's nmh profile
 .ne 4
 .SH "SEE ALSO"

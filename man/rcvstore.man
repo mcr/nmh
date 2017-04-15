@@ -110,7 +110,7 @@ local lockfile, if you use the \*(lqUnseen-Sequence\*(rq profile entry.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
+^$HOME/.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

@@ -81,7 +81,7 @@ With
 is used directly, and with the others, the grep pattern constructed is:
 .PP
 .RS 5
-`component[ \\t]*:\&.*pattern'
+`component[ \\t]*:.*pattern'
 .RE
 .PP
 This means that the pattern specified for a
@@ -97,7 +97,7 @@ component.  The expression
 is a shorthand for specifying
 .PP
 .RS 5
-`\-search \*(lqcomponent[ \\t]*:\&.*pattern\*(rq\ '
+`\-search \*(lqcomponent[ \\t]*:.*pattern\*(rq\ '
 .RE
 .PP
 It is used to pick a component which is not one of \*(lqTo:\*(rq,
@@ -323,7 +323,7 @@ This lets the outer command fail gracefully as well.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
+^$HOME/.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

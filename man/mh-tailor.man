@@ -160,13 +160,13 @@ value (which is empty).
 .RE
 .PP
 .BR mmdelim1 :
-\&\\001\\001\\001\\001\\n
+\\001\\001\\001\\001\\n
 .RS 5
 The beginning-of-message delimiter for mail drops.
 .RE
 .PP
 .BR mmdelim2 :
-\&\\001\\001\\001\\001\\n
+\\001\\001\\001\\001\\n
 .RS 5
 The end-of-message delimiter for mail drops.
 .RE

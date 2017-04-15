@@ -45,7 +45,7 @@ when the message arrives.
 The message selection criteria used by
 .B slocal is specified
 in the file
-.RI \*(lq \&.maildelivery \*(rq
+.RI \*(lq .maildelivery \*(rq
 in the user's home directory.
 You can specify an alternate file with the
 .B \-maildelivery
@@ -68,7 +68,7 @@ The message is normally read from the standard input.  The
 .B \-file
 switch sets the name of the file from which the message should be
 read, instead of reading stdin.  This is useful when debugging a
-.RI \*(lq \&.maildelivery \*(rq
+.RI \*(lq .maildelivery \*(rq
 file.
 .PP
 The
@@ -109,12 +109,12 @@ stdout about its progress.  The
 switch produces more
 verbose debugging output on stderr.  These flags are useful when
 creating and debugging your
-.RI \*(lq \&.maildelivery \*(rq
+.RI \*(lq .maildelivery \*(rq
 file, as they
 allow you to see the decisions and actions that
 .B slocal
 is taking, as well as check for syntax errors in your
-.RI \*(lq \&.maildelivery \*(rq
+.RI \*(lq .maildelivery \*(rq
 file.
 .SS "Message Transfer Agents"
 Most modern MTAs including
@@ -134,7 +134,7 @@ your MTA to invoke
 on your behalf when a message arrives.
 .SS "The Maildelivery File"
 The
-.RI \*(lq \&.maildelivery \*(rq
+.RI \*(lq .maildelivery \*(rq
 file controls how
 .B slocal
 filters and delivers
@@ -145,7 +145,7 @@ argument in double-quotes.  A double-quote can be included by preceding it
 with a backslash.  Lines beginning with `#' and blank lines are ignored.
 .PP
 The format of each line in the
-.RI \*(lq \&.maildelivery \*(rq
+.RI \*(lq .maildelivery \*(rq
 file is:
 .PP
 .RS 5
@@ -275,13 +275,13 @@ can be made and several actions can be taken.
 .RE
 .SS "Security of Delivery Files"
 In order to prevent security problems, the
-.RI \*(lq \&.maildelivery \*(rq
+.RI \*(lq .maildelivery \*(rq
 file must be owned either by the user or by root, and must be
 writable only by the owner.  If this is not the case, the file is
 not read.
 .PP
 If the
-.RI \*(lq \&.maildelivery \*(rq
+.RI \*(lq .maildelivery \*(rq
 file cannot be found, or does not
 perform an action which delivers the message, then
 .B slocal
@@ -366,7 +366,7 @@ quicker delivery into your mail drop.
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^%nmhetcdir%/mts.conf~^nmh mts configuration file
-^$HOME/\&.maildelivery~^The file controlling local delivery
+^$HOME/.maildelivery~^The file controlling local delivery
 ^%nmhetcdir%/maildelivery~^Rather than the standard file
 ^%mailspool%/$USER~^The default mail drop
 .fi
@@ -380,7 +380,7 @@ quicker delivery into your mail drop.
 .nf
 .RB ` \-noverbose '
 .RB ` \-nosuppressdup '
-.RB ` \-maildelivery "' defaults to $HOME/\&.maildelivery"
+.RB ` \-maildelivery "' defaults to $HOME/.maildelivery"
 .RB ` \-mailbox "' defaults to %mailspool%/$USER"
 .RB ` \-file "' defaults to stdin"
 .RB ` \-addr "' defaults to the current user"
@@ -401,7 +401,7 @@ the
 facility provided by
 .BR MMDF-II .
 Thus, the
-.RI \*(lq \&.maildelivery \*(rq
+.RI \*(lq .maildelivery \*(rq
 file syntax is somewhat limited.  But
 .B slocal
 has been modified and extended, so that is it no longer compatible with

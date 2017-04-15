@@ -377,7 +377,7 @@ supersedes all of this.  (profile, no default)
 .RE
 .PP
 .BR credentials :
-\&legacy
+legacy
 .RS 5
 Indicates how the username and password credentials will be retrieved
 for access to external servers, such as those that provide SMTP or POP
@@ -1025,13 +1025,13 @@ This may be set by
 .SH FILES
 .PD 0
 .TP 20
-$HOME/\&.mh\-profile
+$HOME/.mh\-profile
 The user's profile.
 .TP
 <mh\-dir>/context
 The user's context
 .TP
-<folder>/\&.mh\-sequences
+<folder>/.mh\-sequences
 Public sequences for <folder>.
 .PD
 .SH "SEE ALSO"

@@ -216,7 +216,7 @@ The default message skeleton.
 <mh\-dir>/distcomps
 The user's message skeleton.
 .TP 20
-$HOME/\&.mh\(ruprofile
+$HOME/.mh\(ruprofile
 The user's profile.
 .TP 20
 <mh\-dir>/draft

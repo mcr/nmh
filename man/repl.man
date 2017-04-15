@@ -501,7 +501,7 @@ is checked.
 ^or <mh\-dir>/replgroupcomps~^Rather than the standard template
 ^%nmhetcdir%/mhl.reply~^The standard message filter
 ^or <mh\-dir>/mhl.reply~^Rather than the standard filter
-^$HOME/\&.mh\(ruprofile~^The user profile
+^$HOME/.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
 .fi
 .SH "PROFILE COMPONENTS"

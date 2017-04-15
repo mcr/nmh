@@ -61,8 +61,8 @@ can be unpacked using
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-^\&.msgbox\&.map~^A binary index of the file
+^$HOME/.mh\(ruprofile~^The user profile
+^.msgbox.map~^A binary index of the file
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

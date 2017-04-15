@@ -44,7 +44,7 @@ for all the
 details.
 .SH FILES
 .TP 20
-$HOME/\&.mh\(ruprofile
+$HOME/.mh\(ruprofile
 The user profile
 .SH "PROFILE COMPONENTS"
 .PD 0

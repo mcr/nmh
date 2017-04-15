@@ -66,7 +66,7 @@ profile component.
 ^or <mh\-dir>/rcvdistcomps~^User's message skeleton
 ^%nmhetcdir%/mts.conf~^nmh mts configuration file
 ^%nmhetcdir%/maildelivery~^Default delivery file
-^$HOME/\&.maildelivery~^User's delivery file
+^$HOME/.maildelivery~^User's delivery file
 .fi
 .SH "SEE ALSO"
 .IR rcvpack (1),

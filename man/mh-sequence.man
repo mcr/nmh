@@ -39,7 +39,7 @@ the message numerically following \*(lqcur\*(rq
 .PD
 .PP
 In commands that take a `msg' argument, the default is \*(lqcur\*(rq.
-As a shorthand, \*(lq\&.\*(rq is equivalent to \*(lqcur\*(rq.
+As a shorthand, \*(lq.\*(rq is equivalent to \*(lqcur\*(rq.
 .PP
 For example: In a folder containing five messages numbered 5, 10, 94, 177
 and 325, \*(lqfirst\*(rq is 5 and \*(lqlast\*(rq is 325.  If \*(lqcur\*(rq
@@ -322,13 +322,13 @@ one command's messages not appearing on the requested sequence.
 .SH FILES
 .PD 0
 .TP 20
-$HOME/\&.mh\-profile
+$HOME/.mh\-profile
 The user's profile.
 .TP 20
 <mh\-dir>/context
 The user's context.
 .TP 20
-<folder>/\&.mh\-sequences
+<folder>/.mh\-sequences
 File for public sequences.
 .PD
 .SH "PROFILE COMPONENTS"

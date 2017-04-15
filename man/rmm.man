@@ -91,7 +91,7 @@ will advance to the next message in the folder as expected.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
+^$HOME/.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

@@ -145,7 +145,7 @@ to exit with non-zero status.
 .fc ^ ~
 .nf
 .ta \w'ExtraBigProfileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
+^$HOME/.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

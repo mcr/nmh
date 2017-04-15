@@ -933,7 +933,7 @@ is checked.
 .PP
 .PD 0
 .TP 20
-$HOME/\&.mh\(ruprofile
+$HOME/.mh\(ruprofile
 The user's profile.
 .TP
 $MHBUILD

@@ -72,7 +72,7 @@ the address.
 .SH FILES
 .PD 0
 .TP 20
-$HOME/\&.mh\(ruprofile
+$HOME/.mh\(ruprofile
 The user's profile.
 .TP
 %nmhetcdir%/mts.conf

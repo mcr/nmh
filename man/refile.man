@@ -169,7 +169,7 @@ to file the <mh\-dir>/draft.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
+^$HOME/.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

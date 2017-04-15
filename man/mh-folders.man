@@ -168,7 +168,7 @@ The user's context.
 $MHCONTEXT
 Overrides the above context.
 .TP 20
-<folder>/\&.mh\-sequences
+<folder>/.mh\-sequences
 Public sequences for <folder>.
 .SH "SEE ALSO"
 .IR flist (1),

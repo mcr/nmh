@@ -99,7 +99,7 @@ instead.
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^%nmhetcdir%/mts.conf~^nmh mts configuration file
-^$HOME/\&.maildelivery~^The file controlling local delivery
+^$HOME/.maildelivery~^The file controlling local delivery
 ^%nmhetcdir%/maildelivery~^Rather than the standard file
 .fi
 .SH CONTEXT
