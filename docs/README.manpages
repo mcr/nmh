@@ -63,16 +63,8 @@ Dates
 
 	The DATE in the .TH macro should reflect the most recent
 	*non-trivial* update to the *content* of the manpage;
-	formatting changes don't count.  Spell out the date (no
-	abbreviations or shortcuts):
-
-	  January 2, 1904
-
-	not the unparseable
-
-	  01/02/04
-
-	Don't abbreviate the month.
+	formatting changes don't count, nor does expanding the `SEE
+	ALSO' list.  The date is in `yyyy-mm-dd' format.
 
 
 Program Names
