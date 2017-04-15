@@ -128,8 +128,8 @@ Example Alias File
 .RS 5
 .nf
 <%nmhetcdir%/BBoardAliases
-fred: frated@UCI.example
 sgroup: fred, fear, freida
+fred: frated@UCI.example
 b-people: Blind List: bill, betty
 UNIX\-committee: <unix.aliases
 staff: =staff
@@ -141,10 +141,9 @@ news.*: news
 The first line says that more aliases should immediately be read from
 the file
 .BR %nmhetcdir%/BBoardAliases .
-Following this, \*(lqfred\*(rq
-is defined as an alias for \*(lqfrated@UCI.example\*(rq, and \*(lqsgroup\*(rq
-is defined as an alias for the three names \*(lqfrated@UCI.example\*(rq,
-\*(rqfear\*(rq, and \*(rqfreida\*(rq.
+Next, \*(lqsgroup\*(rq is defined as an alias for three names,
+and one of them, \*(lqfred\*(rq,
+is a forward reference to another alias for \*(lqfrated@UCI.example\*(rq.
 .PP
 The alias \*(lqb-people\*(rq is a blind list which includes the addresses
 \*(lqbill\*(rq and \*(lqbetty\*(rq; the message will be delivered to those
@@ -155,18 +154,24 @@ Note that blind lists are not supported with the
 .B sendmail/pipe
 mail transport method.
 .PP
-Next, the definition of \*(lqUNIX\-committee\*(rq is given by
+The definition of \*(lqUNIX\-committee\*(rq is given by
 reading the file
 .I unix.aliases
 in the user's
 .B nmh
-directory,
+directory.
+.PP
 \*(lqstaff\*(rq is defined as all users who are listed as members of the
 group \*(lqstaff\*(rq in the
 system's group database, and \*(lqwheels\*(rq
 is defined as all users whose group\-id in
 the system's password database
 is equivalent to the \*(lqwheel\*(rq group.
+.PP
+Lastly,
+.RI \*(lqnews. anything \*(rq
+is aliased to \*(lqnews\*(rq;
+the full stop is just another literal character.
 .SH "PROFILE COMPONENTS"
 .TP 20
 Aliasfile:
