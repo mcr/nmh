@@ -524,9 +524,7 @@ main (int argc, char **argv)
  	    qsort (Maildir, num_maildir_entries, sizeof(*Maildir), maildir_srt);
  	}
 
-	if ((cp = strdup(newmail)) == NULL)
-	    adios (NULL, "error allocating memory to copy newmail");
-
+	cp = mh_xstrdup(newmail);
 	newmail = cp;
     }
 
@@ -539,9 +537,7 @@ main (int argc, char **argv)
     if (!folder)
 	folder = getfolder (0);
     maildir = m_maildir (folder);
-
-    if ((maildir_copy = strdup(maildir)) == NULL)
-        adios (maildir, "error allocating memory to copy maildir");
+    maildir_copy = mh_xstrdup(maildir);
 
     if (!folder_exists(maildir)) {
         /* If the folder doesn't exist, and we're given the -silent flag,

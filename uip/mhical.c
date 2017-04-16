@@ -332,10 +332,10 @@ convert_to_reply (contentline *clines, act action) {
             (node = find_contentline (clines, "BEGIN", "VEVENT"))) {
             contentline *new_node = add_contentline (node, "ATTENDEE");
 
-            add_param_name (new_node, strdup ("PARTSTAT"));
-            add_param_value (new_node, strdup (partstat));
-            add_param_name (new_node, strdup ("CN"));
-            add_param_value (new_node, strdup (getfullname ()));
+            add_param_name (new_node, mh_xstrdup ("PARTSTAT"));
+            add_param_value (new_node, mh_xstrdup (partstat));
+            add_param_name (new_node, mh_xstrdup ("CN"));
+            add_param_value (new_node, mh_xstrdup (getfullname ()));
             new_node->value = concat ("MAILTO:", getlocalmbox (), NULL);
         }
     }
@@ -369,7 +369,7 @@ convert_to_cancellation (contentline *clines) {
     if ((node = find_contentline (clines, "STATUS", 0))  &&
         ! strcasecmp (node->value, "CONFIRMED")) {
         free (node->value);
-        node->value = strdup ("CANCELLED");
+        node->value = mh_xstrdup ("CANCELLED");
     }
 
     if ((node = find_contentline (clines, "SEQUENCE", 0))) {
@@ -378,7 +378,7 @@ convert_to_cancellation (contentline *clines) {
 
         (void) snprintf (buf, sizeof buf, "%d", sequence + 1);
         free (node->value);
-        node->value = strdup (buf);
+        node->value = mh_xstrdup (buf);
     }
 }
 
@@ -389,24 +389,24 @@ convert_common (contentline *clines, act action) {
 
     if ((node = find_contentline (clines, "METHOD", 0))) {
         free (node->value);
-        node->value = strdup (action == ACT_CANCEL  ?  "CANCEL"  :  "REPLY");
+        node->value = mh_xstrdup (action == ACT_CANCEL  ?  "CANCEL"  :  "REPLY");
     }
 
     if ((node = find_contentline (clines, "PRODID", 0))) {
         free (node->value);
-        node->value = strdup ("nmh mhical v0.1");
+        node->value = mh_xstrdup ("nmh mhical v0.1");
     }
 
     if ((node = find_contentline (clines, "VERSION", 0))) {
         if (! node->value) {
             admonish (NULL, "Version property is missing value, assume 2.0");
-            node->value = strdup ("2.0");
+            node->value = mh_xstrdup ("2.0");
         }
 
         if (strcmp (node->value, "2.0")) {
             admonish (NULL, "supports the Version 2.0 specified by RFC 5545 "
                             "but iCalendar object has Version %s", node->value);
-            node->value = strdup ("2.0");
+            node->value = mh_xstrdup ("2.0");
         }
     }
 
@@ -458,7 +458,7 @@ convert_common (contentline *clines, act action) {
 
             if (strftime (buf, sizeof buf, "%Y%m%dT%H%M%SZ", &now_tm)) {
                 free (node->value);
-                node->value = strdup (buf);
+                node->value = mh_xstrdup (buf);
             } else {
                 admonish (NULL, "strftime unable to format current time");
             }
@@ -523,7 +523,7 @@ output (FILE *file, contentline *clines, int contenttype) {
             char *line = NULL;
             size_t len;
 
-            line = strdup (node->name);
+            line = mh_xstrdup (node->name);
             line = format_params (line, node->params);
 
             len = strlen (line);
@@ -576,20 +576,20 @@ display (FILE *file, contentline *clines, char *nfs) {
 
     if ((c = fmt_findcomp ("method"))) {
         if ((node = find_contentline (clines, "METHOD", 0))  &&  node->value) {
-            c->c_text = strdup (node->value);
+            c->c_text = mh_xstrdup (node->value);
         }
     }
 
     if ((c = fmt_findcomp ("organizer"))) {
         if ((node = find_contentline (clines, "ORGANIZER", 0))  &&
             node->value) {
-            c->c_text = strdup (identity (node));
+            c->c_text = mh_xstrdup (identity (node));
         }
     }
 
     if ((c = fmt_findcomp ("summary"))) {
         if ((node = find_contentline (clines, "SUMMARY", 0))  &&  node->value) {
-            c->c_text = strdup (node->value);
+            c->c_text = mh_xstrdup (node->value);
         }
     }
 
@@ -601,7 +601,7 @@ display (FILE *file, contentline *clines, char *nfs) {
             if (node->name  &&  node->value  &&  ! in_valarm  &&
                 ! strcasecmp ("DESCRIPTION", node->name)  &&
                 strcasecmp (node->value, "\\n\\n")) {
-                c->c_text = strdup (node->value);
+                c->c_text = mh_xstrdup (node->value);
             } else if (in_valarm) {
                 if (! strcasecmp ("END", node->name)  &&
                     ! strcasecmp ("VALARM", node->value)) {
@@ -619,7 +619,7 @@ display (FILE *file, contentline *clines, char *nfs) {
     if ((c = fmt_findcomp ("location"))) {
         if ((node = find_contentline (clines, "LOCATION", 0))  &&
             node->value) {
-            c->c_text = strdup (node->value);
+            c->c_text = mh_xstrdup (node->value);
         }
     }
 
@@ -642,7 +642,7 @@ display (FILE *file, contentline *clines, char *nfs) {
                 } else if (! strcasecmp ("DTSTART", node->name)) {
                     /* Got it:  DTSTART outside of a VTIMEZONE section. */
                     char *datetime = format_datetime (timezones, node);
-                    c->c_text = datetime ? datetime : strdup(node->value);
+                    c->c_text = datetime ? datetime : mh_xstrdup(node->value);
                 }
             }
         }

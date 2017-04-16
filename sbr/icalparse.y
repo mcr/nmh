@@ -149,7 +149,7 @@ add_contentline (contentline *node, const char *name) {
     contentline *new_node;
 
     NEW0(new_node);
-    new_node->name  = strdup (name);
+    new_node->name  = mh_xstrdup (name);
     new_node->next = node->next;
     node->next = new_node;
 

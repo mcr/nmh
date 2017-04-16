@@ -379,7 +379,7 @@ try_it_again:
 
 	for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)
 	    if (is_selected (mp, msgnum)) {
-	    	fwdmsg = strdup(m_name(msgnum));
+		fwdmsg = mh_xstrdup(m_name(msgnum));
 		break;
 	    }
 

@@ -525,7 +525,7 @@ fix_addresses (char *str) {
             struct mailname *mp;
 
             NEW(adr_nodep);
-            adr_nodep->adr = strdup (cp);
+            adr_nodep->adr = mh_xstrdup (cp);
             adr_nodep->escape_local_part = 0;
             adr_nodep->fixed = 0;
             adr_nodep->next = NULL;
@@ -552,12 +552,12 @@ fix_addresses (char *str) {
          * Walk the list and try to fix broken addresses.
          */
         for (np = adrs; np; np = np->next) {
-            char *display_name = strdup (np->adr);
+            char *display_name = mh_xstrdup (np->adr);
             size_t len = strlen (display_name);
 
             if (np->escape_local_part) {
                 char *local_part_end = strrchr (display_name, '<');
-                char *angle_addr = strdup (local_part_end);
+                char *angle_addr = mh_xstrdup (local_part_end);
                 struct mailname *mp;
                 char *new_adr, *adr;
 
@@ -578,7 +578,7 @@ fix_addresses (char *str) {
                 free (angle_addr);
                 free (new_adr);
                 free (np->adr);
-                np->adr = strdup (adr);
+                np->adr = mh_xstrdup (adr);
 
                 /* Need to flush getname() */
                 while ((cp = getname (""))) continue;
@@ -601,7 +601,7 @@ fix_addresses (char *str) {
                     free (fixed_str);
                     fixed_str = new_str;
                 } else {
-                    fixed_str = strdup (np->adr);
+                    fixed_str = mh_xstrdup (np->adr);
                 }
             }
 
@@ -615,5 +615,5 @@ fix_addresses (char *str) {
         return fixed_str;
     }
     free (fixed_str);
-    return str  ?  strdup (str)  :  NULL;
+    return str  ?  mh_xstrdup (str)  :  NULL;
 }

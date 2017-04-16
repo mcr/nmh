@@ -534,7 +534,7 @@ domain (char *buffer)
 static int
 route (char *buffer)
 {
-    path = strdup ("@");
+    path = mh_xstrdup ("@");
 
     for (;;) {
 	switch (my_lex (buffer)) {
