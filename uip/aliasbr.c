@@ -132,6 +132,8 @@ akval (struct aka *ak, char *s)
 		if (mp	&&  mp->m_ingrp) {
 		    char *gname = add (mp->m_gname, NULL);
 
+                    /* FIXME: gname must be true;  add() never returns NULL.
+		     * Is some other test required? */
 		    if (gname  &&  aleq (name, ak->ak_name)) {
 			/* Will leak cp. */
 			cp = concat (gname, akresult (ak), NULL);
