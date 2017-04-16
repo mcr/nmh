@@ -584,7 +584,7 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 	    create_folder(m_mailpath(folder), 0, exit);
 
 	    /* Record the folder name */
-	    ct->c_folder = add (folder, NULL);
+	    ct->c_folder = mh_xstrdup(folder);
 
 	    if (cp[1])
 		free (folder);

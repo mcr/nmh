@@ -993,7 +993,7 @@ use_forw:
 
 	/* else, use the current folder */
 	if (!folder)
-	    folder = add (getfolder (1), NULL);
+	    folder = mh_xstrdup(getfolder(1));
 
 	if (!(mp = folder_read (folder, 0)))
 	    adios (NULL, "unable to read folder %s", folder);

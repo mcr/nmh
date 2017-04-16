@@ -370,7 +370,7 @@ do_cache:
     /*
      * Cache the current directory before we do any chdirs()'s.
      */
-    cwd = add(pwd(), NULL);
+    cwd = mh_xstrdup(pwd());
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
