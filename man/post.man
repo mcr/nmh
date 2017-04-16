@@ -290,7 +290,7 @@ use.
 does
 .B NOT
 consult the user's
-.I \&.mh\(ruprofile
+.I \&.mh_profile
 .SH "SEE ALSO"
 .IR mhmail (1),
 .IR send (1),

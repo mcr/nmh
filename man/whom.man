@@ -140,7 +140,7 @@ for more information.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/.mh\(ruprofile~^The user profile
+^$HOME/.mh_profile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

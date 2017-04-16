@@ -154,7 +154,7 @@ switch allows time preservation to be turned off, if enabled
 in the profile.
 .SH FILES
 .TP 20
-$HOME/.mh\(ruprofile
+$HOME/.mh_profile
 The user's profile.
 .SH "PROFILE COMPONENTS"
 .PD 0

@@ -178,7 +178,7 @@ verification.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/.mh\(ruprofile~^The user profile
+^$HOME/.mh_profile~^The user profile
 ^%nmhetcdir%/mts.conf~^nmh mts configuration file
 ^%mailspool%/$USER~^Location of mail drop
 .fi

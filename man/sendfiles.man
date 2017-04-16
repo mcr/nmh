@@ -165,7 +165,7 @@ listing is generated, the files are extracted.
 A prudent user will never put
 .B \-auto
 in the
-.I \&.mh\(ruprofile
+.I \&.mh_profile
 file.  The correct procedure is to first use
 .B mhlist
 to find out what will be extracted.  Then
@@ -177,7 +177,7 @@ to perform the extraction.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/.mh\(ruprofile~^The user profile
+^$HOME/.mh_profile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

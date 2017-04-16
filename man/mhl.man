@@ -353,7 +353,7 @@ options can be used to build up multiple arguments to the format filter.
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^%nmhetcdir%/mhl.format~^The message template
 ^or <mh\-dir>/mhl.format~^Rather than the standard template
-^$HOME/.mh\(ruprofile~^The user profile
+^$HOME/.mh_profile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

@@ -498,7 +498,7 @@ is checked.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/mhn.defaults  'u
-^$HOME/.mh\(ruprofile~^The user profile
+^$HOME/.mh_profile~^The user profile
 ^%nmhetcdir%/mhn.defaults~^Default mhfixmsg conversion entries
 .fi
 .SH "PROFILE COMPONENTS"

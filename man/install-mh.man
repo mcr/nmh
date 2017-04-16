@@ -33,7 +33,7 @@ the user's home directory, and has the default name of
 \fI`Mail'\fP.
 .B install\-mh
 writes an initial
-.I \&.mh\(ruprofile
+.I \&.mh_profile
 for the user.
 .PP
 As with all
@@ -52,12 +52,12 @@ is not set, then the
 file is consulted.
 .PP
 When creating the user's
-.IR \&.mh\(ruprofile ,
+.IR \&.mh_profile ,
 .B install\-mh
 will check for the existence of a global profile at
 .IR %nmhetcdir%/mh.profile .
 If found, this will be used to initialize the new
-.IR \&.mh\(ruprofile .
+.IR \&.mh_profile .
 .PP
 The \fB\-check\fP switch checks if
 .B nmh

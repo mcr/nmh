@@ -80,7 +80,7 @@ is a message number or range of message numbers in the sequence.
 There is one sequences file in each
 .B nmh
 folder.  Its default name is
-.IR \&.mh\(rusequences ,
+.IR \&.mh_sequences ,
 but this can be overridden by the \*(lqmh\-sequences\*(rq profile entry.
 .B sequences
 has the following format:

@@ -139,7 +139,7 @@ public and private.  Public sequences of a folder are accessible to any
 user that can read that folder.  They are kept in each folder
 in the file determined by the \*(lqmh\-sequences\*(rq profile entry
 (default is
-.IR \&.mh\(rusequences ).
+.IR \&.mh_sequences ).
 Private sequences are accessible
 only to the
 .B nmh
@@ -218,14 +218,14 @@ there can be a performance penalty in using the
 .B all
 .B nmh
 programs have to write the sequence information to the
-.I \&.mh\(rusequences
+.I \&.mh_sequences
 file for the folder each time they run.  If the
 \*(lqPrevious\-Sequence\*(rq profile entry is not included, only
 .B pick
 and
 .B mark
 will write to the
-.B \&.mh\(rusequences
+.B \&.mh_sequences
 file.
 .SS "The Unseen Sequence"
 Finally, many users like to indicate which messages have not been
@@ -238,7 +238,7 @@ and
 .B show
 honor the profile entry \*(lqUnseen\-Sequence\*(rq to support this
 activity.  This entry in the
-.I \&.mh\(ruprofile
+.I \&.mh_profile
 should be defined as one or more sequence names, as separate arguments.
 If there is a value for \*(lqUnseen\-Sequence\*(rq in the profile,
 then whenever new messages are placed in a folder (using

@@ -84,7 +84,7 @@ executes
 for each matching folder.
 .SH FILES
 .TP 20
-$HOME/.mh\(ruprofile
+$HOME/.mh_profile
 The user profile
 .SH "PROFILE COMPONENTS"
 .PD 0

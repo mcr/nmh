@@ -212,7 +212,7 @@ commands for managing MIME attachments.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/.mh\(ruprofile~^The user profile
+^$HOME/.mh_profile~^The user profile
 ^<mh\-dir>/draft~^The draft file
 .fi
 .SH "PROFILE COMPONENTS"

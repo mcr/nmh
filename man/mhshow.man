@@ -712,7 +712,7 @@ is checked.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/.mh\(ruprofile~^The user profile
+^$HOME/.mh_profile~^The user profile
 ^$MHSHOW~^Additional profile entries
 ^%nmhetcdir%/mhn.defaults~^System default MIME profile entries
 ^%nmhetcdir%/mhl.headers~^The headers template

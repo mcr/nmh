@@ -247,7 +247,7 @@ can, by specifying
 .BR prompter 's
 .B \-prepend
 switch in the
-.I \&.mh\(ruprofile
+.I \&.mh_profile
 file, prepend any commentary text before the forwarded messages.
 .PP
 To use the MIME rules for encapsulation, specify the

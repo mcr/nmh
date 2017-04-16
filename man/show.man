@@ -64,7 +64,7 @@ program to list the messages with no reformatting.  Normally, this
 program is specified as the
 .I showproc
 in the user's
-.IR \&.mh\(ruprofile ,
+.IR \&.mh_profile ,
 rather than using a command line switch.
 .PP
 By default, non-text messages (MIME messages with multi-media
@@ -178,7 +178,7 @@ from each sequence named by the profile entry.
 .fc ^ ~
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/.mh\(ruprofile~^The user profile
+^$HOME/.mh_profile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
