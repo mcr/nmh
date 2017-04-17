@@ -256,6 +256,32 @@ AUTHOR and HISTORY Sections
 	section might be appropriate for documenting incompatibility
 	with older versions of MH.
 
+Common errors and subjective conventions
+
+        Try to mention `nmh' in the NAME section if it's not too awkward.
+        The command-line `-foo' is an option, not a switch.
+        Describe the default behaviour, then how it can be altered,
+            e.g. an option.
+        It's `see foo(1)', not `see the foo(1) man page for more detail'.
+
+        A hyphen is input as an ASCII minus sign, `non-standard',
+            not as `\-' which is the input to output a minus sign.
+        Use an unbreakable space for RFCs: `RFC\ 822'.
+        Hyphenate compound adjectives, e.g. `mail-drop format'.
+        Don't SHOUT for emphasis.
+            Use `.I' for normal emphasis and `.B' for strongest.
+
+        Use `Unix', not `UNIX'.
+        Use `zeroed', not `zero'd'.
+        Use `mail drop', not `maildrop' or `drop box'.
+        Use `messages', not `message(s)', ditto `folders', etc.
+        Use `e.g.', not `eg.', and `i.e.', not `ie.'.
+
+        Use a pair of commas, like this, for parenthetical asides.
+        Use `that' when the clause is essential, without a comma.
+            Use comma then `which' when it's non-essential.
+        `Hence' means `from here';  it's `thus' to introduce a conclusion.
+
 ------------------------------------------------------------------------------
 
 [ This template is a bit behind the times. I will bring it into
