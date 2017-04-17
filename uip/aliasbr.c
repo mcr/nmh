@@ -165,7 +165,7 @@ aleq (char *string, char *aliasent)
     while ((c = *string++)) {
 	if (*aliasent == '*')
 	    return 1;
-        if ((c | 040) != (*aliasent | 040))
+        if (tolower((unsigned char)c) != tolower((unsigned char)*aliasent))
             return 0;
         aliasent++;
     }
