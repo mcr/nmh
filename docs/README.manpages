@@ -27,10 +27,10 @@ Troff Considerations
 	When quoting, use \*(lq and \*(rq. This ensures correct
 	formatting on typesetter-like devices.
 
-	Don't use UTF-8 characters in the manpage source.  We still
-	build and run on systems that can't handle this.  And most
-	anything you would want to use has an internal troff character
-	escape sequence, anyway.
+        A man page's source is ASCII, not UTF-8.  troff has escapes for
+        non-ASCII characters, e.g. \(em for an em-dash, U+2014, that are
+        mapped onto whatever the output device supports, e.g. UTF-8 or
+        PDF.
 
 
 Section Ordering
