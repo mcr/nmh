@@ -143,7 +143,7 @@ rmf (char *folder)
 		printf ("[+%s de-referenced]\n", folder);
 		return OK;
 	    }
-	    advise (NULL, "you have no profile entry for the %s folder +%s",
+	    inform("you have no profile entry for the %s folder +%s",
 		    i == NOTOK ? "unreadable" : "read-only", folder);
 	    return NOTOK;
     }
@@ -201,7 +201,7 @@ rmf (char *folder)
     if (others == 0 && remdir (maildir))
 	return OK;
 
-    advise (NULL, "folder +%s not removed", folder);
+    inform("folder +%s not removed", folder);
     return NOTOK;
 }
 

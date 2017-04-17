@@ -372,7 +372,7 @@ main (int argc, char **argv) {
             set_text_ctparams(ct, fx.decodetypes, fx.lf_line_endings);
             *ctp++ = ct;
         } else {
-            advise (NULL, "unable to parse message from file %s", file);
+            inform("unable to parse message from file %s", file);
             status = NOTOK;
 
             /* If there's an outfile, pass the input message unchanged, so the
@@ -386,7 +386,7 @@ main (int argc, char **argv) {
                 }
 
                 if (copy_input_to_output (file, infp, outfile, outfp) != OK) {
-                    advise (NULL, "unable to copy message to %s, "
+                    inform("unable to copy message to %s, "
                             "it might be lost\n", outfile);
                 }
 
@@ -442,7 +442,7 @@ main (int argc, char **argv) {
                     set_text_ctparams(ct, fx.decodetypes, fx.lf_line_endings);
                     *ctp++ = ct;
                 } else {
-                    advise (NULL, "unable to parse message %s", msgnam);
+                    inform("unable to parse message %s", msgnam);
                     status = NOTOK;
 
                     /* If there's an outfile, pass the input message
@@ -465,10 +465,8 @@ main (int argc, char **argv) {
 
                         if (copy_input_to_output (input_filename, infp,
                                                   outfile, outfp) != OK) {
-                            advise (NULL,
-                                    "unable to copy message to %s, "
-                                    "it might be lost\n",
-                                    outfile);
+                            inform("unable to copy message to %s, "
+                                "it might be lost\n", outfile);
                         }
 
                         fclose (infp);
@@ -608,7 +606,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
            to the output. */
         if (copy_input_to_output (input_filename, *infp, outfile,
                                   *outfp) != OK) {
-            advise (NULL, "unable to copy message to %s, it might be lost\n",
+            inform("unable to copy message to %s, it might be lost\n",
                     outfile);
         }
     }
@@ -692,16 +690,16 @@ fix_boundary (CT *ct, int *message_mods) {
                             }
                         } else {
                             *ct = NULL;
-                            advise (NULL, "unable to parse fixed part");
+                            inform("unable to parse fixed part");
                             status = NOTOK;
                         }
                         free (filename);
                     } else {
-                        advise (NULL, "unable to replace broken boundary");
+                        inform("unable to replace broken boundary");
                         status = NOTOK;
                     }
                 } else {
-                    advise (NULL, "unable to create temporary file in %s",
+                    inform("unable to create temporary file in %s",
                             get_temp_dir());
                     status = NOTOK;
                 }
@@ -826,7 +824,7 @@ replace_boundary (CT ct, char *file, char *boundary) {
     int status = OK;
 
     if (ct->c_file == NULL) {
-        advise (NULL, "missing input filename");
+        inform("missing input filename");
         return NOTOK;
     }
 
@@ -898,12 +896,12 @@ replace_boundary (CT ct, char *file, char *boundary) {
 
         case LENERR:
         case FMTERR:
-            advise (NULL, "message format error in component #%d", compnum);
+            inform("message format error in component #%d", compnum);
             status = NOTOK;
             break;
 
         default:
-            advise (NULL, "getfld() returned %d", state);
+            inform("getfld() returned %d", state);
             status = NOTOK;
             break;
         }
@@ -985,7 +983,7 @@ fix_types (CT ct, svector_t fixtypes, int *message_mods) {
                             *cp = '\0';
                             ct_subtype = mh_xstrdup(++cp);
                         } else {
-                            advise (NULL, "missing / in MIME type of %s %s",
+                            inform("missing / in MIME type of %s %s",
                                     ct->c_file, ct->c_partno);
                             free (ct_type);
                             return NOTOK;
@@ -1000,7 +998,7 @@ fix_types (CT ct, svector_t fixtypes, int *message_mods) {
                         ct->c_ctinfo.ci_subtype = ct_subtype;
                         if (! replace_substring (&ct->c_ctline, type,
                                                  ct_type_subtype)) {
-                            advise (NULL, "did not find %s in %s",
+                            inform("did not find %s in %s",
                                     type, ct->c_ctline);
                         }
 
@@ -1018,7 +1016,7 @@ fix_types (CT ct, svector_t fixtypes, int *message_mods) {
                                     }
                                     break;
                                 } else {
-                                    advise (NULL, "did not find %s in %s",
+                                    inform("did not find %s in %s",
                                             type, hf->value);
                                 }
                             }
@@ -1337,9 +1335,8 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
                         parent->c_ctinfo.ci_subtype = mh_xstrdup("alternative");
                         if (! replace_substring (&parent->c_ctline, "/related",
                                                  "/alternative")) {
-                            advise (NULL,
-                                    "did not find multipart/related in %s",
-                                    parent->c_ctline);
+                            inform("did not find multipart/related in %s",
+                                parent->c_ctline);
                         }
 
                         /* Update Content-Type header field. */
@@ -1359,7 +1356,7 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
                                     remove_parameter (hf->value, "type");
                                     break;
                                 } else {
-                                    advise (NULL, "did not find multipart/"
+                                    inform("did not find multipart/"
                                                   "related in header %s",
                                             hf->value);
                                 }
@@ -1493,7 +1490,7 @@ build_text_plain_part (CT encoded_part) {
 
         /* This m_mktemp2() call closes the temp file. */
         if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
-            advise (NULL, "unable to create temporary file in %s",
+            inform("unable to create temporary file in %s",
                     get_temp_dir());
         } else {
             tmp_plain_file = mh_xstrdup (tempfile);
@@ -1658,14 +1655,14 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
     /* Check for invo_name-format-type/subtype. */
     if ((cf = context_find_by_type ("format", type, subtype)) == NULL) {
         if (verbosw) {
-            advise (NULL, "Don't know how to convert %s, there is no "
+            inform("Don't know how to convert %s, there is no "
                     "%s-format-%s/%s profile entry",
                     ct->c_file, invo_name, type, subtype);
         }
         return NOTOK;
     }
     if (strchr (cf, '>')) {
-        advise (NULL, "'>' prohibited in \"%s\",\nplease fix your "
+        inform("'>' prohibited in \"%s\",\nplease fix your "
                 "%s-format-%s/%s profile entry", cf, invo_name, type,
                 subtype ? subtype : "");
 
@@ -1790,7 +1787,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
         }
 
         if (found_boundary) {
-            advise (NULL, "giving up trying to find a unique boundary");
+            inform("giving up trying to find a unique boundary");
             free_content (ct);
             return NULL;
         }
@@ -2599,7 +2596,7 @@ fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm) {
             replace_param (first_pm, last_pm, name, decoded, 0);
             fixed = 1;
         } else {
-            advise (NULL, "failed to decode %s parameter %s", name, value);
+            inform("failed to decode %s parameter %s", name, value);
         }
     }
 
@@ -2664,7 +2661,7 @@ fix_filename_encoding (CT ct) {
                 free((void *)new_params); /* Cast away const.  Sigh. */
                 free((void *)params);
             } else {
-                advise (NULL, "did not find semicolon in %s:%s\n",
+                inform("did not find semicolon in %s:%s\n",
                         hf->name, hf->value);
             }
         }

@@ -413,10 +413,8 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
     if (!datecomp || (tw = dparsetime (datecomp)) == NULL) {
 	struct stat st;
 
-	advise (NULL,
-		"can't parse %s field in message %d, "
-		"will use file modification time",
-		datesw, msg);
+	inform("can't parse %s field in message %d, "
+            "will use file modification time", datesw, msg);
 	fstat (fileno (in), &st);
 	smsg->s_clock = st.st_mtime;
 	check_failed = 1;

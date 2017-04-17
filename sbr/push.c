@@ -23,7 +23,7 @@ push(void)
     switch (pid) {
 	case -1:
 	    /* fork error */
-	    advise (NULL, "unable to fork, so can't push...");
+	    inform("unable to fork, so can't push...");
 	    break;
 
 	case 0:

@@ -51,7 +51,7 @@ seq_delsel (struct msgs *mp, char *cp, int public, int zero)
 	 */
 	if (new_seq) {
 	    if (!(svector_push_back (mp->msgattrs, strdup (cp)))) {
-		advise (NULL, "strdup failed");
+		inform("strdup failed");
 		return 0;
 	    }
 	}
@@ -66,7 +66,7 @@ seq_delsel (struct msgs *mp, char *cp, int public, int zero)
 	}
     } else {
 	if (new_seq) {
-	    advise (NULL, "no such sequence as %s", cp);
+	    inform("no such sequence as %s", cp);
 	    return 0;
 	}
     }
@@ -129,6 +129,6 @@ seq_delmsg (struct msgs *mp, char *cp, int msgnum)
 	}
     }
 
-    advise (NULL, "no such sequence as %s", cp);
+    inform("no such sequence as %s", cp);
     return 0;
 }

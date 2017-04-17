@@ -352,7 +352,7 @@ ismymbox (struct mailname *np)
 		}
 	    }
 	    if (oops)
-		advise (NULL, "please fix the %s: entry in your %s file",
+		inform("please fix the %s: entry in your %s file",
 			"alternate-mailboxes", mh_profile);
 	}
 

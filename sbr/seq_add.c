@@ -53,7 +53,7 @@ seq_addsel (struct msgs *mp, char *cp, int public, int zero)
      */
     if (new_seq) {
 	if (!(svector_push_back (mp->msgattrs, strdup (cp)))) {
-	    advise (NULL, "strdup failed");
+	    inform("strdup failed");
 	    return 0;
 	}
     }
@@ -140,7 +140,7 @@ seq_addmsg (struct msgs *mp, char *cp, int msgnum, int public, int zero)
      */
     if (new_seq) {
 	if (!(svector_push_back (mp->msgattrs, strdup (cp)))) {
-	    advise (NULL, "strdup failed");
+	    inform("strdup failed");
 	    return 0;
 	}
     }

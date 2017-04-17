@@ -587,7 +587,7 @@ go_to_it:
     if (audfile) {
 	int i;
 	if ((i = stat (audfile, &st)) == NOTOK)
-	    advise (NULL, "Creating Receive-Audit: %s", audfile);
+	    inform("Creating Receive-Audit: %s", audfile);
 	if ((aud = fopen (audfile, "a")) == NULL)
 	    adios (audfile, "unable to append to");
 	else if (i == NOTOK)
@@ -762,15 +762,15 @@ go_to_it:
 	    case SCNERR:
 		if (aud)
 		    fputs ("inc aborted!\n", aud);
-		advise (NULL, "aborted!");	/* doesn't clean up locks! */
+		inform("aborted!");	/* doesn't clean up locks! */
 		break;
 
 	    case SCNNUM:
-		advise (NULL, "BUG in %s, number out of range", invo_name);
+		inform("BUG in %s, number out of range", invo_name);
 		break;
 
 	    default:
-		advise (NULL, "BUG in %s, scan() botch (%d)", invo_name, incerr);
+		inform("BUG in %s, scan() botch (%d)", invo_name, incerr);
 		break;
 
 	    case SCNMSG:
@@ -917,7 +917,7 @@ go_to_it:
     if (inc_type == INC_FILE && Maildir == NULL) {
 	if (trnflag) {
 	    if (stat (newmail, &st) != NOTOK && s1.st_mtime != st.st_mtime)
-		advise (NULL, "new messages have arrived!\007");
+		inform("new messages have arrived!\007");
 	    else {
 		int newfd;
 		if ((newfd = creat (newmail, 0600)) != NOTOK)
@@ -956,7 +956,7 @@ go_to_it:
 
 	if (msgnum >= mp2->hghoff
 		&& !(mp2 = folder_realloc (mp2, mp2->lowoff, msgnum + 1))) {
-	    advise (NULL, "unable to reallocate folder storage");
+	    inform("unable to reallocate folder storage");
 	    goto skip;
 	}
 

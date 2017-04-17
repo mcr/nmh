@@ -265,7 +265,7 @@ main (int argc, char **argv)
 		if ((pw = getpwnam (vec[vecp])))
 		    status += checkmail (pw->pw_name, pw->pw_dir, datesw, notifysw, 0);
 		else
-		    advise (NULL, "no such user as %s", vec[vecp]);
+		    inform("no such user as %s", vec[vecp]);
 	    }
 	}
     }		/* host == NULL */
@@ -389,7 +389,7 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 		  auth_svc) == NOTOK
 	    || pop_stat (&nmsgs, &nbytes) == NOTOK     /* check for messages  */
 	    || pop_quit () == NOTOK) {                 /* quit POP connection */
-	advise (NULL, "%s", response);
+	inform("%s", response);
 	return 1;
     }
 

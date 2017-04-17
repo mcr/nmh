@@ -357,7 +357,7 @@ nmh_strcasestr (const char *s1, const char *s2) {
 void trunccpy(char *dst, const char *src, size_t size)
 {
     if (!size) {
-        advise(NULL, "trunccpy: zero-length destination: \"%.20s\"",
+        inform("trunccpy: zero-length destination: \"%.20s\"",
             src ? src : "null");
         abort();
     }

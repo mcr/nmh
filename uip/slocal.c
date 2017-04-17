@@ -782,11 +782,11 @@ parse (int fd)
 
 	    case LENERR: 
 	    case FMTERR: 
-		advise (NULL, "format error in message");
+		inform("format error in message");
 		break;
 
 	    default: 
-		advise (NULL, "internal error in m_getfld");
+		inform("internal error in m_getfld");
 		fclose (in);
 		return -1;
 	}

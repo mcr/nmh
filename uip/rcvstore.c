@@ -175,7 +175,7 @@ main (int argc, char **argv)
     /* don't add file if it is empty */
     if (st.st_size == 0) {
 	(void) m_unlink (tmpfilenam);
-	advise (NULL, "empty file");
+	inform("empty file");
 	done (0);
     }
 

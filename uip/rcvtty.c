@@ -189,7 +189,7 @@ message_fd (char **vec)
     struct stat st;
 
     if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) {
-	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
+	inform("unable to create temporary file in %s", get_temp_dir());
 	return NOTOK;
     }
     (void) m_unlink(tfile);  /* Use fd, no longer need the file name. */
@@ -255,7 +255,7 @@ header_fd (void)
     charstring_t scanl = NULL;
 
     if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) {
-	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
+	inform("unable to create temporary file in %s", get_temp_dir());
         return NOTOK;
     }
     (void) m_unlink(tfile);  /* Use fd, no longer need the file name. */

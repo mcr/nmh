@@ -115,7 +115,7 @@ static unsigned char cc[] = {
 #define	nxtarg()	(*argp ? *argp++ : NULL)
 #define	prvarg()	argp--
 
-#define	padvise		if (!talked++) advise
+#define	pinform		if (!talked++) inform
 
 struct nexus {
     int (*n_action)();
@@ -203,7 +203,7 @@ pcompile (char **vec, char *date)
 	return (talked ? 0 : 1);
 
     if (*argp) {
-	padvise (NULL, "%s unexpected", *argp);
+	inform("%s unexpected", *argp);
 	return 0;
     }
 
@@ -221,7 +221,7 @@ parse (void)
 	return n;
 
     if (*cp != '-') {
-	padvise (NULL, "%s unexpected", cp);
+	pinform("%s unexpected", cp);
 	return NULL;
     }
 
@@ -242,7 +242,7 @@ parse (void)
 	    o->n_L_child = n;
 	    if ((o->n_R_child = parse ()))
 		return o;
-	    padvise (NULL, "missing disjunctive");
+	    pinform("missing disjunctive");
 	    free (o);
 	    return NULL;
 
@@ -263,7 +263,7 @@ nexp1 (void)
 	return n;
 
     if (*cp != '-') {
-	padvise (NULL, "%s unexpected", cp);
+	pinform("%s unexpected", cp);
 	free (n);
 	return NULL;
     }
@@ -287,7 +287,7 @@ nexp1 (void)
 	    o->n_L_child = n;
 	    if ((o->n_R_child = nexp1 ()))
 		return o;
-	    padvise (NULL, "missing conjunctive");
+	    pinform("missing conjunctive");
 	    free (o);
 	    return NULL;
 
@@ -329,7 +329,7 @@ nexp2 (void)
 	    n = newnexus (NOTaction);
 	    if ((n->n_L_child = nexp3 ()))
 		return n;
-	    padvise (NULL, "missing negation");
+	    pinform("missing negation");
 	    free (n);
 	    return NULL;
 
@@ -352,7 +352,7 @@ nexp3 (void)
 	return NULL;
 
     if (*cp != '-') {
-	padvise (NULL, "%s unexpected", cp);
+	pinform("%s unexpected", cp);
 	return NULL;
     }
 
@@ -372,16 +372,16 @@ nexp3 (void)
 
 	case PRLBR: 
 	    if ((n = parse ()) == NULL) {
-		padvise (NULL, "missing group");
+		pinform("missing group");
 		return NULL;
 	    }
 	    if ((cp = nxtarg ()) == NULL) {
-		padvise (NULL, "missing -rbrace");
+		pinform("missing -rbrace");
 		return NULL;
 	    }
 	    if (*cp++ == '-' && smatch (cp, parswit) == PRRBR)
 		return n;
-	    padvise (NULL, "%s unexpected", --cp);
+	    pinform("%s unexpected", --cp);
 	    return NULL;
 
 	default: 
@@ -398,7 +398,7 @@ nexp3 (void)
 	    dp = *brkstring (temp, " ", NULL);
     header: ;
 	    if (!(cp = nxtarg ())) {/* allow -xyz arguments */
-		padvise (NULL, "missing argument to %s", argp[-2]);
+		pinform("missing argument to %s", argp[-2]);
 		return NULL;
 	    }
 	    n = newnexus (GREPaction);
@@ -411,14 +411,14 @@ nexp3 (void)
 	    n = newnexus (GREPaction);
 	    n->n_header = 0;
 	    if (!(cp = nxtarg ())) {/* allow -xyz arguments */
-		padvise (NULL, "missing argument to %s", argp[-2]);
+		pinform("missing argument to %s", argp[-2]);
 		free (n);
 		return NULL;
 	    }
 	    dp = cp;
     pattern: ;
 	    if (!gcompile (n, dp)) {
-		padvise (NULL, "pattern error in %s %s", argp[-2], cp);
+		pinform("pattern error in %s %s", argp[-2], cp);
 		free (n);
 		return NULL;
 	    }
@@ -426,12 +426,12 @@ nexp3 (void)
 	    return n;
 
 	case PROTHR: 
-	    padvise (NULL, "internal error!");
+	    pinform("internal error!");
 	    return NULL;
 
 	case PRDATF: 
 	    if (!(datesw = nxtarg ()) || *datesw == '-') {
-		padvise (NULL, "missing argument to %s", argp[-2]);
+		pinform("missing argument to %s", argp[-2]);
 		return NULL;
 	    }
 	    return nexp3 ();
@@ -439,13 +439,13 @@ nexp3 (void)
 	case PRAFTR: 
 	case PRBEFR: 
 	    if (!(cp = nxtarg ())) {/* allow -xyz arguments */
-		padvise (NULL, "missing argument to %s", argp[-2]);
+		pinform("missing argument to %s", argp[-2]);
 		return NULL;
 	    }
 	    n = newnexus (TWSaction);
 	    n->n_datef = datesw;
 	    if (!tcompile (cp, &n->n_tws, n->n_after = i == PRAFTR)) {
-		padvise (NULL, "unable to parse %s %s", argp[-2], cp);
+		pinform("unable to parse %s %s", argp[-2], cp);
 		free (n);
 		return NULL;
 	    }
@@ -962,7 +962,7 @@ plist
 	    case LENERR: 
 	    case FMTERR: 
 		if (state == LENERR || state == FMTERR)
-		    advise (NULL, "format error in message %d", msgnum);
+		    inform("format error in message %d", msgnum);
                 mh_xfree(bp);
 		return 0;
 
@@ -974,7 +974,7 @@ plist
     m_getfld_state_destroy (&gstate);
 
     if ((tw = dparsetime (bp)) == NULL)
-	advise (NULL, "unable to parse %s field in message %d, matching...",
+	inform("unable to parse %s field in message %d, matching...",
 		n->n_datef, msgnum), state = 1;
     else
 	state = n->n_after ? (twsort (tw, &n->n_tws) > 0)

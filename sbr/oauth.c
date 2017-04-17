@@ -166,7 +166,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
             if (mh_oauth_get_err_code(ctx) == MH_OAUTH_BAD_GRANT) {
                 adios(NULL, "credentials rejected -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
             }
-            advise(NULL, "error refreshing OAuth2 token");
+            inform("error refreshing OAuth2 token");
             adios(NULL, mh_oauth_get_err_string(ctx));
         }
 

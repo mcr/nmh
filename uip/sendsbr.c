@@ -484,7 +484,7 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 		alert (drft, fd);
 		close (fd);
 	    } else {
-		advise (NULL, "message not delivered to anyone");
+		inform("message not delivered to anyone");
 	    }
 	    if (annotext && fd2 != NOTOK)
 		close (fd2);
@@ -587,7 +587,7 @@ tmp_fd (void)
     if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) return NOTOK;
 
     if (debugsw)
-	advise (NULL, "temporary file %s selected", tfile);
+	inform("temporary file %s selected", tfile);
     else
 	if (m_unlink (tfile) == NOTOK)
 	    advise (tfile, "unable to remove");
@@ -618,8 +618,7 @@ anno (int fd, struct stat *st)
     switch (child_id) {
 	case NOTOK: 		/* oops */
 	    if (!debugsw)
-		advise (NULL,
-			    "unable to fork, so doing annotations by hand...");
+		inform("unable to fork, so doing annotations by hand...");
 	    if (cwd == NULL)
 		cwd = mh_xstrdup(pwd ());
 	    /* FALLTHRU */
@@ -724,12 +723,12 @@ annoaux (int fd)
     fclose (fp);
 
     if (debugsw)
-	advise (NULL, "annotate%s with %s: \"%s\"",
+	inform("annotate%s with %s: \"%s\"",
 		inplace ? " inplace" : "", annotext, cp);
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	if (is_selected(mp, msgnum)) {
 	    if (debugsw)
-		advise (NULL, "annotate message %d", msgnum);
+		inform("annotate message %d", msgnum);
             annotate (m_name (msgnum), annotext, cp, inplace, 1, -2, 0);
 	}
     }

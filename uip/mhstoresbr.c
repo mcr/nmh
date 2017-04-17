@@ -343,7 +343,7 @@ store_partial (CT ct, mhstoreinfo_t info)
     }
 
     if (hi == 0) {
-	advise (NULL, "missing (at least) last part of multipart message");
+	inform("missing (at least) last part of multipart message");
 	return NOTOK;
     }
 
@@ -375,9 +375,8 @@ store_partial (CT ct, mhstoreinfo_t info)
 	    }
 
 missing_part:
-	    advise (NULL,
-		    "missing %spart %d of %d part multipart message",
-		    cur != hi ? "(at least) " : "", cur, hi);
+	    inform("missing %spart %d of %d part multipart message",
+                cur != hi ? "(at least) " : "", cur, hi);
 	    goto losing;
 	}
         else
@@ -706,7 +705,7 @@ output_content_file (CT ct, int appending)
 	int cc, fd;
 
 	if (!ct->c_ceopenfnx) {
-	    advise (NULL, "don't know how to decode part %s of message %s",
+	    inform("don't know how to decode part %s of message %s",
 		    ct->c_partno, ct->c_file);
 	    return NOTOK;
 	}
@@ -905,7 +904,7 @@ output_content_folder (char *folder, char *filename)
 	/* Link file into folder */
 	msgnum = folder_addmsg (&mp, filename, 0, 0, 0, 0, NULL);
     } else {
-	advise (NULL, "unable to read folder %s", folder);
+	inform("unable to read folder %s", folder);
 	return NOTOK;
     }
 
@@ -1175,7 +1174,7 @@ next_version (char *file, enum clobber_policy_t clobber_policy) {
 
       default:
         /* Should never get here. */
-        advise (NULL, "will not overwrite %s, invalid clobber policy", buffer);
+        inform("will not overwrite %s, invalid clobber policy", buffer);
         free (buffer);
         return NULL;
     }
@@ -1196,7 +1195,7 @@ next_version (char *file, enum clobber_policy_t clobber_policy) {
   free (file);
 
   if (version >= max_versions) {
-    advise (NULL, "will not overwrite %s, too many versions", buffer);
+    inform("will not overwrite %s, too many versions", buffer);
     free (buffer);
     buffer = NULL;
   }
@@ -1278,7 +1277,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
             free (prompt);
           } else {
             /* Overwrite, that's what nmh used to do.  And warn. */
-            advise (NULL, "-clobber ask but no tty, so overwrite %s", file);
+            inform("-clobber ask but no tty, so overwrite %s", file);
             break;
           }
 
@@ -1322,7 +1321,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
         if (stat (file, &st) == OK) {
           /* Keep count of files that would have been clobbered,
              and return that as process exit status. */
-          advise (NULL, "will not overwrite %s with -clobber never", file);
+          inform("will not overwrite %s with -clobber never", file);
           free (file);
           file = NULL;
           ++info->files_not_clobbered;

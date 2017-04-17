@@ -109,7 +109,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
       code = geta();
     }
     if (cred == NULL) {
-      advise(NULL, "error exchanging code for OAuth2 token");
+      inform("error exchanging code for OAuth2 token");
       adios(NULL, mh_oauth_get_err_string(ctx));
     }
 

@@ -258,7 +258,7 @@ folded-value         {VALUE-CHAR}*({fold}{VALUE-CHAR}*)+
 
 . {
     /* By default, flex will just pass unmatched text.  Catch it instead. */
-    advise (NULL, "unexpected input: |%s|\n", icaltext);
+    inform("unexpected input: |%s|\n", icaltext);
 }
 
 <<EOF>> {

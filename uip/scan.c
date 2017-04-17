@@ -266,7 +266,7 @@ main (int argc, char **argv)
 		    adios (NULL, "scan() botch (%d)", state);
 
 		case SCNEOF: 
-		    advise (NULL, "message %d: empty", msgnum);
+		    inform("message %d: empty", msgnum);
 		    break;
 	    }
 	    charstring_free (scanl);

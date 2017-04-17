@@ -151,7 +151,7 @@ losing_directory:
 	    if (!answer)
 		goto losing_directory;
 	    if (!makedir (file)) {
-		advise (NULL, "unable to create directory %s", file);
+		inform("unable to create directory %s", file);
 		goto losing_directory;
 	    }
 	}
@@ -250,7 +250,7 @@ content_error (char *what, CT ct, char *fmt, ...)
 
 	errs = add (buffer, errs);
     } else {
-	advise (NULL, "%s", buffer);
+	inform("%s", buffer);
     }
 }
 

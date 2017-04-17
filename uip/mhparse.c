@@ -250,7 +250,7 @@ parse_mime (char *file)
 	return NULL;
     } else if (S_ISDIR(statbuf.st_mode)) {
 	/* Don't try to parse a directory. */
-	advise (NULL, "%s is a directory", file);
+	inform("%s is a directory", file);
 	return NULL;
     } else if ((fp = fopen (file, "r")) == NULL) {
 	advise (file, "unable to read");
@@ -260,7 +260,7 @@ parse_mime (char *file)
     if (!(ct = get_content (fp, file, 1))) {
 	if (is_stdin)
 	    (void) m_unlink (file);
-	advise (NULL, "unable to decode %s", file);
+	inform("unable to decode %s", file);
 	return NULL;
     }
 
@@ -420,7 +420,7 @@ get_content (FILE *in, char *file, int toplevel)
 		ct->c_vrsn = vrsn;
 	    } else {
 		if (! suppress_multiple_mime_version_warning)
-		    advise (NULL, "message %s has multiple %s: fields",
+		    inform("message %s has multiple %s: fields",
 			    ct->c_file, VRSN_FIELD);
 		free(vrsn);
 	    }
@@ -432,7 +432,7 @@ get_content (FILE *in, char *file, int toplevel)
 
 	    /* Check if we've already seen a Content-Type header */
 	    if (ct->c_ctline) {
-		advise (NULL, "message %s has multiple %s: fields",
+		inform("message %s has multiple %s: fields",
 			ct->c_file, TYPE_FIELD);
 		goto next_header;
 	    }
@@ -463,7 +463,7 @@ get_content (FILE *in, char *file, int toplevel)
 	     * Content-Transfer-Encoding field
 	     */
 	    if (ct->c_celine) {
-		advise (NULL, "message %s has multiple %s: fields",
+		inform("message %s has multiple %s: fields",
 			ct->c_file, ENCODING_FIELD);
 		goto next_header;
 	    }
@@ -502,7 +502,7 @@ get_content (FILE *in, char *file, int toplevel)
 		goto next_header;
 
 	    if (ct->c_digested) {
-		advise (NULL, "message %s has multiple %s: fields",
+		inform("message %s has multiple %s: fields",
 			ct->c_file, MD5_FIELD);
 		goto next_header;
 	    }
@@ -666,7 +666,7 @@ get_ctinfo (char *cp, CT ct, int magic)
     *dp = c, cp = dp;
 
     if (!*ci->ci_type) {
-	advise (NULL, "invalid %s: field in message %s (empty type)",
+	inform("invalid %s: field in message %s (empty type)",
 		TYPE_FIELD, ct->c_file);
 	return NOTOK;
     }
@@ -700,9 +700,8 @@ get_ctinfo (char *cp, CT ct, int magic)
     *dp = c, cp = dp;
 
     if (!*ci->ci_subtype) {
-	advise (NULL,
-		"invalid %s: field in message %s (empty subtype for \"%s\")",
-		TYPE_FIELD, ct->c_file, ci->ci_type);
+	inform("invalid %s: field in message %s (empty subtype for \"%s\")",
+            TYPE_FIELD, ct->c_file, ci->ci_type);
 	return NOTOK;
     }
     to_lower(ci->ci_subtype);
@@ -728,7 +727,7 @@ magic_skip:
         mh_xfree(ct->c_id);
         ct->c_id = NULL;
 	if (!(dp = strchr(ct->c_id = ++cp, '>'))) {
-	    advise (NULL, "invalid ID in message %s", ct->c_file);
+	    inform("invalid ID in message %s", ct->c_file);
 	    return NOTOK;
 	}
 	c = *dp;
@@ -753,7 +752,7 @@ magic_skip:
 	    if (*dp == ']')
 		break;
 	if (dp < cp) {
-	    advise (NULL, "invalid description in message %s", ct->c_file);
+	    inform("invalid description in message %s", ct->c_file);
 	    ct->c_descr = NULL;
 	    return NOTOK;
 	}
@@ -780,7 +779,7 @@ magic_skip:
 	    if (*dp == '}')
 		break;
 	if (dp < cp) {
-	    advise (NULL, "invalid disposition in message %s", ct->c_file);
+	    inform("invalid disposition in message %s", ct->c_file);
 	    ct->c_dispo = NULL;
 	    return NOTOK;
 	}
@@ -814,7 +813,7 @@ magic_skip:
 	    cp++;
 
 	if (dp == cp) {
-	    advise (NULL, "invalid null transfer encoding specification");
+	    inform("invalid null transfer encoding specification");
 	    return NOTOK;
 	}
 
@@ -831,7 +830,7 @@ magic_skip:
 	}
 
 	if (ct->c_reqencoding == CE_UNKNOWN) {
-	    advise (NULL, "invalid CTE specification: \"%s\"", dp);
+	    inform("invalid CTE specification: \"%s\"", dp);
 	    return NOTOK;
 	}
 
@@ -857,9 +856,8 @@ magic_skip:
 	    }
         }
 	else
-	    advise (NULL,
-		    "extraneous information in message %s's %s: field\n%*s(%s)",
-                    ct->c_file, TYPE_FIELD, strlen(invo_name) + 2, "", cp);
+	    inform("extraneous information in message %s's %s: field\n%*s(%s)",
+                ct->c_file, TYPE_FIELD, strlen(invo_name) + 2, "", cp);
     }
 
     return OK;
@@ -925,9 +923,8 @@ get_dispo (char *cp, CT ct, int buildflag)
 	    return NOTOK;
 	}
     } else if (*cp) {
-	advise (NULL,
-		"extraneous information in message %s's %s: field\n%*s(%s)",
-                    ct->c_file, DISPO_FIELD, strlen(invo_name) + 2, "", cp);
+	inform("extraneous information in message %s's %s: field\n%*s(%s)",
+            ct->c_file, DISPO_FIELD, strlen(invo_name) + 2, "", cp);
     }
 
     if (buildflag)
@@ -955,7 +952,7 @@ get_comment (const char *filename, const char *fieldname, char **ap,
 	switch (c = *cp++) {
 	case '\0':
 invalid:
-	advise (NULL, "invalid comment in message %s's %s: field",
+	inform("invalid comment in message %s's %s: field",
 		filename, fieldname);
 	return NOTOK;
 
@@ -1135,9 +1132,8 @@ InitMultiPart (CT ct)
 
     /* complain if boundary parameter is missing */
     if (!pm) {
-	advise (NULL,
-		"a \"boundary\" parameter is mandatory for \"%s/%s\" type in message %s's %s: field",
-		ci->ci_type, ci->ci_subtype, ct->c_file, TYPE_FIELD);
+	inform("a \"boundary\" parameter is mandatory for \"%s/%s\" type in message %s's %s: field",
+            ci->ci_type, ci->ci_subtype, ct->c_file, TYPE_FIELD);
 	return NOTOK;
     }
 
@@ -1149,7 +1145,7 @@ InitMultiPart (CT ct)
     for (cp = bp; isspace ((unsigned char) *cp); cp++)
 	continue;
     if (!*cp) {
-	advise (NULL, "invalid \"boundary\" parameter for \"%s/%s\" type in message %s's %s: field",
+	inform("invalid \"boundary\" parameter for \"%s/%s\" type in message %s's %s: field",
 		ci->ci_type, ci->ci_subtype, ct->c_file, TYPE_FIELD);
 	return NOTOK;
     }
@@ -1219,7 +1215,7 @@ end_part:
     }
 
     if (! suppress_bogus_mp_content_warning) {
-        advise (NULL, "bogus multipart content in message %s", ct->c_file);
+        inform("bogus multipart content in message %s", ct->c_file);
     }
     bogus_mp_content = 1;
 
@@ -1437,10 +1433,9 @@ InitMessage (CT ct)
 			if (sscanf (pm->pm_value, "%d", &p->pm_partno) != 1
 			        || p->pm_partno < 1) {
 invalid_param:
-			    advise (NULL,
-				    "invalid %s parameter for \"%s/%s\" type in message %s's %s field",
-				    pm->pm_name, ci->ci_type, ci->ci_subtype,
-				    ct->c_file, TYPE_FIELD);
+			    inform("invalid %s parameter for \"%s/%s\" type in message %s's %s field",
+                                pm->pm_name, ci->ci_type, ci->ci_subtype,
+                                ct->c_file, TYPE_FIELD);
 			    return NOTOK;
 			}
 			continue;
@@ -1456,10 +1451,8 @@ invalid_param:
 		if (!p->pm_partid
 		        || !p->pm_partno
 		        || (p->pm_maxno && p->pm_partno > p->pm_maxno)) {
-		    advise (NULL,
-			    "invalid parameters for \"%s/%s\" type in message %s's %s field",
-			    ci->ci_type, ci->ci_subtype,
-			    ct->c_file, TYPE_FIELD);
+		    inform("invalid parameters for \"%s/%s\" type in message %s's %s field",
+                        ci->ci_type, ci->ci_subtype, ct->c_file, TYPE_FIELD);
 		    return NOTOK;
 		}
 	    }
@@ -1644,9 +1637,8 @@ params_external (CT ct, int composing)
     }
 
     if (!e->eb_access) {
-	advise (NULL,
-		"invalid parameters for \"%s/%s\" type in message %s's %s field",
-		ci->ci_type, ci->ci_subtype, ct->c_file, TYPE_FIELD);
+	inform("invalid parameters for \"%s/%s\" type in message %s's %s field",
+            ci->ci_type, ci->ci_subtype, ct->c_file, TYPE_FIELD);
 	return NOTOK;
     }
 
@@ -2729,7 +2721,7 @@ openMail (CT ct, char **file)
 
 	default:
 	    if (pidXwait (child_id, NULL) == OK)
-		advise (NULL, "request sent");
+		inform("request sent");
 	    break;
     }
 
@@ -3290,10 +3282,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 
 	if (*cp == 0) {
 	    if (! suppress_extraneous_trailing_semicolon_warning) {
-		advise (NULL,
-			"extraneous trailing ';' in message %s's %s: "
-			"parameter list",
-			filename, fieldname);
+		inform("extraneous trailing ';' in message %s's %s: "
+                    "parameter list", filename, fieldname);
 	    }
 	    return DONE;
 	}
@@ -3305,10 +3295,9 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	for (up = dp; isspace ((unsigned char) *dp);)
 	    dp++;
 	if (dp == cp || *dp != '=') {
-	    advise (NULL,
-		    "invalid parameter in message %s's %s: "
-                    "field\n%*sparameter %s (error detected at offset %d)",
-		    filename, fieldname, strlen(invo_name) + 2, "",cp, dp - cp);
+	    inform("invalid parameter in message %s's %s: "
+                "field\n%*sparameter %s (error detected at offset %d)",
+                filename, fieldname, strlen(invo_name) + 2, "",cp, dp - cp);
 	    return NOTOK;
 	}
 
@@ -3338,7 +3327,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		if (isdigit((unsigned char) *vp))
 		    index = *vp - '0' + index * 10;
 		else {
-		    advise (NULL, "invalid parameter index in message %s's "
+		    inform("invalid parameter index in message %s's "
 			    "%s: field\n%*s(parameter %s)", filename,
 			    fieldname, strlen(invo_name) + 2, "", cp);
 		    return NOTOK;
@@ -3382,7 +3371,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		    }
 		    vp++;
 		} else {
-		    advise(NULL, "missing charset in message %s's %s: "
+		    inform("missing charset in message %s's %s: "
 			   "field\n%*s(parameter %s)", filename, fieldname,
 			   strlen(invo_name) + 2, "", nameptr);
 		    free(nameptr);
@@ -3405,7 +3394,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		    }
 		    vp++;
 		} else {
-		    advise(NULL, "missing language tag in message %s's %s: "
+		    inform("missing language tag in message %s's %s: "
 			   "field\n%*s(parameter %s)", filename, fieldname,
 			   strlen(invo_name) + 2, "", nameptr);
 		    free(nameptr);
@@ -3429,7 +3418,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 				!isxdigit((unsigned char) *(vp + 1)) ||
 				*(vp + 2) == '\0' ||
 				!isxdigit((unsigned char) *(vp + 2))) {
-			advise(NULL, "invalid encoded sequence in message "
+			inform("invalid encoded sequence in message "
 			       "%s's %s: field\n%*s(parameter %s)",
 			       filename, fieldname, strlen(invo_name) + 2,
 			       "", nameptr);
@@ -3472,11 +3461,9 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		    switch (*cp++) {
 		    case '\0':
 bad_quote:
-		        advise (NULL,
-				"invalid quoted-string in message %s's %s: "
-                                "field\n%*s(parameter %s)",
-				filename, fieldname, strlen(invo_name) + 2, "",
-				nameptr);
+		        inform("invalid quoted-string in message %s's %s: "
+                            "field\n%*s(parameter %s)", filename,
+                            fieldname, strlen(invo_name) + 2, "", nameptr);
 			free(nameptr);
                         mh_xfree(charset);
                         mh_xfree(lang);
@@ -3560,7 +3547,7 @@ bad_quote:
 	    } else {
 		for (sp2 = pp->sechead; sp2 != NULL; sp2 = sp2->next) {
 		    if (sp2->index == sp->index) {
-			advise (NULL, "duplicate index (%d) in message "
+			inform("duplicate index (%d) in message "
 				"%s's %s: field\n%*s(parameter %s)", sp->index,
 				filename, fieldname, strlen(invo_name) + 2, "",
 				nameptr);
@@ -3575,7 +3562,7 @@ bad_quote:
 		}
 
 		if (sp2 == NULL) {
-		    advise(NULL, "Internal error: cannot insert partial "
+		    inform("Internal error: cannot insert partial "
 		    	   "param in message %s's %s: field\n%*s(parameter %s)",
 			   filename, fieldname, strlen(invo_name) + 2, "",
 			   nameptr);
@@ -3618,7 +3605,7 @@ bad_quote:
 	int pindex = 0;
 	for (sp = pp->sechead; sp != NULL; sp = sp->next) {
 	    if (sp->index != pindex++) {
-		advise(NULL, "missing section %d for parameter in "
+		inform("missing section %d for parameter in "
 		       "message %s's %s: field\n%*s(parameter %s)", pindex - 1,
 		       filename, fieldname, strlen(invo_name) + 2, "",
 		       pp->name);
@@ -3689,7 +3676,7 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 	    continue;
 
 	if (strlen(params->pm_name) > CPERLIN) {
-	    advise(NULL, "Parameter name \"%s\" is too long", params->pm_name);
+	    inform("Parameter name \"%s\" is too long", params->pm_name);
             mh_xfree(paramout);
 	    return NULL;
 	}
@@ -3993,7 +3980,7 @@ encode_param(PM pm, char *output, size_t len, size_t valuelen,
 	output += n;
 	outlen += n;
 	if (output > endptr) {
-	    advise(NULL, "Internal error: parameter buffer overflow");
+	    inform("Internal error: parameter buffer overflow");
 	    return 0;
 	}
     }
@@ -4013,7 +4000,7 @@ encode_param(PM pm, char *output, size_t len, size_t valuelen,
 	    outlen++;
 	}
 	if (output > endptr) {
-	    advise(NULL, "Internal error: parameter buffer overflow");
+	    inform("Internal error: parameter buffer overflow");
 	    return 0;
 	}
     }
@@ -4053,13 +4040,13 @@ normal_param(PM pm, char *output, size_t len, size_t valuelen,
 	    outlen++;
 	}
 	if (output > endptr) {
-	    advise(NULL, "Internal error: parameter buffer overflow");
+	    inform("Internal error: parameter buffer overflow");
 	    return 0;
 	}
     }
 
     if (output - 2 > endptr) {
-	advise(NULL, "Internal error: parameter buffer overflow");
+	inform("Internal error: parameter buffer overflow");
 	return 0;
     }
 

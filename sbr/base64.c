@@ -260,7 +260,7 @@ decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
                 }
                 if (skip  ||  (((unsigned char) *cp) & 0x80)  ||
                     (value = b642nib[((unsigned char) *cp) & 0x7f]) > 0x3f) {
-                    advise (NULL, "invalid BASE64 encoding in %s", cp);
+                    inform("invalid BASE64 encoding in %s", cp);
                     charstring_free (decoded_c);
                     *decoded = NULL;
 
@@ -315,7 +315,7 @@ test_end:
 
         /* Show some context for the error. */
         for (i = 0; i < 20  &&  cp > encoded; ++i, --cp) {}
-        advise (NULL, "premature ending (bitno %d) near %s", bitno,
+        inform("premature ending (bitno %d) near %s", bitno,
                 cp ? cp : encoded);
         charstring_free (decoded_c);
         *decoded = NULL;
@@ -355,7 +355,7 @@ hexify (const unsigned char *input, size_t len, char **output) {
             const int num = snprintf(s, sizeof s, "[0x%02x]", *cp);
 
             if (num <= 0  ||  (unsigned int) num >= sizeof s) {
-                advise (NULL, "hexify failed to write nonprintable character, needed %d bytes", num + 1);
+                inform("hexify failed to write nonprintable character, needed %d bytes", num + 1);
             } else {
                 charstring_append_cstring (tmp, s);
             }

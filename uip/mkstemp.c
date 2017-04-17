@@ -164,7 +164,7 @@ process_args(int argc, char **argv, const char **directory,
                 ambigsw(cp, switches);
                 done(NOTOK);
             case UNKWNSW:
-                advise (NULL, "-%s unknown", cp);
+                inform("-%s unknown", cp);
                 (void) snprintf(buf, sizeof buf, "%s [switches]", invo_name);
                 print_help(buf, switches, 1);
                 done(NOTOK);

@@ -87,7 +87,7 @@ mime_type(const char *file_name) {
 	    int binary = 0, c;
 
 	    if (!(fp = fopen(file_name, "r"))) {
-		advise (NULL, "unable to access file \"%s\"", file_name);
+		inform("unable to access file \"%s\"", file_name);
 		return NULL;
 	    }
 
@@ -121,7 +121,7 @@ get_file_info(const char *proc, const char *file_name) {
     if ((cp = strchr(file_name, '\''))) {
         /* file_name contains a single quote. */
         if (strchr(file_name, '"')) {
-            advise(NULL, "filenames containing both single and double quotes "
+            inform("filenames containing both single and double quotes "
                    "are unsupported for attachment");
             return NULL;
         }
@@ -162,12 +162,12 @@ get_file_info(const char *proc, const char *file_name) {
 
             (void) pclose(fp);
         } else {
-            advise(NULL, "no output from %s", cmd);
+            inform("no output from %s", cmd);
         }
 
         free(cmd);
     } else {
-        advise(NULL, "concat with \"%s\" failed, out of memory?", proc);
+        inform("concat with \"%s\" failed, out of memory?", proc);
     }
 
     return cp  ?  strdup(cp)  :  NULL;

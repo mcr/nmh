@@ -199,11 +199,11 @@ WhatNow (int argc, char **argv)
 		continue;
 
 	    case ATTACHSW:
-		advise(NULL, "The -attach switch is deprecated");
+		inform("The -attach switch is deprecated");
 		continue;
 
 	    case NOATTACHSW:
-		advise(NULL, "The -noattach switch is deprecated");
+		inform("The -noattach switch is deprecated");
 		continue;
 	    }
 	}
@@ -250,7 +250,7 @@ WhatNow (int argc, char **argv)
 	    if (msgnam)
 		showfile (++argp, msgnam);
 	    else
-		advise (NULL, "no alternate message to display");
+		inform("no alternate message to display");
 	    break;
 
 	case BUILDMIMESW:
@@ -284,7 +284,7 @@ WhatNow (int argc, char **argv)
 		removefile (drft);
 	    } else {
 		if (stat (drft, &st) != NOTOK)
-		    advise (NULL, "draft left on %s", drft);
+		    inform("draft left on %s", drft);
 	    }
 	    done (1);
 
@@ -385,7 +385,7 @@ WhatNow (int argc, char **argv)
 	    }
 
 	    if (n == -1)
-		advise(NULL, "usage is alist [-ln].");
+		inform("usage is alist [-ln].");
 
 	    else
 		annolist(drft, ATTACH_FIELD, l, n);
@@ -413,7 +413,7 @@ WhatNow (int argc, char **argv)
 	    }
 
 	    if (*(argp+1) == NULL) {
-		advise(NULL, "attach command requires file argument(s).");
+		inform("attach command requires file argument(s).");
 		break;
 	    }
 
@@ -532,7 +532,7 @@ WhatNow (int argc, char **argv)
 
 	default:
 	    /* Unknown command */
-	    advise (NULL, "say what?");
+	    inform("say what?");
 	    break;
 	}
     }
@@ -741,9 +741,9 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 		    && (!reedit || (status & 0x00ff))) {
 		    if (!use && (status & 0xff00) &&
 			    (rename (file, cp = m_backup (file)) != NOTOK)) {
-			advise (NULL, "problems with edit--draft left in %s", cp);
+			inform("problems with edit--draft left in %s", cp);
 		    } else {
-			advise (NULL, "problems with edit--%s preserved", file);
+			inform("problems with edit--%s preserved", file);
 		    }
 		}
 		status = -2;	/* maybe "reedit ? -2 : -1"? */
@@ -833,7 +833,7 @@ sendfile (char **arg, char *file, int pushsw)
 	sleep (5);
     switch (child_id) {
 	case NOTOK:
-	    advise (NULL, "unable to fork, so sending directly...");
+	    inform("unable to fork, so sending directly...");
 	    /* FALLTHRU */
 	case OK:
 	    vec = argsplit(sendproc, &program, &vecp);
@@ -1072,7 +1072,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    ambigsw (cp, sendswitches);
 		    return;
 		case UNKWNSW:
-		    advise (NULL, "-%s unknown\n", cp);
+		    inform("-%s unknown\n", cp);
 		    return;
 
 		case SHELPSW:
@@ -1092,7 +1092,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 
 		case SPLITSW:
 		    if (!(cp = *argp++) || sscanf (cp, "%d", &splitsw) != 1) {
-			advise (NULL, "missing argument to %s", argp[-2]);
+			inform("missing argument to %s", argp[-2]);
 			return;
 		    }
 		    continue;
@@ -1174,7 +1174,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case MESSAGEIDSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-') {
-			advise (NULL, "missing argument to %s", argp[-2]);
+			inform("missing argument to %s", argp[-2]);
 			return;
 		    }
 		    vec[vecp++] = cp;
@@ -1184,7 +1184,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case SDRFSW:
 		case SDRMSW:
 		    if (!(cp = *argp++) || *cp == '-') {
-			advise (NULL, "missing argument to %s", argp[-2]);
+			inform("missing argument to %s", argp[-2]);
 			return;
 		    }
 		    /* FALLTHRU */
@@ -1192,18 +1192,18 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    continue;
 
 		case SNDATTACHSW:
-		    advise(NULL, "The -attach switch is deprecated");
+		    inform("The -attach switch is deprecated");
 		    continue;
 		case SNDNOATTACHSW:
-		    advise(NULL, "The -noattach switch is deprecated");
+		    inform("The -noattach switch is deprecated");
 		    continue;
 
 		case SNDATTACHFORMAT:
-		    advise(NULL, "The -attachformat switch is deprecated");
+		    inform("The -attachformat switch is deprecated");
 		    continue;
 	    }
 	}
-	advise (NULL, "usage: %s [switches]", sp);
+	inform("usage: %s [switches]", sp);
 	return;
     }
 
@@ -1351,7 +1351,7 @@ checkmimeheader (char *drft)
 	case FLD:
 	case FLDPLUS:
 	    if (strcasecmp(name, VRSN_FIELD) == 0) {
-		advise(NULL, "Cannot use attach commands with already-"
+		inform("Cannot use attach commands with already-"
 		       "formatted MIME message \"%s\"", drft);
 		retval = 1;
 		break;

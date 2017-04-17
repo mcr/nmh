@@ -47,11 +47,11 @@ context_foil (char *path)
 	NEW(np);
 	m_defs = np;
 	if (!(np->n_name = strdup ("Path"))) {
-	    advise (NULL, "strdup failed");
+	    inform("strdup failed");
 	    return -1;
 	}
 	if (!(np->n_field = strdup (path))) {
-	    advise (NULL, "strdup failed");
+	    inform("strdup failed");
 	    return -1;
 	}
 	np->n_context = 0;
@@ -59,7 +59,7 @@ context_foil (char *path)
 
 	if (mypath == NULL && (mypath = getenv ("HOME")) != NULL)
 	    if (!(mypath = strdup (mypath))) {
-		advise (NULL, "strdup failed");
+		inform("strdup failed");
 		return -1;
 	    }
     }

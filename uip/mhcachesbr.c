@@ -94,19 +94,19 @@ cache_content (CT ct)
     CE ce = &ct->c_cefile;
 
     if (!ct->c_id) {
-	advise (NULL, "no %s: field in %s", ID_FIELD, ct->c_file);
+	inform("no %s: field in %s", ID_FIELD, ct->c_file);
 	return;
     }
 
     if (!ce) {
-	advise (NULL, "unable to decode %s", ct->c_file);
+	inform("unable to decode %s", ct->c_file);
 	return;
     }
 
     if (find_cache (NULL, wcachesw != CACHE_NEVER ? wcachesw : CACHE_ASK,
 		    &cachetype, ct->c_id, cachefile, sizeof(cachefile))
 	    == NOTOK) {
-	advise (NULL, "unable to cache %s's contents", ct->c_file);
+	inform("unable to cache %s's contents", ct->c_file);
 	return;
     }
     if (wcachesw != CACHE_NEVER && wcachesw != CACHE_ASK) {

@@ -38,7 +38,7 @@ folder_pack (struct msgs **mpp, int verbose)
 	if ((mp = folder_realloc (mp, 1, mp->hghmsg)))
 	    *mpp = mp;
 	else {
-	    advise (NULL, "unable to allocate folder storage");
+	    inform("unable to allocate folder storage");
 	    return -1;
 	}
     }

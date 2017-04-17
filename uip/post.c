@@ -796,7 +796,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	str++;
 
     if (msgstate == NORMAL && uprf (name, "resent")) {
-	advise (NULL, "illegal header line -- %s:", name);
+	inform("illegal header line -- %s:", name);
 	badmsg++;
 	return;
     }
@@ -827,7 +827,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	    if (strcmp (str, "\n")) {
                 trim_suffix_c(str, '\n');
 		if (! whomsw) {
-		    advise (NULL, "ignoring header line -- %s: %s", name, str);
+		    inform("ignoring header line -- %s: %s", name, str);
 		}
 	    }
 	}
@@ -840,7 +840,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	return;
     }
     if (hdr->flags & HBAD) {
-	advise (NULL, "illegal header line -- %s:", name);
+	inform("illegal header line -- %s:", name);
 	badmsg++;
 	return;
     }
@@ -900,11 +900,11 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	     */
 	    if ((msgstate == RESENT) ? (hdr->set & MRSN)
 					: (hdr->set & MSND)) {
-		advise (NULL, "%s: field requires one address", name);
+		inform("%s: field requires one address", name);
 		badmsg++;
 	    }
 #ifdef notdef
-	    advise (NULL, "%s: field requires at least one address", name);
+	    inform("%s: field requires at least one address", name);
 	    badmsg++;
 #endif /* notdef */
 	}
@@ -912,7 +912,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
     }
 
     if (count > 1 && (hdr->flags & HONE)) {
-	advise (NULL, "%s: field only permits one address", name);
+	inform("%s: field only permits one address", name);
 	badmsg++;
 	return;
     }
@@ -1068,7 +1068,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
     }
 
     if (grp > 0 && (hdr->flags & HNGR)) {
-	advise (NULL, "%s: field does not allow groups", name);
+	inform("%s: field does not allow groups", name);
 	badmsg++;
     }
     if (linepos) {
@@ -1108,14 +1108,14 @@ finish_headers (FILE *out)
 		/*
 		 * A From: header is now required in the draft.
 		 */
-		advise (NULL, "message has no From: header");
-		advise (NULL, "See default components files for examples");
+		inform("message has no From: header");
+		inform("See default components files for examples");
 		badmsg++;
 		break;
 	    }
 
 	    if (fromcount > 1 && (seensender == 0 && !(msgflags & MEFM))) {
-		advise (NULL, "A Sender: or Envelope-From: header is required "
+		inform("A Sender: or Envelope-From: header is required "
 			"with multiple\nFrom: addresses");
 		badmsg++;
 		break;
@@ -1135,7 +1135,7 @@ finish_headers (FILE *out)
 
 	    if (fromcount > 1 && seensender == 0) {
 	    	if (efrom[0] == '\0') {
-		    advise (NULL, "Envelope-From cannot be blank when there "
+		    inform("Envelope-From cannot be blank when there "
 		    	    "is multiple From: addresses\nand no Sender: "
 			    "header");
 		    badmsg++;
@@ -1150,21 +1150,21 @@ finish_headers (FILE *out)
 
 	case RESENT: 
 	    if (!(msgflags & MDAT)) {
-		advise (NULL, "message has no Date: header");
+		inform("message has no Date: header");
 		badmsg++;
 	    }
 	    if (!(msgflags & MFRM)) {
-		advise (NULL, "message has no From: header");
+		inform("message has no From: header");
 		badmsg++;
 	    }
 	    if (!(msgflags & MRFM)) {
-		advise (NULL, "message has no Resent-From: header");
-		advise (NULL, "See default components files for examples");
+		inform("message has no Resent-From: header");
+		inform("See default components files for examples");
 		badmsg++;
 		break;
 	    }
 	    if (fromcount > 1 && (seensender == 0 && !(msgflags & MEFM))) {
-		advise (NULL, "A Resent-Sender: or Envelope-From: header is "
+		inform("A Resent-Sender: or Envelope-From: header is "
 			"required with multiple\nResent-From: addresses");
 		badmsg++;
 		break;
@@ -1185,7 +1185,7 @@ finish_headers (FILE *out)
 
 	    if (fromcount > 1 && seensender == 0) {
 	    	if (efrom[0] == '\0') {
-		    advise (NULL, "Envelope-From cannot be blank when there "
+		    inform("Envelope-From cannot be blank when there "
 		    	    "is multiple Resent-From: addresses and no "
 			    "Resent-Sender: header");
 		    badmsg++;

@@ -77,7 +77,7 @@ m_convert (struct msgs *mp, char *name)
     cp = delimp;
     if (*cp != '\0' && *cp != '-' && *cp != ':' && *cp != '=') {
 badelim:
-	advise (NULL, "illegal argument delimiter: `%c'(0%o)", *delimp, *delimp);
+	inform("illegal argument delimiter: `%c'(0%o)", *delimp, *delimp);
 	return 0;
     }
 
@@ -87,28 +87,28 @@ badelim:
 badmsg:
 	    switch (err) {
 	    case BADMSG: 
-		advise (NULL, "no %s message", cp);
+		inform("no %s message", cp);
 		break;
 
 	    case BADNUM: 
-		advise (NULL, "message %s doesn't exist", cp);
+		inform("message %s doesn't exist", cp);
 		break;
 
 	    case BADRNG: 
-		advise (NULL, "message %s out of range 1-%d", cp, mp->hghmsg);
+		inform("message %s out of range 1-%d", cp, mp->hghmsg);
 		break;
 
 	    case BADLST: 
 badlist:
-		advise (NULL, "bad message list %s", name);
+		inform("bad message list %s", name);
 		break;
 
 	    case BADNEW:
-		advise (NULL, "folder full, no %s message", name);
+		inform("folder full, no %s message", name);
 		break;
 
 	    default: 
-		advise (NULL, "no messages match specification");
+		inform("no messages match specification");
 	    }
 	    return 0;
 	}
@@ -119,7 +119,7 @@ badlist:
 	    goto badelim;
 	if (first > mp->hghmsg || last < mp->lowmsg) {
 rangerr:
-	    advise (NULL, "no messages in range %s", name);
+	    inform("no messages in range %s", name);
 	    return 0;
 	}
 
@@ -179,7 +179,7 @@ rangerr:
 	    }
 	} else { /* looking for the nth message.  if not enough, fail. */
 	    if (last < mp->lowmsg || last > mp->hghmsg) {
-		advise (NULL, "no such message");
+		inform("no such message");
 		return 0;
 	    }
 	    first = last;
@@ -213,9 +213,9 @@ single:
 		|| first < mp->lowmsg
 		|| !(does_exist (mp, first))) {
 		if (!strcmp (name, "cur") || !strcmp (name, "."))
-		    advise (NULL, "no %s message", name);
+		    inform("no %s message", name);
 		else
-		    advise (NULL, "message %d doesn't exist", first);
+		    inform("message %d doesn't exist", first);
 		return 0;
 	    }
 	}
@@ -505,6 +505,6 @@ attr (struct msgs *mp, char *cp)
 
     if (first || just_one)
 	return BADMSG;
-    advise (NULL, "sequence %s %s", cp, inverted ? "full" : "empty");
+    inform("sequence %s %s", cp, inverted ? "full" : "empty");
     return -1;
 }

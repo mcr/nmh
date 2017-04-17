@@ -16,7 +16,7 @@ seq_nameok (char *s)
     char *pp;
 
     if (s == NULL || *s == '\0') {
-	advise (NULL, "empty sequence name");
+	inform("empty sequence name");
 	return 0;
     }
 
@@ -30,7 +30,7 @@ seq_nameok (char *s)
 	  strcmp (s, "last") &&
 	  strcmp (s, "prev") &&
 	  strcmp (s, "next"))) {
-	advise (NULL, "illegal sequence name: %s", s);
+	inform("illegal sequence name: %s", s);
 	return 0;
     }
 
@@ -39,7 +39,7 @@ seq_nameok (char *s)
      * an alphabetic character ...
      */
     if (!isalpha ((unsigned char) *s)) {
-	advise (NULL, "illegal sequence name: %s", s);
+	inform("illegal sequence name: %s", s);
 	return 0;
     }
 
@@ -48,7 +48,7 @@ seq_nameok (char *s)
      */
     for (pp = s + 1; *pp; pp++)
 	if (!isalnum ((unsigned char) *pp)) {
-	    advise (NULL, "illegal sequence name: %s", s);
+	    inform("illegal sequence name: %s", s);
 	    return 0;
 	}
 

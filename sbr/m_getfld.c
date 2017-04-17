@@ -548,7 +548,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 		int next_char;
 		if (c == EOF  ||  (next_char = Peek (s)) == EOF) {
 		    *bufsz = *cp = *buf = 0;
-		    advise (NULL, "eof encountered in field \"%s\"", name);
+		    inform("eof encountered in field \"%s\"", name);
 		    leave_getfld (s);
 		    return s->state = FMTERR;
 		}
@@ -574,7 +574,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 		if (*bufsz < n + 1) {
 		    /* No, it can't.  Oh well, guess we'll blow up. */
 		    *bufsz = *cp = *buf = 0;
-		    advise (NULL, "eol encountered in field \"%s\"", name);
+		    inform("eol encountered in field \"%s\"", name);
 		    s->state = FMTERR;
 		    break;
 		}
@@ -596,7 +596,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
                    it had read.  It's in c, use it. */
 		*cp++ = c;
 		*bufsz = *cp = *buf = 0;
-		advise (NULL, "field name \"%s\" exceeds %d bytes", name,
+		inform("field name \"%s\" exceeds %d bytes", name,
 			NAMESZ - 2);
 		s->state = LENERR;
 		break;

@@ -560,7 +560,7 @@ lockit (struct lockinfo *li)
     curlock = li->curlock;
 
     if ((tmpfile = m_mktemp(li->tmplock, &fd, NULL)) == NULL) {
-        advise(NULL, "unable to create temporary file in %s", li->tmplock);
+        inform("unable to create temporary file in %s", li->tmplock);
 	return -1;
     }
 

@@ -435,7 +435,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	char lastchar = '\n';
 
 	if (fd == NOTOK) {
-	    advise(NULL, "Cannot use NULL command to display content-type "
+	    inform("Cannot use NULL command to display content-type "
 		   "%s/%s", ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype);
 	    return NOTOK;
 	}
@@ -1085,7 +1085,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
 
         if ((conv_desc = iconv_open (dest_charset, src_charset)) ==
             (iconv_t) -1) {
-            advise (NULL, "Can't convert %s to %s", src_charset, dest_charset);
+            inform("Can't convert %s to %s", src_charset, dest_charset);
             free (src_charset);
             return NOTOK;
         }
@@ -1158,7 +1158,7 @@ iconv_start:
 			}
 			fseeko (*fp, -inbytes, SEEK_CUR);
 			if (end > 0) bytes_to_read += inbytes;
-			/* advise(NULL, "convert_charset: EINVAL"); */
+			/* inform("convert_charset: EINVAL"); */
 			continue;
 		    }
 		    if (errno == EILSEQ) {
@@ -1173,10 +1173,10 @@ iconv_start:
 			    ib++; inbytes--; /* skip it */
 			}
 			(*ob++) = '?'; outbytes --;
-			/* advise(NULL, "convert_charset: EILSEQ"); */
+			/* inform("convert_charset: EILSEQ"); */
 			goto iconv_start;
 		    }
-		    advise (NULL, "convert_charset: errno = %d", errno);
+		    inform("convert_charset: errno = %d", errno);
                     status = NOTOK;
                     break;
                 } else {
@@ -1246,7 +1246,7 @@ iconv_start:
 #else  /* ! HAVE_ICONV */
         NMH_UNUSED (message_mods);
 
-        advise (NULL, "Can't convert %s to %s without iconv", src_charset,
+        inform("Can't convert %s to %s without iconv", src_charset,
                 dest_charset);
         errno = ENOSYS;
         status = NOTOK;

@@ -52,13 +52,13 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
          */
 	if (msgnum > mp->hghoff) {
 	    if (!(mp = folder_realloc (mp, mp->lowoff, msgnum + 100))) {
-		advise (NULL, "unable to allocate folder storage");
+		inform("unable to allocate folder storage");
 		return -1;
             }
             *mpp = mp;
 	} else if (msgnum < mp->lowoff) {
 	    if (!(mp = folder_realloc (mp, msgnum, mp->hghoff))) {
-		advise (NULL, "unable to allocate folder storage");
+		inform("unable to allocate folder storage");
 		return -1;
             }
             *mpp = mp;
@@ -165,7 +165,7 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
          */
         if (linkerr == EXDEV  ||  linkerr == EPERM) {
             if (stat (newmsg, &st1) == 0) {
-                advise (NULL, "message %s:%s already exists", mp->foldpath, newmsg);
+                inform("message %s:%s already exists", mp->foldpath, newmsg);
                 return -1;
             }
 

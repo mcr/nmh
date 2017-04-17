@@ -28,7 +28,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
     switch (pid = fork()) {
     case -1:
 	status = NOTOK;
-	advise(NULL, "external database may be out-of-date.");
+	inform("external database may be out-of-date.");
 	break;
 
     case 0:
@@ -50,7 +50,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
 	if (did_message == 0) {
 	    char *msghook;
 	    if ((msghook = context_find("msg-hook")) != NULL)
-		advise(NULL, msghook);
+		inform(msghook);
 	    else {
 	    	char errbuf[BUFSIZ];
 		snprintf(errbuf, sizeof(errbuf), "external hook \"%s\"", hook);

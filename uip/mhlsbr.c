@@ -771,7 +771,7 @@ evalvar (struct mcomp *c1)
 	    return 1;
 
 	if (! c1->c_name  ||  strcasecmp (c1->c_name, "body")) {
-	    advise (NULL, "format filters are currently only supported on "
+	    inform("format filters are currently only supported on "
 	    	    "the \"body\" component");
 	    return 1;
 	}
@@ -802,7 +802,7 @@ ptoi (char *name, int *i)
     char *cp;
 
     if (*parptr++ != '=' || !*(cp = parse ())) {
-	advise (NULL, "missing argument to variable %s", name);
+	inform("missing argument to variable %s", name);
 	return 1;
     }
 
@@ -817,7 +817,7 @@ ptos (char *name, char **s)
     char c, *cp;
 
     if (*parptr++ != '=') {
-	advise (NULL, "missing argument to variable %s", name);
+	inform("missing argument to variable %s", name);
 	return 1;
     }
 
@@ -1100,7 +1100,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 
 	    case LENERR: 
 	    case FMTERR: 
-		advise (NULL, "format error in message %s", mname);
+		inform("format error in message %s", mname);
 		exitstat++;
 		m_getfld_state_destroy (&gstate);
 		return;

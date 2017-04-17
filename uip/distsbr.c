@@ -56,7 +56,7 @@ distout (char *drft, char *msgnam, char *backup)
 		if (uprf (name, "distribution-"))
 		    snprintf (name, sizeof(name), "%s%s", "Resent", &name[12]);
 		if (!uprf (name, "resent")) {
-		    advise (NULL, BADHDR, "draft", name);
+		    inform(BADHDR, "draft", name);
 		    goto leave_bad;
 		}
 		if (state == FLD)
@@ -74,7 +74,7 @@ distout (char *drft, char *msgnam, char *backup)
 	    case BODY: 
 		for (dp = buffer; *dp; dp++)
 		    if (!isspace ((unsigned char) *dp)) {
-			advise (NULL, BADTXT, "draft");
+			inform(BADTXT, "draft");
 			goto leave_bad;
 		    }
 
@@ -83,7 +83,7 @@ distout (char *drft, char *msgnam, char *backup)
 
 	    case LENERR: 
 	    case FMTERR: 
-		advise (NULL, BADRFT, "draft");
+		inform(BADRFT, "draft");
 	leave_bad: ;
 		fclose (ifp);
 		fclose (ofp);
@@ -102,7 +102,7 @@ process: ;
     fflush (ofp);
 
     if (!resent) {
-	advise (NULL, BADMSG, "draft");
+	inform(BADMSG, "draft");
 	fclose (ofp);
 	(void) m_unlink (drft);
 	if (rename (backup, drft) == NOTOK)

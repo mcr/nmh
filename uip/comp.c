@@ -359,7 +359,7 @@ try_it_again:
 			i = YESW;
 		    break;
 		default: 
-		    advise (NULL, "say what?");
+		    inform("say what?");
 		    break;
 	    }
 	}

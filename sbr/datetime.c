@@ -75,7 +75,7 @@ parse_datetime (const char *datetime, const char *zone, int dst,
     if (items_matched == 7) {
         /* The 'Z' must be capital according to RFC 5545 Sec. 3.3.5. */
         if (utc_indicator != 'Z') {
-            advise (NULL, "%s has invalid timezone indicator of 0x%x",
+            inform("%s has invalid timezone indicator of 0x%x",
                     datetime, utc_indicator);
             return NOTOK;
         }
@@ -177,7 +177,7 @@ load_timezones (const contentline *clines) {
                         params->start_dt = tws.tw_clock;
                     }
                 } else {
-                    advise (NULL, "failed to parse start time %s for %s",
+                    inform("failed to parse start time %s for %s",
                             params->dtstart,
                             in_standard ? "standard" : "daylight");
                     return NULL;
@@ -360,7 +360,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
         if (parse_datetime (node->value, NULL, 0, &tws[0]) == OK) {
             return strdup (dasctime (&tws[0], 0));
         }
-        advise (NULL, "unable to parse datetime %s", node->value);
+        inform("unable to parse datetime %s", node->value);
         return NULL;
     }
 
@@ -382,7 +382,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
     if (tz) {
         free(dt_timezone);
     } else {
-        advise (NULL, "did not find VTIMEZONE section for %s", dt_timezone);
+        inform("did not find VTIMEZONE section for %s", dt_timezone);
         free(dt_timezone);
         return NULL;
     }
@@ -424,7 +424,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
         }
 
         if (transition[0] < transition[1]) {
-            advise (NULL, "format_datetime() requires that daylight "
+            inform("format_datetime() requires that daylight "
                     "saving time transition precede standard time "
                     "transition");
             return NULL;
@@ -434,7 +434,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
                             0, &tws[0]) == OK) {
             dt[0] = tws[0].tw_clock;
         } else {
-            advise (NULL, "unable to parse datetime %s", node->value);
+            inform("unable to parse datetime %s", node->value);
             return NULL;
         }
 
@@ -447,7 +447,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
                                     &tws[1]) == OK) {
                     dt[1] = tws[1].tw_clock;
                 } else {
-                    advise (NULL, "unable to parse datetime %s",
+                    inform("unable to parse datetime %s",
                             node->value);
                     return NULL;
                 }
@@ -459,7 +459,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
         if (dst) {
             if (tz->daylight_params.start_dt > 0  &&
                 dt[dst] < tz->daylight_params.start_dt) {
-                advise (NULL, "date-time of %s is before VTIMEZONE start "
+                inform("date-time of %s is before VTIMEZONE start "
                         "of %s", node->value,
                         tz->daylight_params.dtstart);
                 return NULL;
@@ -467,7 +467,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
         } else {
             if (tz->standard_params.start_dt > 0  &&
                 dt[dst] < tz->standard_params.start_dt) {
-                advise (NULL, "date-time of %s is before VTIMEZONE start "
+                inform("date-time of %s is before VTIMEZONE start "
                         "of %s", node->value,
                         tz->standard_params.dtstart);
                 return NULL;
@@ -475,12 +475,12 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
         }
     } else {
         if (! tp_std) {
-            advise (NULL, "unsupported date-time format: %s",
+            inform("unsupported date-time format: %s",
                     tz->standard_params.dtstart);
             return NULL;
         }
         if (! tp_dt) {
-            advise (NULL, "unsupported date-time format: %s", node->value);
+            inform("unsupported date-time format: %s", node->value);
             return NULL;
         }
     }

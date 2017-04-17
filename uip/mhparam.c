@@ -196,10 +196,10 @@ main(int argc, char **argv)
         struct node *np;
 
 	if (compp)
-	    advise(NULL, "profile-components ignored with -all");
+	    inform("profile-components ignored with -all");
 
 	if (components >= 0)
-	    advise(NULL, "-%scomponents ignored with -all",
+	    inform("-%scomponents ignored with -all",
 		   components ? "" : "no");
 
 	/* Print all entries in context/profile list.  That does not

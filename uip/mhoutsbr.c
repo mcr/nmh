@@ -175,13 +175,13 @@ output_content (CT ct, FILE *out)
 		putc ('\n', out);
 		result = write8Bit (ct, out);
 	    } else {
-		advise (NULL, "can't handle binary transfer encoding in content");
+		inform("can't handle binary transfer encoding in content");
 		result = NOTOK;
 	    }
 	    break;
 
 	default:
-	    advise (NULL, "unknown transfer encoding in content");
+	    inform("unknown transfer encoding in content");
 	    result = NOTOK;
 	    break;
 	}

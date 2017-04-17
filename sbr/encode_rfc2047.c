@@ -107,7 +107,7 @@ encode_rfc2047(const char *name, char **value, int encoding,
     	charset = write_charset_8bit();
 
     if (strcasecmp(charset, "US-ASCII") == 0) {
-    	advise(NULL, "Cannot use US-ASCII with 8 bit characters in header");
+    	inform("Cannot use US-ASCII with 8 bit characters in header");
 	return 1;
     }
 
@@ -146,7 +146,7 @@ encode_rfc2047(const char *name, char **value, int encoding,
 				   eightbitcount + qpspecialcount, 0);
 
     default:
-    	advise(NULL, "Internal error: unknown RFC-2047 encoding type");
+    	inform("Internal error: unknown RFC-2047 encoding type");
 	return 1;
     }
 }
@@ -381,7 +381,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
 	numencode = strbase64(ENCODELINELIMIT - (q - linestart) - 2);
 
 	if (numencode <= 0) {
-	    advise(NULL, "Internal error: tried to encode %d characters "
+	    inform("Internal error: tried to encode %d characters "
 	    	   "in base64", numencode);
 	    return 1;
 	}
@@ -405,7 +405,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
 	    	numencode--;
 
 	    if (numencode == 0) {
-	    	advise(NULL, "Internal error: could not find start of "
+	    	inform("Internal error: could not find start of "
 		       "UTF-8 character when base64 encoding header");
 		return 1;
 	    }
@@ -413,7 +413,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
 
 	if (writeBase64raw((unsigned char *) p, numencode,
 			   (unsigned char *) q) != OK) {
-	    advise(NULL, "Internal error: base64 encoding of header failed");
+	    inform("Internal error: base64 encoding of header failed");
 	    return 1;
 	}
 
@@ -460,7 +460,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
 
     if (writeBase64raw((unsigned char *) p, strlen(p),
     		       (unsigned char *) q) != OK) {
-	advise(NULL, "Internal error: base64 encoding of header failed");
+	inform("Internal error: base64 encoding of header failed");
 	return 1;
     }
 
@@ -574,7 +574,7 @@ field_encode_address(const char *name, char **value, int encoding,
 
     for (groupflag = 0; (mp = getname(*value)); ) {
     	if ((mn = getm(mp, NULL, 0, errbuf, sizeof(errbuf))) == NULL) {
-	    advise(NULL, "%s: %s", errbuf, mp);
+	    inform("%s: %s", errbuf, mp);
 	    errflag++;
 	    continue;
 	}
@@ -632,7 +632,7 @@ field_encode_address(const char *name, char **value, int encoding,
 		break;
 
 	    default:
-		advise(NULL, "Internal error: unknown RFC-2047 encoding type");
+		inform("Internal error: unknown RFC-2047 encoding type");
 		errflag++;
 		goto out;
 	    }
@@ -658,7 +658,7 @@ field_encode_address(const char *name, char **value, int encoding,
 	}
 
 	if (mn->m_note[0] != '(' || mn->m_note[len - 1] != ')') {
-	    advise(NULL, "Internal error: Invalid note field \"%s\"",
+	    inform("Internal error: Invalid note field \"%s\"",
 	    	   mn->m_note);
 	    errflag++;
 	    goto out;
@@ -695,7 +695,7 @@ field_encode_address(const char *name, char **value, int encoding,
 		break;
 
 	    default:
-		advise(NULL, "Internal error: unknown RFC-2047 encoding type");
+		inform("Internal error: unknown RFC-2047 encoding type");
 		errflag++;
 		goto out;
 	    }

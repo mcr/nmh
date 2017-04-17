@@ -302,14 +302,14 @@ main (int argc, char **argv)
 		    continue;
 		
 		case ATTACHSW:
-		    advise(NULL, "The -attach switch is deprecated");
+		    inform("The -attach switch is deprecated");
 		    continue;
 		case NOATTACHSW:
-		    advise(NULL, "The -noattach switch is deprecated");
+		    inform("The -noattach switch is deprecated");
 		    continue;
 
 		case ATTACHFORMATSW:
-		    advise(NULL, "The -attachformat switch is deprecated");
+		    inform("The -attachformat switch is deprecated");
 		    continue;
 	    }
 	} else {
@@ -347,7 +347,7 @@ main (int argc, char **argv)
 			showfile (++argp, msgs[0]);
 			break;
 		    default:
-			advise (NULL, "say what?");
+			inform("say what?");
 			break;
 		}
 	    }
