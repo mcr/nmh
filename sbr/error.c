@@ -71,13 +71,12 @@ admonish (char *what, char *fmt, ...)
 
 
 /* advertise prints fmt and ap to stderr after flushing stdout.
- * If invo_name isn't NULL or empty, it precedes the output seperated by ": ".
- * If what isn't NULL, errno as a string is appended.
- * A non-empty what separates fmt from errno, surrounded by " " and ": ".
- * BUG: No space separator before errno if what is "".
- * If tail isn't NULL or empty then ", " and tail are appended
- * before the finishing "\n".
- * In summary: "invo_name: fmt what: errno, tail\n". */
+ * If invo_name isn't NULL or empty then "invo_name: " precedes fmt.
+ * If what isn't NULL or empty      then " what"   is appended.
+ * If what isn't NULL               then ": errno" is appended.
+ * If tail isn't NULL or empty      then ", tail"  is appended.
+ * A "\n" finishes the output to stderr.
+ * In summary: "[invo_name: ]fmt[[ what]: errno][, tail]\n". */
 void
 advertise (const char *what, char *tail, const char *fmt, va_list ap)
 {
@@ -107,8 +106,8 @@ advertise (const char *what, char *tail, const char *fmt, va_list ap)
 	if (*what) {
             ADD_LITERAL(" ");
             ADD_VAR((void *)what);
-            ADD_LITERAL(": ");
 	}
+        ADD_LITERAL(": ");
         err = strerror(eindex);
         if (!err) {
 	    /* this shouldn't happen, but we'll test for it just in case */
