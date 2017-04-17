@@ -263,6 +263,8 @@ Common errors and subjective conventions
         Describe the default behaviour, then how it can be altered,
             e.g. an option.
         It's `see foo(1)', not `see the foo(1) man page for more detail'.
+        Emails have `From' and `Date' headers, not `From:' and `Date:'.
+        An mbox-format file has `"From "' envelope-address headers.
 
         A hyphen is input as an ASCII minus sign, `non-standard',
             not as `\-' which is the input to output a minus sign.
