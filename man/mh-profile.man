@@ -895,6 +895,7 @@ switch.
 MHTMPDIR, TMPDIR
 These variables are searched, in order, for the directory in which to
 create some temporary files.
+MHTMPDIR is deprecated and will be removed in a future release of nmh.
 .TP
 MHWDEBUG
 If this variable is set to a non-null value,
