@@ -61,10 +61,11 @@ Section Ordering
 
 Dates
 
-	The DATE in the .TH macro should reflect the most recent
-	*non-trivial* update to the *content* of the manpage;
-	formatting changes don't count, nor does expanding the `SEE
-	ALSO' list.  The date is in `yyyy-mm-dd' format.
+        The DATE in the .TH macro is in `yyyy-mm-dd' format, and should
+        reflect the most recent *non-trivial* update to the *content* of
+        the manpage; formatting changes don't count, nor does expanding
+        the `SEE ALSO' list.  Ask "Would the familiar user wish to
+        re-read this page to learn of this change?"
 
 
 Program Names
