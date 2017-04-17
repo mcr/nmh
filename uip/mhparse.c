@@ -245,8 +245,8 @@ parse_mime (char *file)
 	    return NULL;
 	}
 	fseek (fp, 0L, SEEK_SET);
-    } else if (lstat (file, &statbuf) == NOTOK) {
-	advise (file, "unable to lstat");
+    } else if (stat (file, &statbuf) == NOTOK) {
+	advise (file, "unable to stat");
 	return NULL;
     } else if (S_ISDIR(statbuf.st_mode)) {
 	/* Don't try to parse a directory. */
