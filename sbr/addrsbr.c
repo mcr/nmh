@@ -310,12 +310,9 @@ ismymbox (struct mailname *np)
 		return 0;
 	    }
 
-	    /*
-	     * Sigh, it turns out that the address parser gets messed up
-	     * if you don't call getname() until it returns NULL.
-	     */
-
-	    while ((cp = getname(am)) != NULL)
+	    /* Sigh, it turns out that the address parser gets messed up
+	     * if you don't call getname() until it returns NULL. */
+	    while (getname(am) != NULL)
 	    	;
 	}
 
