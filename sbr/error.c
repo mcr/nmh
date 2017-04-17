@@ -14,7 +14,7 @@
 
 
 /* inform calls advertise() with no what and no tail.
- * Thus the simple "invo_name: fmt\n" results. */
+ * Thus the simple "[invo_name: ]fmt\n" results. */
 void inform(char *fmt, ...)
 {
     va_list ap;
@@ -26,7 +26,8 @@ void inform(char *fmt, ...)
 
 
 /* advise calls advertise() with no tail to print fmt, and perhaps what,
- * to stderr. */
+ * to stderr.
+ * Thus "[invo_name: ]fmt[[ what]: errno]\n" results. */
 void
 advise (const char *what, const char *fmt, ...)
 {
@@ -38,9 +39,11 @@ advise (const char *what, const char *fmt, ...)
 }
 
 
-/* adios calls advertise() with no tail to print fmt, and perhaps what,
- * to stderr, and "ends" the program with an error exit status.  The
- * route to exit is via the done function pointer and may not be
+/* adios is the same as advise(), but then "ends" the program.
+ * It calls advertise() with no tail to print fmt, and perhaps what, to
+ * stderr, and exits the program with an error status.
+ * Thus "[invo_name: ]fmt[[ what]: errno]\n" results.
+ * The route to exit is via the done function pointer and may not be
  * straightforward, e.g. longjmp(3), but it must not return to adios().
  * If it does then it's a bug and adios() will abort(3) as callers do
  * not expect execution to continue. */
@@ -58,7 +61,8 @@ adios (const char *what, const char *fmt, ...)
 
 
 /* admonish calls advertise() with a tail indicating the program
- * continues. */
+ * continues.
+ * Thus "[invo_name: ]fmt[[ what]: errno], continuing...\n" results. */
 void
 admonish (char *what, char *fmt, ...)
 {
