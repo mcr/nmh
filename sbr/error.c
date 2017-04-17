@@ -13,6 +13,18 @@
 #include <sys/uio.h>
 
 
+/* inform calls advertise() with no what and no tail.
+ * Thus the simple "invo_name: fmt\n" results. */
+void inform(char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    advertise(NULL, NULL, fmt, ap);
+    va_end(ap);
+}
+
+
 /* advise calls advertise() with no tail to print fmt, and perhaps what,
  * to stderr. */
 void
