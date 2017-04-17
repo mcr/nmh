@@ -432,8 +432,8 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 	    snprintf (buf, sizeof(buf), "%d", fd2);
 	    vec[vecp++] = buf;
 	} else {
-	    admonish (NULL, "unable to create temporary file in %s "
-                      "for annotation list", get_temp_dir());
+	    inform("unable to create temporary file in %s for "
+		"annotation list, continuing...", get_temp_dir());
 	}
     }
     vec[vecp++] = drft;
@@ -610,7 +610,7 @@ anno (int fd, struct stat *st)
 		|| st->st_dev != st2.st_dev
 		|| st->st_ino != st2.st_ino)) {
 	if (debugsw)
-	    admonish (NULL, "$mhaltmsg mismatch");
+	    inform("$mhaltmsg mismatch, continuing...");
 	return;
     }
 
@@ -664,7 +664,7 @@ annoaux (int fd)
 
     if ((folder = getenv ("mhfolder")) == NULL || *folder == 0) {
 	if (debugsw)
-	    admonish (NULL, "$mhfolder not set");
+	    inform("$mhfolder not set, continuing...");
 	return;
     }
     maildir = m_maildir (folder);
@@ -675,20 +675,20 @@ annoaux (int fd)
     }
     if (!(mp = folder_read (folder, 0))) {
 	if (debugsw)
-	    admonish (NULL, "unable to read folder %s", folder);
+	    inform("unable to read folder %s, continuing...", folder);
 	return;
     }
 
     /* check for empty folder */
     if (mp->nummsg == 0) {
 	if (debugsw)
-	    admonish (NULL, "no messages in %s", folder);
+	    inform("no messages in %s, continuing...", folder);
 	goto oops;
     }
 
     if ((cp = getenv ("mhmessages")) == NULL || *cp == 0) {
 	if (debugsw)
-	    admonish (NULL, "$mhmessages not set");
+	    inform("$mhmessages not set, continuing...");
 	goto oops;
     }
     if (!debugsw			/* MOBY HACK... */
@@ -707,14 +707,14 @@ annoaux (int fd)
 	dup2 (fd2, fileno (stderr));
     if (mp->numsel == 0) {
 	if (debugsw)
-	    admonish (NULL, "no messages to annotate");
+	    inform("no messages to annotate, continuing...");
 	goto oops;
     }
 
     lseek (fd, (off_t) 0, SEEK_SET);
     if ((fp = fdopen (fd, "r")) == NULL) {
 	if (debugsw)
-	    admonish (NULL, "unable to fdopen annotation list");
+	    inform("unable to fdopen annotation list, continuing...");
 	goto oops;
     }
     cp = NULL;

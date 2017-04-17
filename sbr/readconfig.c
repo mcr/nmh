@@ -52,7 +52,7 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
     m_getfld_state_t gstate = 0;
 
     if (npp == NULL && (npp = opp) == NULL) {
-	admonish (NULL, "bug: readconfig called but pump not primed");
+	inform("bug: readconfig called but pump not primed, continuing...");
 	return;
     }
 
@@ -142,9 +142,9 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 		struct node *np2;
 		for (np2 = np->n_next; np2; np2 = np2->n_next) {
 		    if (! strcasecmp (np->n_name, np2->n_name)) {
-			admonish (NULL, "multiple \"%s\" profile components "
-					"in %s, ignoring \"%s\"",
-				  np->n_name, defpath, np2->n_field);
+			inform("multiple \"%s\" profile components in %s, "
+			    "ignoring \"%s\", continuing...",
+			    np->n_name, defpath, np2->n_field);
 		    }
 		}
 	    }

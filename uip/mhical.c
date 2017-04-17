@@ -399,13 +399,14 @@ convert_common (contentline *clines, act action) {
 
     if ((node = find_contentline (clines, "VERSION", 0))) {
         if (! node->value) {
-            admonish (NULL, "Version property is missing value, assume 2.0");
+            inform("Version property is missing value, assume 2.0, continuing...");
             node->value = mh_xstrdup ("2.0");
         }
 
         if (strcmp (node->value, "2.0")) {
-            admonish (NULL, "supports the Version 2.0 specified by RFC 5545 "
-                            "but iCalendar object has Version %s", node->value);
+            inform("supports the Version 2.0 specified by RFC 5545 "
+		"but iCalendar object has Version %s, continuing...",
+		node->value);
             node->value = mh_xstrdup ("2.0");
         }
     }
@@ -460,10 +461,10 @@ convert_common (contentline *clines, act action) {
                 free (node->value);
                 node->value = mh_xstrdup (buf);
             } else {
-                admonish (NULL, "strftime unable to format current time");
+                inform("strftime unable to format current time, continuing...");
             }
         } else {
-            admonish (NULL, "gmtime_r failed on current time");
+            inform("gmtime_r failed on current time, continuing...");
         }
     }
 

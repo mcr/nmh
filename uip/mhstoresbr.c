@@ -368,8 +368,7 @@ store_partial (CT ct, mhstoreinfo_t info)
 	pm = (struct partial *) p->c_ctparams;
 	if (pm->pm_marked != cur) {
 	    if (pm->pm_marked == cur - 1) {
-		admonish (NULL,
-			  "duplicate part %d of %d part multipart message",
+		inform("duplicate part %d of %d part multipart message, continuing...",
 			  pm->pm_marked, hi);
 		continue;
 	    }

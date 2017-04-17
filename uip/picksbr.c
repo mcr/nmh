@@ -810,7 +810,7 @@ advance (char *alp, char *aep)
 		return 0;
 
 	    default: 
-		admonish (NULL, "advance() botch -- you lose big");
+		inform("advance() botch -- you lose big, continuing...");
 		return 0;
 	}
 }

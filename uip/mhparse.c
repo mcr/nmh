@@ -413,7 +413,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    ucmp = !strcasecmp (cp, VRSN_VALUE);
 	    *dp = c;
 	    if (!ucmp) {
-		admonish (NULL, "message %s has unknown value for %s: field (%s)",
+		inform("message %s has unknown value for %s: field (%s), continuing...",
 		ct->c_file, VRSN_FIELD, cp);
 	    }
 	    if (!ct->c_vrsn) {
@@ -1103,13 +1103,12 @@ InitMultiPart (CT ct)
 	while (bp >= cte && isspace ((unsigned char) *bp)) *bp-- = '\0';
 	for (bp = cte; *bp && isblank ((unsigned char) *bp); ++bp) continue;
 
-	admonish (NULL,
-		  "\"%s/%s\" type in message %s must be encoded in\n"
-		  "7bit, 8bit, or binary, per RFC 2045 (6.4).  "
-                  "mhfixmsg -fixcte can fix it, or\n"
-                  "manually edit the file and change the \"%s\"\n"
-		  "Content-Transfer-Encoding to one of those.  For now",
-		  ci->ci_type, ci->ci_subtype, ct->c_file, bp);
+	inform("\"%s/%s\" type in message %s must be encoded in\n"
+	    "7bit, 8bit, or binary, per RFC 2045 (6.4).  "
+	    "mhfixmsg -fixcte can fix it, or\n"
+	    "manually edit the file and change the \"%s\"\n"
+	    "Content-Transfer-Encoding to one of those.  For now, continuing...",
+	    ci->ci_type, ci->ci_subtype, ct->c_file, bp);
 	free (cte);
 
 	return NOTOK;
@@ -1398,9 +1397,9 @@ InitMessage (CT ct)
     CI ci = &ct->c_ctinfo;
 
     if ((ct->c_encoding != CE_7BIT) && (ct->c_encoding != CE_8BIT)) {
-	admonish (NULL,
-		  "\"%s/%s\" type in message %s should be encoded in 7bit or 8bit",
-		  ci->ci_type, ci->ci_subtype, ct->c_file);
+	inform("\"%s/%s\" type in message %s should be encoded in "
+	    "7bit or 8bit, continuing...", ci->ci_type, ci->ci_subtype,
+	    ct->c_file);
 	return NOTOK;
     }
 

@@ -301,12 +301,12 @@ ismymbox (struct mailname *np)
 	    localmailbox++;
 
 	    if ((cp = getname(am)) == NULL) {
-	        admonish (NULL, "Unable to find address in local-mailbox");
+	        inform("Unable to find address in local-mailbox, continuing...");
 		return 0;
 	    }
 
 	    if ((mq.m_next = getm (cp, NULL, 0, NULL, 0)) == NULL) {
-	    	admonish (NULL, "invalid entry in local-mailbox: %s", cp);
+                inform("invalid entry in local-mailbox: %s, continuing...", cp);
 		return 0;
 	    }
 
@@ -323,7 +323,7 @@ ismymbox (struct mailname *np)
 	    oops = 0;
 	    while ((cp = getname (am))) {
 		if ((mp->m_next = getm (cp, NULL, 0, NULL, 0)) == NULL) {
-		    admonish (NULL, "illegal address: %s", cp);
+		    inform("illegal address: %s, continuing...", cp);
 		    oops++;
 		} else {
 		    mp = mp->m_next;

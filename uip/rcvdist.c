@@ -129,7 +129,7 @@ main (int argc, char **argv)
 	sleep (5);
     switch (child_id) {
 	case NOTOK: 
-	    admonish (NULL, "unable to fork");
+	    inform("unable to fork, continuing...");
 	    /* FALLTHRU */
 	case OK: 
 	    execvp (program, vec);

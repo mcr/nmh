@@ -176,7 +176,7 @@ rmf (char *folder)
 			|| has_prefix(dp->d_name, BACKUP_PREFIX))
 		    break;
 
-		admonish (NULL, "file \"%s/%s\" not deleted",
+		inform("file \"%s/%s\" not deleted, continuing...",
 			folder, dp->d_name);
 		others++;
 		continue;
@@ -231,7 +231,8 @@ rma (char *folder)
 		&& *(np->n_name + j) == '-'
 		&& strcmp (cp, np->n_name + j + 1) == 0) {
 	    if (!np->n_context)
-		admonish (NULL, "bug: context_del(key=\"%s\")", np->n_name);
+		inform("bug: context_del(key=\"%s\"), continuing...",
+		    np->n_name);
 	    if (pp) {
 		pp->n_next = np->n_next;
 		np = pp;

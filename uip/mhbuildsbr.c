@@ -405,7 +405,7 @@ finish_field:
 	CT p;
 
 	if (user_content (in, buf, &p, infile) == DONE) {
-	    admonish (NULL, "ignoring spurious #end");
+	    inform("ignoring spurious #end, continuing...");
 	    continue;
 	}
 	if (!p)
@@ -1123,7 +1123,7 @@ use_forw:
 	    pp = &part->mp_next;
 	    part->mp_part = p;
 	}
-	admonish (NULL, "premature end-of-file, missing #end");
+	inform("premature end-of-file, missing #end, continuing...");
 	return OK;
     }
 
@@ -2069,13 +2069,13 @@ set_disposition (CT ct) {
 
         if (cp  &&  strcasecmp (cp, "attachment")  &&
             strcasecmp (cp, "inline")) {
-            admonish (NULL, "configuration problem: %s-disposition-%s%s%s "
-                      "specifies '%s' but only 'attachment' and 'inline' are "
-                      "allowed", invo_name,
-                      ct->c_ctinfo.ci_type,
-                      ct->c_ctinfo.ci_subtype ? "/" : "",
-                      ct->c_ctinfo.ci_subtype ? ct->c_ctinfo.ci_subtype : "",
-                      cp);
+            inform("configuration problem: %s-disposition-%s%s%s specifies "
+		"'%s' but only 'attachment' and 'inline' are allowed, "
+		"continuing...", invo_name,
+		ct->c_ctinfo.ci_type,
+		ct->c_ctinfo.ci_subtype ? "/" : "",
+		ct->c_ctinfo.ci_subtype ? ct->c_ctinfo.ci_subtype : "",
+		cp);
         }
 
         if (!cp)
@@ -2248,7 +2248,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
 
     if ((status = show_content_aux (ct, 0, convert_command, NULL, NULL)) !=
         OK) {
-        admonish (NULL, "store of %s content failed", type);
+        inform("store of %s content failed, continuing...", type);
     }
     free (convert_command);
 
@@ -2258,9 +2258,8 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
 
     if (extract_headers (reply_ct, reply_file, &reply_fp) == NOTOK) {
         free (reply_file);
-        admonish (NULL,
-                  "failed to extract headers from convert output in %s",
-                  reply_file);
+        inform("failed to extract headers from convert output in %s, "
+	    "continuing...", reply_file);
         return;
     }
 
@@ -2271,7 +2270,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
         if ((fd = open (reply_file, O_RDONLY)) == NOTOK  ||
             scan_input (fd, &eightbit) == NOTOK) {
             free (reply_file);
-            admonish (NULL, "failed to read %s", reply_file);
+            inform("failed to read %s, continuing...", reply_file);
             return;
         } 
         (void) close (fd);
@@ -2440,7 +2439,7 @@ extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
         n = strlen (buffer);
 
         if (get_ctinfo (buffer + 14, ct, 0) != OK) {
-            admonish (NULL, "unable to get content info for reply");
+            inform("unable to get content info for reply, continuing...");
             goto failed_to_extract_ct;
         }
 

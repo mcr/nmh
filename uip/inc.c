@@ -933,7 +933,7 @@ go_to_it:
     }
 
     if (msgnum == hghnum) {
-	admonish (NULL, "no messages incorporated");
+	inform("no messages incorporated, continuing...");
     } else {
     	/*
 	 * Lock the sequence file now, and loop to set the right flags
@@ -946,7 +946,7 @@ go_to_it:
 	context_replace (pfolder, folder);	/* update current folder */
 
 	if ((mp2 = folder_read(folder, 1)) == NULL) {
-	    admonish(NULL, "Unable to reread folder %s", folder);
+	    inform("Unable to reread folder %s, continuing...", folder);
 	    goto skip;
 	}
 

@@ -321,9 +321,8 @@ rrule_clock (const char *rrule, const char *starttime, const char *zone,
 
 fail:
     if (clock == 0) {
-        admonish (NULL,
-                  "Unsupported RRULE format: %s, assume local timezone",
-                  rrule);
+        inform("Unsupported RRULE format: %s, assume local timezone, continuing...",
+	    rrule);
     }
 
     return clock;

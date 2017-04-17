@@ -38,7 +38,7 @@ init_credentials_file () {
                     credentials_file =
                         concat (mypath ? mypath : ".", "/", filename, NULL);
                     if (stat (credentials_file, &st) != OK) {
-                        admonish (NULL, "unable to find credentials file %s",
+                        inform("unable to find credentials file %s, continuing...",
                                   filename);
                     }
                 }
@@ -79,7 +79,7 @@ nmh_get_credentials (const char *host, const char *user)
          */
         creds->user = user == NULL ? NULL : mh_xstrdup(user);
     } else {
-        admonish (NULL, "unknown credentials style %s", cred_style);
+        inform("unknown credentials style %s, continuing...", cred_style);
         return NULL;
     }
 

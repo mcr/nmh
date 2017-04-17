@@ -335,7 +335,7 @@ main (int argc, char **argv)
 	 */
 	if (!argfolder) {
 	    if (msg)
-		admonish (NULL, "no folder given for message %s", msg);
+		inform("no folder given for message %s, continuing...", msg);
 	    readonly_folders (); /* do any readonly folders */
 	    strncpy (folder, (cp = context_find (pfolder)) ? cp : "", sizeof(folder));
 	    crawl_folders (".", get_folder_info_callback, NULL);
@@ -407,7 +407,7 @@ get_folder_info_body (char *fold, char *msg, boolean *crawl_children)
 	 * create message structure and get folder info
 	 */
 	if (!(mp = folder_read (fold, fpack))) {
-	    admonish (NULL, "unable to read folder %s", fold);
+	    inform("unable to read folder %s, continuing...", fold);
 	    *crawl_children = FALSE;
 	    return 0;
 	}
@@ -612,7 +612,7 @@ sfold (struct msgs *mp, char *msg)
 	return 0;
 
     if (mp->numsel > 1) {
-	admonish (NULL, "only one message at a time!");
+	inform("only one message at a time!, continuing...");
 	return 0;
     }
     seq_setprev (mp);		/* set the previous-sequence     */

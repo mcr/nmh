@@ -1628,7 +1628,7 @@ decode_part (CT ct) {
     (void) m_unlink (tmp_decoded);
     free (tmp_decoded);
     if (fclose (file)) {
-        admonish (NULL, "unable to close temporary file %s", tempfile);
+        inform("unable to close temporary file %s, continuing...", tempfile);
     }
 
     return status;
@@ -2301,7 +2301,7 @@ strip_crs (CT ct, int *message_mods) {
                 }
 
                 if (close (fd)) {
-                    admonish (NULL, "unable to write temporary file %s",
+                    inform("unable to write temporary file %s, continuing...",
                               stripped_content_file);
                     (void) m_unlink (stripped_content_file);
                     status = NOTOK;
@@ -2716,15 +2716,15 @@ write_content (CT ct, const char *input_filename, char *outfile, FILE *outfp,
                                expand filename to absolute path. */
                             int file = ct->c_file  &&  ct->c_file[0] == '/';
 
-                            admonish (NULL, "unable to rename %s %s to %s",
+                            inform("unable to rename %s %s to %s, continuing...",
                                       file ? "file" : "message", outfile,
                                       infile);
                             status = NOTOK;
                         }
                     }
                 } else {
-                    admonish (NULL, "unable to remove input file %s, "
-                              "not modifying it", infile);
+                    inform("unable to remove input file %s, "
+			"not modifying it, continuing...", infile);
                     (void) m_unlink (outfile);
                     status = NOTOK;
                 }

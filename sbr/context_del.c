@@ -23,7 +23,7 @@ context_del (char *key)
     for (np = m_defs, pp = NULL; np; pp = np, np = np->n_next) {
 	if (!strcasecmp (np->n_name ? np->n_name : "", key ? key : "")) {
 	    if (!np->n_context)
-		admonish (NULL, "bug: context_del(key=\"%s\")", np->n_name);
+		inform("bug: context_del(key=\"%s\"), continuing...", np->n_name);
 	    if (pp)
 		pp->n_next = np->n_next;
 	    else

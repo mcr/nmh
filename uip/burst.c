@@ -180,7 +180,7 @@ main (int argc, char **argv)
 	    } else {
 		if (numburst == 0) {
 		    if (!quietsw)
-			admonish (NULL, "message %d not in digest format",
+			inform("message %d not in digest format, continuing...",
 				  msgnum);
 		}  /* this pair of braces was missing before 1999-07-15 */
 		else

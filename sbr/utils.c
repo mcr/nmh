@@ -105,7 +105,7 @@ pwd(void)
     static char curwd[PATH_MAX];
 
     if (!getcwd (curwd, PATH_MAX)) {
-        admonish (NULL, "unable to determine working directory");
+        inform("unable to determine working directory, continuing...");
         if (!mypath || !*mypath
                 || (strcpy (curwd, mypath), chdir (curwd)) == -1) {
             strcpy (curwd, "/");
@@ -505,8 +505,8 @@ nmh_init(const char *argv0, int read_context) {
     }
 
     if (! setlocale (LC_ALL, locale)) {
-        admonish (NULL, "setlocale failed, check your LC_ALL, LC_CTYPE, and "
-                 "LANG environment variables");
+        inform("setlocale failed, check your LC_ALL, LC_CTYPE, and LANG "
+	    "environment variables, continuing...");
     }
 
     return status;

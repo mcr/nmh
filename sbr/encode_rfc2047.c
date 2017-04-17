@@ -289,7 +289,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
     if (q == NULL) {
 	/* This should never happen, but just in case.  Found by
 	   clang static analyzer. */
-	admonish (NULL, "null output encoding for %s", *value);
+	inform("null output encoding for %s, continuing...", *value);
 	return 1;
     }
     *q++ = '?';

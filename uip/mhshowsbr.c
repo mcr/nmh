@@ -370,7 +370,7 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked, struct format *
                 return NOTOK;
         } else {
             char *charset = content_charset (ct);
-            admonish (NULL, "unable to convert character set%s%s from %s",
+            inform("unable to convert character set%s%s from %s, continuing...",
                       ct->c_partno  ?  " of part "  :  "",
                       ct->c_partno  ?  ct->c_partno  :  "",
                       charset);
@@ -385,7 +385,7 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked, struct format *
 
     if (parse_display_string (ct, cp, &xstdin, &xlist, file, buffer,
     			      sizeof(buffer) - 1, 0)) {
-	admonish (NULL, "Buffer overflow constructing show command!\n");
+	inform("Buffer overflow constructing show command, continuing...");
 	return NOTOK;
     }
 
@@ -720,7 +720,7 @@ show_multi_aux (CT ct, int alternate, char *cp, struct format *fmt)
 
     if (parse_display_string (ct, cp, &xstdin, &xlist, file,
 			      buffer, sizeof(buffer) - 1, 1)) {
-	admonish (NULL, "Buffer overflow constructing show command!\n");
+	inform("Buffer overflow constructing show command, continuing...");
 	return NOTOK;
     }
 
@@ -943,8 +943,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
 		    /* This will get confused if there are multiple %{}'s,
 		       but its real purpose is to avoid doing bad things
 		       above if a closing brace wasn't found. */
-		    admonish(NULL,
-			     "no closing brace for display string escape %s",
+		    inform("no closing brace for display string escape %s, continuing...",
 			     cp);
 		}
 		break;

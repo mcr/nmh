@@ -390,7 +390,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	case LENERR:
 	case FMTERR:
 	    if (state == LENERR || state == FMTERR) {
-		admonish (NULL, "format error in message %d (header #%d)",
+		inform("format error in message %d (header #%d), continuing...",
 		      msg, compnum);
 		check_failed = 1;
 	    }

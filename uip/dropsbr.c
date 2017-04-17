@@ -652,7 +652,7 @@ map_chk (char *file, int fd, struct drop *dp, long pos, int noisy)
 
     if (read (fd, (char *) &tmpd, sizeof(*dp)) != sizeof(*dp)) {
 #ifdef notdef
-	admonish (NULL, "%s: missing or partial index", file);
+	inform("%s: missing or partial index, continuing...", file);
 #endif /* notdef */
 	return NOTOK;
     }
@@ -667,22 +667,21 @@ map_chk (char *file, int fd, struct drop *dp, long pos, int noisy)
     
     if (dp->d_size != DRVRSN) {
 	if (noisy)
-	    admonish (NULL, "%s: version mismatch (%d != %d)", file,
+	    inform("%s: version mismatch (%d != %d), continuing...", file,
 				dp->d_size, DRVRSN);
 	return NOTOK;
     }
 
     if (dp->d_stop != pos) {
 	if (noisy && pos != (long) 0)
-	    admonish (NULL,
-		    "%s: pointer mismatch or incomplete index (%ld!=%ld)", 
-		    file, dp->d_stop, (long) pos);
+	    inform("%s: pointer mismatch or incomplete index (%ld!=%ld), "
+		"continuing...", file, dp->d_stop, (long) pos);
 	return NOTOK;
     }
 
     if ((long) ((dp->d_id + 1) * sizeof(*dp)) != (long) lseek (fd, (off_t) 0, SEEK_END)) {
 	if (noisy)
-	    admonish (NULL, "%s: corrupt index(1)", file);
+	    inform("%s: corrupt index(1), continuing...", file);
 	return NOTOK;
     }
 
@@ -693,7 +692,7 @@ map_chk (char *file, int fd, struct drop *dp, long pos, int noisy)
 	    || (ntohl(dl->d_stop) != dp->d_stop
 		&& ntohl(dl->d_stop) + count != dp->d_stop)) {
 	if (noisy)
-	    admonish (NULL, "%s: corrupt index(2)", file);
+	    inform("%s: corrupt index(2), continuing...", file);
 	return NOTOK;
     }
 
