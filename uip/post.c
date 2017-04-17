@@ -2006,7 +2006,10 @@ fcc (char *file, char *folder)
 static void
 die (char *what, char *fmt, ...)
 {
+    int err;
     va_list ap;
+
+    err = errno;
 
     (void) m_unlink (tmpfil);
     if (msgflags & MINV)
@@ -2016,6 +2019,7 @@ die (char *what, char *fmt, ...)
 	sm_end (NOTOK);
 
     va_start(ap, fmt);
+    errno = err;
     advertise (what, NULL, fmt, ap);
     va_end(ap);
     done (1);
