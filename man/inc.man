@@ -12,7 +12,7 @@ inc \- incorporate new mail to an nmh folder
 .RB [ \-version ]
 .RI [ +folder ]
 .RB [ \-audit
-.IR audit\-file ]
+.IR audit-file ]
 .RB [ \-noaudit ]
 .RB [ \-changecur " | " \-nochangecur ]
 .RB [ \-form
@@ -87,7 +87,7 @@ mode will be preserved.
 .PP
 If the switch
 .B \-audit
-.I audit\-file
+.I audit-file
 is specified (usually as a default switch in the user's profile), then
 .B inc
 will append a header line and a line per message to the specified
@@ -112,7 +112,7 @@ and
 may also output audit information to this (or another) file, perhaps with
 .RI \*(lq Message\-Id \*(rq
 information to keep an exact correspondence history.
-.RI \*(lq Audit\-file \*(rq
+.RI \*(lq Audit-file \*(rq
 is assumed to be in the user's nmh directory unless a full path is specified.
 .PP
 .B inc

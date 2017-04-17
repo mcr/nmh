@@ -467,7 +467,7 @@ to
 It implies
 .BR \-nowhatnowproc .
 It causes a file
-.I <mh\-dir>/reply
+.I <mh-dir>/reply
 to be created, containing the draft message that would normally be presented
 to the user for editing.
 No mail is actually sent.
@@ -496,13 +496,13 @@ is checked.
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^%nmhetcdir%/replcomps~^The standard reply template
-^or <mh\-dir>/replcomps~^Rather than the standard template
+^or <mh-dir>/replcomps~^Rather than the standard template
 ^%nmhetcdir%/replgroupcomps~^The standard `reply -group' template
-^or <mh\-dir>/replgroupcomps~^Rather than the standard template
+^or <mh-dir>/replgroupcomps~^Rather than the standard template
 ^%nmhetcdir%/mhl.reply~^The standard message filter
-^or <mh\-dir>/mhl.reply~^Rather than the standard filter
+^or <mh-dir>/mhl.reply~^Rather than the standard filter
 ^$HOME/.mh_profile~^The user profile
-^<mh\-dir>/draft~^The draft file
+^<mh-dir>/draft~^The draft file
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -512,11 +512,11 @@ is checked.
 ^Path:~^To determine the user's nmh directory
 ^Alternate\-Mailboxes:~^To determine the user's mailboxes
 ^Current\-Folder:~^To find the default current folder
-^Draft\-Folder:~^To find the default draft\-folder
+^Draft\-Folder:~^To find the default draft-folder
 ^Editor:~^To override the default editor
 ^Msg\-Protect:~^To set mode when creating a new message (draft)
 ^fileproc:~^Program to refile the message
-^mhlproc:~^Program to filter message being replied\-to
+^mhlproc:~^Program to filter message being replied-to
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
 .fi
 .SH "SEE ALSO"

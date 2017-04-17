@@ -22,10 +22,10 @@ mhbuild \- translate MIME composition drafts for nmh messages
 .RB [ \-disposition " | " \-nodisposition ]
 .RB [ \-check " | " \-nocheck ]
 .RB [ \-headerencoding
-.IR encoding\-algorithm
+.IR encoding-algorithm
 .RB " | " \-autoheaderencoding ]
 .RB [ \-maxunencoded
-.IR line\-length ]
+.IR line-length ]
 .RB [ \-dist ]
 .ad
 .SH DESCRIPTION
@@ -483,7 +483,7 @@ url=	URL of content
 .PP
 A minimum \*(lqexternal\-type\*(rq directive for the
 .B url
-.I access\-type
+.I access-type
 would be as follows:
 .PP
 .RS 3

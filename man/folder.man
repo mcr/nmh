@@ -196,14 +196,14 @@ switch directs
 .B folder
 to push the current folder
 onto the
-.IR folder\-stack ,
+.IR folder-stack ,
 and make the
 .I +folder
 argument the current folder.  If
 .I +folder
 is not given, the current folder and the
 top of the
-.I folder\-stack
+.I folder-stack
 are exchanged.  This corresponds to the
 \*(lqpushd\*(rq operation in the shell.
 .PP
@@ -212,7 +212,7 @@ The
 switch directs
 .B folder
 to discard the top of the
-.IR folder\-stack ,
+.IR folder-stack ,
 after setting the current folder to that value.
 No
 .I +folder
@@ -232,7 +232,7 @@ The
 switch directs
 .B folder
 to list the
-.IR folder\-stack .
+.IR folder-stack .
 No
 .I +folder
 argument is allowed.  After a successful

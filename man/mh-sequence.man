@@ -160,7 +160,7 @@ For most commands, this can be overridden by using the switches
 .B \-public
 and
 .BR \-private .
-But if the folder is read\-only, or if
+But if the folder is read-only, or if
 the \*(lqmh\-sequences\*(rq profile entry is defined but empty, then
 \fIprivate\fR sequences will be created instead.
 .SS "Sequence Negation"
@@ -303,7 +303,7 @@ commands are run simultaneously.
 commands that modify the sequence file use transactional locks; the lock
 is held from the time the sequence file is read until it it written out.
 This ensures that modifications to the sequence file will not be lost
-if multiple commands are run simultaneously.  Long\-running
+if multiple commands are run simultaneously.  Long-running
 .B nmh
 commands, such as
 .B inc
@@ -325,7 +325,7 @@ one command's messages not appearing on the requested sequence.
 $HOME/.mh\-profile
 The user's profile.
 .TP 20
-<mh\-dir>/context
+<mh-dir>/context
 The user's context.
 .TP 20
 <folder>/.mh\-sequences

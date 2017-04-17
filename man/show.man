@@ -139,7 +139,7 @@ The
 .B \-header
 switch tells
 .B show
-to display a one\-line
+to display a one-line
 description of the message being shown.  This description includes
 the folder and the message number.
 .PP
@@ -162,15 +162,15 @@ If a <RETURN> is entered, it will print the next line, whereas
 <SPACE> will print the next screenful.
 .PP
 If the standard output is not a terminal, no queries are made, and
-each file is listed with a one\-line header and two lines of
+each file is listed with a one-line header and two lines of
 separation.
 .PP
 .RB \*(lq "show \-draft" \*(rq
-will list the file <mh\-dir>/draft if it
+will list the file <mh-dir>/draft if it
 exists.
 .PP
 If the profile entry \*(lqUnseen\-Sequence\*(rq is present and
-non\-empty, then
+non-empty, then
 .B show
 will remove each of the messages shown
 from each sequence named by the profile entry.
@@ -238,7 +238,7 @@ is
 (the default), then
 .B show
 uses
-a built\-in
+a built-in
 .BR mhl :
 it does not actually run the
 .B mhl
@@ -267,7 +267,7 @@ show | imprint &
 Due to a bug in
 .BR more ,
 show will go into a \*(lqtty input\*(rq state.
-To avoid this problem, re\-direct
+To avoid this problem, re-direct
 .BR show 's
 diagnostic output as well.
 For users of

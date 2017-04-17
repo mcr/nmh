@@ -237,7 +237,7 @@ switch is intended to be used by the Emacs mh-e interface to
 .BR nmh .
 It implies
 .BR \-nowhatnowproc .
-It causes a file <mh\-dir>/draft to be created, containing the draft message that
+It causes a file <mh-dir>/draft to be created, containing the draft message that
 would normally be presented to the user for editing.
 No mail is actually sent.
 .SH FILES
@@ -246,7 +246,7 @@ No mail is actually sent.
 %nmhetcdir%/components
 The default message skeleton.
 .TP
-<mh\-dir>/components
+<mh-dir>/components
 The user's message skeleton.
 .TP
 $HOME/.mh_profile
@@ -259,7 +259,7 @@ Path:
 To determine the user's nmh directory.
 .TP
 Draft\-Folder:
-To find the default draft\-folder.
+To find the default draft-folder.
 .TP
 Editor:
 To override the default editor.
@@ -302,7 +302,7 @@ is
 .BR whatnow ,
 then
 .B comp
-uses a built\-in
+uses a built-in
 .BR whatnow ,
 it does not actually run the
 .B whatnow

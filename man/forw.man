@@ -309,7 +309,7 @@ switch is intended to be used by the Emacs mh-e interface to
 .BR nmh .
 It implies
 .BR \-nowhatnowproc .
-It causes a file <mh\-dir>/draft
+It causes a file <mh-dir>/draft
 to be created, containing the draft message that would normally be
 presented to the user for editing.  No mail is actually sent.
 .PP
@@ -369,7 +369,7 @@ is checked.
 %nmhetcdir%/forwcomps
 The default message skeleton.
 .TP
-<mh\-dir>/forwcomps
+<mh-dir>/forwcomps
 The user's message skeleton.
 .TP
 %nmhetcdir%/digestcomps
@@ -377,7 +377,7 @@ The default message skeleton if
 .B \-digest
 is given.
 .TP
-<mh\-dir>/digestcomps
+<mh-dir>/digestcomps
 The user's
 .B \-digest
 skeleton.
@@ -385,7 +385,7 @@ skeleton.
 ^%nmhetcdir%/mhl.forward
 The default message filter.
 .TP
-<mh\-dir>/mhl.forward
+<mh-dir>/mhl.forward
 The user's message filter.
 .TP
 ^$HOME/.mh_profile
@@ -401,7 +401,7 @@ Current\-Folder:
 To find the default current folder.
 .TP
 Draft\-Folder:
-To find the default draft\-folder.
+To find the default draft-folder.
 .TP
 Editor:
 To override the default editor.

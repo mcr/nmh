@@ -218,7 +218,7 @@ component	string/L	name to use instead of \*(lqcomponent\*(rq for
 nocomponent	flag	don't output \*(lqcomponent: \*(rq for this
 		component
 center	flag	center component on line (works for
-		one\-line components only)
+		one-line components only)
 nocenter	flag	don't center
 leftadjust	flag	strip off leading whitespace on each
 		line of text
@@ -266,7 +266,7 @@ ignores=component,...
 .PP
 specifies a list of components which are never output.
 .PP
-The component \*(lqMessageName\*(rq (case\-insensitive) will output the
+The component \*(lqMessageName\*(rq (case-insensitive) will output the
 actual message name (file name) preceded by the folder name if one is
 specified or found in the environment.  The format is identical to that
 produced by the
@@ -352,7 +352,7 @@ options can be used to build up multiple arguments to the format filter.
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^%nmhetcdir%/mhl.format~^The message template
-^or <mh\-dir>/mhl.format~^Rather than the standard template
+^or <mh-dir>/mhl.format~^Rather than the standard template
 ^$HOME/.mh_profile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
@@ -360,7 +360,7 @@ options can be used to build up multiple arguments to the format filter.
 .nf
 .ta 2.4i
 .ta \w'ExtraBigProfileName  'u
-^moreproc:~^Program to use as interactive front\-end
+^moreproc:~^Program to use as interactive front-end
 ^formatproc:~^Program to use as a filter for components that
 ^^have the \*(lqformat\*(rq flag set.
 .fi
@@ -379,7 +379,7 @@ options can be used to build up multiple arguments to the format filter.
 None
 .SH BUGS
 There should be some way to pass `bell' and `clear' information to the
-front\-end.
+front-end.
 .PP
 The \*(lqnonewline\*(rq option interacts badly with \*(lqcompress\*(rq
 and \*(lqsplit\*(rq.

@@ -148,7 +148,7 @@ for more information.
 .ta 2.4i
 .ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-^Draft\-Folder:~^To find the default draft\-folder
+^Draft\-Folder:~^To find the default draft-folder
 ^Aliasfile:~^For a default alias file
 ^postproc:~^Program to post the message
 .fi
@@ -158,7 +158,7 @@ for more information.
 .IR post (8)
 .SH DEFAULTS
 .nf
-.RB ` file "' defaults to <mh\-dir>/draft"
+.RB ` file "' defaults to <mh-dir>/draft"
 .RB ` \-nocheck '
 .RB ` \-alias "' defaults to  %nmhetcdir%/MailAliases"
 .fi

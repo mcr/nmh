@@ -13,18 +13,18 @@ alias file takes one of the following forms:
 .RS 5
 .I alias
 .B :
-.I address\-group
+.I address-group
 .RE
 .sp
 .RS 5
 .I alias
 .B ;
-.I address\-group
+.I address-group
 .RE
 .sp
 .RS 5
 .B <
-.I alias\-file
+.I alias-file
 .RE
 .sp
 .RS 5
@@ -40,27 +40,27 @@ where:
 .PP
 .RS 5
 .nf
-.IR address\-group "	:= " address\-list
+.IR address-group "	:= " address-list
 .RI "			|  < " file
-.RI "			|  = " Unix\-group
-.RI "			|  + " Unix\-group
+.RI "			|  = " Unix-group
+.RI "			|  + " Unix-group
 
-.IR address\-list "	:= " address
-.RI "			|  " address\-list ", " address
+.IR address-list "	:= " address
+.RI "			|  " address-list ", " address
 .fi
 .RE
 .PP
 Continuation lines end with \*(lq\\\*(rq followed by a newline
 character.  This also applies to comment lines.  Thus, the line following a
-\*(lq\\\*(rq\-terminated
+\*(lq\\\*(rq-terminated
 comment line is a continuation of
 that comment line.
 .PP
-.I Alias\-file
+.I Alias-file
 and
 .I file
 are Unix file names.
-.I Unix\-group
+.I Unix-group
 is a group name or number from
 the system's group database.
 Alias file contents are case-insensitive, with the exception
@@ -71,30 +71,30 @@ read for more alias definitions.  The reading is done recursively, so a
 \*(lq<\*(rq may occur in the beginning of an alias file with the expected results.
 .PP
 If the
-.I address\-group
+.I address-group
 starts with a \*(lq<\*(rq, the file named after the
 \*(lq<\*(rq is read and its contents are added to the
-.I address\-list
+.I address-list
 for the alias.
 .PP
 If the
-.I address\-group
+.I address-group
 starts with an \*(lq=\*(rq, the
 system's group database
-is consulted for the Unix\-group named after the \*(lq=\*(rq.  Each login name
+is consulted for the Unix-group named after the \*(lq=\*(rq.  Each login name
 occurring as a member of the group is added to the
-.I address\-list
+.I address-list
 for the alias.
 .PP
 In contrast, if the
-.I address\-group
+.I address-group
 starts with a \*(lq+\*(rq, the system's group database
-is consulted to determine the group\-id of the
-Unix\-group named after the \*(lq+\*(rq.  Each login name occurring in the
+is consulted to determine the group-id of the
+Unix-group named after the \*(lq+\*(rq.  Each login name occurring in the
 system's password database
-whose group\-id is indicated by this group is
+whose group-id is indicated by this group is
 added to the
-.I address\-list
+.I address-list
 for the alias.
 .PP
 In match, a trailing \*(lq*\*(rq on an alias will match just about anything
@@ -110,9 +110,9 @@ perform alias resolution.
 .IP 3)
 For each line in the alias file, compare \*(lqalias\*(rq against all of
 the existing addresses.  If a match, remove the matched \*(lqalias\*(rq
-from the address list, and add each new address in the address\-group to
+from the address list, and add each new address in the address-group to
 the address list if it is not already on the list.  The alias itself is
-not usually output, rather the address\-group that the alias maps to is
+not usually output, rather the address-group that the alias maps to is
 output instead.  If \*(lqalias\*(rq is terminated with a \*(lq;\*(rq instead of
 a \*(lq:\*(rq, then both the \*(lqalias\*(rq and the address are output in the
 correct format (with the alias quoted if necessary and the address
@@ -164,7 +164,7 @@ directory.
 \*(lqstaff\*(rq is defined as all users who are listed as members of the
 group \*(lqstaff\*(rq in the
 system's group database, and \*(lqwheels\*(rq
-is defined as all users whose group\-id in
+is defined as all users whose group-id in
 the system's password database
 is equivalent to the \*(lqwheel\*(rq group.
 .PP
@@ -191,7 +191,7 @@ System-wide default alias file.
 Although the forward-referencing semantics of
 mh\-alias
 files prevent recursion, the
-.B alias\-file
+.B alias-file
 directive may defeat this.
 Since the number of file descriptors is finite, such
 infinite recursion will terminate with a meaningless diagnostic when

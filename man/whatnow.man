@@ -46,7 +46,7 @@ and awaits a response.  The valid responses are:
 .RS 5
 .TP \w'refilezzzzfolderz'u
 .B edit
-re\-edit using the same editor that was used on the
+re-edit using the same editor that was used on the
 preceding round unless a profile entry
 \*(lq<lasteditor>\-next: <editor>\*(rq names an alternate editor
 .TP \w'refilezzzzfolderz'u
@@ -65,7 +65,7 @@ command
 by default)
 .TP \w'refilezzzzfolderz'u
 .B display
-list the message being distributed/replied\-to
+list the message being distributed/replied-to
 on the terminal
 .TP \w'refilezzzzfolderz'u
 .B list
@@ -158,7 +158,7 @@ and
 responses, any valid argument to
 the
 .I lproc
-is valid.  If any non\-switch arguments are present, then
+is valid.  If any non-switch arguments are present, then
 the pathname of the draft will be excluded from the argument list given
 to the
 .I lproc
@@ -213,7 +213,7 @@ commands for managing MIME attachments.
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/.mh_profile~^The user profile
-^<mh\-dir>/draft~^The draft file
+^<mh-dir>/draft~^The draft file
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -221,7 +221,7 @@ commands for managing MIME attachments.
 .ta 2.4i
 .ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-^Draft\-Folder:~^To find the default draft\-folder
+^Draft\-Folder:~^To find the default draft-folder
 ^Editor:~^To override the default editor
 ^<lasteditor>\-next:~^To name an editor to be used after exit
 ^~^from <lasteditor>
@@ -265,7 +265,7 @@ then
 .BR forw ,
 and
 .B repl
-use a built\-in
+use a built-in
 .BR whatnow ,
 and do not actually run the
 .B whatnow
@@ -281,7 +281,7 @@ is
 .BR send ,
 then
 .B whatnow
-uses a built\-in
+uses a built-in
 .BR send ,
 it does not actually run the
 .B send

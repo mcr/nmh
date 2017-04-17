@@ -150,7 +150,7 @@ If the message is not sent immediately from
 .BR dist ,
 .RB \*(lq comp
 .BR \-use \*(rq
-may be used to re\-edit and send the constructed
+may be used to re-edit and send the constructed
 message, but the annotations won't take place.  Normally annotations are
 done in place in order to preserve any links to the message.  You may use
 the
@@ -213,13 +213,13 @@ will prevent any edit from occurring.)
 %nmhetcdir%/distcomps
 The default message skeleton.
 .TP 20
-<mh\-dir>/distcomps
+<mh-dir>/distcomps
 The user's message skeleton.
 .TP 20
 $HOME/.mh_profile
 The user's profile.
 .TP 20
-<mh\-dir>/draft
+<mh-dir>/draft
 The draft file.
 .PD
 .SH "PROFILE COMPONENTS"
@@ -232,7 +232,7 @@ Current\-Folder:
 To find the default current folder.
 .TP 20
 Draft\-Folder:
-To find the default draft\-folder.
+To find the default draft-folder.
 .TP 20
 Editor:
 To override the default editor.
@@ -303,7 +303,7 @@ is
 .BR whatnow ,
 then
 .B comp
-uses a built\-in
+uses a built-in
 .BR whatnow ,
 it does not actually run the
 .B whatnow

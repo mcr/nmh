@@ -117,7 +117,7 @@ on a prototype message form, and then lets you send it via the
 .B whatnow
 command.
 .B whatnow
-also supports easy\-to\-use management of MIME attachments via
+also supports easy-to-use management of MIME attachments via
 its
 .B attach
 and related responses, as described in its man page.

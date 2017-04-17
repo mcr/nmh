@@ -72,7 +72,7 @@ switch causes
 .B sortm
 to sort messages by the specified text field.  All characters except
 letters and numbers are stripped and the resulting strings are sorted
-datefield\-major, textfield\-minor, using a case insensitive
+datefield-major, textfield-minor, using a case insensitive
 comparison.  If this field is \*(lqsubject\*(rq, any leading "re:" is
 stripped off.
 .PP
@@ -90,7 +90,7 @@ makes the limit infinity.
 With
 .B \-limit
 .IR 0 ,
-the sort is instead simply textfield\-major.
+the sort is instead simply textfield-major.
 .PP
 For example, to order a folder by date-major, grouping messages with
 the same subject on the same date together, use:

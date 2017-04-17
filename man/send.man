@@ -65,7 +65,7 @@ will cause each of the specified files to be delivered
 to each of the destinations in the \*(lqTo:\*(rq, \*(lqcc:\*(rq,
 \*(lqBcc:\*(rq, \*(lqDcc:\*(rq, and \*(lqFcc:\*(rq fields of the message.  If
 .B send
-is re\-distributing a message, as invoked from
+is re-distributing a message, as invoked from
 .BR dist ,
 then the
 corresponding \*(lqResent\-xxx\*(rq fields are examined instead.
@@ -281,7 +281,7 @@ If
 .B \-filter
 .I filterfile
 is specified, then this copy is filtered
-(re\-formatted) by
+(re-formatted) by
 .B mhl
 prior to being sent to the blind recipients.
 Alternately, if you specify the
@@ -316,7 +316,7 @@ switch must be enabled for this switch to have any effect.
 .PP
 If
 .B send
-is re\-distributing a message (when invoked by
+is re-distributing a message (when invoked by
 .BR dist ),
 then \*(lqResent\-\*(rq will be prepended to each of these
 fields: \*(lqFrom:\*(rq, \*(lqDate:\*(rq, and \*(lqMessage\-ID:\*(rq.
@@ -333,7 +333,7 @@ include a \*(lqSender:\*(rq field but does include an \*(lqEnvelope\-From:\*(rq
 field, the \*(lqEnvelope\-From:\*(rq field will be used to construct
 a \*(lqSender:\*(rq field.
 .PP
-When using SMTP for mail submission, the envelope\-from used for the SMTP
+When using SMTP for mail submission, the envelope-from used for the SMTP
 transaction is derived from the \*(lqEnvelope\-From:\*(rq field.
 If no \*(lqEnvelope\-From:\*(rq field is present, the \*(lqSender:\*(rq
 field is used.  If neither the \*(lqEnvelope\-From:\*(rq nor the
@@ -604,7 +604,7 @@ man page for login credentials.
 .ta 2.4i
 .ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-^Draft\-Folder:~^To find the default draft\-folder
+^Draft\-Folder:~^To find the default draft-folder
 ^Aliasfile:~^For a default alias file
 ^Signature:~^To determine the user's mail signature
 ^mailproc:~^Program to post failure notices
@@ -628,7 +628,7 @@ man page for login credentials.
 .IR post (8)
 .SH DEFAULTS
 .nf
-.RB ` file "' defaults to <mh\-dir>/draft"
+.RB ` file "' defaults to <mh-dir>/draft"
 .RB ` \-alias "' defaults to %nmhetcdir%/MailAliases"
 .RB ` \-nodraftfolder '
 .RB ` \-nofilter '

@@ -63,7 +63,7 @@ profile component.
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^%nmhetcdir%/rcvdistcomps~^Default message skeleton
-^or <mh\-dir>/rcvdistcomps~^User's message skeleton
+^or <mh-dir>/rcvdistcomps~^User's message skeleton
 ^%nmhetcdir%/mts.conf~^nmh mts configuration file
 ^%nmhetcdir%/maildelivery~^Default delivery file
 ^$HOME/.maildelivery~^User's delivery file

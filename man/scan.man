@@ -26,7 +26,7 @@ scan \- produce a one line per nmh message scan listing
 .ad
 .SH DESCRIPTION
 .B scan
-produces a one\-line\-per\-message listing of the specified
+produces a one-line-per-message listing of the specified
 folder or messages.  Each
 .B scan
 line contains the message number
@@ -148,7 +148,7 @@ followed by a formatted listing of all messages in the folder, one
 per page.  Omitting
 .RB \*(lq "\-show\ pr\ \-f" \*(rq
 will cause the messages to be
-concatenated, separated by a one\-line header and two blank lines.
+concatenated, separated by a one-line header and two blank lines.
 .PP
 To override the output format used by
 .BR scan ,

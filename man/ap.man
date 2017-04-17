@@ -22,7 +22,7 @@ ap \- parse addresses RFC 822-style
 .SH DESCRIPTION
 .B ap
 is a program that parses addresses according to the ARPA
-Internet standard.  It also understands many non\-standard formats.
+Internet standard.  It also understands many non-standard formats.
 It is useful for seeing how
 .B nmh
 will interpret an address.

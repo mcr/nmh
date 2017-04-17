@@ -140,7 +140,7 @@ The first non-flag argument to
 is taken as the name of the draft file, and subsequent non-flag
 arguments are ignored.
 .\" (\fIrepl\fR invokes editors with two file arguments:
-.\" the draft file name and the replied\-to message file name.)
+.\" the draft file name and the replied-to message file name.)
 .SH FILES
 .fc ^ ~
 .nf

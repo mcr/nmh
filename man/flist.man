@@ -104,7 +104,7 @@ then
 .B flist
 will search all the folders in the top
 level of the users nmh directory.  These folders are all preceded by
-the read\-only folders, which occur as
+the read-only folders, which occur as
 .RI \*(lq atr\-cur\- \*(rq
 entries in the user's
 .B nmh

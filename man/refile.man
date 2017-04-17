@@ -164,7 +164,7 @@ The
 .B \-draft
 switch tells
 .B refile
-to file the <mh\-dir>/draft.
+to file the <mh-dir>/draft.
 .SH FILES
 .fc ^ ~
 .nf

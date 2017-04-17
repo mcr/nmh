@@ -572,7 +572,7 @@ local filename
 The program should terminate with an exit status of zero if the
 retrieval is successful, and a non-zero exit status otherwise.
 .PP
-For the \*(lqurl\*(rq access\-type,
+For the \*(lqurl\*(rq access-type,
 .B mhshow
 will look for the \*(lqnmh-access-url\*(rq profile entry.  See
 .IR mhstore (1)

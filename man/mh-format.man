@@ -123,7 +123,7 @@ These are combined into the conditional execution construct:
 .PP
 (Extra white space is shown here only for clarity.)
 These constructs, which may be nested without ambiguity, form a general
-.B if\-elseif\-else\-endif
+.B if-elseif-else-endif
 block where only one of the format-texts is interpreted.  In other
 words, `%<' is like the "if", `%?' is like the "elseif", `%|' is like
 "else", and `%>' is like "endif".
@@ -532,7 +532,7 @@ register for the width) a better implementation would look like:
 .PP
 It should be noted here that the side effects of function and component
 escapes are still in force and, as a result, each component test in the
-.B if\-elseif\-else\-endif
+.B if-elseif-else-endif
 clause sets the
 .I str
 register.

@@ -474,7 +474,7 @@ nmh-access-url: curl -L
 to determine the program to use to perform the HTTP retrieval.  This program
 is invoked with one argument: the URL of the content to retrieve.  The program
 should write the content to standard out, and should terminate with a status
-of zero if the retrieval is successful and a non\-zero exit status otherwise.
+of zero if the retrieval is successful and a non-zero exit status otherwise.
 .SS "The Content Cache"
 When
 .B mhstore

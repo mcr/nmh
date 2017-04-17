@@ -81,7 +81,7 @@ and that link is not called
 your link will act like
 .B show
 instead.  To circumvent this, add a
-profile\-entry for the link to your
+profile-entry for the link to your
 .B nmh
 profile and add the argument
 .B prev

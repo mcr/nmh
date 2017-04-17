@@ -162,7 +162,7 @@ slower, and introduce usage ambiguities.
 .SH FILES
 .PD 0
 .TP 20
-<mh\-dir>/context
+<mh-dir>/context
 The user's context.
 .TP 20
 $MHCONTEXT

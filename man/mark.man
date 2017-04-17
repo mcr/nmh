@@ -24,15 +24,15 @@ mark \- manipulate nmh message sequences
 The
 .B mark
 command manipulates message sequences by adding or deleting
-message numbers from folder\-specific message sequences, or by listing
+message numbers from folder-specific message sequences, or by listing
 those sequences and messages.
 .PP
 A message sequence is a keyword, just like one of the \*(lqreserved\*(rq
 message names, such as \*(lqfirst\*(rq or \*(lqnext\*(rq.  Unlike the
 \*(lqreserved\*(rq message names, which have a fixed semantics on
-a per\-folder basis, the semantics of a message sequence may be
+a per-folder basis, the semantics of a message sequence may be
 defined, modified, and removed by the user.  Message sequences are
-folder\-specific, e.g., the sequence name \*(lqseen\*(rq in the context
+folder-specific, e.g., the sequence name \*(lqseen\*(rq in the context
 of folder
 .RI \*(lq +inbox \*(rq
 need not have any relation whatsoever to the
@@ -152,7 +152,7 @@ be one of the (reserved) message names \*(lqnew\*(rq, \*(lqfirst\*(rq,
 \*(lqlast\*(rq, \*(lqall\*(rq, \*(lqnext\*(rq, or \*(lqprev\*(rq.
 .PP
 .IP \(bu 2
-Message ranges with user\-defined sequence names are restricted to the
+Message ranges with user-defined sequence names are restricted to the
 form \*(lqname:n\*(rq, \*(lqname:+n\*(rq, or \*(lqname:-n\*(rq, and refer
 to the first or last `n' messages of the sequence `name', respectively.
 Constructs of the form \*(lqname1\-name2\*(rq are forbidden for user
