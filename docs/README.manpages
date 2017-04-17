@@ -274,6 +274,7 @@ Common errors and subjective conventions
             Use `.I' for normal emphasis and `.B' for strongest.
 
         Use `Unix', not `UNIX'.
+        Use `user ID' and `group ID', not `user-id'.
         Use `zeroed', not `zero'd'.
         Use `mail drop', not `maildrop' or `drop box'.
         Use `messages', not `message(s)', ditto `folders', etc.
