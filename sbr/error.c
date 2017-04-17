@@ -85,7 +85,7 @@ void
 advertise (const char *what, char *tail, const char *fmt, va_list ap)
 {
     int	eindex = errno;
-    char buffer[NMH_BUFSIZ], errbuf[NMH_BUFSIZ], *err;
+    char buffer[NMH_BUFSIZ], *err;
     struct iovec iob[10], *iov;
     size_t niov;
 
@@ -113,11 +113,6 @@ advertise (const char *what, char *tail, const char *fmt, va_list ap)
 	}
         ADD_LITERAL(": ");
         err = strerror(eindex);
-        if (!err) {
-	    /* this shouldn't happen, but we'll test for it just in case */
-	    snprintf(errbuf, sizeof(errbuf), "Error %d", eindex);
-            err = errbuf;
-	}
         ADD_VAR(err);
     }
     if (tail && *tail) {
