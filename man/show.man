@@ -244,7 +244,7 @@ it does not actually run the
 .B mhl
 program.
 Hence, if you define your own
-.B showproc ,
+.BR showproc ,
 don't call it
 .B mhl
 since

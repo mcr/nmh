@@ -96,7 +96,7 @@ switch, a period on a line all by itself also signifies end-of-file.
 At this point control is returned to the calling program,
 where the user is asked \*(lqWhat now?\*(rq.
 See
-.B whatnow (1)
+.IR whatnow (1)
 for the valid options to this query.
 .PP
 By using the

@@ -43,8 +43,8 @@ is invoked on your behalf by your system's Message Transfer Agent
 when the message arrives.
 .PP
 The message selection criteria used by
-.B slocal is specified
-in the file
+.B slocal
+is specified in the file
 .RI \*(lq .maildelivery \*(rq
 in the user's home directory.
 You can specify an alternate file with the

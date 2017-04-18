@@ -50,10 +50,12 @@ re-edit using the same editor that was used on the
 preceding round unless a profile entry
 \*(lq<lasteditor>\-next: <editor>\*(rq names an alternate editor
 .TP \w'refilezzzzfolderz'u
-.B edit <editor>
-invoke <editor> for further editing
+\fBedit\fP \fIeditor\fP
+invoke
+.I editor
+for further editing
 .TP \w'refilezzzzfolderz'u
-.B refile +folder
+\fBrefile\fP \fI+folder\fP
 refile the draft into the given folder
 .TP \w'refilezzzzfolderz'u
 .B mime
@@ -96,16 +98,18 @@ delete the draft and exit
 .B delete
 delete the draft and exit
 .TP \w'refilezzzzfolderz'u
-.B cd directory
-use the directory when interpreting attachment file names
+\fBcd\fP \fIdirectory\fP
+use
+.I directory
+when interpreting attachment file names
 .TP \w'refilezzzzfolderz'u
 .B pwd
 print the working directory for attachment files
 .TP \w'refilezzzzfolderz'u
-.B ls [ls-options]
+\fBls\fP [\fIls-options\fP\^]
 list files in the attachment working directory using the ls command
 .TP \w'refilezzzzfolderz'u
-.B attach [-v] files
+\fBattach [-v]\fP \fIfiles\fP
 add the named files to the message as MIME attachments; -v displays
 the mhbuild directive that
 .IR send (1)
@@ -114,7 +118,7 @@ will use
 .B alist [-ln]
 list the MIME attachments, either short, long [-l] or numbered [-n]
 .TP \w'refilezzzzfolderz'u
-.B detach [-n] files-or-numbers
+\fBdetach [-n]\fP \fIfiles-or-numbers\fP
 remove MIME attachments, either by file name or by number with -n
 .RE
 .PP

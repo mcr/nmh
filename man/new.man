@@ -80,7 +80,8 @@ In
 mode,
 .B new
 executes
-.B scan sequences
+.B scan
+.I sequences
 for each matching folder.
 .SH FILES
 .TP 20
