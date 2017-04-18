@@ -18,14 +18,6 @@
 #define	MHBUILD_FILE_PSEUDOHEADER  PSEUDOHEADER_PREFIX "mhbuild-file-"
 #define	MHBUILD_ARGS_PSEUDOHEADER  PSEUDOHEADER_PREFIX "mhbuild-args-"
 
-#define	isatom(c)   (isascii((unsigned char) c) \
-                     && !isspace ((unsigned char) c) \
-		     && !iscntrl ((unsigned char) c) && (c) != '(' \
-	             && (c) != ')' && (c) != '<'  && (c) != '>' \
-	             && (c) != '@' && (c) != ','  && (c) != ';' \
-	             && (c) != ':' && (c) != '\\' && (c) != '"' \
-	             && (c) != '.' && (c) != '['  && (c) != ']')
-
 /*
  * Test for valid characters used in "token"
  * as defined in RFC2045
