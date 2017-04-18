@@ -328,7 +328,7 @@ is optional.
 .PP
 If a message with multiple \*(lqFrom:\*(rq
 addresses does
-.B NOT
+.I not
 include a \*(lqSender:\*(rq field but does include an \*(lqEnvelope\-From:\*(rq
 field, the \*(lqEnvelope\-From:\*(rq field will be used to construct
 a \*(lqSender:\*(rq field.

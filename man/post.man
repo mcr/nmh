@@ -288,7 +288,7 @@ use.
 .SH "PROFILE COMPONENTS"
 .B post
 does
-.B NOT
+.I not
 consult the user's
 .I \&.mh_profile
 .SH "SEE ALSO"

@@ -474,7 +474,9 @@ an internal cache and will use this cache to suppress duplicate addresses.
 If you need to create an address list that includes previously-seen
 addresses you may use the (\fIconcataddr\fR\^) function, which is identical
 to (\fIformataddr\fR\^) in all other respects.  Note that (\fIconcataddr\fR\^)
-does NOT add addresses to the duplicate-suppression cache.
+does
+.I not
+add addresses to the duplicate-suppression cache.
 .SS Other Hints and Tips
 Sometimes, the writer of a format function is confused because output is
 duplicated.  The general rule to remember is simple: If a function or
@@ -490,7 +492,9 @@ the From: and Reply-To: headers:
 .fi
 .RE
 .PP
-Unfortunately, if the Reply-to: header is NOT present, the output line
+Unfortunately, if the Reply-to: header is
+.I not
+present, the output line
 will be something like:
 .PP
 .RS 5
@@ -507,7 +511,9 @@ argument to the
 statement (so the rule about not starting with % applies).  But the component
 escape in our
 .B else
-statement (everything after the `%|') is NOT an argument to anything;
+statement (everything after the `%|') is
+.I not
+an argument to anything;
 it begins with a %, and thus the value of that component is output.
 This also has the side effect of setting the
 .I str

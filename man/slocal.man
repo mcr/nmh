@@ -168,7 +168,7 @@ the address that was used to cause delivery to the recipient
 .TP \w'defaultrrr'u
 .I default
 this matches
-.B only
+.I only
 if the message hasn't been delivered yet
 .TP \w'defaultrrr'u
 .I *

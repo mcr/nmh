@@ -279,7 +279,9 @@ message which were not matched by explicit components, or included in
 the ignore list.  If this component is not specified, an ignore list is
 not needed since all non-specified components will be ignored.
 .PP
-If \*(lqnocomponent\*(rq is NOT specified, then the component name will
+If \*(lqnocomponent\*(rq is
+.I not
+specified, then the component name will
 be output as it appears in the format file.
 .PP
 The default format file is:

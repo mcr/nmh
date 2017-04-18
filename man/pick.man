@@ -225,7 +225,7 @@ Once the search has been performed, if the
 .B \-list
 switch is given, the message numbers of the selected messages are
 written to the standard output separated by newlines.  This is
-.B extremely
+.I extremely
 useful for quickly generating arguments for other
 .B nmh
 programs by using the \*(lqbackquoting\*(rq syntax of the shell.

@@ -273,7 +273,9 @@ to construct your default \*(lqFrom:\*(rq header.  The text used here will
 be copied exactly to your \*(lqFrom:\*(rq header, so it should already be RFC
 822 compliant.  If this is set, the
 .B Signature
-profile entry is NOT used, so it should include a signature as well.  (profile,
+profile entry is
+.I not
+used, so it should include a signature as well.  (profile,
 default: userid@local.hostname)
 .RE
 .PP
@@ -751,7 +753,9 @@ The
 .I \&.mh\-profile
 contains only static information, which
 .B nmh
-programs will NOT update.  Changes in context are made to the
+programs will
+.I not
+update.  Changes in context are made to the
 .I context
 file kept in the users
 .B nmh

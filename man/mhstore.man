@@ -68,7 +68,9 @@ will accept the source message on the standard input.  Note that the
 file, or input from standard input, should be a validly formatted
 message, just like any other
 .B nmh
-message.  It should NOT be in mail drop format (to convert a file in
+message.  It should
+.I not
+be in mail drop format (to convert a file in
 mail drop format to a folder of
 .B nmh
 messages, see

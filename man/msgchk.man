@@ -69,7 +69,7 @@ to never report the status of
 mail drops.  This is useful if the user wishes to check
 .BR msgchk 's
 exit status.  A non-zero exit status indicates that mail was
-.B not
+.I not
 waiting for at least one of the indicated users.
 .PP
 If

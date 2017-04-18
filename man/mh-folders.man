@@ -22,7 +22,7 @@ names beyond those of the host filesystem.
 The file name is a positive integer.  Other files containing metadata or
 arbitrary names can exist in a folder; while the preference is that non-message
 files begin with \*(lq.\*(rq, all files that are not positive integers
-.B must
+.I must
 be ignored by an
 .BR MH \-compatible
 implementation.  However, implementations are free to indicate to the user
@@ -35,7 +35,7 @@ message in the folder; its full path can be accessed by the pseudo-sequence
 .B mhpath
 .IR new ).
 New messages are
-.B only
+.I only
 permitted to be added to a folder at the end of the message number range.
 .PP
 To add a new message to a folder, the recommended sequence is:

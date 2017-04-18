@@ -54,7 +54,9 @@ are indicated by leading spaces or tabs.
 .PP
 Each header item is called a component and is composed of a keyword or
 name, along with associated text.  The keyword begins at the left margin,
-may NOT contain spaces or tabs, may not exceed 63 characters (as specified
+may
+.I not
+contain spaces or tabs, may not exceed 63 characters (as specified
 by RFC 822), and is terminated by a colon (`:').  Certain components
 (as identified by their keywords) must follow rigidly defined formats
 in their text portions.

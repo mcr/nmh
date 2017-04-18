@@ -67,7 +67,7 @@ A <RETURN> will cause the whole component to be left out.
 Otherwise, a `\\' preceding a <RETURN> will continue the
 response on the next line, allowing for multiline components.
 Continuation lines
-.B must
+.I must
 begin with a space or tab.
 .PP
 Each non-empty component is copied to the draft and displayed on the

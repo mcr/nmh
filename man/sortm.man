@@ -165,7 +165,7 @@ When
 .B sortm
 complains about a message which it can't temporally
 order, it complains about the message number
-.B prior
+.I prior
 to sorting.
 It should indicate what the message number will be
 .B after

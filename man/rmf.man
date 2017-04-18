@@ -21,7 +21,7 @@ folder, and then removes the folder (directory) itself.
 If there are any files within the folder which are not a part of
 .BR nmh ,
 they will
-.B not
+.I not
 be removed, and an error will be produced.
 If the folder is given explicitly, or the
 .B \-nointeractive

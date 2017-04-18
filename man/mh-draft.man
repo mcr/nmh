@@ -210,7 +210,9 @@ et al, invoke
 .B send
 directly, they supply
 .B send
-with the Unix pathname of the message draft; NOT a
+with the Unix pathname of the message draft;
+.I not
+a
 .B \-draftmessage
 .I msg
 argument.  As far as

@@ -121,7 +121,9 @@ use your
 .I rmmproc
 to delete the message, the
 .I rmmproc
-must NOT call
+must
+.I not
+call
 .B rmm
 or
 .B refile

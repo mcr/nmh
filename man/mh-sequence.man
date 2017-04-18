@@ -257,7 +257,7 @@ directs
 to add new messages to the sequence \*(lqunseen\*(rq.
 Unlike the behavior of the \*(lqPrevious\-Sequence\*(rq entry in the
 profile, however, the sequence(s) will
-.B not
+.I not
 be zeroed by
 .BR inc .
 .PP
@@ -313,7 +313,7 @@ will release the sequence lock during the bulk of their runtime and reread
 the sequence file after their processing is complete to reduce lock
 contention time.
 .PP
-.B Note:
+Note:
 Currently transactional locks are only supported for public sequences;
 private sequences will not get corrupted, but the possibility exists that two
 .B nmh

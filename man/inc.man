@@ -153,7 +153,9 @@ By using the
 switch, one can direct
 .B inc
 to incorporate messages from a file other than the user's mail drop.
-Note that the named file will NOT be zeroed, unless the
+Note that the named file will
+.I not
+be zeroed, unless the
 .B \-truncate
 switch is given.
 .PP
