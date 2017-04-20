@@ -272,7 +272,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
     int i, j, size;
     off_t start, stop;
     long pos;
-    char *cp, buffer[BUFSIZ];
+    char *cp, buffer[BUFSIZ + 1];   /* Space for NUL. */
     FILE *fp;
 
     pos = (long) lseek (md, (off_t) 0, SEEK_CUR);
@@ -295,10 +295,8 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 			size++;
 	    }
 		    
-	    while ((i = read (fd, buffer, sizeof(buffer))) > 0) {
-                /* valgrind noticed that stringdex depends on null
-                   termination. */
-                buffer[i] = '\0';
+	    while ((i = read (fd, buffer, sizeof buffer - 1)) > 0) {
+                buffer[i] = '\0';   /* Terminate for stringdex(). */
 
 		for ( ;	(j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
 		    continue;
@@ -351,7 +349,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 		     * back to "From ".
 		     */
                     if (has_prefix(buffer, "Return-Path:")) {
-			char tmpbuffer[BUFSIZ];
+			char tmpbuffer[sizeof buffer];
 			char *tp, *ep, *fp;
 
 			strncpy(tmpbuffer, buffer, sizeof(tmpbuffer));
@@ -366,7 +364,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 			 * Change the "X-Envelope-From:" field
 			 * (if first line) back to "From ".
 			 */
-			char tmpbuffer[BUFSIZ];
+			char tmpbuffer[sizeof buffer];
 			char *ep;
 
 			strncpy(tmpbuffer, buffer, sizeof(tmpbuffer));
@@ -377,7 +375,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 			 * If there is already a "From " line,
 			 * then leave it alone.  Else we add one.
 			 */
-			char tmpbuffer[BUFSIZ];
+			char tmpbuffer[sizeof buffer];
 			char *tp, *ep;
 
 			strncpy(tmpbuffer, buffer, sizeof(tmpbuffer));
