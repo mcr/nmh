@@ -57,8 +57,6 @@
     X("prompt string", 4, PRMPTSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
-    X("attach header-field-name", -6, ATTACHSW) \
-    X("noattach", -8, NOATTACHSW) \
 
 
 #define X(sw, minchars, id) id,
@@ -196,14 +194,6 @@ WhatNow (int argc, char **argv)
 	    case PRMPTSW:
 		if (!(myprompt = *argp++) || *myprompt == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
-		continue;
-
-	    case ATTACHSW:
-		inform("The -attach switch is deprecated");
-		continue;
-
-	    case NOATTACHSW:
-		inform("The -noattach switch is deprecated");
 		continue;
 	    }
 	}
@@ -948,9 +938,6 @@ buildfile (char **argp, char *file)
     X("saslmech", SASLminc(5), SASLMECHSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("user username", SASLminc(4), USERSW) \
-    X("attach fieldname", 6, SNDATTACHSW) \
-    X("noattach", 0, SNDNOATTACHSW) \
-    X("attachformat", 7, SNDATTACHFORMAT) \
     X("port server-port-name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
@@ -1189,17 +1176,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    }
 		    /* FALLTHRU */
 		case SNDRFSW:
-		    continue;
-
-		case SNDATTACHSW:
-		    inform("The -attach switch is deprecated");
-		    continue;
-		case SNDNOATTACHSW:
-		    inform("The -noattach switch is deprecated");
-		    continue;
-
-		case SNDATTACHFORMAT:
-		    inform("The -attachformat switch is deprecated");
 		    continue;
 	    }
 	}

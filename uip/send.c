@@ -66,9 +66,6 @@
     X("saslmech mechanism", SASLminc(6), SASLMECHSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("user username", SASLminc(-4), USERSW) \
-    X("attach", -6, ATTACHSW) \
-    X("noattach", -8, NOATTACHSW) \
-    X("attachformat", 7, ATTACHFORMATSW) \
     X("port server-port-name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
@@ -299,17 +296,6 @@ main (int argc, char **argv)
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    vec[vecp++] = cp;
-		    continue;
-		
-		case ATTACHSW:
-		    inform("The -attach switch is deprecated");
-		    continue;
-		case NOATTACHSW:
-		    inform("The -noattach switch is deprecated");
-		    continue;
-
-		case ATTACHFORMATSW:
-		    inform("The -attachformat switch is deprecated");
 		    continue;
 	    }
 	} else {
