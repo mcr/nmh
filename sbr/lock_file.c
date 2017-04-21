@@ -73,14 +73,8 @@ struct lock {
 
 enum locktype { FCNTL_LOCKING, FLOCK_LOCKING, LOCKF_LOCKING, DOT_LOCKING };
 
-/*
- * Flags to indicate whether we've initialized the lock types, and
- * our saved lock types
- */
-static int datalockinit = 0;
-static int spoollockinit = 0;
+/* Our saved lock types. */
 static enum locktype datalocktype, spoollocktype;
-
 
 /* top of list containing all open locks */
 static struct lock *l_top = NULL;
@@ -117,17 +111,18 @@ static int lockit (struct lockinfo *);
 int
 lkopendata(const char *file, int access, mode_t mode, int *failed_to_lock)
 {
-    if (! datalockinit) {
-    	char *cp = context_find("datalocking");
+    static bool deja_vu;
 
-	if (cp) {
-	    datalocktype = init_locktype(cp);
+    if (!deja_vu) {
+        char *dl;
+
+        deja_vu = true;
+	if ((dl = context_find("datalocking"))) {
+	    datalocktype = init_locktype(dl);
 	} else {
 	    /* We default to fcntl locking for data files */
 	    datalocktype = FCNTL_LOCKING;
 	}
-
-	datalockinit = 1;
     }
 
     return lkopen(file, access, mode, datalocktype, failed_to_lock);
@@ -140,10 +135,11 @@ lkopendata(const char *file, int access, mode_t mode, int *failed_to_lock)
 
 int lkopenspool(const char *file, int access, mode_t mode, int *failed_to_lock)
 {
-    if (! spoollockinit) {
-    	spoollocktype = init_locktype(spoollocking);
+    static bool deja_vu;
 
-	spoollockinit = 1;
+    if (!deja_vu) {
+	deja_vu = true;
+        spoollocktype = init_locktype(spoollocking);
     }
 
     return lkopen(file, access, mode, spoollocktype, failed_to_lock);
