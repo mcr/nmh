@@ -321,9 +321,6 @@ struct msgs {
 #define set_unseen(mp,msgnum) \
         bvector_set (msgstat(mp, msgnum), SELECT_UNSEEN)
 
-/* for msh only */
-#define set_deleted(mp,msgnum)     bvector_set (msgstat(mp, msgnum), DELETED)
-
 #define in_sequence(mp,seqnum,msgnum) \
         bvector_at (msgstat(mp, msgnum), FFATTRSLOT + seqnum)
 #define clear_sequence(mp,seqnum,msgnum) \
