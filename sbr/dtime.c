@@ -41,12 +41,6 @@ char *tw_ldotw[] = {
     "Saturday",  NULL
 };
 
-struct zone {
-    char *std;
-    char *dst;
-    int shift;
-};
-
 static int dmsize[] = {
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
