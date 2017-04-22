@@ -1,4 +1,3 @@
-
 /*
  * discard.c -- discard output on a file pointer
  *
@@ -11,16 +10,9 @@
 
 #include <termios.h>
 
-
 void
 discard (FILE *io)
 {
-    if (io == NULL)
-	return;
-
-    tcflush (fileno(io), TCOFLUSH);
-
-    /* There used to be an fpurge() here on some platforms, stdio
-       hackery on others.  But it didn't seem necessary. */
+    if (io)
+        tcflush (fileno(io), TCOFLUSH);
 }
-
