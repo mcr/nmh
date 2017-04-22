@@ -172,14 +172,6 @@ char *rp_string (int);
 
 
 /*
- * Macros to access reply info
- */
-
-/* get the entire return value */
-#define rp_gval(val)    ((signed char) (val))
-
-
-/*
  * MACHINE DEPENDENCY
  *
  * The following treat the value as strictly numeric.
@@ -188,5 +180,5 @@ char *rp_string (int);
  */
 
 /* is return value negative? */
-#define rp_isbad(val)   (rp_gval (val) < 0)
+#define rp_isbad(val)   (((signed char)(val)) < 0)
 
