@@ -1,4 +1,6 @@
-/* dtimep.l exceeds the default table capacities for some old versions
+/* dtimep.l -- parse dates and times.
+ *
+ * This exceeds the default table capacities for some old versions
  * of lex (and the minimum defaults as specified by POSIX).  The following
  * choices meet or exceed the lex defaults for older SunOS4.x, Solaris,
  * HPUX, and AIX.
