@@ -42,20 +42,16 @@
 
 #define	NBITS ((sizeof (int)) * 8)
 
-/*
- * these codes must all be different!
- */
+/* Timeout in seconds for SMTP commands.
+ * Lore has it they must be distinct. */
 #define	SM_OPEN	 300      /* Changed to 5 minutes to comply with a SHOULD in RFC 1123 */
 #define	SM_HELO	 20
 #define	SM_RSET	 15
 #define	SM_MAIL	 301      /* changed to 5 minutes and a second (for uniqueness), see above */
 #define	SM_RCPT	 302      /* see above */
 #define	SM_DATA	 120      /* see above */
-#define	SM_TEXT	180	/* see above */
 #define	SM_DOT	600	/* see above */
 #define	SM_QUIT	 30
-#define	SM_CLOS	 10
-#define	SM_AUTH  45
 
 static int sm_addrs = 0;
 static int sm_child = NOTOK;
