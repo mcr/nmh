@@ -28,7 +28,6 @@
 #include <sys/wait.h>
 
 # include <dirent.h>
-#define NLENGTH(dirent) strlen((dirent)->d_name)
 
 #include <stdlib.h>
 #include <stdarg.h>
