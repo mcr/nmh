@@ -1,4 +1,4 @@
-/* Network security library routines for nmh.
+/* netsec.h -- network-security library routines.
  *
  * These are a common set of routines to handle network security for
  * things like SASL and OpenSSL.

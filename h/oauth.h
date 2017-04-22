@@ -1,12 +1,12 @@
-/* Implementation of OAuth 2.0 [1] for XOAUTH2 in SMTP [2] and POP3 [3].
+/* oauth.h -- OAuth 2.0 implementation for XOAUTH2 in SMTP and POP3.
  *
  * Google defined XOAUTH2 for SMTP, and that's what we use here.  If other
  * providers implement XOAUTH2 or some similar OAuth-based SMTP authentication
  * protocol, it should be simple to extend this.
  *
- * [1] https://tools.ietf.org/html/rfc6749
- * [2] https://developers.google.com/gmail/xoauth2_protocol
- * [3] http://googleappsdeveloper.blogspot.com/2014/10/updates-on-authentication-for-gmail.html
+ * OAuth  https://tools.ietf.org/html/rfc6749
+ * SMTP   https://developers.google.com/gmail/xoauth2_protocol
+ * POP3   http://googleappsdeveloper.blogspot.com/2014/10/updates-on-authentication-for-gmail.html
  *
  * Presumably [2] should document POP3 and that is an over-sight.  As it stands,
  * that blog post is the closest we have to documentation.

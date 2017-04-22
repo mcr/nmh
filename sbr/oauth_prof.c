@@ -1,4 +1,6 @@
-/* This code is Copyright (c) 2014, by the authors of nmh.  See the
+/* oauth_prof.c -- OAuth 2.0 implementation for XOAUTH2 in SMTP and POP3.
+ *
+ * This code is Copyright (c) 2014, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.
  */

@@ -1,4 +1,6 @@
-/* Portions of this code are Copyright (c) 1988, 1993
+/* getpass.c -- read a password without echo.
+ *
+ * Portions of this code are Copyright (c) 1988, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

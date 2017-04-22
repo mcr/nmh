@@ -1,4 +1,6 @@
-/* The Single Unix Specification function nl_langinfo(CODESET)
+/* norm_charmap.c -- map locale's encoding to MIME charset.
+ *
+ * The Single Unix Specification function nl_langinfo(CODESET)
  * returns the name of the encoding used by the currently selected
  * locale:
  *
