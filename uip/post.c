@@ -120,7 +120,7 @@ DEFINE_SWITCH_ARRAY(POST, switches);
  * from 'send'.  We use a service name of 'post' internally.
  */
 
-static struct oauth_profile {
+static struct {
     const char *profname;
     int switchnum;
     const char *value;
