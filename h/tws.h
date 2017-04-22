@@ -38,9 +38,7 @@ struct tws {
 #define	TW_DST	 0x0010	/* daylight savings time          */
 #define	TW_ZONE	 0x0020	/* use numeric timezones only     */
 
-#define TW_SUCC  0x0040 /* whether parsing was successful */
-#define TW_YES   0x0040 /*   yes, found                   */
-#define TW_NO    0x0000 /*   no, not found                */
+#define TW_SUCC  0x0040 /* Parsing was successful. */
 
 #define	dtwszone(tw) dtimezone (tw->tw_zone, tw->tw_flags)
 

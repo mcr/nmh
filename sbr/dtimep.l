@@ -139,7 +139,7 @@ static int day_map[] = {
 #define SETYEAR()    { tw.tw_year = atoi(cp); \
   		       SKIPD(); }
 #define SETDAY()     { tw.tw_mday = atoi(cp); \
-                       tw.tw_flags |= TW_YES; \
+                       tw.tw_flags |= TW_SUCC; \
   		       SKIPD(); }
 #define SETTIME()    { tw.tw_hour = atoi(cp); \
                        cp += 2; \
