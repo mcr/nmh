@@ -25,19 +25,6 @@
 # define DONE 1
 #endif
 
-#define	LINESIZ	512
-
-#define	MBXMODE	0600
-#define	TMPMODE	0600
-
-#define	OWIDTH	75		/* length of a header line */
-
-#define	HFROM	1		/* header has From: component	 */
-#define	HSNDR	2		/* header has Sender: component  */
-#define	HADDR	3		/* header has address component	 */
-#define	HDATE	4		/* header has Date: component	 */
-#define	HOTHR	5		/* header is unimportant	 */
-
 
 struct adrx {
     char *text;
@@ -50,21 +37,6 @@ struct adrx {
     char *note;
     char *err;
 };
-
-
-/* 
- *    Codes returned by uucp2mmdf(), mmdf2uucp()
- */
-
-#define	MFOK	0		/* all went well		 */
- /* remaining codes must > DONE	 */
-#define	MFPRM	2		/* bad parameter		 */
-#define	MFSIO	3		/* stdio package went screwy	 */
-#define	MFROM	4		/* from line was bad		 */
-#define	MFHDR	5		/* headers were bad		 */
-#define	MFTXT	6		/* text was bad			 */
-#define	MFERR	7		/* I/O or system error		 */
-#define	MFDLM	8		/* Bad delimiter in MMDF file	 */
 
 
 /*
