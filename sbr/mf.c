@@ -23,32 +23,6 @@ static int route (char *);
 static int my_lex (char *);
 
 
-int
-isfrom(const char *string)
-{
-    return (has_prefix(string, "From ")
-	    || has_prefix(string, ">From "));
-}
-
-
-int
-lequal (const char *a, const char *b)
-{
-    char c1, c2;
-
-    for (; *a; a++, b++) {
-	if (*b == 0)
-	    return FALSE;
-        c1 = toupper((unsigned char)*a);
-        c2 = toupper((unsigned char)*b);
-        if (c1 != c2)
-            return FALSE;
-    }
-
-    return (*b == 0);
-}
-
-
 static int
 isat (const char *p)
 {
@@ -741,61 +715,4 @@ legal_person (const char *p)
 	    }
 
     return (char *) p;
-}
-
-
-int
-mfgets (FILE *in, char **bp)
-{
-    int i;
-    char *cp, *dp, *ep;
-    static int len = 0;
-    static char *pp = NULL;
-
-    if (pp == NULL)
-	pp = mh_xmalloc ((size_t) (len = BUFSIZ));
-
-    for (ep = (cp = pp) + len - 2;;) {
-	switch (i = getc (in)) {
-	    case EOF: 
-	eol: 	;
-		if (cp != pp) {
-		    *cp = 0;
-		    *bp = pp;
-		    return OK;
-		}
-	eoh:	;
-		*bp = NULL;
-		free (pp);
-		pp = NULL;
-		return DONE;
-
-	    case 0: 
-		continue;
-
-	    case '\n': 
-		if (cp == pp)	/* end of headers, gobble it */
-		    goto eoh;
-		switch (i = getc (in)) {
-		    default: 	/* end of line */
-		    case '\n': 	/* end of headers, save for next call */
-			ungetc (i, in);
-			goto eol;
-
-		    case ' ': 	/* continue headers */
-		    case '\t': 
-			*cp++ = '\n';
-			break;
-		}
-		/* FALLTHRU */
-
-	    default: 
-		*cp++ = i;
-		break;
-	}
-	if (cp >= ep) {
-	    dp = mh_xrealloc (pp, (size_t) (len += BUFSIZ));
-	    cp += dp - pp, ep = (pp = cp) + len - 2;
-	}
-    }
 }
