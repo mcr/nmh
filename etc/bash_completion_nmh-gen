@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 #
 # Generates COMPLETION-BASH from man/mh-chart.man.
 #

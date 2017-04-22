@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 #
 # mhn.defaults.sh -- create extra profile file for MIME handling
 #

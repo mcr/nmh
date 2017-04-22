@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 #
 # Sends multiple files and/or directories in a MIME message.
 # Requires tar and any specified compression program.
