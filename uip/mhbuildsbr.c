@@ -54,12 +54,6 @@ typedef struct convert_list {
     struct convert_list *next;
 } convert_list;
 
-/*
- * Maximum size of URL token in message/external-body
- */
-
-#define MAXURLTOKEN 40
-
 
 /* mhmisc.c */
 void content_error (char *, CT, char *, ...);
