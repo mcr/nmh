@@ -1,4 +1,3 @@
-
 /*
  * signals.h -- header file for nmh signal interface
  */

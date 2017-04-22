@@ -1,4 +1,3 @@
-
 /*
  * r1bindex.c -- Given a string and a character, return a pointer
  *            -- to the right of the rightmost occurrence of the

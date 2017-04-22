@@ -1,4 +1,3 @@
-
 /*
  * mhfree.c -- routines to free the data structures used to
  *          -- represent MIME messages

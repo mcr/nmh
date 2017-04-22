@@ -1,4 +1,3 @@
-
 /*
  * read_switch_multiword.c -- get an answer from the user and return a string array
  *

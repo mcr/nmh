@@ -1,4 +1,3 @@
-
 /*
  * mhn.c -- display, list, cache, or store the contents of MIME messages
  *

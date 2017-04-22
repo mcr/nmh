@@ -1,4 +1,3 @@
-
 /*
  * done.c -- terminate the program
  *

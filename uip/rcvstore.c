@@ -1,4 +1,3 @@
-
 /*
  * rcvstore.c -- asynchronously add mail to a folder
  *

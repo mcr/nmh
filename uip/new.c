@@ -1,4 +1,3 @@
-
 /*
  * new.c -- as new,    list all folders with unseen messages
  *       -- as fnext,  move to next folder with unseen messages

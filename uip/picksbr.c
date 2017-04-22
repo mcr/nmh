@@ -1,4 +1,3 @@
-
 /*
  * picksbr.c -- routines to help pick along...
  *

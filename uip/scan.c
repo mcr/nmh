@@ -1,4 +1,3 @@
-
 /*
  * scan.c -- display a one-line "scan" listing of folder or messages
  *

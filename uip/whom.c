@@ -1,4 +1,3 @@
-
 /*
  * whom.c -- report to whom a message would be sent
  *

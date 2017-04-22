@@ -1,4 +1,3 @@
-
 /*
  * seq_setprev.c -- set the Previous-Sequence
  *

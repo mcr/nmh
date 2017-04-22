@@ -1,4 +1,3 @@
-
 /*
  * prototypes.h -- various prototypes
  *

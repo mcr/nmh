@@ -1,4 +1,3 @@
-
 /*
  * rmm.c -- remove a message(s)
  *

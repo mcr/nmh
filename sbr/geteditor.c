@@ -1,4 +1,3 @@
-
 /*
  * geteditor.c -- Determine the default editor to use
  *

@@ -1,4 +1,3 @@
-
 /*
  * send.c -- send a composed message
  *

@@ -1,4 +1,3 @@
-
 /*
  * m_maildir.c -- get the path for the mail directory
  *

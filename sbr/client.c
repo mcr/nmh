@@ -1,4 +1,3 @@
-
 /*
  * client.c -- connect to a server
  *

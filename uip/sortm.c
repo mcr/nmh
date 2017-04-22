@@ -1,4 +1,3 @@
-
 /*
  * sortm.c -- sort messages in a folder by date/time
  *

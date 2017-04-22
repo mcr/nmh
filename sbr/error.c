@@ -1,4 +1,3 @@
-
 /*
  * error.c -- main error handling routines
  *

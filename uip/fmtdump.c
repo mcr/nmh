@@ -1,4 +1,3 @@
-
 /*
  * fmtdump.c -- compile format file and dump out instructions
  *

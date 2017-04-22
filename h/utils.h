@@ -1,4 +1,3 @@
-
 /*
  * utils.h -- utility prototypes
  */

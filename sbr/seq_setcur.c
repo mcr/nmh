@@ -1,4 +1,3 @@
-
 /*
  * seq_setcur.c -- set the current message ("cur" sequence) for a folder
  *

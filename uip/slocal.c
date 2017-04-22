@@ -1,4 +1,3 @@
-
 /*
  * slocal.c -- asynchronously filter and deliver new mail
  *

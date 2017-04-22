@@ -1,4 +1,3 @@
-
 /*
  * forwsbr.c -- subroutine to build a draft from a component file
  *

@@ -1,4 +1,3 @@
-
 /*
  * showfile.c -- invoke the `lproc' command
  *

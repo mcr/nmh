@@ -1,4 +1,3 @@
-
 /*
  * folder_read.c -- initialize folder structure and read folder
  *

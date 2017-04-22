@@ -1,4 +1,3 @@
-
 /*
  * fmt_scan.c -- format string interpretation
  *

@@ -1,4 +1,3 @@
-
 /*
  * folder_realloc.c -- realloc a folder/msgs structure
  *

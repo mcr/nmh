@@ -1,4 +1,3 @@
-
 /*
  * cpydgst.c -- copy from one fd to another in encapsulating mode
  *           -- (do dashstuffing of input data).

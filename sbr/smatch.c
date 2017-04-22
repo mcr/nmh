@@ -1,4 +1,3 @@
-
 /*
  * smatch.c -- match a switch (option)
  *

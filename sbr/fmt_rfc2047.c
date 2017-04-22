@@ -1,4 +1,3 @@
-
 /*
  * fmt_rfc2047.c -- decode RFC-2047 header format 
  *

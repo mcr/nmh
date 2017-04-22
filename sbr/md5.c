@@ -1,4 +1,3 @@
-
 /*
  * md5.c -- md5 message digest algorithm
  *          taken from RFC-1321/Appendix A.3
@@ -303,4 +302,3 @@ unsigned int len;
  output[i] = ((UINT4)input[j]) | (((UINT4)input[j+1]) << 8) |
    (((UINT4)input[j+2]) << 16) | (((UINT4)input[j+3]) << 24);
 }
-

@@ -1,4 +1,3 @@
-
 /*
  * mhstore.c -- store the contents of MIME messages
  *

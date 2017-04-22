@@ -1,4 +1,3 @@
-
 /*
  * fmt_compile.c -- "compile" format strings for fmt_scan
  *

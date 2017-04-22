@@ -1,4 +1,3 @@
-
 /*
  * mhlistsbr.c -- routines to list information about the
  *             -- contents of MIME messages

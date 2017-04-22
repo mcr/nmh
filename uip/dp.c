@@ -1,4 +1,3 @@
-
 /*
  * dp.c -- parse dates 822-style
  *

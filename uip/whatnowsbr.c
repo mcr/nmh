@@ -1,4 +1,3 @@
-
 /*
  * whatnowsbr.c -- the WhatNow shell
  *

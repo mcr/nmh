@@ -1,4 +1,3 @@
-
 /*
  * addrsbr.h -- definitions for the address parsing system
  */

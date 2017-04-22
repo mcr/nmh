@@ -1,4 +1,3 @@
-
 /*
  * termsbr.c -- termcap support
  *

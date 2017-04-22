@@ -1,4 +1,3 @@
-
 /*
  * m_name.c -- return a message number as a string
  *

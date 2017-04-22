@@ -36,4 +36,3 @@ for A in $SEARCHPATH; do
     fi
 done
 IFS="$oIFS"
-

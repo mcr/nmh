@@ -1,4 +1,3 @@
-
 /*
  * strindex.c -- "unsigned" lexical index
  *

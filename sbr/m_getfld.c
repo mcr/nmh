@@ -1,4 +1,3 @@
-
 /*
  * m_getfld.c -- read/parse a message
  *

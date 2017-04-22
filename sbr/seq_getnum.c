@@ -1,4 +1,3 @@
-
 /*
  * seq_getnum.c -- find the index for a sequence
  *              -- return -1 if sequence doesn't exist

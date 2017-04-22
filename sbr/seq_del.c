@@ -1,4 +1,3 @@
-
 /*
  * seq_del.c -- delete message(s) from a sequence
  *

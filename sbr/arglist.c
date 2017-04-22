@@ -1,4 +1,3 @@
-
 /*
  * arglist.c -- Routines for handling argument lists for execvp() and friends
  *

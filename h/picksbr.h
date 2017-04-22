@@ -1,4 +1,3 @@
-
 /*
  * picksbr.h -- definitions for picksbr.c
  */

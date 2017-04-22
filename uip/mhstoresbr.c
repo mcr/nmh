@@ -1,4 +1,3 @@
-
 /*
  * mhstoresbr.c -- routines to save/store the contents of MIME messages
  *

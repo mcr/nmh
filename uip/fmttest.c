@@ -1,4 +1,3 @@
-
 /*
  * fmttest.c -- A program to help test and debug format instructions
  *

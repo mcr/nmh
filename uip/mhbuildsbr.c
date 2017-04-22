@@ -1,4 +1,3 @@
-
 /*
  * mhbuildsbr.c -- routines to expand/translate MIME composition files
  *

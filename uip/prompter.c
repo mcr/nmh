@@ -1,4 +1,3 @@
-
 /*
  * prompter.c -- simple prompting editor front-end
  *

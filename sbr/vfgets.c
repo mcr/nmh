@@ -1,4 +1,3 @@
-
 /*
  * vfgets.c -- virtual fgets
  *

@@ -1,4 +1,3 @@
-
 /*
  * fmt_new.c -- read format file/string and normalize
  *

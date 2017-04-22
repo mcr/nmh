@@ -1,4 +1,3 @@
-
 /*
  * m_gmprot.c -- return the msg-protect value
  *

@@ -1,4 +1,3 @@
-
 /*
  * signals.c -- general signals interface for nmh
  *

@@ -1,4 +1,3 @@
-
 /*
  * mf.c -- mail filter subroutines
  *

@@ -1,4 +1,3 @@
-
 /*
  * atooi.c -- octal version of atoi()
  *

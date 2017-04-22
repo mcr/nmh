@@ -1,4 +1,3 @@
-
 /*
  * print_version.c -- print a version string
  *

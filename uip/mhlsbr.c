@@ -1,4 +1,3 @@
-
 /*
  * mhlsbr.c -- main routines for nmh message lister
  *

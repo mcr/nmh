@@ -1,4 +1,3 @@
-
 /*
  * rcvdist.c -- asynchronously redistribute messages
  *

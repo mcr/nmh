@@ -1,4 +1,3 @@
-
 /*
  * seq_print.c -- Routines to print sequence information.
  *

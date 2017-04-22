@@ -1,4 +1,3 @@
-
 /*
  * read_switch_multiword_via_readline.c -- get an answer from the user, with readline
  *
@@ -113,4 +112,3 @@ nmh_command_generator(const char *text, int state)
     return NULL;
 }
 #endif /* READLINE_SUPPORT */
-

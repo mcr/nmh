@@ -1,4 +1,3 @@
-
 /*
  * trimcpy.c -- strip leading and trailing whitespace,
  *           -- replace internal whitespace with spaces,

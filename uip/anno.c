@@ -1,4 +1,3 @@
-
 /*
  * anno.c -- annotate messages
  *

@@ -1,4 +1,3 @@
-
 /*
  * context_save.c -- write out the updated context file
  *

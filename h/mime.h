@@ -1,4 +1,3 @@
-
 /*
  * mime.h -- definitions for MIME
  */
@@ -51,4 +50,3 @@
 #define	BPERLIN	(CPERLIN / 4)
 #define	LPERMSG	632
 #define	CPERMSG	(LPERMSG * CPERLIN)
-

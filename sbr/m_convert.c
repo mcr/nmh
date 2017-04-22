@@ -1,4 +1,3 @@
-
 /*
  * m_convert.c -- parse a message range or sequence and set SELECTED
  *

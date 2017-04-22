@@ -1,4 +1,3 @@
-
 /*
  * putenv.c -- (un)set an envariable
  *

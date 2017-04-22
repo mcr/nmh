@@ -1,4 +1,3 @@
-
 /*
  * seq_add.c -- add message(s) to a sequence
  *

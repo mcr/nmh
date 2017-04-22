@@ -1,4 +1,3 @@
-
 /*
  * fdcompare.c -- are two files identical?
  *

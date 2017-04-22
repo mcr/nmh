@@ -1,4 +1,3 @@
-
 /*
  * whatnowproc.c -- exec the "whatnowproc"
  *

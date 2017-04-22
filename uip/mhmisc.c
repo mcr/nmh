@@ -1,4 +1,3 @@
-
 /*
  * mhparse.c -- misc routines to process MIME messages
  *

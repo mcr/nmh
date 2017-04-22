@@ -1,4 +1,3 @@
-
 /*
  * m_draft.c -- construct the name of a draft message
  *

@@ -1,4 +1,3 @@
-
 /*
  * seq_setunseen.c -- add/delete all messages which have the SELECT_UNSEEN
  *                 -- bit set to/from the Unseen-Sequence

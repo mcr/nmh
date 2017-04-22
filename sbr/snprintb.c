@@ -1,4 +1,3 @@
-
 /*
  * snprintb.c -- snprintf a %b string
  *

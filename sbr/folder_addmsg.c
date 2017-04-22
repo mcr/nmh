@@ -1,4 +1,3 @@
-
 /*
  * folder_addmsg.c -- Link message into folder
  *

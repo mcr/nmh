@@ -1,4 +1,3 @@
-
 /*
  * context_foil.c -- foil search of profile and context
  *
@@ -66,4 +65,3 @@ context_foil (char *path)
 
     return 0;
 }
-

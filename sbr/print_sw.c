@@ -1,4 +1,3 @@
-
 /*
  * print_sw.c -- print switches
  *

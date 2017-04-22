@@ -1,4 +1,3 @@
-
 /*
  * mts.c -- definitions for the mail transport system
  *

@@ -1,4 +1,3 @@
-
 /*
  * dropsbr.h -- definitions for maildrop-style files
  */
@@ -54,4 +53,3 @@ char *map_name (char *);
 int map_read (char *, long, struct drop **, int);
 int map_write (char *, int, int, long, off_t, off_t, long, int, int);
 int map_chk (char *, int, struct drop *, long, int);
-

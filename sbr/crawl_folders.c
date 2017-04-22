@@ -1,4 +1,3 @@
-
 /*
  * crawl_folders.c -- crawl folder hierarchy
  *

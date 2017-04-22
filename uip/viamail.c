@@ -1,4 +1,3 @@
-
 /*
  * viamail.c -- send multiple files in a MIME message
  *

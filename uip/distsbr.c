@@ -1,4 +1,3 @@
-
 /*
  * distsbr.c -- routines to do additional "dist-style" processing
  *

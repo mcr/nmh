@@ -1,4 +1,3 @@
-
 /*
  * ali.c -- list nmh mail aliases
  *

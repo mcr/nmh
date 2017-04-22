@@ -1,4 +1,3 @@
-
 /*
  * popsbr.h -- header for POP client subroutines
  */

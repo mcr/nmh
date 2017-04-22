@@ -1,4 +1,3 @@
-
 /*
  * mhpath.c -- print full pathnames of nmh messages and folders
  *

@@ -1,4 +1,3 @@
-
 /*
  * seq_list.c -- Get all messages in a sequence and return them
  *            -- as a space separated list of message ranges.

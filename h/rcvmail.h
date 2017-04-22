@@ -1,4 +1,3 @@
-
 /*
  * rcvmail.h -- rcvmail hook definitions
  */

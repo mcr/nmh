@@ -1,4 +1,3 @@
-
 /*
  * dropsbr.c -- create/read/manipulate mail drops
  *

@@ -1,4 +1,3 @@
-
 /*
  * config.c -- master nmh configuration file
  *
@@ -333,4 +332,3 @@ char *foldprot = "700";
  */
 
 char *msgprot = "600";
-

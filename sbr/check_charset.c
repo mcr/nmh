@@ -1,4 +1,3 @@
-
 /*
  * check_charset.c -- routines for character sets
  *

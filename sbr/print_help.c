@@ -1,4 +1,3 @@
-
 /*
  * print_help.c -- print a help message, and possibly the
  *              -- profile/context entries for this command

@@ -1,4 +1,3 @@
-
 /*
  * sendsbr.c -- routines to help WhatNow/Send along
  *

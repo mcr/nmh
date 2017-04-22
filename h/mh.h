@@ -498,4 +498,3 @@ extern char *whomproc;
 extern void (*done) (int) NORETURN;
 
 #include <h/prototypes.h>
-

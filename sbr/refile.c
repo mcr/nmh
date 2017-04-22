@@ -1,4 +1,3 @@
-
 /*
  * refile.c -- call the "fileproc" to refile the
  *          -- msg or draft into another folder

@@ -1,4 +1,3 @@
-
 /*
  * netsec.c -- Network security routines for handling protocols that
  *	       require SASL and/or TLS.

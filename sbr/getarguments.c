@@ -1,4 +1,3 @@
-
 /*
  * getarguments.c -- Get the argument vector ready to go.
  *

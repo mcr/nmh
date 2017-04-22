@@ -1,4 +1,3 @@
-
 /*
  * packf.c -- pack a nmh folder into a file
  *

@@ -1,4 +1,3 @@
-
 /*
  * dist.c -- re-distribute a message
  *

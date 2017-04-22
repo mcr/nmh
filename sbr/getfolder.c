@@ -1,4 +1,3 @@
-
 /*
  * getfolder.c -- get the current or default folder
  *

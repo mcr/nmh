@@ -1,4 +1,3 @@
-
 /*
  * getcpy.c -- copy a string in managed memory
  *

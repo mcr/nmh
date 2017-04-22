@@ -1,4 +1,3 @@
-
 /*
  * forw.c -- forward a message, or group of messages.
  *

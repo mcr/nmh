@@ -1,4 +1,3 @@
-
 /*
  * cpydata.c -- copy all data from one fd to another
  *

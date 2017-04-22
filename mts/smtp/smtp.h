@@ -1,4 +1,3 @@
-
 /*
  * smtp.h -- definitions for the nmh SMTP Interface
  */
@@ -181,4 +180,3 @@ char *rp_string (int);
 
 /* is return value negative? */
 #define rp_isbad(val)   (((signed char)(val)) < 0)
-

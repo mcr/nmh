@@ -1,4 +1,3 @@
-
 /*
  * remdir.c -- remove a directory
  *

@@ -1,4 +1,3 @@
-
 /*
  * mhshow.c -- display the contents of MIME messages
  *

@@ -1,4 +1,3 @@
-
 /*
  * nmh.h -- system configuration header file
  */

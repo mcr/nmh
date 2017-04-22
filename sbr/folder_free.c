@@ -1,4 +1,3 @@
-
 /*
  * folder_free.c -- free a folder/message structure
  *

@@ -1,4 +1,3 @@
-
 /*
  * scansbr.h -- definitions for scan()
  */

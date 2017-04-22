@@ -1,4 +1,3 @@
-
 /*
  * seq_read.c -- read the .mh_sequence file and
  *            -- initialize sequence information

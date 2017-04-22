@@ -1,4 +1,3 @@
-
 /*
  * rcvtty.c -- a rcvmail program (a lot like rcvalert) handling IPC ttys
  *

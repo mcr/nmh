@@ -1,4 +1,3 @@
-
 /*
  * mhl.c -- the nmh message listing program
  *

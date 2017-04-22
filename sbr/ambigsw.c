@@ -1,4 +1,3 @@
-
 /*
  * ambigsw.c -- report an ambiguous switch
  *

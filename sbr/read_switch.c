@@ -1,4 +1,3 @@
-
 /*
  * read_switch.c -- prompt the user for an answer from the list
  *

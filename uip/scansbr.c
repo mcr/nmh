@@ -1,4 +1,3 @@
-
 /*
  * scansbr.c -- routines to help scan along...
  *

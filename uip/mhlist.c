@@ -1,4 +1,3 @@
-
 /*
  * mhlist.c -- list the contents of MIME messages
  *

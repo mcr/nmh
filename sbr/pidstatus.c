@@ -1,4 +1,3 @@
-
 /*
  * pidstatus.c -- report child's status
  *

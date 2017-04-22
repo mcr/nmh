@@ -1,4 +1,3 @@
-
 /*
  * read_yes_or_no_if_tty.c -- get a yes/no answer from the user
  *

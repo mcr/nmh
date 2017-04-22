@@ -1,4 +1,3 @@
-
 /*
  * rcvpack.c -- append message to a file
  *

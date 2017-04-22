@@ -1,4 +1,3 @@
-
 /*
  * makedir.c -- make a directory
  *

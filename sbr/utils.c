@@ -1,4 +1,3 @@
-
 /*
  * utils.c -- various utility routines
  *

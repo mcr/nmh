@@ -1,4 +1,3 @@
-
 /*
  * readconfig.c -- base routine to read nmh configuration files
  *              -- such as nmh profile, context file, or mhn.defaults.

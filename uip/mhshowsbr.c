@@ -1,4 +1,3 @@
-
 /*
  * mhshowsbr.c -- routines to display the contents of MIME messages
  *

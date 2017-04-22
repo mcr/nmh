@@ -1,4 +1,3 @@
-
 /*
  * burst.c -- explode digests into individual messages
  *

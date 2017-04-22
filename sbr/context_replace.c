@@ -1,4 +1,3 @@
-
 /*
  * context_replace.c -- add/replace an entry in the context/profile list
  *

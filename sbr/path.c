@@ -1,4 +1,3 @@
-
 /*
  * path.c -- return a pathname
  *

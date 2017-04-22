@@ -1,4 +1,3 @@
-
 /*
  * folder(s).c -- set/list the current message and/or folder
  *             -- push/pop a folder onto/from the folder stack

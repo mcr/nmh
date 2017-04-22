@@ -1,4 +1,3 @@
-
 /*
  * seq_save.c -- 1) synchronize sequences
  *            -- 2) save public sequences

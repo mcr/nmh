@@ -1,4 +1,3 @@
-
 /*
  * pidwait.c -- wait for child to exit
  *

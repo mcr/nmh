@@ -1,4 +1,3 @@
-
 /*
  * context_del.c -- delete an entry from the context/profile list
  *

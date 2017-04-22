@@ -1,4 +1,3 @@
-
 /*
  * rmf.c -- remove a folder
  *

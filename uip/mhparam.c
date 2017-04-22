@@ -1,4 +1,3 @@
-
 /*
  * mhparam.c -- print mh_profile values
  *

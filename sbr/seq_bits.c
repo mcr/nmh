@@ -1,4 +1,3 @@
-
 /*
  * seq_bits.c -- return the snprintb() string for a sequence
  *

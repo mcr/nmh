@@ -1,4 +1,3 @@
-
 /*
  * brkstring.c -- (destructively) split a string into
  *             -- an array of substrings

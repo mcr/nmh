@@ -1,4 +1,3 @@
-
 /*
  * fmt_addr.c -- format an address field (from fmt_scan)
  *

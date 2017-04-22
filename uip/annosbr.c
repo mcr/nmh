@@ -1,4 +1,3 @@
-
 /*
  * annosbr.c -- prepend annotation to messages
  *

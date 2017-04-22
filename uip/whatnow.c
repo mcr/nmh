@@ -1,4 +1,3 @@
-
 /*
  * whatnow.c -- the nmh `WhatNow' shell
  *

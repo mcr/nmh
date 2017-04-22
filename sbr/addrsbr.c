@@ -1,4 +1,3 @@
-
 /*
  * addrsbr.c -- parse addresses 822-style
  *

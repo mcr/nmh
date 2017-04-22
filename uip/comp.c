@@ -1,4 +1,3 @@
-
 /*
  * comp.c -- compose a message
  *

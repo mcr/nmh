@@ -1,4 +1,3 @@
-
 /*
  * refile.c -- move or link message(s) from a source folder
  *          -- into one or more destination folders

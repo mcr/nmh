@@ -1,4 +1,3 @@
-
 /*
  * fmt_scan.h -- definitions for fmt_scan()
  */

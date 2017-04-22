@@ -1,4 +1,3 @@
-
 /*
  * mhoutsbr.c -- routines to output MIME messages
  *            -- given a Content structure

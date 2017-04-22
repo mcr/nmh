@@ -1,4 +1,3 @@
-
 /*
  * closefds.c -- close-up fd's
  *

@@ -1,4 +1,3 @@
-
 /*
  * push.c -- push a fork into the background
  *
@@ -53,4 +52,3 @@ push(void)
 	    done (0);
     }
 }
-

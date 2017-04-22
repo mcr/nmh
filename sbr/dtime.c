@@ -1,4 +1,3 @@
-
 /*
  * dtime.c -- time/date routines
  *

@@ -1,4 +1,3 @@
-
 /*
  * context_find.c -- find an entry in the context/profile list
  *

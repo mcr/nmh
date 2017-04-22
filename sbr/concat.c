@@ -1,4 +1,3 @@
-
 /*
  * concat.c -- concatenate a variable number (minimum of 1)
  *             of strings in managed memory

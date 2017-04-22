@@ -1,4 +1,3 @@
-
 /*
  * inc.c -- incorporate messages from a maildrop into a folder
  *

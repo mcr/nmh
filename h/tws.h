@@ -1,4 +1,3 @@
-
 /*
  * tws.h
  */
@@ -63,4 +62,3 @@ time_t dmktime (struct tws *);
 void set_dotw (struct tws *);
 
 struct tws *dparsetime (char *);
-

@@ -1,4 +1,3 @@
-
 /*
  * lock.c -- routines to lock/unlock files
  *

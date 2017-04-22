@@ -1,4 +1,3 @@
-
 /*
  * m_backup.c -- construct a backup file
  *

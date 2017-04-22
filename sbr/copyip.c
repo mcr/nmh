@@ -1,4 +1,3 @@
-
 /*
  * copyip.c -- copy a string array and return pointer to end
  *

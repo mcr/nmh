@@ -1,4 +1,3 @@
-
 /*
  * msgchk.c -- check for mail
  *

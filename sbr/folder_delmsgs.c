@@ -1,4 +1,3 @@
-
 /*
  * folder_delmsgs.c -- "remove" SELECTED messages from a folder
  *

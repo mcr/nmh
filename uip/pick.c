@@ -1,4 +1,3 @@
-
 /*
  * pick.c -- search for messages by content
  *

@@ -1,4 +1,3 @@
-
 /*
  * seq_nameok.c -- check if a sequence name is ok
  *
