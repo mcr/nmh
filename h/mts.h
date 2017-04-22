@@ -31,9 +31,6 @@ char *getlocalmbox(void);
 extern char *mmdlm1;
 extern char *mmdlm2;
 
-#define	isdlm1(s) (strcmp (s, mmdlm1) == 0)
-#define	isdlm2(s) (strcmp (s, mmdlm2) == 0)
-
 /*
  * Read mts.conf file
  */
