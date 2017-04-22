@@ -1,5 +1,4 @@
-/*
- * getline.c -- replacement getline() implementation
+/* getline.c -- replacement getline() implementation
  *
  * This code is Copyright (c) 2016, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

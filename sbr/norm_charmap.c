@@ -1,5 +1,4 @@
-/*
- * The Single Unix Specification function nl_langinfo(CODESET)
+/* The Single Unix Specification function nl_langinfo(CODESET)
  * returns the name of the encoding used by the currently selected
  * locale:
  *

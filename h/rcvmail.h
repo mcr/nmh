@@ -1,5 +1,4 @@
-/*
- * rcvmail.h -- rcvmail hook definitions
+/* rcvmail.h -- rcvmail hook definitions
  */
 
 #include <ctype.h>

@@ -1,5 +1,4 @@
-/*
- * tws.h
+/* tws.h
  */
 
 /* If the following is #defined, a timezone given as a numeric-only offset will

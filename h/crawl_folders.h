@@ -1,5 +1,4 @@
-/*
- * crawl_folders.h -- crawl folder hierarchy
+/* crawl_folders.h -- crawl folder hierarchy
  */
 
 #define CRAWL_NUMFOLDERS 100

@@ -1,5 +1,4 @@
-/*
- * m_atoi.c -- Parse a string representation of a message number, and
+/* m_atoi.c -- Parse a string representation of a message number, and
  *          -- return the numeric value of the message.  If the string
  *          -- contains any non-digit characters, then return 0.
  *

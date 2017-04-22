@@ -1,5 +1,4 @@
-/*
- * mhstoresbr.c -- routines to save/store the contents of MIME messages
+/* mhstoresbr.c -- routines to save/store the contents of MIME messages
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

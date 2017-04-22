@@ -1,5 +1,4 @@
-/*
- * icalendar.h -- data structures and common code for icalendar scanner,
+/* icalendar.h -- data structures and common code for icalendar scanner,
  *                parser, and application code
  *
  * This code is Copyright (c) 2014, by the authors of nmh.  See the

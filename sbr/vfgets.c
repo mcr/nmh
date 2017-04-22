@@ -1,5 +1,4 @@
-/*
- * vfgets.c -- virtual fgets
+/* vfgets.c -- virtual fgets
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

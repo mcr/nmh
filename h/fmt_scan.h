@@ -1,5 +1,4 @@
-/*
- * fmt_scan.h -- definitions for fmt_scan()
+/* fmt_scan.h -- definitions for fmt_scan()
  */
 
 /*

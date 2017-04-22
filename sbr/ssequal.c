@@ -1,5 +1,4 @@
-/*
- * ssequal.c -- check if a string is a substring of another
+/* ssequal.c -- check if a string is a substring of another
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

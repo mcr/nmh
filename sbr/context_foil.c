@@ -1,5 +1,4 @@
-/*
- * context_foil.c -- foil search of profile and context
+/* context_foil.c -- foil search of profile and context
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

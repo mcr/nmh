@@ -1,5 +1,4 @@
-/*
- * post.c -- enter messages into the mail transport system
+/* post.c -- enter messages into the mail transport system
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

@@ -1,5 +1,4 @@
-/*
- * mh.h -- main header file for all of nmh
+/* mh.h -- main header file for all of nmh
  */
 
 #include <h/nmh.h>

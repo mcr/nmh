@@ -1,5 +1,4 @@
-/*
- * fmt_compile.h -- format types
+/* fmt_compile.h -- format types
  */
 
 /* types that output text */

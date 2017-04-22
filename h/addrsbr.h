@@ -1,5 +1,4 @@
-/*
- * addrsbr.h -- definitions for the address parsing system
+/* addrsbr.h -- definitions for the address parsing system
  */
 
 #define	UUCPHOST	(-1)

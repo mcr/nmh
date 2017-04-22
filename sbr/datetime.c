@@ -1,5 +1,4 @@
-/*
- * datetime.c -- functions for manipulating RFC 5545 date-time values
+/* datetime.c -- functions for manipulating RFC 5545 date-time values
  *
  * This code is Copyright (c) 2014, by the authors of nmh.
  * See the COPYRIGHT file in the root directory of the nmh

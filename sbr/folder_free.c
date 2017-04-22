@@ -1,5 +1,4 @@
-/*
- * folder_free.c -- free a folder/message structure
+/* folder_free.c -- free a folder/message structure
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

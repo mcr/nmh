@@ -1,5 +1,4 @@
-/*
- * mhical.c -- operate on an iCalendar request
+/* mhical.c -- operate on an iCalendar request
  *
  * This code is Copyright (c) 2014, by the authors of nmh.
  * See the COPYRIGHT file in the root directory of the nmh

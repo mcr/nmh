@@ -1,5 +1,4 @@
-/*
- * m_popen.c -- Interface for a popen() call that redirects the current
+/* m_popen.c -- Interface for a popen() call that redirects the current
  *		process standard output to the popen()d process.
  *
  * This code is Copyright (c) 2014, by the authors of nmh.  See the

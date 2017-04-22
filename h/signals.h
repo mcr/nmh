@@ -1,5 +1,4 @@
-/*
- * signals.h -- header file for nmh signal interface
+/* signals.h -- header file for nmh signal interface
  */
 
 #ifdef HAVE_CONFIG_H

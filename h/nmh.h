@@ -1,5 +1,4 @@
-/*
- * nmh.h -- system configuration header file
+/* nmh.h -- system configuration header file
  */
 
 #ifdef HAVE_CONFIG_H

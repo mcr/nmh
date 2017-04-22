@@ -1,5 +1,4 @@
-/*
- * fmtdump.c -- compile format file and dump out instructions
+/* fmtdump.c -- compile format file and dump out instructions
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

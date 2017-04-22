@@ -1,5 +1,4 @@
-/*
- * error.c -- main error handling routines
+/* error.c -- main error handling routines
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

@@ -1,5 +1,4 @@
-/*
- * utils.c -- various utility routines
+/* utils.c -- various utility routines
  *
  * This code is Copyright (c) 2006, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

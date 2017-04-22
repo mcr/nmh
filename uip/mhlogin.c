@@ -1,5 +1,4 @@
-/*
- * mhlogin.c -- login to external (OAuth) services
+/* mhlogin.c -- login to external (OAuth) services
  *
  * This code is Copyright (c) 2014, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

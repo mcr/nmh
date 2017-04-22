@@ -1,5 +1,4 @@
-/*
- * icalendar.l -- icalendar (RFC 5545) scanner
+/* icalendar.l -- icalendar (RFC 5545) scanner
  *
  * This code is Copyright (c) 2014, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

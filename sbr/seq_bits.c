@@ -1,5 +1,4 @@
-/*
- * seq_bits.c -- return the snprintb() string for a sequence
+/* seq_bits.c -- return the snprintb() string for a sequence
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

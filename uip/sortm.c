@@ -1,5 +1,4 @@
-/*
- * sortm.c -- sort messages in a folder by date/time
+/* sortm.c -- sort messages in a folder by date/time
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

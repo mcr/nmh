@@ -1,5 +1,4 @@
-/*
- * seq_nameok.c -- check if a sequence name is ok
+/* seq_nameok.c -- check if a sequence name is ok
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

@@ -1,5 +1,4 @@
-/*
- * Network security library routines for nmh.
+/* Network security library routines for nmh.
  *
  * These are a common set of routines to handle network security for
  * things like SASL and OpenSSL.

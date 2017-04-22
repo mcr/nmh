@@ -1,5 +1,4 @@
-/*
- * folder_addmsg.c -- Link message into folder
+/* folder_addmsg.c -- Link message into folder
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

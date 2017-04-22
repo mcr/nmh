@@ -1,5 +1,4 @@
-/*
- * m_draft.c -- construct the name of a draft message
+/* m_draft.c -- construct the name of a draft message
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

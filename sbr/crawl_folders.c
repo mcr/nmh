@@ -1,5 +1,4 @@
-/*
- * crawl_folders.c -- crawl folder hierarchy
+/* crawl_folders.c -- crawl folder hierarchy
  *
  * This code is Copyright (c) 2008, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

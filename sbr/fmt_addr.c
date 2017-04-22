@@ -1,5 +1,4 @@
-/*
- * fmt_addr.c -- format an address field (from fmt_scan)
+/* fmt_addr.c -- format an address field (from fmt_scan)
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

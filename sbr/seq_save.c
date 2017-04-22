@@ -1,5 +1,4 @@
-/*
- * seq_save.c -- 1) synchronize sequences
+/* seq_save.c -- 1) synchronize sequences
  *            -- 2) save public sequences
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

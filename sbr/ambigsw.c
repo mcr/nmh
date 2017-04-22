@@ -1,5 +1,4 @@
-/*
- * ambigsw.c -- report an ambiguous switch
+/* ambigsw.c -- report an ambiguous switch
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

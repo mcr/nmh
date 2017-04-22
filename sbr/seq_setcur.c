@@ -1,5 +1,4 @@
-/*
- * seq_setcur.c -- set the current message ("cur" sequence) for a folder
+/* seq_setcur.c -- set the current message ("cur" sequence) for a folder
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

@@ -1,5 +1,4 @@
-/*
- * rcvpack.c -- append message to a file
+/* rcvpack.c -- append message to a file
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

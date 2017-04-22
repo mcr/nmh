@@ -1,5 +1,4 @@
-/*
- * seq_getnum.c -- find the index for a sequence
+/* seq_getnum.c -- find the index for a sequence
  *              -- return -1 if sequence doesn't exist
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

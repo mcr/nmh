@@ -1,5 +1,4 @@
-/*
- * mts.h -- definitions for the mail system
+/* mts.h -- definitions for the mail system
  */
 
 /*

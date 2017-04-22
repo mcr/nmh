@@ -1,5 +1,4 @@
-/*
- * forwsbr.c -- subroutine to build a draft from a component file
+/* forwsbr.c -- subroutine to build a draft from a component file
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

@@ -1,5 +1,4 @@
-/*
- * flist.c -- list nmh folders containing messages
+/* flist.c -- list nmh folders containing messages
  *         -- in a given sequence
  *
  * originally by

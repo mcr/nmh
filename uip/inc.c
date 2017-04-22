@@ -1,5 +1,4 @@
-/*
- * inc.c -- incorporate messages from a maildrop into a folder
+/* inc.c -- incorporate messages from a maildrop into a folder
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

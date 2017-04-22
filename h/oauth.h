@@ -1,5 +1,4 @@
-/*
- * Implementation of OAuth 2.0 [1] for XOAUTH2 in SMTP [2] and POP3 [3].
+/* Implementation of OAuth 2.0 [1] for XOAUTH2 in SMTP [2] and POP3 [3].
  *
  * Google defined XOAUTH2 for SMTP, and that's what we use here.  If other
  * providers implement XOAUTH2 or some similar OAuth-based SMTP authentication

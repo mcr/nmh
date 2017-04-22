@@ -1,5 +1,4 @@
-/*
- * m_backup.c -- construct a backup file
+/* m_backup.c -- construct a backup file
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

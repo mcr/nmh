@@ -1,5 +1,4 @@
-/*
- * readconfig.c -- base routine to read nmh configuration files
+/* readconfig.c -- base routine to read nmh configuration files
  *              -- such as nmh profile, context file, or mhn.defaults.
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

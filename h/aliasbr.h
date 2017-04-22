@@ -1,5 +1,4 @@
-/*
- * aliasbr.h -- definitions for the aliasing system
+/* aliasbr.h -- definitions for the aliasing system
  *
  */
 

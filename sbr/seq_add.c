@@ -1,5 +1,4 @@
-/*
- * seq_add.c -- add message(s) to a sequence
+/* seq_add.c -- add message(s) to a sequence
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

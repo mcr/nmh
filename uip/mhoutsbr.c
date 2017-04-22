@@ -1,5 +1,4 @@
-/*
- * mhoutsbr.c -- routines to output MIME messages
+/* mhoutsbr.c -- routines to output MIME messages
  *            -- given a Content structure
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

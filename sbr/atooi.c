@@ -1,5 +1,4 @@
-/*
- * atooi.c -- octal version of atoi()
+/* atooi.c -- octal version of atoi()
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

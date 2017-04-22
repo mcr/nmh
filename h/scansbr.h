@@ -1,5 +1,4 @@
-/*
- * scansbr.h -- definitions for scan()
+/* scansbr.h -- definitions for scan()
  */
 
 #define	SCNENC	2		/* message just fine, but encrypted(!!) */

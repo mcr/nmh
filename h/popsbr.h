@@ -1,5 +1,4 @@
-/*
- * popsbr.h -- header for POP client subroutines
+/* popsbr.h -- header for POP client subroutines
  */
 
 /* TLS flags */

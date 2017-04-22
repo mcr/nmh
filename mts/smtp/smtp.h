@@ -1,5 +1,4 @@
-/*
- * smtp.h -- definitions for the nmh SMTP Interface
+/* smtp.h -- definitions for the nmh SMTP Interface
  */
 
 /* length is the length of the string in text[], which is also NUL

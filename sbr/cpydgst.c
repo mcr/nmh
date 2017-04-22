@@ -1,5 +1,4 @@
-/*
- * cpydgst.c -- copy from one fd to another in encapsulating mode
+/* cpydgst.c -- copy from one fd to another in encapsulating mode
  *           -- (do dashstuffing of input data).
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

@@ -1,5 +1,4 @@
-/*
- * context_del.c -- delete an entry from the context/profile list
+/* context_del.c -- delete an entry from the context/profile list
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

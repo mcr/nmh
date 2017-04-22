@@ -1,5 +1,4 @@
-/*
- * Routines to encode message headers using RFC 2047-encoding.
+/* Routines to encode message headers using RFC 2047-encoding.
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

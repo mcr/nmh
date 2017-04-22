@@ -1,5 +1,4 @@
-/*
- * mime_type.c -- routine to determine the MIME Content-Type of a file
+/* mime_type.c -- routine to determine the MIME Content-Type of a file
  *
  * This code is Copyright (c) 2014, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

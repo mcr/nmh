@@ -1,5 +1,4 @@
-/*
- * r1bindex.c -- Given a string and a character, return a pointer
+/* r1bindex.c -- Given a string and a character, return a pointer
  *            -- to the right of the rightmost occurrence of the
  *            -- character.  If the character doesn't occur, the
  *            -- pointer will be at the beginning of the string.

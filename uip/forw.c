@@ -1,5 +1,4 @@
-/*
- * forw.c -- forward a message, or group of messages.
+/* forw.c -- forward a message, or group of messages.
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

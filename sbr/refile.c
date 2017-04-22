@@ -1,5 +1,4 @@
-/*
- * refile.c -- call the "fileproc" to refile the
+/* refile.c -- call the "fileproc" to refile the
  *          -- msg or draft into another folder
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

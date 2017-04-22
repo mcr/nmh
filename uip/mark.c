@@ -1,5 +1,4 @@
-/*
- * mark.c -- add message(s) to sequences in given folder
+/* mark.c -- add message(s) to sequences in given folder
  *        -- delete messages (s) from sequences in given folder
  *        -- list sequences in given folder
  *

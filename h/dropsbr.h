@@ -1,5 +1,4 @@
-/*
- * dropsbr.h -- definitions for maildrop-style files
+/* dropsbr.h -- definitions for maildrop-style files
  */
 
 /*

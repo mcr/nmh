@@ -1,5 +1,4 @@
-/*
- * mkstemp.c -- create a temporary file
+/* mkstemp.c -- create a temporary file
  *
  * This code is Copyright (c) 2014 by the authors of nmh.
  * See the COPYRIGHT file in the root directory of the nmh

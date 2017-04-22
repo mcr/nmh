@@ -1,5 +1,4 @@
-/*
- * mhlistsbr.c -- routines to list information about the
+/* mhlistsbr.c -- routines to list information about the
  *             -- contents of MIME messages
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

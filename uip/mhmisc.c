@@ -1,5 +1,4 @@
-/*
- * mhparse.c -- misc routines to process MIME messages
+/* mhparse.c -- misc routines to process MIME messages
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

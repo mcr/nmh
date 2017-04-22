@@ -1,5 +1,4 @@
-/*
- * mhparam.c -- print mh_profile values
+/* mhparam.c -- print mh_profile values
  *
  * Originally contributed by
  * Jeffrey C Honig <Jeffrey_C_Honig@cornell.edu>

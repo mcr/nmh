@@ -1,5 +1,4 @@
-/*
- * brkstring.c -- (destructively) split a string into
+/* brkstring.c -- (destructively) split a string into
  *             -- an array of substrings
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

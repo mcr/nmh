@@ -1,5 +1,4 @@
-/*
- * mhcachesbr.h -- definitions for manipulating MIME content cache
+/* mhcachesbr.h -- definitions for manipulating MIME content cache
  */
 
 /*

@@ -1,5 +1,4 @@
-/*
- * getcpy.c -- copy a string in managed memory
+/* getcpy.c -- copy a string in managed memory
  *
  * THIS IS OBSOLETE.  NEED TO REPLACE ALL OCCURRENCES
  * OF GETCPY WITH STRDUP.  BUT THIS WILL REQUIRE

@@ -1,5 +1,4 @@
-/*
- * showfile.c -- invoke the `lproc' command
+/* showfile.c -- invoke the `lproc' command
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

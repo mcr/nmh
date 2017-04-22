@@ -1,5 +1,4 @@
-/*
- * context_read.c -- find and read profile and context files
+/* context_read.c -- find and read profile and context files
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

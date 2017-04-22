@@ -1,5 +1,4 @@
-/*
- * smtp.c -- nmh SMTP interface
+/* smtp.c -- nmh SMTP interface
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

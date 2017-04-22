@@ -1,5 +1,4 @@
-/*
- * m_getfld.c -- read/parse a message
+/* m_getfld.c -- read/parse a message
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

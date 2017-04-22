@@ -1,5 +1,4 @@
-/*
- * concat.c -- concatenate a variable number (minimum of 1)
+/* concat.c -- concatenate a variable number (minimum of 1)
  *             of strings in managed memory
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

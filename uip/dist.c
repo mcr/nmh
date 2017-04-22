@@ -1,5 +1,4 @@
-/*
- * dist.c -- re-distribute a message
+/* dist.c -- re-distribute a message
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

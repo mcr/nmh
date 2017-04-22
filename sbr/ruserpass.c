@@ -1,5 +1,4 @@
-/*
- * Portions of this code are
+/* Portions of this code are
  * Copyright (c) 1985 Regents of the University of California.
  * All rights reserved.
  *

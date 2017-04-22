@@ -1,5 +1,4 @@
-/*
- * m_mktemp.c -- Construct a temporary file.
+/* m_mktemp.c -- Construct a temporary file.
  *
  * This code is Copyright (c) 2010, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

@@ -1,5 +1,4 @@
-/*
- * seq_list.c -- Get all messages in a sequence and return them
+/* seq_list.c -- Get all messages in a sequence and return them
  *            -- as a space separated list of message ranges.
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

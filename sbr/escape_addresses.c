@@ -1,5 +1,4 @@
-/*
- * escape_addresses.c -- Escape address components, hopefully per RFC 5322.
+/* escape_addresses.c -- Escape address components, hopefully per RFC 5322.
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

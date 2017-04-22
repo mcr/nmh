@@ -1,5 +1,4 @@
-/*
- * utils.h -- utility prototypes
+/* utils.h -- utility prototypes
  */
 
 /* Call malloc(3), exiting on NULL return. */

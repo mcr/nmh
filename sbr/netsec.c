@@ -1,5 +1,4 @@
-/*
- * netsec.c -- Network security routines for handling protocols that
+/* netsec.c -- Network security routines for handling protocols that
  *	       require SASL and/or TLS.
  *
  * This code is Copyright (c) 2016, by the authors of nmh.  See the

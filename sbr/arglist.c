@@ -1,5 +1,4 @@
-/*
- * arglist.c -- Routines for handling argument lists for execvp() and friends
+/* arglist.c -- Routines for handling argument lists for execvp() and friends
  *
  * This code is Copyright (c) 2013, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

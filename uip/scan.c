@@ -1,5 +1,4 @@
-/*
- * scan.c -- display a one-line "scan" listing of folder or messages
+/* scan.c -- display a one-line "scan" listing of folder or messages
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

@@ -1,5 +1,4 @@
-/*
- * mhpath.c -- print full pathnames of nmh messages and folders
+/* mhpath.c -- print full pathnames of nmh messages and folders
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

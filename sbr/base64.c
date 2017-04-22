@@ -1,5 +1,4 @@
-/*
- * base64.c -- routines for converting to base64
+/* base64.c -- routines for converting to base64
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

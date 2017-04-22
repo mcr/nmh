@@ -1,5 +1,4 @@
-/*
- * seq_read.c -- read the .mh_sequence file and
+/* seq_read.c -- read the .mh_sequence file and
  *            -- initialize sequence information
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

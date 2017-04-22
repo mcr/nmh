@@ -1,5 +1,4 @@
-/*
- * refile.c -- move or link message(s) from a source folder
+/* refile.c -- move or link message(s) from a source folder
  *          -- into one or more destination folders
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

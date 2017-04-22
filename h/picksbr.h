@@ -1,5 +1,4 @@
-/*
- * picksbr.h -- definitions for picksbr.c
+/* picksbr.h -- definitions for picksbr.c
  */
 
 /*

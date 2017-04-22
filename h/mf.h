@@ -1,5 +1,4 @@
-/*
- * mf.h -- include file for mailbox filters
+/* mf.h -- include file for mailbox filters
  */
 
 #include <h/nmh.h>

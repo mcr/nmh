@@ -1,5 +1,4 @@
-/*
- * mhfree.c -- routines to free the data structures used to
+/* mhfree.c -- routines to free the data structures used to
  *          -- represent MIME messages
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

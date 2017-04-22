@@ -1,5 +1,4 @@
-/*
- * folder_pack.c -- pack (renumber) the messages in a folder
+/* folder_pack.c -- pack (renumber) the messages in a folder
  *               -- into a contiguous range from 1 to n.
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the

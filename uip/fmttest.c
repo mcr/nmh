@@ -1,5 +1,4 @@
-/*
- * fmttest.c -- A program to help test and debug format instructions
+/* fmttest.c -- A program to help test and debug format instructions
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
