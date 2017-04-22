@@ -1852,12 +1852,8 @@ Date: Tue, 1 Nov 1994 00:00:00 -0800
 
   If you say, "show all," and one of the messages was a MIME message,
   your pager will be run several times on each message, rather than
-  once on all the messages as a whole. If you find this annoying, set
-  the environment variable NOMHNPROC:
-
-    % setenv NOMHNPROC ""			# csh
-    $ NOMHNPROC=				# sh and bash
-    $ export NOMHNPROC
+  once on all the messages as a whole. If you find this annoying, use
+  -nocheckmime.
 
   See also MH book sections 6.2.3, 6.2.10, or the URLs:
 
