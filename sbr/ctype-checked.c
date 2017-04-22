@@ -1,4 +1,4 @@
-/* sbr/ctype-checked.c:  checks char isn't used as the value for each of
+/* ctype-checked.c -- checks char isn't used as the value for each of
  *     the ctype functions
  *
  * This code is Copyright (c) 2016, by the authors of nmh.

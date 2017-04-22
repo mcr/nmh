@@ -1,4 +1,4 @@
-/* message-id.c -- construct the body of a Message-ID or Content-ID
+/* message_id.c -- construct the body of a Message-ID or Content-ID
  *                 header field
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the

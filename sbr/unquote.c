@@ -1,4 +1,4 @@
-/* unquote.c: Handle quote removal and quoted-pair strings on
+/* unquote.c -- Handle quote removal and quoted-pair strings on
  * RFC 2822-5322 atoms.
  *
  * This code is Copyright (c) 2013, by the authors of nmh.  See the

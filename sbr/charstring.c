@@ -1,4 +1,4 @@
-/* charstring -- dynamically-sized char array that can report size
+/* charstring.c -- dynamically-sized char array that can report size
  *               in both characters and bytes
  *
  * This code is Copyright (c) 2014, by the authors of nmh.  See the

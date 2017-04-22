@@ -1,4 +1,4 @@
-/* sbr/ctype-checked.h
+/* ctype-checked.h
  *
  * This code is Copyright (c) 2016, by the authors of nmh.
  * See the COPYRIGHT file in the root directory of the nmh
