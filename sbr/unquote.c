@@ -39,6 +39,4 @@ unquote_string(const char *input, char *output)
     }
 
     output[m] = '\0';
-
-    return;
 }

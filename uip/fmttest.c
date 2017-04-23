@@ -571,7 +571,6 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 
     ivector_free (seqnum);
     folder_free(mp);
-    return;
 }
 
 /*

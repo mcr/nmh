@@ -153,8 +153,6 @@ annolist(char *file, char *comp, char *text, int number)
     free(field);
 
     (void)fclose(fp);
-
-    return;
 }
 
 /*
@@ -165,7 +163,6 @@ void
 annopreserve(int preserve)
 {
 	preserve_actime_and_modtime = preserve;
-	return;
 }
 
 static int

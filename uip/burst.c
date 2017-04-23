@@ -351,8 +351,6 @@ find_mime_parts (CT content, struct smsg *smsgs, int *msgp)
 	for (part = m->mp_parts; part; part = part->mp_next)
 	    find_mime_parts(part->mp_part, smsgs, msgp);
     }
-
-    return;
 }
 
 

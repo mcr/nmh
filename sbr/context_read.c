@@ -141,6 +141,4 @@ context_read (void)
 	readconfig ((struct node **) 0, ib, cp, 1);
 	lkfclosedata (ib, ctxpath);
     }
-
-    return;
 }
