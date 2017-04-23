@@ -81,6 +81,7 @@ The mts configuration file.
 .SH "PROFILE COMPONENTS"
 None
 .SH "SEE ALSO"
+.IR fmttest (1),
 .IR dp (8)
 .PP
 .I
