@@ -4,7 +4,6 @@
  * things like SASL and OpenSSL.
  */
 
-struct _netsec_context;
 typedef struct _netsec_context netsec_context;
 
 /*

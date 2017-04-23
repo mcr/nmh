@@ -200,7 +200,6 @@
 /*
  * static prototypes
  */
-struct m_getfld_state;
 static int m_Eom (m_getfld_state_t);
 
 #define eom(c,s)	(s->msg_style != MS_DEFAULT && \
