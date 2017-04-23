@@ -169,9 +169,8 @@ extern struct swit anoyes[];	/* standard yes/no switches */
 #define	SEQMOD	   (1<<1)	/* folder's sequences modified   */
 #define	ALLOW_NEW  (1<<2)	/* allow the "new" sequence     */
 #define	OTHERS	   (1<<3)	/* folder has other files	*/
-#define	MODIFIED   (1<<4)	/* msh in-core folder modified  */
 
-#define	FBITS "\020\01READONLY\02SEQMOD\03ALLOW_NEW\04OTHERS\05MODIFIED"
+#define	FBITS "\020\01READONLY\02SEQMOD\03ALLOW_NEW\04OTHERS"
 
 /*
  * first free slot for user defined sequences
@@ -183,12 +182,11 @@ extern struct swit anoyes[];	/* standard yes/no switches */
  * internal messages attributes (sequences)
  */
 #define EXISTS        (0)	/* exists            */
-#define DELETED       (1)	/* deleted           */
 #define SELECTED      (2)	/* selected for use  */
 #define SELECT_EMPTY  (3)	/* "new" message     */
 #define	SELECT_UNSEEN (4)	/* inc/show "unseen" */
 
-#define	MBITS "\020\01EXISTS\02DELETED\03SELECTED\04NEW\05UNSEEN"
+#define	MBITS "\020\01EXISTS\02!BUG!\03SELECTED\04NEW\05UNSEEN"
 
 /*
  * type for holding the sequence set of a message
