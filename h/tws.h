@@ -55,7 +55,6 @@ struct tws *dlocaltime (time_t *);
 struct tws *dgmtime (time_t *);
 char *dasctime (struct tws *, int);
 char *dtimezone (int, int);
-void twscopy (struct tws *, struct tws *);
 int twsort (struct tws *, struct tws *);
 time_t dmktime (struct tws *);
 void set_dotw (struct tws *);

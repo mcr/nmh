@@ -394,17 +394,6 @@ set_dotw (struct tws *tw)
 
 
 /*
- * Copy nmh time structure
- */
-
-void
-twscopy (struct tws *tb, struct tws *tw)
-{
-    *tb = *tw;  /* struct copy */
-}
-
-
-/*
  * Compare two nmh time structures
  */
 

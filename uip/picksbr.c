@@ -841,7 +841,7 @@ tcompile (char *ap, struct tws *tb, int isafter)
     if ((tw = tws_parse (ap, isafter)) == NULL)
 	return 0;
 
-    twscopy (tb, tw);
+    *tb = *tw;
     return 1;
 }
 
