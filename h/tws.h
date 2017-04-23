@@ -25,7 +25,6 @@ struct tws {
 #define	TW_NULL	 0x0000
 
 #define	TW_SDAY	 0x0003	/* how day-of-week was determined */
-#define	TW_SNIL	 0x0000	/*   not given                    */
 #define	TW_SEXP	 0x0001	/*   explicitly given             */
 #define	TW_SIMP	 0x0002	/*   implicitly given             */
 

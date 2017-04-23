@@ -249,6 +249,7 @@ dasctime (struct tws *tw, int flags)
 {
     char buffer[80];
     static char result[80];
+    int twf;
 
     if (!tw)
 	return NULL;
@@ -264,13 +265,13 @@ dasctime (struct tws *tw, int flags)
 	    tw->tw_year < 100 ? 2 : 4, tw->tw_year,
 	    tw->tw_hour, tw->tw_min, tw->tw_sec, result);
 
-    if ((tw->tw_flags & TW_SDAY) == TW_SEXP)
-	snprintf (result, sizeof(result), "%s, %s", tw_dotw[tw->tw_wday], buffer);
-    else
-	if ((tw->tw_flags & TW_SDAY) == TW_SNIL)
-	    strncpy (result, buffer, sizeof(result));
-	else
-	    snprintf (result, sizeof(result), "%s (%s)", buffer, tw_dotw[tw->tw_wday]);
+    if ((twf = tw->tw_flags & TW_SDAY)) {
+        if (twf == TW_SEXP)
+            snprintf(result, sizeof(result), "%s, %s", tw_dotw[tw->tw_wday], buffer);
+        else
+	    snprintf(result, sizeof(result), "%s (%s)", buffer, tw_dotw[tw->tw_wday]);
+    } else
+        strncpy(result, buffer, sizeof(result));
 
     return result;
 }
