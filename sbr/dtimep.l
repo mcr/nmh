@@ -52,14 +52,6 @@
   return(&tw)
 
 /*
- * Patchable flag that says how to interpret NN/NN/NN dates. When
- * true, we do it European style: DD/MM/YY. When false, we do it
- * American style: MM/DD/YY.  Of course, these are all non-RFC822
- * compliant.
- */
-int europeandate = 0;
-
-/*
  * Table to convert month names to numeric month.  We use the
  * fact that the low order 5 bits of the sum of the 2nd & 3rd
  * characters of the name is a hash with no collisions for the 12
@@ -323,17 +315,10 @@ nl      [ \t\n()]
                                      }
 {D}("-"|"/"){D}("-"|"/"){YEAR}{W}{TIME}       {
                                      INIT();
-				     if(europeandate) {
-				       /* DD/MM/YY */
-				     SETDAY();
-				     SKIPTOD();
-				     SETMON_NUM();
-				     } else {
-				       /* MM/DD/YY */
+				     /* MM/DD/YY */
 				     SETMON_NUM();
 				     SKIPTOD();
 				     SETDAY();
-				     }
 				     SKIPTOD();
 				     SETYEAR();
 				     SKIPTOD();
@@ -341,17 +326,10 @@ nl      [ \t\n()]
                                      }
 {D}("-"|"/"){D}("-"|"/"){YEAR}                {
                                      INIT();
-				     if(europeandate) {
-				       /* DD/MM/YY */
-				     SETDAY();
-				     SKIPTOD();
-				     SETMON_NUM();
-				     } else {
-				       /* MM/DD/YY */
+				     /* MM/DD/YY */
 				     SETMON_NUM();
 				     SKIPTOD();
 				     SETDAY();
-				     }
 				     SKIPTOD();
 				     SETYEAR();
                                      }
