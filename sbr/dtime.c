@@ -298,10 +298,8 @@ dtimezone (int offset, int flags)
 	hours = offset / 60;
     }
 
-#ifdef ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
     if (flags & TW_DST)
 	hours++;
-#endif /* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
     snprintf (buffer, sizeof(buffer), "%s%02d%02d",
 		offset < 0 ? "-" : "+", abs (hours), abs (mins));
     return buffer;

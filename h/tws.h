@@ -1,12 +1,11 @@
 /* tws.h -- time routines.
  */
 
-/* If the following is #defined, a timezone given as a numeric-only offset will
+/* A timezone given as a numeric-only offset will
    be treated specially if it's in a zone that observes Daylight Saving Time.
    For instance, during DST, a Date: like "Mon, 24 Jul 2000 12:31:44 -0700" will
    be printed as "Mon, 24 Jul 2000 12:31:44 PDT".  Without the code activated by
    the following #define, that'd be incorrectly printed as "...MST". */
-#define	ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST 1
 
 struct tws {
     int tw_sec;		/* seconds after the minute - [0, 61] */
