@@ -990,8 +990,8 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
 			   quote. */
 			memmove (pp, pp-1, len+1);
 			*(pp++-1) = '\\';
-			buflen -= 1;
-			bp += 1;
+			buflen--;
+			bp++;
 		    }
 		}
 		/* If pp is still set, that means we ran out of space. */

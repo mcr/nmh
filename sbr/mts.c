@@ -192,7 +192,7 @@ tailor_value (char *s)
 		    }
 		    r = ((unsigned char) *s) != '0' ? 10 : 8;
 		    for (i = 0; isdigit ((unsigned char) *s); s++)
-			i = i * r + ((unsigned char) *s) - '0';
+			i *= r + ((unsigned char) *s) - '0';
 		    s--;
 		    *bp = toascii (i);
 		    break;

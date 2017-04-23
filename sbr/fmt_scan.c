@@ -749,13 +749,13 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    break;
 	case FT_LV_DIVIDE_L:
 	    if (fmt->f_value)
-		value = value / fmt->f_value;
+		value /= fmt->f_value;
 	    else
 		value = 0;
 	    break;
 	case FT_LV_MODULO_L:
 	    if (fmt->f_value)
-		value = value % fmt->f_value;
+		value %= fmt->f_value;
 	    else
 		value = 0;
 	    break;

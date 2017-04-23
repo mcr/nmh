@@ -1212,7 +1212,7 @@ compose_content (CT ct, int verbose)
 	if (listsw) {
 	    ct->c_end = (partnum = strlen (prefix) + 2) + 2;
 	    if (ct->c_rfc934)
-		ct->c_end += 1;
+		ct->c_end++;
 
 	    for (part = m->mp_parts; part; part = part->mp_next)
 		ct->c_end += part->mp_part->c_end + partnum;
