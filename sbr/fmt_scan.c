@@ -833,7 +833,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    }
 	    break;
 	case FT_LV_ZONEF:
-	    if ((fmt->f_comp->c_tws->tw_flags & TW_SZONE) == TW_SZEXP)
+	    if (fmt->f_comp->c_tws->tw_flags & TW_SZEXP)
 		    value = 1;
 	    else
 		    value = -1;

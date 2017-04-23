@@ -113,7 +113,6 @@ dlocaltime (time_t *clock)
 
     tw.tw_flags &= ~TW_SDAY;
     tw.tw_flags |= TW_SEXP;
-    tw.tw_flags &= ~TW_SZONE;
     tw.tw_flags |= TW_SZEXP;
 
     tw.tw_clock = *clock;
@@ -161,7 +160,6 @@ dgmtime (time_t *clock)
 
     tw.tw_flags &= ~TW_SDAY;
     tw.tw_flags |= TW_SEXP;
-    tw.tw_flags &= ~TW_SZONE;
     tw.tw_flags |= TW_SZEXP;
 
     tw.tw_clock = *clock;
@@ -256,10 +254,10 @@ dasctime (struct tws *tw, int flags)
 	return NULL;
 
     /* Display timezone if known */
-    if ((tw->tw_flags & TW_SZONE) == TW_SZNIL)
-	result[0] = '\0';
-    else
+    if (tw->tw_flags & TW_SZEXP)
 	snprintf(result, sizeof(result), " %s", dtimezone(tw->tw_zone, tw->tw_flags | flags));
+    else
+	result[0] = '\0';
 
     snprintf(buffer, sizeof(buffer), "%02d %s %0*d %02d:%02d:%02d%s",
 	    tw->tw_mday, tw_moty[tw->tw_mon],

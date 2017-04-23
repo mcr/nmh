@@ -29,9 +29,7 @@ struct tws {
 #define	TW_SEXP	 0x0001	/*   explicitly given             */
 #define	TW_SIMP	 0x0002	/*   implicitly given             */
 
-#define	TW_SZONE 0x0004	/* how timezone was determined    */
-#define	TW_SZNIL 0x0000	/*   not given                    */
-#define	TW_SZEXP 0x0004	/*   explicitly given             */
+#define	TW_SZEXP 0x0004	/* Explicit timezone. */
 
 #define	TW_DST	 0x0010	/* daylight savings time          */
 #define	TW_ZONE	 0x0020	/* use numeric timezones only     */
