@@ -241,7 +241,7 @@ The function escapes may be roughly grouped into a few categories.
 .RS 5
 .nf
 .ta \w'Fformataddr 'u +\w'Aboolean 'u +\w'Rboolean 'u
-.I "Function	Argument   Result	Description"
+.I "Function	Argument	Return	Description"
 msg		integer	message number
 cur		integer	message is current (0 or 1)
 unseen		integer	message is unseen (0 or 1)
