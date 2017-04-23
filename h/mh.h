@@ -176,17 +176,17 @@ extern struct swit anoyes[];	/* standard yes/no switches */
  * first free slot for user defined sequences
  * and attributes
  */
-#define	FFATTRSLOT  5
+#define	FFATTRSLOT  4
 
 /*
  * internal messages attributes (sequences)
  */
 #define EXISTS        (0)	/* exists            */
-#define SELECTED      (2)	/* selected for use  */
-#define SELECT_EMPTY  (3)	/* "new" message     */
-#define	SELECT_UNSEEN (4)	/* inc/show "unseen" */
+#define SELECTED      (1)	/* selected for use  */
+#define SELECT_EMPTY  (2)	/* "new" message     */
+#define	SELECT_UNSEEN (3)	/* inc/show "unseen" */
 
-#define	MBITS "\020\01EXISTS\02!BUG!\03SELECTED\04NEW\05UNSEEN"
+#define	MBITS "\020\01EXISTS\02SELECTED\03NEW\04UNSEEN"
 
 /*
  * type for holding the sequence set of a message
