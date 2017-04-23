@@ -308,10 +308,7 @@ static int
 read_hdrs (struct msgs *mp, char *datesw)
 {
     int msgnum;
-    struct tws tb;
     struct smsg *s;
-
-    twscopy (&tb, dlocaltimenow ());
 
     smsgs = mh_xcalloc(mp->hghsel - mp->lowsel + 2, sizeof *smsgs);
     s = smsgs;
