@@ -200,7 +200,6 @@ void bvector_clear_all (bvector_t);
 void bvector_set (bvector_t, size_t);
 unsigned int bvector_at (bvector_t, size_t);
 const unsigned long *bvector_bits (bvector_t);
-size_t bvector_maxsize (bvector_t);
 
 typedef struct svector *svector_t;
 
@@ -219,7 +218,6 @@ void ivector_free (ivector_t);
 int ivector_push_back (ivector_t, int);
 int ivector_at (ivector_t, size_t);
 int *ivector_atp (ivector_t, size_t);
-size_t ivector_size (ivector_t);
 
 /*
  * Primary structure of folder/message information

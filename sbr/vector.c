@@ -130,11 +130,6 @@ bvector_bits (bvector_t vec) {
     return vec->bits;
 }
 
-size_t
-bvector_maxsize (bvector_t vec) {
-    return vec->maxsize;
-}
-
 
 struct svector {
     char **strs;
@@ -266,11 +261,6 @@ ivector_atp (ivector_t vec, size_t i) {
     if (i >= vec->maxsize)
         ivector_resize (vec, i);
     return &vec->ints[i];
-}
-
-size_t
-ivector_size (ivector_t vec) {
-    return vec->size;
 }
 
 static void
