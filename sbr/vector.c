@@ -27,11 +27,8 @@
  * constants in the code below must also be changed to a 1 that's at
  * least as wide as the new type.
  */
-#ifndef Nbby
-# define Nbby 8
-#endif
-#define BVEC_WORD(vec, max) ((max) / (sizeof *vec->bits * Nbby))
-#define BVEC_OFFSET(vec, max) ((max) % (sizeof *vec->bits * Nbby))
+#define BVEC_WORD(vec, max) ((max) / (sizeof *vec->bits * CHAR_BIT))
+#define BVEC_OFFSET(vec, max) ((max) % (sizeof *vec->bits * CHAR_BIT))
 #define BVEC_BYTES(vec, n) \
     ((BVEC_WORD (vec, n) + (BVEC_OFFSET (vec, n) == 0 ? 0 : 1))  * \
     sizeof *vec->bits)
@@ -52,7 +49,7 @@ bvector_create (size_t init_size) {
     bytes = BVEC_BYTES (vec, init_size  ?  init_size  :  VEC_INIT_SIZE);
 
     vec->bits = mh_xcalloc (1, bytes);
-    vec->maxsize = bytes * Nbby;
+    vec->maxsize = bytes * CHAR_BIT;
 
     return vec;
 }

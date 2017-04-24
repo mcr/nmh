@@ -10,7 +10,6 @@
 #define	OK             0	/*  ditto on success               */
 #define	DONE           1	/* trinary logic                   */
 #define ALL           ""
-#define	Nbby           8	/* number of bits/byte */
 
 #define MAXARGS	    1000	/* max arguments to exec                */
 #define NFOLDERS    1000	/* max folder arguments on command line */
