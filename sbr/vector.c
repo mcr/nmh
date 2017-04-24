@@ -51,8 +51,7 @@ bvector_create (size_t init_size) {
     NEW(vec);
     bytes = BVEC_BYTES (vec, init_size  ?  init_size  :  VEC_INIT_SIZE);
 
-    vec->bits = mh_xmalloc (bytes);
-    memset (vec->bits, 0, bytes);
+    vec->bits = mh_xcalloc (1, bytes);
     vec->maxsize = bytes * Nbby;
 
     return vec;
@@ -156,8 +155,7 @@ svector_create (size_t init_size) {
     NEW(vec);
     vec->maxsize = init_size ? init_size : VEC_INIT_SIZE;
     bytes = vec->maxsize * sizeof (char *);
-    vec->strs = mh_xmalloc (bytes);
-    memset (vec->strs, 0, bytes);
+    vec->strs = mh_xcalloc (1, bytes);
     vec->size = 0;
 
     return vec;
@@ -240,8 +238,7 @@ ivector_create (size_t init_size) {
     NEW(vec);
     vec->maxsize = init_size ? init_size : VEC_INIT_SIZE;
     bytes = vec->maxsize * sizeof (int);
-    vec->ints = mh_xmalloc (bytes);
-    memset (vec->ints, 0, bytes);
+    vec->ints = mh_xcalloc (1, bytes);
     vec->size = 0;
 
     return vec;
