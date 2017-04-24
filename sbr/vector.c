@@ -45,6 +45,9 @@ bvector_create (size_t init_size) {
     bvector_t vec;
     size_t bytes;
 
+    /* See "wider than unsigned long" comment above. */
+    assert (sizeof *vec->bits <= sizeof 1ul);
+
     NEW(vec);
     bytes = BVEC_BYTES (vec, init_size  ?  init_size  :  VEC_INIT_SIZE);
 
@@ -78,7 +81,6 @@ bvector_clear (bvector_t vec, size_t n) {
     if (n >= vec->maxsize)
         bvector_resize (vec, n);
 
-    assert (sizeof *vec->bits <= sizeof 1ul);
     vec->bits[word] &= ~(1ul << offset);
 }
 
@@ -96,7 +98,6 @@ bvector_set (bvector_t vec, size_t n) {
 
     if (n >= vec->maxsize)
         bvector_resize (vec, n);
-    assert (sizeof *vec->bits <= sizeof 1ul);
     vec->bits[word] |= 1ul << offset;
 }
 
@@ -105,7 +106,6 @@ bvector_at (bvector_t vec, size_t i) {
     size_t word = BVEC_WORD (vec, i);
     size_t offset = BVEC_OFFSET (vec, i);
 
-    assert (sizeof *vec->bits <= sizeof 1ul);
     return i < vec->maxsize
         ?  (vec->bits[word] & (1ul << offset) ? 1 : 0)
         :  0;
