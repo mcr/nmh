@@ -142,13 +142,6 @@ folder_read (char *name, int lockflag)
     mp->msgattrs = svector_create (0);
 
     /*
-     * Clear all the flag bits for all the message
-     * status entries we just allocated.
-     */
-    for (msgnum = mp->lowoff; msgnum <= mp->hghoff; msgnum++)
-	clear_msg_flags (mp, msgnum);
-
-    /*
      * Scan through the array of messages we've seen and
      * setup the initial flags for those messages in the
      * newly allocated mp->msgstats area.
