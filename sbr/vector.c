@@ -27,11 +27,11 @@
  * constants in the code below must also be changed to a 1 that's at
  * least as wide as the new type.
  */
-#define BVEC_WORD(vec, max) ((max) / (sizeof *vec->bits * CHAR_BIT))
-#define BVEC_OFFSET(vec, max) ((max) % (sizeof *vec->bits * CHAR_BIT))
-#define BVEC_BYTES(vec, n) \
-    ((BVEC_WORD (vec, n) + (BVEC_OFFSET (vec, n) == 0 ? 0 : 1))  * \
-    sizeof *vec->bits)
+#define BVEC_SIZEOF_BITS (sizeof *(((bvector_t)NULL)->bits))
+#define BVEC_WORD(max) ((max) / (BVEC_SIZEOF_BITS * CHAR_BIT))
+#define BVEC_OFFSET(max) ((max) % (BVEC_SIZEOF_BITS * CHAR_BIT))
+#define BVEC_BYTES(n) \
+    ((BVEC_WORD(n) + (BVEC_OFFSET(n) == 0 ? 0 : 1)) * BVEC_SIZEOF_BITS)
 
 struct bvector {
     unsigned long *bits;
@@ -49,7 +49,7 @@ bvector_create (size_t init_size) {
     assert (sizeof *vec->bits <= sizeof 1ul);
 
     NEW(vec);
-    bytes = BVEC_BYTES (vec, init_size  ?  init_size  :  VEC_INIT_SIZE);
+    bytes = BVEC_BYTES(init_size  ?  init_size  :  VEC_INIT_SIZE);
 
     vec->bits = mh_xcalloc (1, bytes);
     vec->maxsize = bytes * CHAR_BIT;
@@ -59,7 +59,7 @@ bvector_create (size_t init_size) {
 
 void
 bvector_copy (bvector_t dest, bvector_t src) {
-    size_t bytes = BVEC_BYTES (dest, src->maxsize);
+    size_t bytes = BVEC_BYTES(src->maxsize);
 
     free (dest->bits);
     dest->bits = mh_xmalloc (bytes);
@@ -75,8 +75,8 @@ bvector_free (bvector_t vec) {
 
 void
 bvector_clear (bvector_t vec, size_t n) {
-    size_t word = BVEC_WORD (vec,n);
-    size_t offset = BVEC_OFFSET (vec, n);
+    size_t word = BVEC_WORD(n);
+    size_t offset = BVEC_OFFSET(n);
 
     if (n >= vec->maxsize)
         bvector_resize (vec, n);
@@ -87,14 +87,14 @@ bvector_clear (bvector_t vec, size_t n) {
 
 void
 bvector_clear_all (bvector_t vec) {
-    memset (vec->bits, 0, BVEC_BYTES (vec, vec->maxsize));
+    memset (vec->bits, 0, BVEC_BYTES(vec->maxsize));
 }
 
 
 void
 bvector_set (bvector_t vec, size_t n) {
-    size_t word = BVEC_WORD (vec, n);
-    size_t offset = BVEC_OFFSET (vec, n);
+    size_t word = BVEC_WORD(n);
+    size_t offset = BVEC_OFFSET(n);
 
     if (n >= vec->maxsize)
         bvector_resize (vec, n);
@@ -103,8 +103,8 @@ bvector_set (bvector_t vec, size_t n) {
 
 unsigned int
 bvector_at (bvector_t vec, size_t i) {
-    size_t word = BVEC_WORD (vec, i);
-    size_t offset = BVEC_OFFSET (vec, i);
+    size_t word = BVEC_WORD(i);
+    size_t offset = BVEC_OFFSET(i);
 
     return i < vec->maxsize
         ?  (vec->bits[word] & (1ul << offset) ? 1 : 0)
@@ -119,7 +119,7 @@ bvector_resize (bvector_t vec, size_t maxsize) {
 
     while ((vec->maxsize *= 2) < maxsize)
         ;
-    bytes = BVEC_BYTES (vec, vec->maxsize);
+    bytes = BVEC_BYTES(vec->maxsize);
     vec->bits = mh_xrealloc (vec->bits, bytes);
     for (i = old_maxsize; i < vec->maxsize; ++i)
         bvector_clear (vec, i);
