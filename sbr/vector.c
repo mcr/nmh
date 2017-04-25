@@ -19,7 +19,9 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-#define VEC_INIT_SIZE 256
+#define BVEC_INIT_SIZE (sizeof *(((bvector_t)NULL)->tiny) * CHAR_BIT)
+#define SVEC_INIT_SIZE 256
+#define IVEC_INIT_SIZE 256
 
 /*
  * These try to hide the type of the "bits" member of bvector.  But if
@@ -36,6 +38,7 @@
 struct bvector {
     unsigned long *bits;
     size_t maxsize;
+    unsigned long tiny[2];
 };
 
 static void bvector_resize (bvector_t, size_t);
@@ -49,8 +52,15 @@ bvector_create (size_t init_size) {
     assert (sizeof *vec->bits <= sizeof 1ul);
 
     NEW(vec);
-    bytes = BVEC_BYTES(init_size  ?  init_size  :  VEC_INIT_SIZE);
 
+    if (init_size <= BVEC_INIT_SIZE) {
+        vec->bits = vec->tiny;
+        vec->maxsize = BVEC_INIT_SIZE;
+        memset(vec->tiny, 0, sizeof vec->tiny);
+        return vec;
+    }
+
+    bytes = BVEC_BYTES(init_size);
     vec->bits = mh_xcalloc (1, bytes);
     vec->maxsize = bytes * CHAR_BIT;
 
@@ -61,7 +71,8 @@ void
 bvector_copy (bvector_t dest, bvector_t src) {
     size_t bytes = BVEC_BYTES(src->maxsize);
 
-    free (dest->bits);
+    if (dest->bits != dest->tiny)
+        free(dest->bits);
     dest->bits = mh_xmalloc (bytes);
     memcpy (dest->bits, src->bits, bytes);
     dest->maxsize = src->maxsize;
@@ -69,7 +80,8 @@ bvector_copy (bvector_t dest, bvector_t src) {
 
 void
 bvector_free (bvector_t vec) {
-    free (vec->bits);
+    if (vec->bits != vec->tiny)
+        free(vec->bits);
     free (vec);
 }
 
@@ -120,7 +132,11 @@ bvector_resize (bvector_t vec, size_t maxsize) {
     while ((vec->maxsize *= 2) < maxsize)
         ;
     bytes = BVEC_BYTES(vec->maxsize);
-    vec->bits = mh_xrealloc (vec->bits, bytes);
+    if (vec->bits == vec->tiny) {
+        vec->bits = mh_xmalloc(bytes);
+        memcpy(vec->bits, vec->tiny, sizeof vec->tiny);
+    } else
+        vec->bits = mh_xrealloc(vec->bits, bytes);
     for (i = old_maxsize; i < vec->maxsize; ++i)
         bvector_clear (vec, i);
 }
@@ -145,7 +161,7 @@ svector_create (size_t init_size) {
     size_t bytes;
 
     NEW(vec);
-    vec->maxsize = init_size ? init_size : VEC_INIT_SIZE;
+    vec->maxsize = init_size ? init_size : SVEC_INIT_SIZE;
     bytes = vec->maxsize * sizeof (char *);
     vec->strs = mh_xcalloc (1, bytes);
     vec->size = 0;
@@ -228,7 +244,7 @@ ivector_create (size_t init_size) {
     size_t bytes;
 
     NEW(vec);
-    vec->maxsize = init_size ? init_size : VEC_INIT_SIZE;
+    vec->maxsize = init_size ? init_size : IVEC_INIT_SIZE;
     bytes = vec->maxsize * sizeof (int);
     vec->ints = mh_xcalloc (1, bytes);
     vec->size = 0;
