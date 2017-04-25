@@ -256,16 +256,15 @@ cpstripped (charstring_t dest, size_t max, char *str)
     while (*str != '\0' && len > 0 && max > 0) {
 #ifdef MULTIBYTE_SUPPORT
 	char_len = mbtowc(&wide_char, str, len);
-	w = wcwidth(wide_char);
 
 	/*
 	 * If mbrtowc() failed, then we have a character that isn't valid
-	 * in the current encoding.  Replace it with a '?'.  We do that by
+	 * in the current encoding, or len wasn't enough for the whole
+	 * multi-byte rune to be read.  Replace it with a '?'.  We do that by
 	 * setting the alstr variable to the value of the replacement string;
 	 * altstr is used below when the bytes are copied into the output
 	 * buffer.
 	 */
-
 	if (char_len < 0) {
 	    altstr = "?";
 	    char_len = mbtowc(&wide_char, altstr, 1);
@@ -297,6 +296,7 @@ cpstripped (charstring_t dest, size_t max, char *str)
 	prevCtrl = 0;
 
 #ifdef MULTIBYTE_SUPPORT
+	w = wcwidth(wide_char);
 	assert(w >= 0);
 	if (max >= (size_t) w) {
 	    charstring_push_back_chars (dest, altstr ? altstr : str, char_len, w);
