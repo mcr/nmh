@@ -141,9 +141,9 @@ bvector_resize (bvector_t vec, size_t maxsize) {
         bvector_clear (vec, i);
 }
 
-const unsigned long *
-bvector_bits (bvector_t vec) {
-    return vec->bits;
+unsigned long
+bvector_first_bits (bvector_t vec) {
+    return *vec->bits;
 }
 
 

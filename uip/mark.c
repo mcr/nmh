@@ -259,7 +259,7 @@ seq_printdebug (struct msgs *mp)
 	if (is_selected (mp, msgnum))
 	    printf ("%*d: %s\n", DMAXFOLDER, msgnum,
 		    snprintb (buf, sizeof buf,
-			      (unsigned) *bvector_bits (msgstat (mp, msgnum)),
+			      (unsigned) bvector_first_bits (msgstat (mp, msgnum)),
 			      seq_bits (mp)));
     }
 }

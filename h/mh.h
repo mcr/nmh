@@ -199,7 +199,7 @@ void bvector_clear (bvector_t, size_t);
 void bvector_clear_all (bvector_t);
 void bvector_set (bvector_t, size_t);
 unsigned int bvector_at (bvector_t, size_t);
-const unsigned long *bvector_bits (bvector_t);
+unsigned long bvector_first_bits (bvector_t);
 
 typedef struct svector *svector_t;
 
