@@ -29,6 +29,8 @@
  * constants in the code below must also be changed to a 1 that's at
  * least as wide as the new type.
  */
+
+/* The *sizeof* struct bvector's bits member.  Not its size in bits. */
 #define BVEC_SIZEOF_BITS (sizeof *(((bvector_t)NULL)->bits))
 #define BVEC_WORD(max) ((max) / (BVEC_SIZEOF_BITS * CHAR_BIT))
 #define BVEC_OFFSET(max) ((max) % (BVEC_SIZEOF_BITS * CHAR_BIT))
@@ -127,7 +129,6 @@ static void
 bvector_resize (bvector_t vec, size_t maxsize) {
     size_t old_maxsize = vec->maxsize;
     size_t bytes;
-    size_t i;
 
     while ((vec->maxsize *= 2) < maxsize)
         ;
@@ -137,8 +138,9 @@ bvector_resize (bvector_t vec, size_t maxsize) {
         memcpy(vec->bits, vec->tiny, sizeof vec->tiny);
     } else
         vec->bits = mh_xrealloc(vec->bits, bytes);
-    for (i = old_maxsize; i < vec->maxsize; ++i)
-        bvector_clear (vec, i);
+
+    memset(vec->bits + (old_maxsize / (BVEC_SIZEOF_BITS * CHAR_BIT)),
+        0, (vec->maxsize - old_maxsize) / CHAR_BIT);
 }
 
 unsigned long
@@ -220,13 +222,12 @@ svector_size (svector_t vec) {
 static void
 svector_resize (svector_t vec, size_t maxsize) {
     size_t old_maxsize = vec->maxsize;
-    size_t i;
 
     while ((vec->maxsize *= 2) < maxsize)
         ;
     vec->strs = mh_xrealloc (vec->strs, vec->maxsize * sizeof (char *));
-    for (i = old_maxsize; i < vec->maxsize; ++i)
-        vec->strs[i] = NULL;
+    memset(vec->strs + old_maxsize, 0,
+        (vec->maxsize - old_maxsize) * sizeof *vec->strs);
 }
 
 
@@ -282,11 +283,10 @@ ivector_atp (ivector_t vec, size_t i) {
 static void
 ivector_resize (ivector_t vec, size_t maxsize) {
     size_t old_maxsize = vec->maxsize;
-    size_t i;
 
     while ((vec->maxsize *= 2) < maxsize)
         ;
     vec->ints = mh_xrealloc (vec->ints, vec->maxsize * sizeof (int));
-    for (i = old_maxsize; i < vec->maxsize; ++i)
-        vec->ints[i] = 0;
+    memset(vec->ints + old_maxsize, 0,
+        (vec->maxsize - old_maxsize) * sizeof *vec->ints);
 }
