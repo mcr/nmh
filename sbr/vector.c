@@ -19,8 +19,14 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
+/* The default size of a struct bvector's bits, measured in bits.
+ * The struct's tiny member is used for storage. */
 #define BVEC_INIT_SIZE (sizeof *(((bvector_t)NULL)->tiny) * CHAR_BIT)
+
+/* The default number of char pointers in a struct svector. */
 #define SVEC_INIT_SIZE 256
+
+/* The default number of ints in a struct ivector. */
 #define IVEC_INIT_SIZE 256
 
 /*
@@ -34,18 +40,24 @@
 #define BVEC_SIZEOF_BITS (sizeof *(((bvector_t)NULL)->bits))
 /* The number of bits held in one element of the bits member. */
 #define BVEC_BITS_BITS (BVEC_SIZEOF_BITS * CHAR_BIT)
-#define BVEC_WORD(max) ((max) / BVEC_BITS_BITS)
-#define BVEC_OFFSET(max) ((max) % BVEC_BITS_BITS)
+/* The index of bit n in struct bvector's bits member. */
+#define BVEC_WORD(n) ((n) / BVEC_BITS_BITS)
+/* The index of bit n within a single struct bvector's bits member. */
+#define BVEC_OFFSET(n) ((n) % BVEC_BITS_BITS)
 /* The number of elements bits needs to cover bit n, measured in bytes. */
 #define BVEC_BYTES(n) (((n) / BVEC_BITS_BITS + 1) * BVEC_SIZEOF_BITS)
 
 struct bvector {
     unsigned long *bits;
     size_t maxsize;
-    unsigned long tiny[2];
+    unsigned long tiny[2];   /* Default fixed-size storage for bits. */
 };
 
-static void bvector_resize (bvector_t, size_t);
+/* bvector_resize ensures the storage used for bits can cover bit
+ * newsize.  It always increases the size of the storage used for bits,
+ * even if newsize would have been covered by the existing storage.
+ * Thus it's normally only called when it's known the storage must grow. */
+static void bvector_resize (bvector_t vec, size_t newsize);
 
 bvector_t
 bvector_create (size_t init_size) {
@@ -128,11 +140,11 @@ bvector_at (bvector_t vec, size_t i) {
 }
 
 static void
-bvector_resize (bvector_t vec, size_t maxsize) {
-    size_t old_maxsize = vec->maxsize;
+bvector_resize (bvector_t vec, size_t newsize) {
+    size_t oldsize = vec->maxsize;
     size_t bytes;
 
-    while ((vec->maxsize *= 2) < maxsize)
+    while ((vec->maxsize *= 2) < newsize)
         ;
     bytes = BVEC_BYTES(vec->maxsize);
     if (vec->bits == vec->tiny) {
@@ -141,8 +153,8 @@ bvector_resize (bvector_t vec, size_t maxsize) {
     } else
         vec->bits = mh_xrealloc(vec->bits, bytes);
 
-    memset(vec->bits + (old_maxsize / BVEC_BITS_BITS), 0,
-        (vec->maxsize - old_maxsize) / CHAR_BIT);
+    memset(vec->bits + (oldsize / BVEC_BITS_BITS), 0,
+        (vec->maxsize - oldsize) / CHAR_BIT);
 }
 
 unsigned long
