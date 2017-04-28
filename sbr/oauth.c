@@ -878,7 +878,7 @@ make_query_url(char *s, size_t size, CURL *curl, const char *base_url, ...)
 }
 
 static int
-debug_callback(const CURL *handle, curl_infotype type, const char *data,
+debug_callback(CURL *handle, curl_infotype type, char *data,
                size_t size, void *userptr)
 {
     FILE *fp = userptr;
