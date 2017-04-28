@@ -32,8 +32,10 @@
 
 /* The *sizeof* struct bvector's bits member.  Not its size in bits. */
 #define BVEC_SIZEOF_BITS (sizeof *(((bvector_t)NULL)->bits))
-#define BVEC_WORD(max) ((max) / (BVEC_SIZEOF_BITS * CHAR_BIT))
-#define BVEC_OFFSET(max) ((max) % (BVEC_SIZEOF_BITS * CHAR_BIT))
+/* The number of bits held in one element of the bits member. */
+#define BVEC_BITS_BITS (BVEC_SIZEOF_BITS * CHAR_BIT)
+#define BVEC_WORD(max) ((max) / BVEC_BITS_BITS)
+#define BVEC_OFFSET(max) ((max) % BVEC_BITS_BITS)
 #define BVEC_BYTES(n) \
     ((BVEC_WORD(n) + (BVEC_OFFSET(n) == 0 ? 0 : 1)) * BVEC_SIZEOF_BITS)
 
@@ -139,8 +141,8 @@ bvector_resize (bvector_t vec, size_t maxsize) {
     } else
         vec->bits = mh_xrealloc(vec->bits, bytes);
 
-    memset(vec->bits + (old_maxsize / (BVEC_SIZEOF_BITS * CHAR_BIT)),
-        0, (vec->maxsize - old_maxsize) / CHAR_BIT);
+    memset(vec->bits + (old_maxsize / BVEC_BITS_BITS), 0,
+        (vec->maxsize - old_maxsize) / CHAR_BIT);
 }
 
 unsigned long
