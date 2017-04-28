@@ -79,7 +79,10 @@ bvector_copy (bvector_t dest, bvector_t src) {
 
     if (dest->bits != dest->tiny)
         free(dest->bits);
-    dest->bits = mh_xmalloc (bytes);
+    if (bytes <= sizeof dest->tiny)
+        dest->bits = dest->tiny;
+    else
+        dest->bits = mh_xmalloc (bytes);
     memcpy (dest->bits, src->bits, bytes);
     dest->maxsize = src->maxsize;
 }
