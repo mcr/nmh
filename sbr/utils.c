@@ -469,7 +469,7 @@ nmh_init(const char *argv0, int read_context) {
         }
 
         /* Check to see if the user is running a different (or older, if
-           specified) version of nmh than they had run bfore, and notify them
+           specified) version of nmh than they had run before, and notify them
            if so.  But only if read_context was set to a value to enable. */
         if (allow_version_check  &&  isatty (fileno (stdin))  &&
             isatty (fileno (stdout))  &&  isatty (fileno (stderr))) {

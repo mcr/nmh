@@ -510,7 +510,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 	    done(1);
     seq_setprev(mp);			/* set the Previous-Sequence */
 
-    context_replace(pfolder, folder);	/* update curren folder */
+    context_replace(pfolder, folder);	/* update current folder */
     seq_save(mp);			/* synchronize message sequences */
     context_save();			/* save the context file */
 
@@ -602,7 +602,7 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
     }
 
     /*
-     * Initialize everyting else
+     * Initialize everything else
      */
 
     if (dat[0] == -1)

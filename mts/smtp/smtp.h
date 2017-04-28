@@ -135,7 +135,7 @@ char *rp_string (int);
 
 
 /*
- * SPECIFIC FALURE VALUES
+ * SPECIFIC FAILURE VALUES
  */
 
 /*

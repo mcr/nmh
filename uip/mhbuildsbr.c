@@ -375,7 +375,7 @@ finish_field:
     }
 
     /*
-     * We initally assume we will find multiple contents in the
+     * We initially assume we will find multiple contents in the
      * draft.  So create a multipart/mixed content to hold everything.
      * We can remove this later, if it is not needed.
      */
@@ -1977,7 +1977,7 @@ setup_attach_content(CT ct, char *filename)
 
     /*
      * Parse the Content-Type.  get_ctinfo() parses MIME parameters, but
-     * since we're just feeding it a MIME type we have to add those ourself.
+     * since we're just feeding it a MIME type we have to add those ourselves.
      * Map that to a valid content-type label and call any initialization
      * function.
      */
@@ -2078,7 +2078,7 @@ set_disposition (CT ct) {
 
 /*
  * Set text content charset if it was unspecified.  contains8bit
- * selctions:
+ * selections:
  * 0: content does not contain 8-bit characters
  * 1: content contains 8-bit characters
  * -1: ignore content and use user's locale to determine charset

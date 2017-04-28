@@ -797,7 +797,7 @@ do_expr (char *sp, int preprocess)
  *
  * Okay, got some more information on this from John L. Romine!  From an
  * email he sent to the nmh-workers mailing list on December 2, 2010, he
- * explains it thusly:
+ * explains it so:
  *
  *    In this case (scan, formatsbr) it has to do with an extension to
  *    the mh-format syntax to allow for looping.

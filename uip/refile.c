@@ -310,7 +310,7 @@ opnfolds (struct msgs *src_folder, struct st_fold *folders, int nfolders)
 
 
 /*
- * Set the Previous-Sequence and then sychronize the
+ * Set the Previous-Sequence and then synchronize the
  * sequence file, for each destination folder.
  */
 

@@ -203,7 +203,7 @@ char *get_term_stringcap(char *capability);
  * arg1..argN	- Arguments 1-N.
  *
  * Returns a tparm and tputs-processed string, or NULL if there was a problem
- * initializating the terminal or retrieving the capability.
+ * initialising the terminal or retrieving the capability.
  */
 char *get_term_stringparm(char *capability, long arg1, long arg2);
 
@@ -534,7 +534,7 @@ nmh_creds_t nmh_get_credentials (const char *host, const char *user);
  *
  * creds	- Structure from previous nmh_get_credentials() call
  *
- * Returns NULL on error, otherwise a NUL-termined string containing
+ * Returns NULL on error, otherwise a NUL-terminated string containing
  * the username.  Points to allocated memory in the credentials structure
  * that is free()d by nmh_free_credentials().
  */

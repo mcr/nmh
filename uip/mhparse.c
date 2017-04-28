@@ -55,8 +55,8 @@ int npreferred;
  */
 struct k2v SubText[] = {
     { "plain",    TEXT_PLAIN },
-    { "richtext", TEXT_RICHTEXT },  /* defined in RFC-1341    */
-    { "enriched", TEXT_ENRICHED },  /* defined in RFC-1896    */
+    { "richtext", TEXT_RICHTEXT },  /* defined in RFC 1341    */
+    { "enriched", TEXT_ENRICHED },  /* defined in RFC 1896    */
     { NULL,       TEXT_UNKNOWN }    /* this one must be last! */
 };
 
@@ -1089,7 +1089,7 @@ InitMultiPart (CT ct)
 
     /*
      * The encoding for multipart messages must be either
-     * 7bit, 8bit, or binary (per RFC2045).
+     * 7bit, 8bit, or binary (per RFC 2045).
      */
     if (! skip_mp_cte_check  &&  ct->c_encoding != CE_7BIT  &&
         ct->c_encoding != CE_8BIT  &&  ct->c_encoding != CE_BINARY) {
@@ -1286,7 +1286,7 @@ last_part:
  * ease of choosing/displaying it later on.  from a mail message on
  * nmh-workers, from kenh:
  *  "Stock" MH 6.8.5 did not have a reverse_parts() function, but I
- *  see code in mhn that did the same thing...  Acccording to the RCS
+ *  see code in mhn that did the same thing...  According to the RCS
  *  logs, that code was around from the initial checkin of mhn.c by
  *  John Romine in 1992, which is as far back as we have."
  */
@@ -3754,7 +3754,7 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 	}
 
 	/*
-	 * At this point, we're either finishing a contined parameter, or
+	 * At this point, we're either finishing a continued parameter, or
 	 * we're working on a new one.
 	 */
 

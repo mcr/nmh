@@ -8,7 +8,7 @@
  */
 #define	NOTOK        (-1)	/* syscall()s return this on error */
 #define	OK             0	/*  ditto on success               */
-#define	DONE           1	/* trinary logic                   */
+#define	DONE           1	/* ternary logic                   */
 #define ALL           ""
 
 #define MAXARGS	    1000	/* max arguments to exec                */

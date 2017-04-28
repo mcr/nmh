@@ -5,7 +5,7 @@
    be treated specially if it's in a zone that observes Daylight Saving Time.
    For instance, during DST, a Date: like "Mon, 24 Jul 2000 12:31:44 -0700" will
    be printed as "Mon, 24 Jul 2000 12:31:44 PDT".  Without the code activated by
-   the following #define, that'd be incorrectly printed as "...MST". */
+   the following #define, that would be incorrectly printed as "...MST". */
 
 struct tws {
     int tw_sec;		/* seconds after the minute - [0, 61] */
@@ -13,7 +13,7 @@ struct tws {
     int tw_hour;	/* hour since midnight - [0, 23]      */
     int tw_mday;	/* day of the month - [1, 31]         */
     int tw_mon;		/* months since January - [0, 11]     */
-    int tw_year;	/* 4 digit year (ie, 1997)            */
+    int tw_year;	/* 4 digit year (e.g. 1997)           */
     int tw_wday;	/* days since Sunday - [0, 6]         */
     int tw_yday;	/* days since January 1 - [0, 365]    */
     int tw_zone;

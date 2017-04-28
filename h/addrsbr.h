@@ -102,7 +102,7 @@ char *auxformat(struct mailname *mp, int extras);
  *
  * This function used to have an argument called 'wanthost' which would
  * control whether or not it would canonicalize hostnames in email
- * addresses.  This functionalit was removed for nmh 1.5, and eventually
+ * addresses.  This functionality was removed for nmh 1.5, and eventually
  * all of the code that used this argument was garbage collected.
  */
 struct mailname *getm(char *str, char *dfhost, int dftype, char *eresult,

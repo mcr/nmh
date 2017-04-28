@@ -585,7 +585,7 @@ rename_msgs (struct msgs *mp, struct smsg **mlist)
 	rename_chain (mp, mlist, j, i);
 
 	/*
-	 *	Run the external hook to refile the temorary message number
+	 *	Run the external hook to refile the temporary message number
 	 *	to the real place.
 	 */
 

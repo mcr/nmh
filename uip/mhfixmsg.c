@@ -1067,7 +1067,7 @@ replace_substring (char **str, const char *old, const char *new) {
 char *
 remove_parameter (char *str, const char *name) {
     /* It looks to me, based on the BNF in RFC 2045, than there can't
-       be whitespace betwwen the parameter name and the "=", or
+       be whitespace between the parameter name and the "=", or
        between the "=" and the parameter value. */
     char *param_name = concat (name, "=", NULL);
     char *cp;

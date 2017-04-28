@@ -369,7 +369,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
 
     /* Find the corresponding tzdesc. */
     for (tz = timezones; dt_timezone && tz; tz = tz->next) {
-        /* Property parameter values are case insenstive (RFC 5545
+        /* Property parameter values are case insensitive (RFC 5545
            Sec. 2) and time zone identifiers are property parameters
            (RFC 5545 Sec. 3.8.2.4), though it would seem odd to use
            different case in the same file for identifiers that are

@@ -35,7 +35,7 @@
    */
 #define YY_DECL struct tws *dparsetime(char *lexstr)
 
-  /* yyerminate() is called after the input string is matched to
+  /* yyterminate() is called after the input string is matched to
    * completion (actually, when the lexer reaches an EOF).  The only
    * thing that really needs to be in this macro function is the
    * return call, which must be substituted inline into dparsetime.

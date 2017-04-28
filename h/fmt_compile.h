@@ -6,7 +6,7 @@
 #define FT_COMPF         2       /* comp text, filled                       */
 #define FT_LIT           3       /* literal text                            */
 #define FT_LITF          4       /* literal text, filled                    */
-#define FT_CHAR          5       /* a single ascii character                */
+#define FT_CHAR          5       /* a single ASCII character                */
 #define FT_NUM           6       /* "value" as decimal number               */
 #define FT_NUMF          7       /* "value" as filled dec number            */
 #define FT_STR           8       /* "str" as text                           */
@@ -76,7 +76,7 @@
 
 /* Date Coercion */
 #define FT_LOCALDATE     68      /* Coerce date to local timezone */
-#define FT_GMTDATE       69      /* Coerce date to gmt            */
+#define FT_GMTDATE       69      /* Coerce date to GMT            */
 
 /* pre-format processing */
 #define FT_PARSEDATE     70      /* parse comp into a date (tws) struct */
@@ -91,7 +91,7 @@
 #define FT_SAVESTR       77      /* save current str reg               */
 #define FT_DONE          78      /* stop formatting                    */
 #define FT_PAUSE         79      /* pause                              */
-#define FT_NOP           80      /* nop                                */
+#define FT_NOP           80      /* no-op                              */
 #define FT_GOTO          81      /* (relative) goto                    */
 #define FT_IF_S_NULL     82      /* test if "str" null                 */
 #define FT_IF_S          83      /* test if "str" non-null             */

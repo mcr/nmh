@@ -402,7 +402,7 @@ main (int argc, char **argv)
     if (host && !*host)
 	host = NULL;
 
-    /* guarantee dropping group priveleges; we might not have done so earlier */
+    /* guarantee dropping group privileges; we might not have done so earlier */
     DROPGROUPPRIVS();
 
     /*

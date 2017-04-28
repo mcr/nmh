@@ -42,7 +42,7 @@ escape_component (char *name, size_t namesize, char *chars_to_escape) {
     if (strpbrk(name, chars_to_escape)) {
         char *destp, *srcp;
         /* Maximum space requirement would be if each character had
-           to be escaped, plus enclosing double quotes, plus null termintor.
+           to be escaped, plus enclosing double quotes, plus NUL terminator.
            E.g., 2 characters, "", would require 7, "\"\""0, where that 0
            is '\0'. */
         char *tmp = mh_xmalloc (2*strlen(name) + 3);

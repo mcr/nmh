@@ -730,7 +730,7 @@ pop_getline (char *s, int n, netsec_context *ns)
      *
      * We get a length back from netsec_readline, but the rest of the POP
      * code doesn't handle it; the assumptions are that everything from
-     * the network can be respresented as C strings.  That should get fixed
+     * the network can be represented as C strings.  That should get fixed
      * someday.
      */
 

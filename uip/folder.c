@@ -599,7 +599,7 @@ print_folders (void)
 }
 
 /*
- * Set the current message and sychronize sequences
+ * Set the current message and synchronize sequences
  */
 
 static int

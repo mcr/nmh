@@ -148,7 +148,7 @@ int fmt_compile (char *fstring, struct format **fmt, int reset);
  *		  format instructions.  Is always terminated with a
  *		  newline (\n).
  * width	- Maximum number of displayed characters.  Does not include
- *		  characters marked as nonprinting or (depending on the
+ *		  characters marked as non-printing or (depending on the
  *		  encoding) bytes in a multibyte encoding that exceed the
  *		  character's column width.
  * dat		- An integer array that contains data used by certain format

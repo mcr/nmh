@@ -68,7 +68,7 @@ annotate (char *file, char *comp, char *text, int inplace, int datesw, int delet
 
 /*
  *  Produce a listing of all header fields (annotations) whose field name matches
- *  comp.  Number the listing if number is set.  Treate the field bodies as path
+ *  comp.  Number the listing if number is set.  Treat the field bodies as path
  *  names and just output the last component unless text is non-NULL.  We don't
  *  care what text is set to.
  */

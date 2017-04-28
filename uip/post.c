@@ -169,7 +169,7 @@ struct headers {
 #define	MVIS  0x0008	/* we've seen sighted addrs  */
 #define	MINV  0x0010	/* we've seen blind addrs    */
 #define MSND  0x0020	/* we've seen a Sender:      */
-#define MRSN  0x0040	/* We've seen a Resent-Sendr:*/
+#define MRSN  0x0040	/* We've seen a Resent-Sender: */
 #define MEFM  0x0080	/* We've seen Envelope-From: */
 #define MMIM  0x0100    /* We've seen Mime-Version:  */
 

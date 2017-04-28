@@ -36,7 +36,7 @@ context_read (void)
     int failed_to_lock = 0;
 
     /*
-     *  If this routine _is_ called again (despite the wanings in the
+     *  If this routine _is_ called again (despite the warnings in the
      *  comments above), return immediately.
      */
     if ( m_defs != 0 )
@@ -128,7 +128,7 @@ context_read (void)
 
     /* context is NULL if context_foil() was called to disable use of context
      * We also support users setting explicitly setting MHCONTEXT to /dev/null.
-     * (if this wasn't specialcased then the locking would be liable to fail)
+     * (if this wasn't special-cased then the locking would be liable to fail)
      */
     if (!cp || (strcmp(cp,"/dev/null") == 0)) {
 	ctxpath = NULL;

@@ -244,7 +244,7 @@ print_debug (struct msgs *mp)
 /*
  * Print debugging info about all the SELECTED
  * messages and the sequences they are in.
- * Due limitattions of snprintb(), only a limited
+ * Due to limitations of snprintb(), only a limited
  * number of sequences will be printed.  See the
  * comments in sbr/seq_bits.c.
  */

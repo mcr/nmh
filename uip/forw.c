@@ -246,10 +246,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case BITSTUFFSW: 
-		    dashstuff = 1;	/* trinary logic */
+		    dashstuff = 1;	/* ternary logic */
 		    continue;
 		case NBITSTUFFSW: 
-		    dashstuff = -1;	/* trinary logic */
+		    dashstuff = -1;	/* ternary logic */
 		    continue;
 
 		case FROMSW:

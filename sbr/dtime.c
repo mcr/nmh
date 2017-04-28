@@ -198,8 +198,8 @@ dctime (struct tws *tw)
  *	Mon, 16 Jun 1992 15:30:48 -700 (or)
  *	Mon, 16 Jun 1992 15:30:48 EDT
  *
- * for the current time, as specified by rfc822.
- * The first form is required by rfc1123.
+ * for the current time, as specified by RFC 822.
+ * The first form is required by RFC 1123.
  */
 
 char *
@@ -219,8 +219,8 @@ dtimenow (int alpha_timezone)
  *	Mon, 16 Jun 1992 15:30:48 -700  (or)
  *	Mon, 16 Jun 1992 15:30:48 EDT
  *
- * as specified by rfc822.  The first form is required
- * by rfc1123 for outgoing messages.
+ * as specified by RFC 822.  The first form is required
+ * by RFC 1123 for outgoing messages.
  */
 
 char *
@@ -241,7 +241,7 @@ dtime (time_t *clock, int alpha_timezone)
  *
  *	Mon, 16 Jun 1992 15:30:48 -0700
  *
- * as specified by rfc822 and rfc1123.
+ * as specified by RFC 822 and RFC 1123.
  */
 
 char *

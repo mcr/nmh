@@ -21,10 +21,10 @@
    REALLYDUMB are now the default in the code.
 
    If #ifdef DUMB is in effect, a full 822-style parser is called
-   for syntax recongition.  This breaks each address into its components.
+   for syntax recognition.  This breaks each address into its components.
    Note however that no semantics are assumed about the parts or their
    totality.  This means that implicit hostnames aren't made explicit,
-   and explicit hostnames aren't expanded to their "official" represenations.
+   and explicit hostnames aren't expanded to their "official" representations.
 
    If DUMB is not in effect, then this module does some
    high-level thinking about what the addresses are.

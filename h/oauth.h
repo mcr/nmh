@@ -19,7 +19,7 @@
  * 1. User runs mhlogin which prints a URL the user must visit, and prompts for
  *    a code retrieved from that page.
  *
- * 2. User vists this URL in browser, signs in with some Google account, and
+ * 2. User visits this URL in browser, signs in with some Google account, and
  *    copies and pastes the resulting code back to mhlogin.
  *
  * 3. mhlogin does HTTP POST to Google to exchange the user-provided code for a

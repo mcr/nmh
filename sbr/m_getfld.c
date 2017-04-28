@@ -775,7 +775,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
     s = *gstate;
 
 /*
- * Figure out what the message delimitter string is for this
+ * Figure out what the message delimiter string is for this
  * maildrop.  (This used to be part of m_Eom but I didn't like
  * the idea of an "if" statement that could only succeed on the
  * first call to m_Eom getting executed on each call, i.e., at
@@ -885,7 +885,7 @@ m_Eom (m_getfld_state_t s)
         strncmp (text, (char *)s->edelim, s->edelimlen)) {
 	if (i == 0 && s->msg_style == MS_MBOX)
 	    /* the final newline in the (brain damaged) unix-format
-	     * maildrop is part of the delimitter - delete it.
+	     * maildrop is part of the delimiter - delete it.
 	     */
 	    return 1;
 

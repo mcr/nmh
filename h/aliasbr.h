@@ -18,7 +18,7 @@ struct adr {
 };
 
 /*
- * incore version of /etc/passwd
+ * in-core version of /etc/passwd
  */
 struct home {
     char *h_name;		/* user name                             */
@@ -42,7 +42,7 @@ char *akerror (int);
 
 /* codes returned by alias() */
 
-#define	AK_OK		0	/* file parsed ok 	 */
+#define	AK_OK		0	/* file parsed OK 	 */
 #define	AK_NOFILE	1	/* couldn't read file 	 */
 #define	AK_ERROR	2	/* error parsing file 	 */
 #define	AK_LIMIT	3	/* memory limit exceeded */

@@ -20,7 +20,7 @@
  * set, then addresses get split wrong (not at the spaces between commas).
  * To fix this correctly, putstr() should know about "atomic" strings that
  * must NOT be broken across lines.  That's too difficult for right now
- * (it turns out that there are a number of degernate cases), so in
+ * (it turns out that there are a number of degenerate cases), so in
  * oneline(), instead of
  *
  *       (*onelp == '\n' && !onelp[1])
@@ -459,10 +459,10 @@ mhl (int argc, char **argv)
 		    continue;
 
 		case BITSTUFFSW: 
-		    dashstuff = 1;	/* trinary logic */
+		    dashstuff = 1;	/* ternary logic */
 		    continue;
 		case NBITSTUFFSW: 
-		    dashstuff = -1;	/* trinary logic */
+		    dashstuff = -1;	/* ternary logic */
 		    continue;
 
 		case NBODYSW: 

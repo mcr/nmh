@@ -994,7 +994,7 @@ parse_format_string (CT ct, char *cp, char *buffer, int buflen, char *dir)
 		    break;
 
 		case 'p':
-		    /* insert part number withouth leading dot */
+		    /* insert part number without leading dot */
 		    if (ct->c_partno)
 			strncpy (bp, ct->c_partno, buflen);
 		    break;

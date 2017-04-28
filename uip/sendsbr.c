@@ -452,7 +452,7 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 	/*
 	 * child process -- send it
 	 *
-	 * If fd is ok, then we are pushing and fd points to temp
+	 * If fd is OK, then we are pushing and fd points to temp
 	 * file, so capture anything on stdout and stderr there.
 	 */
 	if (fd != NOTOK) {

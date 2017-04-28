@@ -1015,7 +1015,7 @@ netsec_set_sasl_params(netsec_context *nsc, const char *service,
 
     /*
      * According to the RFC, mechanisms can only be uppercase letter, numbers,
-     * and a hypen or underscore.  So make sure we uppercase any letters
+     * and a hyphen or underscore.  So make sure we uppercase any letters
      * in case the user passed in lowercase.
      */
 

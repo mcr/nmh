@@ -159,7 +159,7 @@ struct Content {
     SizeCEFunc  c_cesizefnx;	/* size of decoded contents          */
 
     int	c_umask;		/* associated umask                  */
-    int	c_rfc934;		/* rfc934 compatibility flag         */
+    int	c_rfc934;		/* RFC 934 compatibility flag        */
 
     char *c_showproc;		/* default, if not in profile        */
     char *c_termproc;		/* for charset madness...            */
@@ -415,7 +415,7 @@ int list_content(CT ct, int toplevel, int realsize, int verbose, int debug,
 		 int dispo);
 
 /*
- * Display content-appropriate information on MIME parts, decending recursively
+ * Display content-appropriate information on MIME parts, descending recursively
  * into multipart content if appropriate.  Uses list_content() for displaying
  * generic information.
  *
