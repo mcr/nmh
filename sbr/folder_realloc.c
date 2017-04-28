@@ -19,6 +19,8 @@
 struct msgs *
 folder_realloc (struct msgs *mp, int lo, int hi)
 {
+    struct bvector *tmpstats, *t;
+    size_t i;
     int msgnum;
 
     /* sanity checks */
@@ -37,70 +39,22 @@ folder_realloc (struct msgs *mp, int lo, int hi)
     if (lo == mp->lowoff && hi == mp->hghoff)
 	return mp;
 
-    if (lo == mp->lowoff) {
-	bvector_t *v;
-	size_t old_size = mp->num_msgstats;
-	size_t new_size = hi - lo + 1;
-	size_t i;
-
-	/*
-	 * We are just extending (or shrinking) the end of message
-	 * status array.  So we don't have to move anything and can
-	 * just realloc the message status array.
-	 */
-
-	for (i = old_size, v = &mp->msgstats[old_size-1]; i > new_size;
-	     --i, --v) {
-	    bvector_free (*v);
-	}
-	mp->num_msgstats = MSGSTATNUM (lo, hi);
-	mp->msgstats =
-	    mh_xrealloc (mp->msgstats, MSGSTATSIZE(mp));
-	for (i = old_size, v = &mp->msgstats[old_size]; i < new_size;
-	     ++i, ++v) {
-	    *v = bvector_create ();
-	}
-    } else {
-	/*
-	 * We are changing the offset of the message status
-	 * array.  So we will need to shift everything.
-	 */
-	bvector_t *tmpstats, *t;
-	size_t i;
-
-	/* first allocate the new message status space */
-	mp->num_msgstats = MSGSTATNUM (lo, hi);
-	tmpstats = mh_xmalloc (MSGSTATSIZE(mp));
-	for (i = 0, t = tmpstats; i < mp->num_msgstats; ++i, ++t) {
-	    *t = bvector_create ();
-	}
-
-	/* then copy messages status array with shift */
-	if (mp->nummsg > 0) {
-	    for (msgnum = mp->lowmsg; msgnum <= mp->hghmsg; msgnum++)
-		bvector_copy (tmpstats[msgnum - lo], msgstat (mp, msgnum));
-	}
-	free(mp->msgstats);
-	mp->msgstats = tmpstats;
+    /* first allocate the new message status space */
+    mp->num_msgstats = MSGSTATNUM (lo, hi);
+    tmpstats = mh_xmalloc (MSGSTATSIZE(mp));
+    for (i = 0, t = tmpstats; i < mp->num_msgstats; ++i, ++t) {
+        bvector_init(t);
     }
 
+    /* then copy messages status array with shift */
+    if (mp->nummsg > 0) {
+        for (msgnum = mp->lowmsg; msgnum <= mp->hghmsg; msgnum++)
+            bvector_copy (tmpstats + msgnum - lo, msgstat (mp, msgnum));
+    }
+    free(mp->msgstats);
+    mp->msgstats = tmpstats;
     mp->lowoff = lo;
     mp->hghoff = hi;
-
-    /*
-     * Clear all the flags for entries outside
-     * the current message range for this folder.
-     */
-    if (mp->nummsg > 0) {
-	for (msgnum = mp->lowoff; msgnum < mp->lowmsg; msgnum++)
-	    clear_msg_flags (mp, msgnum);
-	for (msgnum = mp->hghmsg + 1; msgnum <= mp->hghoff; msgnum++)
-	    clear_msg_flags (mp, msgnum);
-    } else {
-	/* no messages, so clear entire range */
-	for (msgnum = mp->lowoff; msgnum <= mp->hghoff; msgnum++)
-	    clear_msg_flags (mp, msgnum);
-    }
 
     return mp;
 }

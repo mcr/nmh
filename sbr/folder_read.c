@@ -27,7 +27,7 @@ folder_read (char *name, int lockflag)
     struct msgs *mp;
     struct dirent *dp;
     DIR *dd;
-    bvector_t *v;
+    struct bvector *v;
     size_t i;
 
     name = m_mailpath (name);
@@ -136,7 +136,7 @@ folder_read (char *name, int lockflag)
     mp->num_msgstats = MSGSTATNUM (mp->lowoff, mp->hghoff);
     mp->msgstats = mh_xmalloc (MSGSTATSIZE(mp));
     for (i = 0, v = mp->msgstats; i < mp->num_msgstats; ++i, ++v) {
-	*v = bvector_create ();
+        bvector_init(v);
     }
 
     mp->msgattrs = svector_create (0);

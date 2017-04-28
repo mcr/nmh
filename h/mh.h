@@ -187,14 +187,22 @@ extern struct swit anoyes[];	/* standard yes/no switches */
 
 #define	MBITS "\020\01EXISTS\02SELECTED\03NEW\04UNSEEN"
 
-/*
- * type for holding the sequence set of a message
- */
+/* A vector of bits for tracking the sequence membership of a single
+ * message.  Do not access the struct members; use vector.c.
+ * Do not move or copy this struct as it may contain a pointer to
+ * itself;  use bvector_copy(). */
+struct bvector {
+    unsigned long *bits;
+    size_t maxsize;
+    unsigned long tiny[2];   /* Default fixed-size storage for bits. */
+};
 typedef struct bvector *bvector_t;
 
 bvector_t bvector_create (void);
+void bvector_init(struct bvector *bv);
 void bvector_copy (bvector_t, bvector_t);
 void bvector_free (bvector_t);
+void bvector_fini(struct bvector *bv);
 void bvector_clear (bvector_t, size_t);
 void bvector_clear_all (bvector_t);
 void bvector_set (bvector_t, size_t);
@@ -263,7 +271,7 @@ struct msgs {
      * in a particular sequence.
      */
     size_t num_msgstats;
-    bvector_t *msgstats;	/* msg status */
+    struct bvector *msgstats;	/* msg status */
 
     /*
      * A FILE handle containing an open filehandle for the sequence file
@@ -289,7 +297,7 @@ struct msgs {
 /*
  * macros for message and sequence manipulation
  */
-#define msgstat(mp,n) (mp)->msgstats[(n) - mp->lowoff]
+#define msgstat(mp,n) ((mp)->msgstats + (n) - mp->lowoff)
 #define clear_msg_flags(mp,msgnum)   bvector_clear_all (msgstat(mp, msgnum))
 #define copy_msg_flags(mp,i,j)       bvector_copy (msgstat(mp,i), msgstat(mp,j))
 #define get_msg_flags(mp,ptr,msgnum) bvector_copy (ptr, msgstat(mp, msgnum))

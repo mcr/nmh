@@ -47,12 +47,6 @@
 /* The number of elements bits needs to cover bit n, measured in bytes. */
 #define BVEC_BYTES(n) (((n) / BVEC_BITS_BITS + 1) * BVEC_SIZEOF_BITS)
 
-struct bvector {
-    unsigned long *bits;
-    size_t maxsize;
-    unsigned long tiny[2];   /* Default fixed-size storage for bits. */
-};
-
 /* bvector_resize ensures the storage used for bits can cover bit
  * newsize.  It always increases the size of the storage used for bits,
  * even if newsize would have been covered by the existing storage.
@@ -67,11 +61,16 @@ bvector_create (void) {
     assert (sizeof *vec->bits <= sizeof 1ul);
 
     NEW(vec);
-    vec->bits = vec->tiny;
-    vec->maxsize = BVEC_INIT_SIZE;
-    memset(vec->tiny, 0, sizeof vec->tiny);
+    bvector_init(vec);
 
     return vec;
+}
+
+void bvector_init(struct bvector *bv)
+{
+    bv->bits = bv->tiny;
+    bv->maxsize = BVEC_INIT_SIZE;
+    memset(bv->tiny, 0, sizeof bv->tiny);
 }
 
 void
@@ -87,9 +86,14 @@ bvector_copy (bvector_t dest, bvector_t src) {
 
 void
 bvector_free (bvector_t vec) {
-    if (vec->bits != vec->tiny)
-        free(vec->bits);
+    bvector_fini(vec);
     free (vec);
+}
+
+void bvector_fini(struct bvector *bv)
+{
+    if (bv->bits != bv->tiny)
+        free(bv->bits);
 }
 
 void

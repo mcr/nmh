@@ -13,7 +13,7 @@ void
 folder_free (struct msgs *mp)
 {
     size_t i;
-    bvector_t *v;
+    struct bvector *v;
 
     if (!mp)
 	return;
@@ -26,7 +26,7 @@ folder_free (struct msgs *mp)
     svector_free (mp->msgattrs);
 
     for (i = 0, v = mp->msgstats; i < mp->num_msgstats; ++i, ++v) {
-	bvector_free (*v);
+	bvector_fini(v);
     }
     free (mp->msgstats);
 
