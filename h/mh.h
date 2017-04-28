@@ -192,7 +192,7 @@ extern struct swit anoyes[];	/* standard yes/no switches */
  */
 typedef struct bvector *bvector_t;
 
-bvector_t bvector_create (size_t /* initial size in bits, can be 0 */);
+bvector_t bvector_create (void);
 void bvector_copy (bvector_t, bvector_t);
 void bvector_free (bvector_t);
 void bvector_clear (bvector_t, size_t);
@@ -329,7 +329,7 @@ struct msgs {
 #define make_seq_private(mp,seqnum) \
         bvector_set (mp->attrstats, FFATTRSLOT + seqnum)
 #define make_all_public(mp) \
-        mp->attrstats = bvector_create(0); bvector_clear_all (mp->attrstats)
+        mp->attrstats = bvector_create(); bvector_clear_all (mp->attrstats)
 
 /*
  * macros for folder attributes

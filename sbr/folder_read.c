@@ -136,7 +136,7 @@ folder_read (char *name, int lockflag)
     mp->num_msgstats = MSGSTATNUM (mp->lowoff, mp->hghoff);
     mp->msgstats = mh_xmalloc (MSGSTATSIZE(mp));
     for (i = 0, v = mp->msgstats; i < mp->num_msgstats; ++i, ++v) {
-	*v = bvector_create (0);
+	*v = bvector_create ();
     }
 
     mp->msgattrs = svector_create (0);

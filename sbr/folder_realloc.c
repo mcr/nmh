@@ -58,7 +58,7 @@ folder_realloc (struct msgs *mp, int lo, int hi)
 	    mh_xrealloc (mp->msgstats, MSGSTATSIZE(mp));
 	for (i = old_size, v = &mp->msgstats[old_size]; i < new_size;
 	     ++i, ++v) {
-	    *v = bvector_create (0);
+	    *v = bvector_create ();
 	}
     } else {
 	/*
@@ -72,7 +72,7 @@ folder_realloc (struct msgs *mp, int lo, int hi)
 	mp->num_msgstats = MSGSTATNUM (lo, hi);
 	tmpstats = mh_xmalloc (MSGSTATSIZE(mp));
 	for (i = 0, t = tmpstats; i < mp->num_msgstats; ++i, ++t) {
-	    *t = bvector_create (0);
+	    *t = bvector_create ();
 	}
 
 	/* then copy messages status array with shift */

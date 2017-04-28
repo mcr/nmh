@@ -60,25 +60,16 @@ struct bvector {
 static void bvector_resize (bvector_t vec, size_t newsize);
 
 bvector_t
-bvector_create (size_t init_size) {
+bvector_create (void) {
     bvector_t vec;
-    size_t bytes;
 
     /* See "wider than unsigned long" comment above. */
     assert (sizeof *vec->bits <= sizeof 1ul);
 
     NEW(vec);
-
-    if (init_size <= BVEC_INIT_SIZE) {
-        vec->bits = vec->tiny;
-        vec->maxsize = BVEC_INIT_SIZE;
-        memset(vec->tiny, 0, sizeof vec->tiny);
-        return vec;
-    }
-
-    bytes = BVEC_BYTES(init_size);
-    vec->bits = mh_xcalloc (1, bytes);
-    vec->maxsize = bytes * CHAR_BIT;
+    vec->bits = vec->tiny;
+    vec->maxsize = BVEC_INIT_SIZE;
+    memset(vec->tiny, 0, sizeof vec->tiny);
 
     return vec;
 }
@@ -103,13 +94,8 @@ bvector_free (bvector_t vec) {
 
 void
 bvector_clear (bvector_t vec, size_t n) {
-    size_t word = BVEC_WORD(n);
-    size_t offset = BVEC_OFFSET(n);
-
-    if (n >= vec->maxsize)
-        bvector_resize (vec, n);
-
-    vec->bits[word] &= ~(1ul << offset);
+    if (n < vec->maxsize)
+        vec->bits[BVEC_WORD(n)] &= ~(1ul << BVEC_OFFSET(n));
 }
 
 
@@ -131,12 +117,10 @@ bvector_set (bvector_t vec, size_t n) {
 
 unsigned int
 bvector_at (bvector_t vec, size_t i) {
-    size_t word = BVEC_WORD(i);
-    size_t offset = BVEC_OFFSET(i);
+    if (i < vec->maxsize)
+        return !!(vec->bits[BVEC_WORD(i)] & (1ul << BVEC_OFFSET(i)));
 
-    return i < vec->maxsize
-        ?  (vec->bits[word] & (1ul << offset) ? 1 : 0)
-        :  0;
+    return 0;
 }
 
 static void

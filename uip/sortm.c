@@ -540,7 +540,7 @@ static void
 rename_msgs (struct msgs *mp, struct smsg **mlist)
 {
     int i, j, old, new;
-    bvector_t tmpset = bvector_create (0);
+    bvector_t tmpset = bvector_create ();
     char f1[BUFSIZ], tmpfil[BUFSIZ];
     char newbuf[PATH_MAX + 1];
     struct smsg *sp;
