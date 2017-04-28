@@ -36,8 +36,8 @@
 #define BVEC_BITS_BITS (BVEC_SIZEOF_BITS * CHAR_BIT)
 #define BVEC_WORD(max) ((max) / BVEC_BITS_BITS)
 #define BVEC_OFFSET(max) ((max) % BVEC_BITS_BITS)
-#define BVEC_BYTES(n) \
-    ((BVEC_WORD(n) + (BVEC_OFFSET(n) == 0 ? 0 : 1)) * BVEC_SIZEOF_BITS)
+/* The number of elements bits needs to cover bit n, measured in bytes. */
+#define BVEC_BYTES(n) (((n) / BVEC_BITS_BITS + 1) * BVEC_SIZEOF_BITS)
 
 struct bvector {
     unsigned long *bits;
