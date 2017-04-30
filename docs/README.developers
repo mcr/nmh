@@ -315,3 +315,19 @@ here; the convention for release candidates is to use something like
     it assumes that we tag with nmh-x_x-release from now on]:
 
         http://git.savannah.gnu.org/cgit/nmh.git/diff/?h=nmh-1_5-release?h=nmh-1_4-release
+
+
+---------------
+after a release
+---------------
+
+Keep an eye on Debian's packaging, especially what patches they have to
+apply, and the results of their Lintian checker, which even includes
+spelling errors in man pages and binaries.
+
+    https://sources.debian.net/src/nmh/1.6-16/debian/patches/
+    https://lintian.debian.org/full/az@debian.org.html#nmh
+
+Perhaps some nmh developer that uses Debian, or Ubuntu?, could provide
+package-building commands, including lintian(1), for Makefile.am so
+Lintian's complaints are known before release.
