@@ -8,6 +8,7 @@ local info best encoded in a comment) are encouraged to share their wisdom here.
 
 Following a commit checklist, the topics are organized alphabetically.
 
+
 ----------------
 commit checklist
 ----------------
@@ -30,6 +31,7 @@ platform, contact the nmh-workers list.)
 ---------------------------------
 C library/system call usage notes
 ---------------------------------
+
 * Use m_mktemp2() or m_mktemp() instead of mkstemp(3) (see section on
   nmh temporary files below).
 * Use m_unlink() instead of unlink(3).
