@@ -681,21 +681,18 @@ plist
 		    --p2;
 		    break;
 		}
-		else
-		    lf = 0;
+                lf = 0;
 	    }
 	    if (c == '\n') {
 		if (body)
 		    break;
-		else {
-		    if (lf) {
-			body++;
-			break;
-		    }
-		    lf++;
-		    /* Unfold by skipping the newline. */
-		    c = 0;
-		}
+                if (lf) {
+                    body++;
+                    break;
+                }
+                lf++;
+                /* Unfold by skipping the newline. */
+                c = 0;
 	    }
 	    if (c && p1 < &linebuf[LBSIZE - 1])
 		*p1++ = c;
