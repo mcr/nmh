@@ -793,9 +793,8 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
 	if ((c = Getc (s)) == EOF) {
 	    *cp = '\0';
 	    break;
-	} else {
-	    *cp = c;
 	}
+        *cp = c;
     }
 
     if (i == sizeof from-1  &&  strncmp (text, "From ", sizeof from-1) == 0) {
@@ -876,9 +875,8 @@ m_Eom (m_getfld_state_t s)
 	if ((c2 = Getc (s)) == EOF) {
 	    *cp = '\0';
 	    break;
-	} else {
-	    *cp = c2;
 	}
+        *cp = c2;
     }
 
     if (i != s->edelimlen  ||
