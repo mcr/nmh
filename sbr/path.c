@@ -107,59 +107,60 @@ compath (char *f)
     if (*f != '/')
 	return;
 
-    for (cp = f; *cp;)
-	if (*cp == '/') {
-	    switch (*++cp) {
-		case 0: 
-		    if (--cp > f)
-			*cp = '\0';
-		    break;
-
-		case '/': 
-		    for (dp = cp; *dp == '/'; dp++)
-			continue;
-		    strcpy (cp--, dp);
-		    continue;
-
-		case '.': 
-		    if (strcmp (cp, DOT) == 0) {
-			if (cp > f + 1)
-			    cp--;
-			*cp = '\0';
-			break;
-		    }
-		    if (strcmp (cp, DOTDOT) == 0) {
-			for (cp -= 2; cp > f; cp--)
-			    if (*cp == '/')
-				break;
-			if (cp <= f)
-			    cp = f + 1;
-			*cp = '\0';
-			break;
-		    }
-		    if (has_prefix(cp, PWD)) {
-			for (dp = cp - 2; dp > f; dp--)
-			    if (*dp == '/')
-				break;
-			if (dp <= f)
-			    dp = f;
-			strcpy (dp, cp + LEN(PWD) - 1);
-			cp = dp;
-			continue;
-		    }
-		    if (has_prefix(cp, CWD)) {
-			strcpy (cp - 1, cp + LEN(CWD) - 1);
-			cp--;
-			continue;
-		    }
-		    continue;
-
-		default: 
-		    cp++;
-		    continue;
-	    }
-	    break;
-	}
-	else
+    for (cp = f; *cp;) {
+	if (*cp != '/') {
 	    cp++;
+            continue;
+        }
+
+        switch (*++cp) {
+            case 0: 
+                if (--cp > f)
+                    *cp = '\0';
+                return;
+
+            case '/': 
+                for (dp = cp; *dp == '/'; dp++)
+                    continue;
+                strcpy (cp--, dp);
+                continue;
+
+            case '.': 
+                if (strcmp (cp, DOT) == 0) {
+                    if (cp > f + 1)
+                        cp--;
+                    *cp = '\0';
+                    return;
+                }
+                if (strcmp (cp, DOTDOT) == 0) {
+                    for (cp -= 2; cp > f; cp--)
+                        if (*cp == '/')
+                            break;
+                    if (cp <= f)
+                        cp = f + 1;
+                    *cp = '\0';
+                    return;
+                }
+                if (has_prefix(cp, PWD)) {
+                    for (dp = cp - 2; dp > f; dp--)
+                        if (*dp == '/')
+                            break;
+                    if (dp <= f)
+                        dp = f;
+                    strcpy (dp, cp + LEN(PWD) - 1);
+                    cp = dp;
+                    continue;
+                }
+                if (has_prefix(cp, CWD)) {
+                    strcpy (cp - 1, cp + LEN(CWD) - 1);
+                    cp--;
+                    continue;
+                }
+                continue;
+
+            default: 
+                cp++;
+                continue;
+        }
+    }
 }
