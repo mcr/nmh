@@ -123,17 +123,16 @@ writeBase64 (const unsigned char *in, size_t length, unsigned char *out)
 	for (cc = 0; length > 0 && cc < 3; ++cc, --length)
           /* empty */ ;
 
-	if (cc == 0) {
+	if (cc == 0)
 	    break;
-	} else {
-	    bits = (in[0] & 0xff) << 16;
-	    if (cc > 1) {
-		bits |= (in[1] & 0xff) << 8;
-		if (cc > 2) {
-		    bits |= in[2] & 0xff;
-		}
-	    }
-	}
+
+        bits = (in[0] & 0xff) << 16;
+        if (cc > 1) {
+            bits |= (in[1] & 0xff) << 8;
+            if (cc > 2) {
+                bits |= in[2] & 0xff;
+            }
+        }
 
 	for (bp = out + 4; bp > out; bits >>= 6)
 	    *--bp = nib2b64[bits & 0x3f];
@@ -176,17 +175,16 @@ writeBase64raw (const unsigned char *in, size_t length, unsigned char *out)
 	for (cc = 0; length > 0 && cc < 3; ++cc, --length)
           /* empty */ ;
 
-	if (cc == 0) {
+	if (cc == 0)
 	    break;
-	} else {
-	    bits = (in[0] & 0xff) << 16;
-	    if (cc > 1) {
-		bits |= (in[1] & 0xff) << 8;
-		if (cc > 2) {
-		    bits |= in[2] & 0xff;
-		}
-	    }
-	}
+
+        bits = (in[0] & 0xff) << 16;
+        if (cc > 1) {
+            bits |= (in[1] & 0xff) << 8;
+            if (cc > 2) {
+                bits |= in[2] & 0xff;
+            }
+        }
 
 	for (bp = out + 4; bp > out; bits >>= 6)
 	    *--bp = nib2b64[bits & 0x3f];
@@ -300,12 +298,10 @@ test_end:
                 break;
 
             case '=':
-                if (++skip > 3) {
-                    self_delimiting = 1;
-                    break;
-                } else {
+                if (++skip <= 3)
                     goto test_end;
-                }
+                self_delimiting = 1;
+                break;
         }
     }
 
