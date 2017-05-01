@@ -764,11 +764,9 @@ get_multipart_boundary (CT ct, char **part_boundary) {
             }
         }
 
-        if (! end_boundary  &&  begin > (off_t) (ct->c_begin + sizeof buffer)) {
-            begin -= sizeof buffer;
-        } else {
+        if (end_boundary  ||  begin <= (off_t) (ct->c_begin + sizeof buffer))
             break;
-        }
+        begin -= sizeof buffer;
     }
 
     /* Get boundary at beginning of multipart. */
@@ -1014,10 +1012,8 @@ fix_types (CT ct, svector_t fixtypes, int *message_mods) {
                                                 type, ct_type_subtype);
                                     }
                                     break;
-                                } else {
-                                    inform("did not find %s in %s",
-                                            type, hf->value);
                                 }
+                                inform("did not find %s in %s", type, hf->value);
                             }
                         }
                     }
@@ -1354,11 +1350,9 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
                                        multipart/alternative. */
                                     remove_parameter (hf->value, "type");
                                     break;
-                                } else {
-                                    inform("did not find multipart/"
-                                                  "related in header %s",
-                                            hf->value);
                                 }
+                                inform("did not find multipart/"
+                                    "related in header %s", hf->value);
                             }
                         }
                     } else {
@@ -2165,7 +2159,8 @@ content_encoding (CT ct, const char **reason) {
                         *reason = "";
                     }
                     break;
-                } else if (*cp == '\n') {
+                }
+                if (*cp == '\n') {
                     line_len = 0;
                 } else if (! isascii ((unsigned char) *cp)) {
                     encoding = CE_8BIT;
