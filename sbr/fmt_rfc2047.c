@@ -189,9 +189,9 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	     */
 	    endofmime = NULL;
 	    for (pp = startofmime; *pp && *(pp+1); pp++) {
-		if (is_lws(*pp)) {
+		if (is_lws(*pp))
 		    break;
-		} else if (*pp == '?' && pp[1] == '=') {
+		if (*pp == '?' && pp[1] == '=') {
 		    endofmime = pp;
 		    break;
 		}
