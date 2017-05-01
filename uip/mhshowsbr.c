@@ -1176,11 +1176,10 @@ iconv_start:
 		    inform("convert_charset: errno = %d", errno);
                     status = NOTOK;
                     break;
-                } else {
-                    if (write (fd, dest_buffer, outbytes_before - outbytes)
-                        < 0) {
-                        advise (dest, "write");
-                    }
+                }
+
+                if (write (fd, dest_buffer, outbytes_before - outbytes) < 0) {
+                    advise (dest, "write");
                 }
             }
 
