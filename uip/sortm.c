@@ -431,10 +431,9 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	    if (strcmp (subjsort, "subject") == 0) {
 		while ((c = *cp)) {
 		    if (! isspace((unsigned char) c)) {
-			if(uprf(cp, "re:"))
-			    cp += 2;
-			else
+			if(!uprf(cp, "re:"))
 			    break;
+                        cp += 2;
 		    }
 		    cp++;
 		}
