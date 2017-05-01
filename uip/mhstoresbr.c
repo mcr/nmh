@@ -364,20 +364,21 @@ store_partial (CT ct, mhstoreinfo_t info)
     for (ctq = base; *ctq; ctq++) {
 	p = *ctq;
 	pm = (struct partial *) p->c_ctparams;
-	if (pm->pm_marked != cur) {
-	    if (pm->pm_marked == cur - 1) {
-		inform("duplicate part %d of %d part multipart message, continuing...",
-			  pm->pm_marked, hi);
-		continue;
-	    }
+	if (pm->pm_marked == cur) {
+	    cur++;
+            continue;
+        }
+
+        if (pm->pm_marked == cur - 1) {
+            inform("duplicate part %d of %d part multipart message, continuing...",
+                      pm->pm_marked, hi);
+            continue;
+        }
 
 missing_part:
-	    inform("missing %spart %d of %d part multipart message",
-                cur != hi ? "(at least) " : "", cur, hi);
-	    goto losing;
-	}
-        else
-	    cur++;
+        inform("missing %spart %d of %d part multipart message",
+            cur != hi ? "(at least) " : "", cur, hi);
+        goto losing;
     }
     if (hi != --cur) {
 	cur = hi;
@@ -967,7 +968,8 @@ parse_format_string (CT ct, char *cp, char *buffer, int buflen, char *dir)
 			*bp = '\0';
 			buflen--;
 			continue;
-		    } else {
+		    }
+                    {
 			PM pm;
 			char *s = "";
 
