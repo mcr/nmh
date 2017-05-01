@@ -848,15 +848,14 @@ parse (void)
 
     for (cp = result; *parptr && (cp - result < NAMESZ); parptr++) {
 	c = *parptr;
-	if (isalnum (c)
-		|| c == '.'
-		|| c == '-'
-		|| c == '_'
-		|| c =='['
-		|| c == ']')
-	    *cp++ = c;
-	else
+	if (!isalnum (c)
+		&& c != '.'
+		&& c != '-'
+		&& c != '_'
+		&& c !='['
+		&& c != ']')
 	    break;
+        *cp++ = c;
     }
     *cp = '\0';
 
@@ -1431,11 +1430,10 @@ oneline (char *stuff, unsigned long flags)
 		    *onelp++ = 0;
 		    break;
 		}
-		else
-		    if (!spc) {
-			*cp++ = ' ';
-			spc++;
-		    }
+                if (!spc) {
+                    *cp++ = ' ';
+                    spc++;
+                }
 	    }
 	    else {
 		*cp++ = *onelp;
