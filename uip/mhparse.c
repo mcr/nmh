@@ -2054,11 +2054,10 @@ openQuoted (CT ct, char **file)
 		     * sequence; let's decode it (above). */
 		    quoted = 1;
 		    continue;
-		} else {
-		    /* One or both of the next 2 is out of range, making this
-		     * an invalid escape sequence; just show the raw bytes
-		     * (below). */
 		}
+                /* One or both of the next 2 is out of range, making this
+                 * an invalid escape sequence; just show the raw bytes
+                 * (below). */
 	    }
 
 	    /* Just show the raw byte. */
@@ -3318,7 +3317,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	    if (*vp == '*' && vp < up - 1) {
 		partial = 1;
 		continue;
-	    } else if (*vp == '*' && vp == up - 1) {
+	    }
+            if (*vp == '*' && vp == up - 1) {
 	    	encoded = 1;
 	    } else if (partial) {
 		if (isdigit((unsigned char) *vp))
