@@ -214,11 +214,6 @@ test "$nmh_cv_has_q_unused_arguments" = "yes"  &&  \
   AM_LDFLAGS="${AM_LDFLAGS:+$AM_LDFLAGS }-Qunused-arguments"
 AC_SUBST([AM_LDFLAGS])
 
-dnl This hack turns off assertions by default, assuming
-dnl that configure still uses this shell variable.  Without
-dnl it, AC_HEADER_ASSERT enables assertions by default.
-test -z "$enable_assert"  &&  enable_assert=no
-
 AC_HEADER_ASSERT
 
 dnl ------------------
