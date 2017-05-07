@@ -95,7 +95,8 @@ parse_datetime (const char *datetime, const char *zone, int dst,
         set_dotw (tws);
         /* set_dotw() sets TW_SIMP.  Replace that with TW_SEXP so that
            dasctime() outputs the dotw before the date instead of after. */
-        tws->tw_flags &= ~TW_SDAY, tws->tw_flags |= TW_SEXP;
+        tws->tw_flags &= ~TW_SDAY;
+        tws->tw_flags |= TW_SEXP;
 
         /* For the call to dmktime():
            - don't need tw_yday

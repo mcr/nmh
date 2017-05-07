@@ -659,9 +659,11 @@ get_ctinfo (char *cp, CT ct, int magic)
 
     for (dp = cp; istoken (*dp); dp++)
 	continue;
-    c = *dp, *dp = '\0';
+    c = *dp;
+    *dp = '\0';
     ci->ci_type = mh_xstrdup(cp);	/* store content type */
-    *dp = c, cp = dp;
+    *dp = c;
+    cp = dp;
 
     if (!*ci->ci_type) {
 	inform("invalid %s: field in message %s (empty type)",
@@ -693,9 +695,11 @@ get_ctinfo (char *cp, CT ct, int magic)
 
     for (dp = cp; istoken (*dp); dp++)
 	continue;
-    c = *dp, *dp = '\0';
+    c = *dp;
+    *dp = '\0';
     ci->ci_subtype = mh_xstrdup(cp);	/* store the content subtype */
-    *dp = c, cp = dp;
+    *dp = c;
+    cp = dp;
 
     if (!*ci->ci_subtype) {
 	inform("invalid %s: field in message %s (empty subtype for \"%s\")",
@@ -906,9 +910,11 @@ get_dispo (char *cp, CT ct, int buildflag)
 
     for (dp = cp; istoken (*dp); dp++)
 	continue;
-    c = *dp, *dp = '\0';
+    c = *dp;
+    *dp = '\0';
     ct->c_dispo_type = mh_xstrdup(cp);	/* store disposition type */
-    *dp = c, cp = dp;
+    *dp = c;
+    cp = dp;
 
     if (*cp == '(' && get_comment (ct->c_file, DISPO_FIELD, &cp, NULL) == NOTOK)
 	return NOTOK;
@@ -2008,7 +2014,8 @@ openQuoted (CT ct, char **file)
 	for (ep = (cp = bufp) + cc - 1; cp <= ep; ep--)
 	    if (!isspace ((unsigned char) *ep))
 		break;
-	*++ep = '\n', ep++;
+        *++ep = '\n';
+        ep++;
 
 	for (; cp < ep; cp++) {
 	    if (quoted > 0) {

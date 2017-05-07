@@ -129,10 +129,14 @@ ready_msg (char *msgnam)
     char *cp = NULL;
     m_getfld_state_t gstate = 0;
 
-    if (hdrfd != NOTOK)
-	close (hdrfd), hdrfd = NOTOK;
-    if (txtfd != NOTOK)
-	close (txtfd), txtfd = NOTOK;
+    if (hdrfd != NOTOK) {
+        close (hdrfd);
+        hdrfd = NOTOK;
+    }
+    if (txtfd != NOTOK) {
+        close (txtfd);
+        txtfd = NOTOK;
+    }
 
     if ((ifp = fopen (msgnam, "r")) == NULL)
 	adios (msgnam, "unable to open message");

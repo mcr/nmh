@@ -386,7 +386,8 @@ set_dotw (struct tws *tw)
     if (tw->tw_wday < 0)
 	tw->tw_wday += 7;
 
-    tw->tw_flags &= ~TW_SDAY, tw->tw_flags |= TW_SIMP;
+    tw->tw_flags &= ~TW_SDAY;
+    tw->tw_flags |= TW_SIMP;
 }
 
 
