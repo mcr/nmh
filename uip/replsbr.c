@@ -24,15 +24,6 @@ static char *dfhost = NULL;
 static struct mailname mq;
 static int nodupcheck = 0;		/* If set, no check for duplicates */
 
-/*
- * Buffer size for content part of header fields.
- * We want this to be large enough so that we don't
- * do a lot of extra FLDPLUS calls on m_getfld but
- * small enough so that we don't snarf the entire
- * message body when we're not going to use any of it.
- */
-#define	SBUFSIZ	NMH_BUFSIZ
-
 static char *addrcomps[] = {
     "from",
     "sender",
@@ -65,7 +56,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 {
     int state, i;
     struct comp *cptr;
-    char tmpbuf[SBUFSIZ];
+    char tmpbuf[NMH_BUFSIZ];
     struct format *fmt;
     char **ap;
     int	char_read = 0, format_len, mask;
