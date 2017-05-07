@@ -12,15 +12,6 @@
 #include <h/tws.h>
 #include <h/utils.h>
 
-/*
- * Buffer size for content part of header fields.  We want this
- * to be large enough so that we don't do a lot of extra FLDPLUS
- * calls on m_getfld but small enough so that we don't snarf
- * the entire message body when we're only going to display 30
- * characters of it.
- */
-#define SBUFSIZ NMH_BUFSIZ
-
 static struct format *fmt;
 static struct comp *datecomp;		/* pntr to "date" comp             */
 static struct comp *bodycomp;		/* pntr to "body" pseudo-comp      *
@@ -122,9 +113,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	nxtbuf = compbuffers = mh_xcalloc(ncomps, sizeof *nxtbuf);
 	used_buf = mh_xcalloc(ncomps + 1, sizeof *used_buf);
 	used_buf += ncomps+1; *--used_buf = 0;
-	rlwidth = bodycomp && (width > SBUFSIZ)
-	    ? min (width, NMH_BUFSIZ)
-	    : SBUFSIZ;
+	rlwidth = NMH_BUFSIZ;
 	for (i = ncomps; i--; )
 	    *nxtbuf++ = mh_xmalloc(rlwidth);
     }
