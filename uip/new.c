@@ -96,7 +96,7 @@ get_msgnums(char *folder, char *sequences[])
     char *seqfile = NULL;
     FILE *fp;
     int state;
-    char name[NAMESZ], field[BUFSIZ];
+    char name[NAMESZ], field[NMH_BUFSIZ];
     char *cp;
     char *msgnums = NULL, *this_msgnums, *old_msgnums;
     int failed_to_lock = 0;

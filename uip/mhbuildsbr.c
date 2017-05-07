@@ -131,7 +131,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 	    int header_encoding, size_t maxunencoded, int verbose)
 {
     int	compnum, state;
-    char buf[BUFSIZ], name[NAMESZ];
+    char buf[NMH_BUFSIZ], name[NAMESZ];
     char *cp, *np, *vp;
     struct multipart *m;
     struct part **pp;

@@ -1311,7 +1311,7 @@ checkmimeheader (char *drft)
 {
     FILE *f;
     m_getfld_state_t gstate = 0;
-    char buf[BUFSIZ], name[NAMESZ];
+    char buf[NMH_BUFSIZ], name[NAMESZ];
     int state, retval = 0;
 
     if ((f = fopen(drft, "r")) == NULL) {

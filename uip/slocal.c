@@ -708,7 +708,7 @@ parse (int fd)
     int i, state;
     int fd1;
     char *cp, *dp, *lp;
-    char name[NAMESZ], field[BUFSIZ];
+    char name[NAMESZ], field[NMH_BUFSIZ];
     struct pair *p, *q;
     FILE  *in;
     m_getfld_state_t gstate = 0;
@@ -1407,7 +1407,7 @@ static int
 suppress_duplicates (int fd, char *file)
 {
     int	fd1, lockfd, state, result;
-    char *cp, buf[BUFSIZ], name[NAMESZ];
+    char *cp, buf[NMH_BUFSIZ], name[NAMESZ];
     datum key, value;
     DBM *db;
     FILE *in;

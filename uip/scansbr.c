@@ -19,7 +19,7 @@
  * the entire message body when we're only going to display 30
  * characters of it.
  */
-#define SBUFSIZ 512
+#define SBUFSIZ NMH_BUFSIZ
 
 static struct format *fmt;
 static struct comp *datecomp;		/* pntr to "date" comp             */

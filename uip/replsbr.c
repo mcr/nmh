@@ -31,7 +31,7 @@ static int nodupcheck = 0;		/* If set, no check for duplicates */
  * small enough so that we don't snarf the entire
  * message body when we're not going to use any of it.
  */
-#define SBUFSIZ 256		
+#define	SBUFSIZ	NMH_BUFSIZ
 
 static char *addrcomps[] = {
     "from",

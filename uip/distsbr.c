@@ -27,7 +27,7 @@ distout (char *drft, char *msgnam, char *backup)
 {
     int state;
     char *dp, *resent;
-    char name[NAMESZ], buffer[BUFSIZ];
+    char name[NAMESZ], buffer[NMH_BUFSIZ];
     FILE *ifp, *ofp;
     m_getfld_state_t gstate = 0;
 
@@ -124,7 +124,7 @@ static void
 ready_msg (char *msgnam)
 {
     int state, out;
-    char name[NAMESZ], buffer[BUFSIZ], tmpfil[BUFSIZ];
+    char name[NAMESZ], buffer[NMH_BUFSIZ], tmpfil[BUFSIZ];
     FILE *ifp, *ofp;
     char *cp = NULL;
     m_getfld_state_t gstate = 0;

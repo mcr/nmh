@@ -318,7 +318,7 @@ main (int argc, char **argv)
     int noverify = 0;
     int eai = 0; /* use Email Address Internationalization (EAI) (SMTPUTF8) */
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
-    char buf[BUFSIZ], name[NAMESZ], *auth_svc = NULL;
+    char buf[NMH_BUFSIZ], name[NAMESZ], *auth_svc = NULL;
     FILE *in, *out;
     m_getfld_state_t gstate = 0;
 

@@ -930,7 +930,7 @@ plist
 {
     int state;
     char *bp;
-    char buf[BUFSIZ], name[NAMESZ];
+    char buf[NMH_BUFSIZ], name[NAMESZ];
     struct tws *tw;
     m_getfld_state_t gstate = 0;
     NMH_UNUSED (stop);

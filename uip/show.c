@@ -367,7 +367,7 @@ is_nontext (char *msgnam)
 {
     int	result, state;
     char *bp, *dp, *cp;
-    char buf[BUFSIZ], name[NAMESZ];
+    char buf[NMH_BUFSIZ], name[NAMESZ];
     FILE *fp;
     m_getfld_state_t gstate = 0;
 

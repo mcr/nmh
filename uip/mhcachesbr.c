@@ -366,7 +366,7 @@ static int
 find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
 {
     int	state;
-    char buf[BUFSIZ], name[NAMESZ];
+    char buf[NMH_BUFSIZ], name[NAMESZ];
     FILE *fp;
     m_getfld_state_t gstate = 0;
     int failed_to_lock = 0;

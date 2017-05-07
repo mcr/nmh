@@ -69,7 +69,7 @@ main (int argc, char **argv)
     int body = 1, prepend = 1, rapid = 0;
     int doteof = 0, fdi, fdo, i, state;
     char *cp, *drft = NULL, *erasep = NULL;
-    char *killp = NULL, name[NAMESZ], field[BUFSIZ];
+    char *killp = NULL, name[NAMESZ], field[NMH_BUFSIZ];
     char buffer[BUFSIZ];
     char **arguments, **argp;
     FILE *in, *out;

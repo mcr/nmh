@@ -298,7 +298,7 @@ static CT
 get_content (FILE *in, char *file, int toplevel)
 {
     int compnum, state;
-    char buf[BUFSIZ], name[NAMESZ];
+    char buf[NMH_BUFSIZ], name[NAMESZ];
     char *np, *vp;
     CT ct;
     HF hp;

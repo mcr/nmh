@@ -16,7 +16,7 @@
  * in reasonable chunks but not enough to slurp in the whole message
  */
 
-static char msgbuf[256];
+static char msgbuf[NMH_BUFSIZ];
 #define COMPFREE(c) mh_xfree(c->c_text)
 
 /*

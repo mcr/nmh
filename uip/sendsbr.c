@@ -189,7 +189,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
     int	compnum, nparts, partno, state, status;
     long pos, start;
     time_t clock;
-    char *cp, *dp, buffer[BUFSIZ], msgid[BUFSIZ];
+    char *cp, *dp, buffer[NMH_BUFSIZ], msgid[BUFSIZ];
     char subject[BUFSIZ];
     char name[NAMESZ], partnum[BUFSIZ];
     FILE *in;

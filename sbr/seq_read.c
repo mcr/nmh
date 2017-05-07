@@ -60,7 +60,7 @@ seq_public (struct msgs *mp, int lockflag, int *failed_to_lock)
 {
     int state;
     char *cp, seqfile[PATH_MAX];
-    char name[NAMESZ], field[BUFSIZ];
+    char name[NAMESZ], field[NMH_BUFSIZ];
     FILE *fp;
     m_getfld_state_t gstate = 0;
 

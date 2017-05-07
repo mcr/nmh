@@ -44,7 +44,7 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 {
     int state;
     char *cp;
-    char name[NAMESZ], field[BUFSIZ];
+    char name[NAMESZ], field[NMH_BUFSIZ];
     struct node *np;
     struct procstr *ps;
     m_getfld_state_t gstate = 0;

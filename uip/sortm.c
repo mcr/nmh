@@ -335,7 +335,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 {
     int state;
     int compnum;
-    char *msgnam, buf[BUFSIZ], nam[NAMESZ];
+    char *msgnam, buf[NMH_BUFSIZ], nam[NAMESZ];
     struct tws *tw;
     char *datecomp = NULL, *subjcomp = NULL;
     FILE *in;

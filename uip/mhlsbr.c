@@ -935,7 +935,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 {
     int state, bucket;
     struct mcomp *c1, *c2, *c3;
-    char **ip, name[NAMESZ], buf[BUFSIZ];
+    char **ip, name[NAMESZ], buf[NMH_BUFSIZ];
     m_getfld_state_t gstate = 0;
 
     compile_filterargs();

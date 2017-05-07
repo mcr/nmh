@@ -144,7 +144,7 @@ main (int argc, char **argv)
 
 /* very similar to routine in replsbr.c */
 
-#define	SBUFSIZ	256
+#define	SBUFSIZ	NMH_BUFSIZ
 
 static int outputlinelen = OUTPUTLINELEN;
 
