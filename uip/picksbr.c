@@ -62,7 +62,7 @@ DEFINE_SWITCH_ARRAY(PARSE, parswit);
 
 #define	STAR	01
 
-#define LBSIZE  1024
+#define LBSIZE  NMH_BUFSIZ
 #define	ESIZE	1024
 
 
