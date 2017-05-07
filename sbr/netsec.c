@@ -1435,7 +1435,7 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 #ifdef TLS_SUPPORT
     if (tls) {
 	SSL *ssl;
-	BIO *rbio, *wbio, *ssl_bio;;
+        BIO *rbio, *wbio, *ssl_bio;
 
 	if (! tls_initialized) {
 	    SSL_library_init();
