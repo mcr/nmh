@@ -184,10 +184,12 @@ maildir_srt(const void *va, const void *vb)
 int
 main (int argc, char **argv)
 {
-    int chgflag = 1, trnflag = 1;
-    int noisy = 1, width = -1;
+    bool chgflag;
+    int trnflag = 1;
+    bool noisy;
+    int width = -1;
     int hghnum = 0, msgnum = 0;
-    int sasl = 0, tls = 0, noverify = 1;
+    bool sasl, tls, noverify;
     int incerr = 0; /* <0 if inc hits an error which means it should not truncate mailspool */
     char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
@@ -232,6 +234,8 @@ main (int argc, char **argv)
     if (pophost && *pophost)
 	host = pophost;
 
+    sasl = tls = false;
+    chgflag = noisy = noverify = true;
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
@@ -259,10 +263,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case CHGSW:
-		chgflag++;
+                chgflag = true;
 		continue;
 	    case NCHGSW:
-		chgflag = 0;
+                chgflag = false;
 		continue;
 
 	    /*
@@ -293,10 +297,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case SILSW:
-		noisy = 0;
+                noisy = false;
 		continue;
 	    case NSILSW:
-		noisy++;
+                noisy = true;
 		continue;
 
 	    case FORMSW:
@@ -344,10 +348,10 @@ main (int argc, char **argv)
 		continue;
 	
 	    case SASLSW:
-		sasl++;
+                sasl = true;
 		continue;
 	    case NOSASLSW:
-	    	sasl = 0;
+                sasl = false;
 		continue;
 	
 	    case SASLMECHSW:
@@ -356,19 +360,19 @@ main (int argc, char **argv)
 		continue;
 
 	    case INITTLSSW:
-		tls++;
+                tls = true;
 		continue;
 
 	    case NOTLSSW:
-		tls = 0;
+                tls = false;
 		continue;
 
 	    case CERTVERSW:
-		noverify = 0;
+                noverify = false;
 		continue;
 
 	    case NOCERTVERSW:
-		noverify++;
+                noverify = true;
 		continue;
 
 	    case AUTHSERVICESW:
