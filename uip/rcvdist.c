@@ -144,8 +144,6 @@ main (int argc, char **argv)
 
 /* very similar to routine in replsbr.c */
 
-#define	SBUFSIZ	NMH_BUFSIZ
-
 static int outputlinelen = OUTPUTLINELEN;
 
 static struct format *fmt;
@@ -174,7 +172,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 {
     int char_read = 0, format_len, i, state;
     char **ap;
-    char *cp, name[NAMESZ], tmpbuf[SBUFSIZ];
+    char *cp, name[NAMESZ], tmpbuf[NMH_BUFSIZ];
     charstring_t scanl;
     struct comp *cptr;
     FILE *out;
@@ -199,7 +197,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 	cptr->c_text = addrs;
 
     for (;;) {
-	int msg_count = SBUFSIZ;
+	int msg_count = sizeof tmpbuf;
 	switch (state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb)) {
 	    case FLD: 
 	    case FLDPLUS: 
@@ -207,7 +205,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 		if (i != -1) {
 		    char_read += msg_count;
 		    while (state == FLDPLUS) {
-			msg_count = SBUFSIZ;
+			msg_count = sizeof tmpbuf;
 			state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
 			fmt_appendcomp(i, name, tmpbuf);
 			char_read += msg_count;
@@ -215,7 +213,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 		}
 
 		while (state == FLDPLUS) {
-		    msg_count = SBUFSIZ;
+		    msg_count = sizeof tmpbuf;
 		    state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
 		}
 		break;
