@@ -24,8 +24,10 @@ static int my_lex (char *);
 static int
 isat (const char *p)
 {
-    return has_prefix(p, " AT ") || has_prefix(p, " At ") ||
-        has_prefix(p, " aT ") || has_prefix(p, " at ");
+    return *p == ' ' &&
+        (p[1] == 'a' || p[1] == 'A') &&
+        (p[2] == 't' || p[2] == 'T') &&
+        p[3] == ' ';
 }
 
 
