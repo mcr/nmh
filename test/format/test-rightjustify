@@ -12,16 +12,18 @@ fi
 
 setup_test
 
-actual=`run_prog ${MH_LIBEXEC_DIR}/ap -format "%-30(friendly{text})<<End of test" "No Such User <nosuch@user.com>"`
-expected="                  No Such User<<End of test"
-##########123456789012345678901234567890
+for prefix in '' '>' '2>'; do
+    actual=`run_prog ${MH_LIBEXEC_DIR}/ap -format "$prefix%-20(friendly{text})<<End of test" 'No Such User <nosuch@user.com>'`
+    expected="$prefix        No Such User<<End of test"
+    #                1       10        20
 
-if test x"$actual" != x"$expected"; then
-    echo "$0: right justification test expected:" 1>&2
-    echo "    $expected" 1>&2
-    echo "but instead got:" 1>&2
-    echo "    $actual" 1>&2
-    failed=`expr ${failed:-0} + 1`
-fi
+    if test x"$actual" != x"$expected"; then
+        echo "$0: right justification test expected:" 1>&2
+        echo "    $expected" 1>&2
+        echo "but instead got:" 1>&2
+        echo "    $actual" 1>&2
+        failed=`expr ${failed:-0} + 1`
+    fi
+done
 
 exit $failed

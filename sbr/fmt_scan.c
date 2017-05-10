@@ -117,6 +117,7 @@ void
 cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
     int remaining;     /* remaining output width available */
     int rjust;
+    struct charstring *trimmed;
     size_t end;        /* number of input bytes remaining in str */
 #ifdef MULTIBYTE_SUPPORT
     int char_len;      /* bytes in current character */
@@ -134,6 +135,8 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
 	rjust++;
     }
     if (remaining > (int) max) { remaining = max; }
+
+    trimmed = rjust ? charstring_create(remaining) : dest;
 
     if ((sp = str)) {
 #ifdef MULTIBYTE_SUPPORT
@@ -180,7 +183,7 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
 		sp++;
 #endif
 		if (!prevCtrl) {
-		    charstring_push_back (dest, ' ');
+                    charstring_push_back (trimmed, ' ');
 		    remaining--;
 		}
 
@@ -191,39 +194,26 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
 
 #ifdef MULTIBYTE_SUPPORT
 	    if (w >= 0 && remaining >= w) {
-		charstring_push_back_chars (dest, altstr ? altstr : sp,
+                charstring_push_back_chars (trimmed, altstr ? altstr : sp,
 					    char_len, w);
 		remaining -= w;
 		altstr = NULL;
 	    }
 	    sp += char_len;
 #else
-	    charstring_push_back (dest, *sp++);
+            charstring_push_back (trimmed, *sp++);
 	    remaining--;
 #endif
 	}
     }
 
+    while (remaining-- > 0) {
+        charstring_push_back(dest, fill);
+    }
+
     if (rjust) {
-	if (remaining > 0) {
-	    /* copy string to the right */
-	    charstring_t copy = charstring_copy (dest);
-
-	    /* add padding at the beginning */
-	    charstring_clear (dest);
-	    for (; remaining > 0; --remaining) {
-		charstring_push_back (dest, fill);
-	    }
-
-	    charstring_append (dest, copy);
-
-	    charstring_free (copy);
-	}
-    } else {
-	/* pad remaining space */
-	while (remaining-- > 0) {
-	    charstring_push_back (dest, fill);
-	}
+        charstring_append(dest, trimmed);
+        charstring_free(trimmed);
     }
 }
 
