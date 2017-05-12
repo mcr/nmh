@@ -451,7 +451,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
                     return NULL;
                 }
 
-                dst = dt[1] > transition[0]  ?  0  :  1;
+                dst = dt[1] <= transition[0];
             }
         }
 

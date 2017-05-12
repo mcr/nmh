@@ -198,7 +198,7 @@ pcompile (char **vec, char *date)
     talked = 0;
 
     if ((head = parse ()) == NULL)
-	return (talked ? 0 : 1);
+        return !talked;
 
     if (*argp) {
 	inform("%s unexpected", *argp);

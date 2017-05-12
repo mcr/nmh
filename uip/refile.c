@@ -382,7 +382,7 @@ m_file (struct msgs *mp, char *msgfile, int oldmsgnum,
 	 * therefore won't be assigned to be the current message.
 	 */
 	if ((msgnum = folder_addmsg (&fp->f_mp, msgfile,
-				     mp == fp->f_mp ? 0 : 1,
+                                     mp != fp->f_mp,
 				     0, preserve, nfolders == 1 && refile,
 				     maildir)) == -1)
 	    return 1;
@@ -409,7 +409,7 @@ copy_seqs (struct msgs *oldmp, int oldmsgnum, struct msgs *newmp, int newmsgnum)
 	    assert ((int) seqnum == seq_getnum (oldmp, *seq));
 	    if (in_sequence (oldmp, seqnum, oldmsgnum)) {
 		seq_addmsg (newmp, *seq, newmsgnum,
-			    is_seq_private (oldmp, seqnum) ? 0 : 1, 0);
+                            !is_seq_private (oldmp, seqnum), 0);
 	    }
 	}
     }
