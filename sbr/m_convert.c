@@ -202,8 +202,8 @@ single:
 	     * limits simply reallocate the folder so it's within range.
 	     */
 	    if (first < mp->lowoff || first > mp->hghoff)
-	    	mp = folder_realloc(mp, first < mp->lowoff ? first : mp->lowoff,
-				    first > mp->hghoff ? first : mp->hghoff);
+                mp = folder_realloc(mp, min(first, mp->lowoff),
+                                    max(first, mp->hghoff));
 
 	    set_select_empty (mp, first);
 	} else {

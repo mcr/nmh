@@ -199,8 +199,8 @@ argsplit_insert(struct msgs_array *msgs, char *command, char **program)
      */
 
     if (msgs->size + argp >= msgs->max) {
-    	msgs->max += MAXMSGS > argp ? MAXMSGS : argp;
-	msgs->msgs = mh_xrealloc(msgs->msgs, msgs->max * sizeof(*msgs->msgs));
+        msgs->max += max(MAXMSGS, argp);
+        msgs->msgs = mh_xrealloc(msgs->msgs, msgs->max * sizeof(*msgs->msgs));
     }
 
     for (i = msgs->size - 1; i >= 0; i--)

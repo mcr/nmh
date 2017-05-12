@@ -809,7 +809,7 @@ fold (char *line, int uses_cr) {
 #endif
 
         charstring_push_back_chars (folded_line, cp, char_len, 1);
-        remaining -= char_len > 0 ? char_len : 1;
+        remaining -= max(char_len, 1);
 
         /* remaining must be > 0 to pass the loop condition above, so
            if it's not > 1, it is == 1. */
@@ -824,7 +824,7 @@ fold (char *line, int uses_cr) {
             }
         }
 
-        cp += char_len > 0 ? char_len : 1;
+        cp += max(char_len, 1);
     }
 
     free (line);

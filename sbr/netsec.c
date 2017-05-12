@@ -391,7 +391,7 @@ netsec_read(netsec_context *nsc, void *buffer, size_t size, char **errstr)
      * assume here that this has something in it.
      */
 
-    retlen = size > nsc->ns_inbuflen ? nsc->ns_inbuflen : size;
+    retlen = min(size, nsc->ns_inbuflen);
 
     memcpy(buffer, nsc->ns_inptr, retlen);
 

@@ -5,7 +5,7 @@
  * complete copyright information.
  */
 
-#include <h/nmh.h>
+#include <h/mh.h>
 #include <h/utils.h>
 
 static void
@@ -76,7 +76,7 @@ escape_component (char *name, size_t namesize, char *chars_to_escape) {
         if (strcmp (tmp, "\"")) {
             size_t len = destp - tmp;
             assert ((ssize_t) strlen(tmp) + 1 == destp - tmp);
-            strncpy (name, tmp, len <= namesize  ?  len  :  namesize);
+            strncpy (name, tmp, min(len, namesize));
         } else {
             /* Handle just " as special case here instead of above. */
             strncpy (name, "\"\\\"\"", namesize);

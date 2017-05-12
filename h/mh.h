@@ -20,7 +20,7 @@
  * This macro is for use by scan, for example, so that platforms with
  * a small BUFSIZ can easily allocate larger buffers.
  */
-#define NMH_BUFSIZ  (BUFSIZ>=8192 ? BUFSIZ : 8192)
+#define NMH_BUFSIZ  max(BUFSIZ, 8192)
 
 #ifndef FALSE
 #define FALSE false

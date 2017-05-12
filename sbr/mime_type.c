@@ -131,7 +131,7 @@ get_file_info(const char *proc, const char *file_name) {
         FILE *fp;
 
         if ((fp = popen(cmd, "r")) != NULL) {
-            char buf[BUFSIZ >= 2048  ?  BUFSIZ  : 2048];
+            char buf[max(BUFSIZ, 2048)];
 
             buf[0] = '\0';
             if (fgets(buf, sizeof buf, fp)) {

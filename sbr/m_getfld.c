@@ -664,7 +664,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 	    max = *bufsz-1;
 	    /* Back up and store the current position. */
 	    bp = --s->readpos;
-	    c = s->end - s->readpos < max  ?  s->end - s->readpos  :  max;
+            c = min(s->end - s->readpos, max);
 	    if (s->msg_style != MS_DEFAULT && c > 1) {
 		/*
 		 * packed maildrop - only take up to the (possible)

@@ -180,8 +180,8 @@ charstring_last_char_len (const charstring_t s) {
         len = mbtowc (&wide_char, sp, (size_t) MB_CUR_MAX < remaining
                                           ? (size_t) MB_CUR_MAX
                                           : remaining);
-        sp += len > 0 ? len : 1;
-        remaining -= len > 0 ? len : 1;
+        sp += max(len, 1);
+        remaining -= max(len, 1);
     }
 #else  /* ! MULTIBYTE_SUPPORT */
     if (charstring_bytes (s) > 0) { len = 1; }

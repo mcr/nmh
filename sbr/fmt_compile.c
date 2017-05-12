@@ -365,7 +365,7 @@ compile_error(char *str, char *cp)
     int i, errpos, errctx;
 
     errpos = cp - format_string;
-    errctx = errpos > 20 ? 20 : errpos;
+    errctx = min(errpos, 20);
     usr_fstring[errpos] = '\0';
 
     for (i = errpos-errctx; i < errpos; i++) {
