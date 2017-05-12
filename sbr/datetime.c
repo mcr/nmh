@@ -170,7 +170,7 @@ load_timezones (const contentline *clines) {
                 if (in_standard) { in_standard = 0; }
                 else if (in_daylight) { in_daylight = 0; }
                 if (parse_datetime (params->dtstart, params->offsetfrom,
-                                    in_daylight ? 1 : 0,
+                                    in_daylight,
                                     &tws) == OK) {
                     if (tws.tw_year >= 1970) {
                         /* dmktime() falls apart for, e.g., the year 1601. */

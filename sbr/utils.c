@@ -533,7 +533,7 @@ nmh_version_changed (int older) {
             context_replace ("Version", "nmh-" VERSION);
         }
 
-        return old_version < current_version  ?  1  :  0;
+        return old_version < current_version;
     }
 
     if (context_version == NULL  ||  strcmp(context_version, "nmh-" VERSION) != 0) {

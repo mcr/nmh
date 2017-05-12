@@ -1772,7 +1772,7 @@ skip_headers:
      */
     if (checksw) {
 	np = mh_xstrdup(MD5_FIELD);
-	vp = calculate_digest (ct, (ct->c_encoding == CE_QUOTED) ? 1 : 0);
+        vp = calculate_digest (ct, ct->c_encoding == CE_QUOTED);
 	add_header (ct, np, vp);
     }
 

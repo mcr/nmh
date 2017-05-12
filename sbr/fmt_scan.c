@@ -470,7 +470,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    int num = value;
 	    unsigned int wid;
 
-	    for (wid = num <= 0  ?  1  :  0; num; ++wid, num /= 10) {}
+            for (wid = num <= 0; num; ++wid, num /= 10) {}
 	    cpnumber (scanlp, value, wid, ' ',
 		      max - charstring_chars (scanlp));
 	    break;

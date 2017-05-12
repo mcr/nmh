@@ -2166,7 +2166,7 @@ content_encoding (CT ct, const char **reason) {
                     encoding = CE_8BIT;
                 }
 
-                last_char_was_cr = *cp == '\r'  ?  1  :  0;
+                last_char_was_cr = *cp == '\r';
             }
         }
 
@@ -2249,7 +2249,7 @@ strip_crs (CT ct, int *message_mods) {
                         break;
                     }
 
-                    last_char_was_cr = *cp == '\r'  ?  1  :  0;
+                    last_char_was_cr = *cp == '\r';
                 }
             }
 
