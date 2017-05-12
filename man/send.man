@@ -358,7 +358,8 @@ appear to any non\-Bcc receivers of the message.  That is, it will have
 the appended fields and field reformatting.  The \*(lqFcc:\*(rq fields
 will be removed from all outgoing copies of the message.
 .PP
-Beware that if no \*(lqFcc:\*(rq folders exist and the default
+Beware that if an \*(lqFcc:\*(rq with one or more folders is present
+but none of the folders exist, and the default
 .I fileproc
 and
 .I postproc
