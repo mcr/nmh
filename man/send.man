@@ -1,4 +1,4 @@
-.TH SEND %manext1% 2016-11-02 "%nmhversion%"
+.TH SEND %manext1% 2017-05-11 "%nmhversion%"
 .
 .\" %nmhwarning%
 .
@@ -358,6 +358,27 @@ appear to any non\-Bcc receivers of the message.  That is, it will have
 the appended fields and field reformatting.  The \*(lqFcc:\*(rq fields
 will be removed from all outgoing copies of the message.
 .PP
+Beware that if no \*(lqFcc:\*(rq folders exist and the default
+.I fileproc
+and
+.I postproc
+are in use, then
+.B refile
+will prompt the user to create the folder(s) if
+.B \-push
+is not specified.  If all responses are negative, or creation of each folder
+fails, or
+.B \-push
+is specified, the message will not be copied to any folder and will be
+removed by
+.BR post.
+With the default
+.B refile
+switches, the message draft will be renamed according to the specification
+of its
+.B \-nolink
+switch.
+.PP
 By using the
 .B \-width
 .I columns
@@ -620,6 +641,7 @@ man page for login credentials.
 .IR mhbuild (1),
 .IR mhparam (1),
 .IR mhlogin (1),
+.IR refile (1),
 .IR repl (1),
 .IR whatnow (1),
 .IR mh\-alias (5),
