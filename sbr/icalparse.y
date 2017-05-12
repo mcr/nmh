@@ -196,7 +196,7 @@ append (contentline *cline, const char *src, const size_t src_len) {
 
         while (len >= cline->input_line_size) {
             cline->input_line_size = cline->input_line_size == 0
-                ?  max(BUFSIZ, 8192)
+                ?  NMH_BUFSIZ
                 :  2 * cline->input_line_size;
             cline->input_line =
                 mh_xrealloc (cline->input_line, cline->input_line_size);
