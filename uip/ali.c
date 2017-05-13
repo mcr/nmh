@@ -217,10 +217,10 @@ print_usr (char *s, int list)
 	while ((cp = getname (pp))) {
 	    if ((np = getm (cp, NULL, 0, NULL, 0)) == NULL)
 		continue;
-	    if (!strcasecmp (mp->m_host ? mp->m_host : "",
-			     np->m_host ? np->m_host : "")  &&
-		!strcasecmp (mp->m_mbox ? mp->m_mbox : "",
-			     np->m_mbox ? np->m_mbox : "")) {
+	    if (!strcasecmp (FENDNULL(mp->m_host),
+			     FENDNULL(np->m_host))  &&
+		!strcasecmp (FENDNULL(mp->m_mbox),
+			     FENDNULL(np->m_mbox))) {
 		vp = vp ? add (ak->ak_name, add (",", vp))
 		    : getcpy (ak->ak_name);
 		mnfree (np);

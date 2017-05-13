@@ -998,7 +998,7 @@ fmt_findcasecomp(char *component)
     struct comp *cm;
 
     for (cm = wantcomp[CHASH(component)]; cm; cm = cm->c_next)
-	if (strcasecmp(component, cm->c_name ? cm->c_name : "") == 0)
+	if (strcasecmp(component, FENDNULL(cm->c_name)) == 0)
 	    break;
 
     return cm;
@@ -1050,7 +1050,7 @@ fmt_addcomptext(char *component, char *text)
     char *cp;
 
     while (cptr) {
-	if (strcasecmp(component, cptr->c_name ? cptr->c_name : "") == 0) {
+	if (strcasecmp(component, FENDNULL(cptr->c_name)) == 0) {
 	    found++;
 	    if (! cptr->c_text) {
 		cptr->c_text = getcpy(text);
@@ -1085,7 +1085,7 @@ fmt_appendcomp(int bucket, char *component, char *text)
 
     if (bucket != -1) {
     	for (cptr = wantcomp[bucket]; cptr; cptr = cptr->c_next)
-	    if (strcasecmp(component, cptr->c_name ? cptr->c_name : "") == 0)
+	    if (strcasecmp(component, FENDNULL(cptr->c_name)) == 0)
 	    	cptr->c_text = add(text, cptr->c_text);
     }
 }

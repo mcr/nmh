@@ -2066,7 +2066,7 @@ set_disposition (CT ct) {
 		"continuing...", invo_name,
 		ct->c_ctinfo.ci_type,
 		ct->c_ctinfo.ci_subtype ? "/" : "",
-		ct->c_ctinfo.ci_subtype ? ct->c_ctinfo.ci_subtype : "",
+		FENDNULL(ct->c_ctinfo.ci_subtype),
 		cp);
         }
 
@@ -2231,7 +2231,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     /* reply_file is used to pass the output of the convert. */
     reply_file = getcpy (m_mktemp2 (NULL, invo_name, NULL, NULL));
     convert_command =
-        concat (convert, " ", argstring ? argstring : "", " >", reply_file,
+        concat (convert, " ", FENDNULL(argstring), " >", reply_file,
                 NULL);
 
     /* Convert here . . . */

@@ -89,7 +89,7 @@ getname (const char *addrs)
     pers = mbox = host = route = grp = note = NULL;
     err[0] = '\0';
 
-    if ((ap = getadrx (addrs ? addrs : "", eai)) == NULL) {
+    if ((ap = getadrx (FENDNULL(addrs), eai)) == NULL) {
 	return NULL;
     }
 
@@ -216,7 +216,7 @@ mnfree (struct mailname *mp)
 }
 
 
-#define empty(s) ((s) ? (s) : "")
+#define empty(s) FENDNULL(s)
 
 char *
 auxformat (struct mailname *mp, int extras)
@@ -225,7 +225,7 @@ auxformat (struct mailname *mp, int extras)
     static char buffer[BUFSIZ];
 
 	if (mp->m_nohost)
-	    strncpy (addr, mp->m_mbox ? mp->m_mbox : "", sizeof(addr));
+	    strncpy (addr, FENDNULL(mp->m_mbox), sizeof(addr));
 	else
 
 	if (mp->m_type != UUCPHOST) {
@@ -355,8 +355,8 @@ ismymbox (struct mailname *np)
 	    for (mp = &mq; mp; mp = mp->m_next) {
 	      fprintf (stderr, "Local- or Alternate-Mailbox: text=\"%s\" "
 		       "mbox=\"%s\" host=\"%s\" %s\n",
-		       mp->m_text ? mp->m_text : "", mp->m_mbox,
-		       mp->m_host ? mp->m_host : "",
+		       FENDNULL(mp->m_text), mp->m_mbox,
+		       FENDNULL(mp->m_host),
 		       snprintb (buffer, sizeof(buffer), (unsigned) mp->m_type,
 				 WBITS));
 	    }

@@ -163,7 +163,7 @@ getadrx (const char *addrs, int eai)
     err[0] = 0;
 
     if (dp == NULL) {
-	dp = cp = strdup (addrs ? addrs : "");
+	dp = cp = strdup (FENDNULL(addrs));
 	glevel = 0;
     }
     else

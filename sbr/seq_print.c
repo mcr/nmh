@@ -7,7 +7,7 @@
 
 #include <h/mh.h>
 
-#define empty(s) ((s) ? (s) : "")
+#define empty(s) FENDNULL(s)
 
 /*
  * Print all the sequences in a folder

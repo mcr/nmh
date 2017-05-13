@@ -48,6 +48,9 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
  * terminating NUL. */
 #define LEN(s) (sizeof (s) - 1)
 
+/* FENDNULL fends off NULL by giving an empty string instead. */
+#define FENDNULL(s) ((s) ? (s) : "")
+
 /*
  * char array that keeps track of size in both bytes and characters
  * Usage note:

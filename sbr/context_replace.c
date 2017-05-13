@@ -33,7 +33,7 @@ context_replace (char *key, char *value)
      * this key, and replace its value if found.
      */
     for (np = m_defs;; np = np->n_next) {
-	if (!strcasecmp (np->n_name ? np->n_name : "", key ? key : "")) {
+	if (!strcasecmp (FENDNULL(np->n_name), FENDNULL(key))) {
 	    if (strcmp (value, np->n_field)) {
 		if (!np->n_context)
 		    inform("bug: context_replace(key=\"%s\",value=\"%s\"), continuing...", key, value);

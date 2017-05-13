@@ -1019,13 +1019,13 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    continue;
 
 		for (c2 = fmthd; c2; c2 = c2->c_next)
-		    if (!strcasecmp (c2->c_name ? c2->c_name : "", name))
+		    if (!strcasecmp (FENDNULL(c2->c_name), name))
 			break;
 		c1 = NULL;
 		if (!((c3 = c2 ? c2 : &global)->c_flags & SPLIT))
 		    for (c1 = msghd; c1; c1 = c1->c_next)
-			if (!strcasecmp (c1->c_name ? c1->c_name : "",
-					 c3->c_name ? c3->c_name : "")) {
+			if (!strcasecmp (FENDNULL(c1->c_name),
+					 FENDNULL(c3->c_name))) {
 			    c1->c_text =
 				mcomp_add (c1->c_flags, buf, c1->c_text);
 			    break;
@@ -1085,8 +1085,8 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			continue;
 		    }
 		    for (c2 = msghd; c2; c2 = c2->c_next)
-			if (!strcasecmp (c2->c_name ? c2->c_name : "",
-					 c1->c_name ? c1->c_name : "")) {
+			if (!strcasecmp (FENDNULL(c2->c_name),
+					 FENDNULL(c1->c_name))) {
 			    putcomp (c1, c2, ONECOMP);
 			    if (!(c1->c_flags & SPLIT))
 				break;
@@ -1590,7 +1590,7 @@ putch (char ch, unsigned long flags)
 	putch ('\n', flags);
 	if (ovoff > 0)
 	    lm = ovoff;
-	putstr (ovtxt ? ovtxt : "", flags);
+	putstr (FENDNULL(ovtxt), flags);
 	putch (ch, flags);
 	return;
     }

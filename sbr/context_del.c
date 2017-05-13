@@ -19,7 +19,7 @@ context_del (char *key)
     struct node *np, *pp;
 
     for (np = m_defs, pp = NULL; np; pp = np, np = np->n_next) {
-	if (!strcasecmp (np->n_name ? np->n_name : "", key ? key : "")) {
+	if (!strcasecmp (FENDNULL(np->n_name), FENDNULL(key))) {
 	    if (!np->n_context)
 		inform("bug: context_del(key=\"%s\"), continuing...", np->n_name);
 	    if (pp)

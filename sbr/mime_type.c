@@ -68,7 +68,7 @@ mime_type(const char *file_name) {
 	if ((p = strrchr(file_name, '.')) != NULL) {
 	    for (np = m_defs; np; np = np->n_next) {
 		if (strncasecmp(np->n_name, "mhshow-suffix-", 14) == 0 &&
-		    strcasecmp(p, np->n_field ? np->n_field : "") == 0) {
+		    strcasecmp(p, FENDNULL(np->n_field)) == 0) {
 		    content_type = strdup(np->n_name + 14);
 		    break;
 		}

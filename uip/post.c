@@ -1211,7 +1211,7 @@ get_header (char *header, struct headers *table)
     struct headers *h;
 
     for (h = table; h->value; h++)
-	if (!strcasecmp (header ? header : "", h->value ? h->value : ""))
+	if (!strcasecmp (FENDNULL(header), FENDNULL(h->value)))
 	    return (h - table);
 
     return NOTOK;
@@ -1312,10 +1312,10 @@ insert (struct mailname *np)
 	    : &netaddrs;
 	    mp->m_next;
 	    mp = mp->m_next)
-	if (!strcasecmp (np->m_host ? np->m_host : "",
-			 mp->m_next->m_host ? mp->m_next->m_host : "") &&
-	    !strcasecmp (np->m_mbox ? np->m_mbox : "",
-			 mp->m_next->m_mbox ? mp->m_next->m_mbox : "") &&
+	if (!strcasecmp (FENDNULL(np->m_host),
+			 FENDNULL(mp->m_next->m_host)) &&
+	    !strcasecmp (FENDNULL(np->m_mbox),
+			 FENDNULL(mp->m_next->m_mbox)) &&
 	    np->m_bcc == mp->m_next->m_bcc)
 	    return 0;
 
@@ -1339,7 +1339,7 @@ pl (void)
 
     printf ("\nnet:\t");
     for (mp = netaddrs.m_next; mp; mp = mp->m_next)
-	printf ("%s%s@%s%s%s", mp->m_path ? mp->m_path : "",
+	printf ("%s%s@%s%s%s", FENDNULL(mp->m_path),
 		mp->m_mbox, mp->m_host,
 		mp->m_bcc ? "[BCC]" : "",
 		mp->m_next ? ",\n\t" : "");

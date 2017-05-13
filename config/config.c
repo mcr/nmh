@@ -56,7 +56,7 @@ etcpath (char *file)
 		}
 	    }
 
-	    snprintf (epath, sizeof(epath), "%s/%s", pp, cp ? cp : "");
+	    snprintf (epath, sizeof(epath), "%s/%s", pp, FENDNULL(cp));
 	    if (cp)
 		*--cp = '/';
 

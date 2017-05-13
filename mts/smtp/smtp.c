@@ -493,7 +493,7 @@ sm_wadr (char *mbox, char *host, char *path)
 {
     switch (smtalk (SM_RCPT, host && *host ? "RCPT TO:<%s%s@%s>"
 					   : "RCPT TO:<%s%s>",
-			     path ? path : "", mbox, host)) {
+			     FENDNULL(path), mbox, host)) {
 	case 250: 
 	case 251: 
 	    sm_addrs++;

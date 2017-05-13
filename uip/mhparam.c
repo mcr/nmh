@@ -228,7 +228,7 @@ main(int argc, char **argv)
 	 * value (as determined after context is read).
          */
 	for (ps = procs; ps->p_name; ps++)
-	    printf ("%s: %s\n", ps->p_name, *ps->p_field ? *ps->p_field : "");
+	    printf ("%s: %s\n", ps->p_name, FENDNULL(*ps->p_field));
 
     }
 

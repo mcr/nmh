@@ -870,7 +870,7 @@ replace_boundary (CT ct, char *file, char *boundary) {
 					   strlen(new_ctline) + 1,
 					   ct->c_ctinfo.ci_first_pm, NULL, 0);
                 fprintf (fpout, "%s:%s%s\n", np, new_ctline,
-			 new_params ? new_params : "");
+			 FENDNULL(new_params));
 		free(new_ctline);
                 mh_xfree(new_params);
             }
@@ -1657,7 +1657,7 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
     if (strchr (cf, '>')) {
         inform("'>' prohibited in \"%s\",\nplease fix your "
                 "%s-format-%s/%s profile entry", cf, invo_name, type,
-                subtype ? subtype : "");
+                FENDNULL(subtype));
 
         return NOTOK;
     }
@@ -1774,7 +1774,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
                 snprintf (buffer2, sizeof buffer2, "%d", serial);
                 boundary =
                     concat (boundary_prefix,
-                            first_alt->c_partno ? first_alt->c_partno : "",
+                            FENDNULL(first_alt->c_partno),
                             "-", buffer2,  NULL);
             }
         }
@@ -2017,8 +2017,7 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes,
                         report (NULL, ct->c_partno, ct->c_file,
                                 "will not decode%s because it is binary (%s)",
                                 ct->c_partno  ?  ""
-                                              :  ct->c_ctline  ?  ct->c_ctline
-                                                               :  "",
+                                              :  (FENDNULL(ct->c_ctline)),
                                 reason);
                     }
                     (void) m_unlink (ct->c_cefile.ce_file);
@@ -2032,8 +2031,7 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes,
                         report (NULL, ct->c_partno, ct->c_file,
                                 "will not decode%s because it is 8bit",
                                 ct->c_partno  ?  ""
-                                              :  ct->c_ctline  ?  ct->c_ctline
-                                                               :  "");
+                                              :  (FENDNULL(ct->c_ctline)));
                     }
                     (void) m_unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
@@ -2052,7 +2050,7 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes,
                         ++*message_mods;
                         if (verbosw) {
                             report (NULL, ct->c_partno, ct->c_file, "decode%s",
-                                    ct->c_ctline ? ct->c_ctline : "");
+                                    FENDNULL(ct->c_ctline));
                         }
                         if (lf_line_endings) {
                             strip_crs (ct, message_mods);
@@ -2809,7 +2807,7 @@ report (char *what, char *partno, char *filename, char *message, ...) {
     if (verbosw) {
         va_start (args, message);
         fmt = concat (filename, partno ? " part " : ", ",
-                      partno ? partno : "", partno ? ", " : "", message, NULL);
+                      FENDNULL(partno), partno ? ", " : "", message, NULL);
 
         advertise (what, NULL, fmt, args);
 

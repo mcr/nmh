@@ -133,7 +133,7 @@ list_switch (CT ct, int toplevel, int realsize, int verbose, int debug,
 }
 
 
-#define empty(s) ((s) ? (s) : "")
+#define empty(s) FENDNULL(s)
 
 /*
  * Method for listing information about a simple/generic content
@@ -452,7 +452,7 @@ list_encoding (CT ct)
 
     fprintf (stderr, "    decoded fp 0x%x file \"%s\"\n",
 	     (unsigned int)(unsigned long) ce->ce_fp,
-	     ce->ce_file ? ce->ce_file : "");
+	     FENDNULL(ce->ce_file));
 
     return OK;
 }

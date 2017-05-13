@@ -335,7 +335,8 @@ main (int argc, char **argv)
 	    if (msg)
 		inform("no folder given for message %s, continuing...", msg);
 	    readonly_folders (); /* do any readonly folders */
-	    strncpy (folder, (cp = context_find (pfolder)) ? cp : "", sizeof(folder));
+	    cp = context_find(pfolder);
+	    strncpy (folder, FENDNULL(cp), sizeof(folder));
 	    crawl_folders (".", get_folder_info_callback, NULL);
 	} else {
 	    strncpy (folder, argfolder, sizeof(folder));
