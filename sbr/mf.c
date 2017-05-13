@@ -5,6 +5,7 @@
  * complete copyright information.
  */
 
+#include <h/mh.h>
 #include <h/mf.h>
 #include <h/utils.h>
 
@@ -136,7 +137,7 @@ static char *ap = NULL;
 static char *pers = NULL;
 static char *mbox = NULL;
 static char *host = NULL;
-static char *path = NULL;
+static char *routepath = NULL;
 static char *grp = NULL;
 static char *note = NULL;
 static char err[BUFSIZ];
@@ -155,10 +156,10 @@ getadrx (const char *addrs, int eai)
     mh_xfree(pers);
     mh_xfree(mbox);
     mh_xfree(host);
-    mh_xfree(path);
+    mh_xfree(routepath);
     mh_xfree(grp);
     mh_xfree(note);
-    pers = mbox = host = path = grp = note = NULL;
+    pers = mbox = host = routepath = grp = note = NULL;
     err[0] = 0;
 
     if (dp == NULL) {
@@ -202,7 +203,7 @@ getadrx (const char *addrs, int eai)
          */
 
         if (contains8bit(mbox, NULL) || contains8bit(host, NULL) ||
-            contains8bit(path, NULL) || contains8bit(grp, NULL)) {
+            contains8bit(routepath, NULL) || contains8bit(grp, NULL)) {
             strcpy(err, "Address contains 8-bit characters");
         }
     }
@@ -234,7 +235,7 @@ getadrx (const char *addrs, int eai)
     adrxp->pers = pers;
     adrxp->mbox = mbox;
     adrxp->host = host;
-    adrxp->path = path;
+    adrxp->path = routepath;
     adrxp->grp = grp;
     adrxp->ingrp = ingrp;
     adrxp->note = note;
@@ -508,13 +509,13 @@ domain (char *buffer)
 static int
 route (char *buffer)
 {
-    path = mh_xstrdup ("@");
+    routepath = mh_xstrdup ("@");
 
     for (;;) {
 	switch (my_lex (buffer)) {
 	    case LX_ATOM: 
 	    case LX_DLIT: 
-		path = add (buffer, path);
+		routepath = add (buffer, routepath);
 		break;
 
 	    default: 
@@ -523,14 +524,14 @@ route (char *buffer)
 	}
 	switch (my_lex (buffer)) {
 	    case LX_COMA: 
-		path = add (buffer, path);
+		routepath = add (buffer, routepath);
 		for (;;) {
 		    switch (my_lex (buffer)) {
 			case LX_COMA: 
 			    continue;
 
 			case LX_AT: 
-			    path = add (buffer, path);
+			    routepath = add (buffer, routepath);
 			    break;
 
 			default: 
@@ -543,11 +544,11 @@ route (char *buffer)
 
 	    case LX_AT:		/* XXX */
 	    case LX_DOT: 
-		path = add (buffer, path);
+		routepath = add (buffer, routepath);
 		continue;
 
 	    case LX_COLN: 
-		path = add (buffer, path);
+		routepath = add (buffer, routepath);
 		return OK;
 
 	    default: 
