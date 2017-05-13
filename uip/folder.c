@@ -591,8 +591,8 @@ print_folders (void)
     if (ftotal > 0 || (all && !fshort && ftotal >= 0)) {
 	if (all)
 	    putchar('\n');
-	printf ("TOTAL = %d message%c in %d folder%s.\n",
-		total_msgs, total_msgs != 1 ? 's' : ' ',
+	printf ("TOTAL = %d message%s in %d folder%s.\n",
+		total_msgs, total_msgs != 1 ? "s" : "",
 		total_folders, total_folders != 1 ? "s" : "");
     }
 
