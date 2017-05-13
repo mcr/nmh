@@ -133,8 +133,6 @@ list_switch (CT ct, int toplevel, int realsize, int verbose, int debug,
 }
 
 
-#define empty(s) FENDNULL(s)
-
 /*
  * Method for listing information about a simple/generic content
  */
@@ -149,16 +147,16 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug,
     PM pm;
 
     if (toplevel > 0)
-    	printf (LSTFMT2a, atoi (r1bindex (empty (ct->c_file), '/')));
+    	printf (LSTFMT2a, atoi (r1bindex (FENDNULL(ct->c_file), '/')));
     else
     	printf(toplevel < 0 ? "part " : "     ");
 
-    snprintf (buffer, sizeof(buffer), "%s/%s", empty (ci->ci_type),
-		empty (ci->ci_subtype));
+    snprintf (buffer, sizeof(buffer), "%s/%s", FENDNULL(ci->ci_type),
+		FENDNULL(ci->ci_subtype));
     if (verbose)
-	printf (LSTFMT2bv, empty (ct->c_partno), buffer);
+	printf (LSTFMT2bv, FENDNULL(ct->c_partno), buffer);
     else
-	printf (LSTFMT2b, empty (ct->c_partno), buffer);
+	printf (LSTFMT2b, FENDNULL(ct->c_partno), buffer);
 
     if (ct->c_cesizefnx && realsize)
 	size = (*ct->c_cesizefnx) (ct);
@@ -252,7 +250,7 @@ list_debug (CT ct)
     PM pm;
 
     fflush (stdout);
-    fprintf (stderr, "  partno \"%s\"\n", empty (ct->c_partno));
+    fprintf (stderr, "  partno \"%s\"\n", FENDNULL(ct->c_partno));
 
     /* print MIME-Version line */
     if (ct->c_vrsn)
@@ -263,10 +261,10 @@ list_debug (CT ct)
 	fprintf (stderr, "  %s:%s\n", TYPE_FIELD, ct->c_ctline);
 
     /* print parsed elements of content type */
-    fprintf (stderr, "    type    \"%s\"\n", empty (ci->ci_type));
-    fprintf (stderr, "    subtype \"%s\"\n", empty (ci->ci_subtype));
-    fprintf (stderr, "    comment \"%s\"\n", empty (ci->ci_comment));
-    fprintf (stderr, "    magic   \"%s\"\n", empty (ci->ci_magic));
+    fprintf (stderr, "    type    \"%s\"\n", FENDNULL(ci->ci_type));
+    fprintf (stderr, "    subtype \"%s\"\n", FENDNULL(ci->ci_subtype));
+    fprintf (stderr, "    comment \"%s\"\n", FENDNULL(ci->ci_comment));
+    fprintf (stderr, "    magic   \"%s\"\n", FENDNULL(ci->ci_magic));
 
     /* print parsed parameters attached to content type */
     fprintf (stderr, "    parameters\n");
@@ -279,9 +277,9 @@ list_debug (CT ct)
 	     ct->c_type, ct->c_subtype,
 	     (unsigned int)(unsigned long) ct->c_ctparams);
 
-    fprintf (stderr, "    showproc  \"%s\"\n", empty (ct->c_showproc));
-    fprintf (stderr, "    termproc  \"%s\"\n", empty (ct->c_termproc));
-    fprintf (stderr, "    storeproc \"%s\"\n", empty (ct->c_storeproc));
+    fprintf (stderr, "    showproc  \"%s\"\n", FENDNULL(ct->c_showproc));
+    fprintf (stderr, "    termproc  \"%s\"\n", FENDNULL(ct->c_termproc));
+    fprintf (stderr, "    storeproc \"%s\"\n", FENDNULL(ct->c_storeproc));
 
     /* print transfer encoding information */
     if (ct->c_celine)
@@ -303,14 +301,14 @@ list_debug (CT ct)
     if (ct->c_dispo)
 	fprintf (stderr, "  %s:%s", DISPO_FIELD, ct->c_dispo);
 
-    fprintf(stderr, "    disposition \"%s\"\n", empty (ct->c_dispo_type));
+    fprintf(stderr, "    disposition \"%s\"\n", FENDNULL(ct->c_dispo_type));
     fprintf(stderr, "    disposition parameters\n");
     for (pm = ct->c_dispo_first; pm; pm = pm->pm_next)
 	fprintf (stderr, "      %s=\"%s\"\n", pm->pm_name,
 		 get_param_value(pm, '?'));
 
     fprintf (stderr, "    read fp 0x%x file \"%s\" begin %ld end %ld\n",
-	     (unsigned int)(unsigned long) ct->c_fp, empty (ct->c_file),
+	     (unsigned int)(unsigned long) ct->c_fp, FENDNULL(ct->c_file),
 	     ct->c_begin, ct->c_end);
 
     /* print more information about transfer encoding */
@@ -318,8 +316,6 @@ list_debug (CT ct)
 
     return OK;
 }
-
-#undef empty
 
 
 /*

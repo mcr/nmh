@@ -216,8 +216,6 @@ mnfree (struct mailname *mp)
 }
 
 
-#define empty(s) FENDNULL(s)
-
 char *
 auxformat (struct mailname *mp, int extras)
 {
@@ -230,10 +228,10 @@ auxformat (struct mailname *mp, int extras)
 
 	if (mp->m_type != UUCPHOST) {
 	    if (mp->m_host)
-	    	snprintf (addr, sizeof(addr), "%s%s@%s", empty(mp->m_path),
-			  empty(mp->m_mbox), mp->m_host);
-	    else snprintf (addr, sizeof(addr), "%s%s", empty(mp->m_path),
-	    		   empty(mp->m_mbox));
+	    	snprintf (addr, sizeof(addr), "%s%s@%s", FENDNULL(mp->m_path),
+			  FENDNULL(mp->m_mbox), mp->m_host);
+	    else snprintf (addr, sizeof(addr), "%s%s", FENDNULL(mp->m_path),
+	    		   FENDNULL(mp->m_mbox));
 	} else
 	    snprintf (addr, sizeof(addr), "%s!%s", mp->m_host, mp->m_mbox);
 

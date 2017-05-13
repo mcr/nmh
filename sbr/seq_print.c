@@ -7,8 +7,6 @@
 
 #include <h/mh.h>
 
-#define empty(s) FENDNULL(s)
-
 /*
  * Print all the sequences in a folder
  */
@@ -21,7 +19,7 @@ seq_printall (struct msgs *mp)
     for (i = 0; i < svector_size (mp->msgattrs); i++) {
 	list = seq_list (mp, svector_at (mp->msgattrs, i));
 	printf ("%s%s: %s\n", svector_at (mp->msgattrs, i),
-	    is_seq_private (mp, i) ? " (private)" : "", empty(list));
+	    is_seq_private (mp, i) ? " (private)" : "", FENDNULL(list));
     }
 }
 
@@ -42,5 +40,5 @@ seq_print (struct msgs *mp, char *seqname)
     list = seq_list (mp, seqname);
 
     printf ("%s%s: %s\n", seqname,
-	(i == -1) ? "" : is_seq_private(mp, i) ? " (private)" : "", empty(list));
+	(i == -1) ? "" : is_seq_private(mp, i) ? " (private)" : "", FENDNULL(list));
 }
