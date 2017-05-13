@@ -568,9 +568,9 @@ print_folders (void)
 			nummsgdigits, "no",
 			fi[i].others ? lowmsgdigits + hghmsgdigits + 5 : 0, "");
 	    } else {
-		printf ("has %*d message%s  (%*d-%*d)",
+		printf ("has %*d message%1s  (%*d-%*d)",
 			nummsgdigits, fi[i].nummsg,
-			(fi[i].nummsg == 1) ? " " : "s",
+			(fi[i].nummsg == 1) ? "" : "s",
 			lowmsgdigits, fi[i].lowmsg,
 			hghmsgdigits, fi[i].hghmsg);
 		if (fi[i].curmsg >= fi[i].lowmsg && fi[i].curmsg <= fi[i].hghmsg) {
