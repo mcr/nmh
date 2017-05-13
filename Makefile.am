@@ -2,6 +2,7 @@
 ## Our Makefile.am template for Makefile.in (and, eventually, Makefile)
 ##
 ## Process this with automake to generate Makefile.in
+## Lists are in `LC_ALL=C sort' order.
 ##
 
 ## We set this to get our autoconf macros in the m4 directory
@@ -48,79 +49,135 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
 		    MULTIBYTE_ENABLED=$(MULTIBYTE_ENABLED) \
 		    ICONV_ENABLED=$(ICONV_ENABLED) \
 		    $(TESTS_SHELL) ## Keep at end of TESTS_ENVIRONMENT.
+
 ##
 ## Important note: the "cleanup" test should always be last
 ##
-TESTS = test/ali/test-ali test/anno/test-anno \
-	test/bad-input/test-header \
-	test/burst/test-burst test/burst/test-burst-mime \
-	test/comp/test-comp-format test/dist/test-dist \
-	test/folder/test-coverage \
-	test/folder/test-create test/folder/test-nocreate \
-	test/folder/test-packf test/folder/test-recurse \
-	test/folder/test-sortm test/folder/test-total \
-	test/format/test-ap \
-	test/format/test-curses test/format/test-dp \
-	test/format/test-fmtdump test/format/test-functions \
-	test/format/test-localmbox test/format/test-myname \
-	test/format/test-myhost test/format/test-mymbox \
-	test/format/test-nullstr \
-	test/format/test-rightjustify \
-	test/format/test-unquote \
-	test/forw/test-forw-coverage \
-	test/forw/test-forw-digest test/forw/test-forw-format \
-	test/inc/test-deb359167 test/inc/test-eom-align \
-	test/inc/test-inc-scanout test/inc/test-msgchk \
-	test/inc/test-pop \
-	test/install-mh/test-install-mh test/install-mh/test-version-check \
-	test/locking/test-datalocking test/locking/test-spoollocking \
-	test/manpages/test-manpages \
-	test/mhbuild/test-attach test/mhbuild/test-mhbuild \
-	test/mhbuild/test-cte \
-	test/mhbuild/test-ext-params \
-	test/mhbuild/test-forw test/mhbuild/test-header-encode \
-	test/mhbuild/test-utf8-body \
-	test/mhfixmsg/test-mhfixmsg test/mhical/test-mhical \
-	test/mhl/test-mhl-flags test/mhl/test-rfc6532 \
-	test/mhlist/test-mhlist test/mhlist/test-ext-params \
-	test/mhmail/test-mhmail \
-	test/mhparam/test-mhparam test/mhpath/test-mhpath \
-	test/mhshow/test-binary \
-	test/mhshow/test-charset test/mhshow/test-textcharset \
-	test/mhshow/test-cte-binary test/mhshow/test-qp \
-	test/mhshow/test-subpart test/mhshow/test-msg-buffer-boundaries \
-	test/mhstore/test-mhstore test/mkstemp/test-mkstemp \
-	test/new/test-basic test/pick/test-pick test/pick/test-stderr \
-	test/oauth/test-mhlogin test/oauth/test-mhparam test/oauth/test-send \
-	test/oauth/test-sendfrom test/oauth/test-inc test/oauth/test-share \
-	test/post/test-post-aliases test/post/test-post-basic \
-	test/post/test-post-multiple test/post/test-post-bcc \
-	test/post/test-post-dcc test/post/test-post-fcc \
-	test/post/test-post-multifrom test/post/test-post-envelope \
-	test/post/test-post-group test/post/test-mts test/post/test-messageid \
-	test/post/test-rfc6531 test/post/test-sendfiles \
-	test/prompter/test-prompter \
-	test/rcv/test-rcvdist test/rcv/test-rcvpack test/rcv/test-rcvstore \
-	test/rcv/test-rcvtty test/refile/test-refile test/repl/test-convert \
-	test/repl/test-if-str test/repl/test-trailing-newline \
-	test/repl/test-multicomp test/repl/test-repl \
-	test/scan/test-header-parsing \
-	test/scan/test-scan test/scan/test-scan-multibyte \
-	test/sequences/test-flist test/sequences/test-mark \
-	test/sequences/test-out-of-range \
-	test/send/test-sendfrom \
-	test/show/test-show \
-	test/slocal/test-slocal \
-	test/whatnow/test-attach-detach test/whatnow/test-cd \
-	test/whatnow/test-ls test/whom/test-whom \
-	test/cleanup ## The "cleanup" test should always be last.
+TESTS = \
+    test/ali/test-ali \
+    test/anno/test-anno \
+    test/bad-input/test-header \
+    test/burst/test-burst \
+    test/burst/test-burst-mime \
+    test/comp/test-comp-format \
+    test/dist/test-dist \
+    test/folder/test-coverage \
+    test/folder/test-create \
+    test/folder/test-nocreate \
+    test/folder/test-packf \
+    test/folder/test-recurse \
+    test/folder/test-sortm \
+    test/folder/test-total \
+    test/format/test-ap \
+    test/format/test-curses \
+    test/format/test-dp \
+    test/format/test-fmtdump \
+    test/format/test-functions \
+    test/format/test-localmbox \
+    test/format/test-myhost \
+    test/format/test-mymbox \
+    test/format/test-myname \
+    test/format/test-nullstr \
+    test/format/test-rightjustify \
+    test/format/test-unquote \
+    test/forw/test-forw-coverage \
+    test/forw/test-forw-digest \
+    test/forw/test-forw-format \
+    test/inc/test-deb359167 \
+    test/inc/test-eom-align \
+    test/inc/test-inc-scanout \
+    test/inc/test-msgchk \
+    test/inc/test-pop \
+    test/install-mh/test-install-mh \
+    test/install-mh/test-version-check \
+    test/locking/test-datalocking \
+    test/locking/test-spoollocking \
+    test/manpages/test-manpages \
+    test/mhbuild/test-attach \
+    test/mhbuild/test-cte \
+    test/mhbuild/test-ext-params \
+    test/mhbuild/test-forw \
+    test/mhbuild/test-header-encode \
+    test/mhbuild/test-mhbuild \
+    test/mhbuild/test-utf8-body \
+    test/mhfixmsg/test-mhfixmsg \
+    test/mhical/test-mhical \
+    test/mhl/test-mhl-flags \
+    test/mhl/test-rfc6532 \
+    test/mhlist/test-ext-params \
+    test/mhlist/test-mhlist \
+    test/mhmail/test-mhmail \
+    test/mhparam/test-mhparam \
+    test/mhpath/test-mhpath \
+    test/mhshow/test-binary \
+    test/mhshow/test-charset \
+    test/mhshow/test-cte-binary \
+    test/mhshow/test-msg-buffer-boundaries \
+    test/mhshow/test-qp \
+    test/mhshow/test-subpart \
+    test/mhshow/test-textcharset \
+    test/mhstore/test-mhstore \
+    test/mkstemp/test-mkstemp \
+    test/new/test-basic \
+    test/oauth/test-inc \
+    test/oauth/test-mhlogin \
+    test/oauth/test-mhparam \
+    test/oauth/test-send \
+    test/oauth/test-sendfrom \
+    test/oauth/test-share \
+    test/pick/test-pick \
+    test/pick/test-stderr \
+    test/post/test-messageid \
+    test/post/test-mts \
+    test/post/test-post-aliases \
+    test/post/test-post-basic \
+    test/post/test-post-bcc \
+    test/post/test-post-dcc \
+    test/post/test-post-envelope \
+    test/post/test-post-fcc \
+    test/post/test-post-group \
+    test/post/test-post-multifrom \
+    test/post/test-post-multiple \
+    test/post/test-rfc6531 \
+    test/post/test-sendfiles \
+    test/prompter/test-prompter \
+    test/rcv/test-rcvdist \
+    test/rcv/test-rcvpack \
+    test/rcv/test-rcvstore \
+    test/rcv/test-rcvtty \
+    test/refile/test-refile \
+    test/repl/test-convert \
+    test/repl/test-if-str \
+    test/repl/test-multicomp \
+    test/repl/test-repl \
+    test/repl/test-trailing-newline \
+    test/scan/test-header-parsing \
+    test/scan/test-scan \
+    test/scan/test-scan-multibyte \
+    test/send/test-sendfrom \
+    test/sequences/test-flist \
+    test/sequences/test-mark \
+    test/sequences/test-out-of-range \
+    test/show/test-show \
+    test/slocal/test-slocal \
+    test/whatnow/test-attach-detach \
+    test/whatnow/test-cd \
+    test/whatnow/test-ls \
+    test/whom/test-whom \
+    test/cleanup ## The "cleanup" test should always be last.
 
-XFAIL_TESTS = \
-    #
+XFAIL_TESTS =
 
 check_SCRIPTS = test/common.sh
-check_PROGRAMS = test/getfullname test/getcanon test/fakepop test/fakesmtp \
-		 test/getcwidth test/fakehttp
+
+check_PROGRAMS = \
+    test/fakehttp \
+    test/fakepop \
+    test/fakesmtp \
+    test/getcanon \
+    test/getcwidth \
+    test/getfullname \
+    #
 
 ## So they can be built without builing the `check' target.
 check-programs: $(check_PROGRAMS)
@@ -136,9 +193,18 @@ AM_DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1 \
 ## Stuff that should be cleaned via "make clean"
 ## automake 1.12.6 on FreeBSD 9 needs the sbr/dtimep.c.
 ##
-CLEANFILES = config/version.c sbr/dtimep.c \
-	     etc/bash_completion_nmh etc/mhn.defaults etc/mts.conf \
-	     man/man.sed man/mh-chart.man $(man_MANS) *.plist
+CLEANFILES = \
+    $(man_MANS) \
+    *.plist \
+    config/version.c \
+    etc/bash_completion_nmh \
+    etc/mhn.defaults \
+    etc/mts.conf \
+    man/man.sed \
+    man/mh-chart.man \
+    sbr/dtimep.c \
+    #
+
 clean-local:
 	@rm -rf RPM a.out.dSYM uip/a.out.dSYM
 	@rm -rf test/testdir
@@ -146,15 +212,37 @@ clean-local:
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
 ##
-MAINTAINERCLEANFILES = atags cscope.files cscope.out cscope.in.out cscope.po.out *.plist
+MAINTAINERCLEANFILES = \
+    *.plist \
+    atags \
+    cscope.files \
+    cscope.in.out \
+    cscope.out \
+    cscope.po.out \
+    #
 
 ##
 ## And our own superclean, to get everything left by maintainer-clean.
 ##
-SUPERCLEANFILES = ChangeLog Makefile.in aclocal.m4 compile config.guess \
-		  config.h.in config.h.in~ config.sub configure depcomp \
-		  install-sh missing test-driver ylwrap nmh-*.tar.gz \
-		  nmh-*.tar.gz.sig
+SUPERCLEANFILES = \
+    ChangeLog \
+    Makefile.in \
+    aclocal.m4 \
+    compile \
+    config.guess \
+    config.h.in \
+    config.h.in~ \
+    config.sub \
+    configure \
+    depcomp \
+    install-sh \
+    missing \
+    nmh-*.tar.gz \
+    nmh-*.tar.gz.sig \
+    test-driver \
+    ylwrap \
+    #
+
 superclean: maintainer-clean
 	@rm -f $(SUPERCLEANFILES)
 .PHONY: superclean
@@ -164,22 +252,68 @@ superclean: maintainer-clean
 ## Note that primary difference between "PROGRAMS" and "SCRIPTS" is that
 ## the latter do not have $(EXEEXT) added on the end.
 ##
-bin_PROGRAMS = uip/ali uip/anno uip/burst uip/comp uip/dist uip/flist \
-	       uip/fmttest uip/folder uip/forw uip/inc uip/install-mh \
-	       uip/mark uip/mhbuild uip/mhfixmsg uip/mhical uip/mhlist uip/mhn \
-	       uip/mhparam uip/mhpath uip/mhshow uip/mhstore uip/msgchk \
-	       uip/new uip/packf uip/pick uip/prompter uip/refile \
-	       uip/repl uip/rmf uip/rmm uip/scan uip/send uip/show uip/sortm \
-	       uip/whatnow uip/whom uip/mhlogin
+bin_PROGRAMS = \
+    uip/ali \
+    uip/anno \
+    uip/burst \
+    uip/comp \
+    uip/dist \
+    uip/flist \
+    uip/fmttest \
+    uip/folder \
+    uip/forw \
+    uip/inc \
+    uip/install-mh \
+    uip/mark \
+    uip/mhbuild \
+    uip/mhfixmsg \
+    uip/mhical \
+    uip/mhlist \
+    uip/mhlogin \
+    uip/mhn \
+    uip/mhparam \
+    uip/mhpath \
+    uip/mhshow \
+    uip/mhstore \
+    uip/msgchk \
+    uip/new \
+    uip/packf \
+    uip/pick \
+    uip/prompter \
+    uip/refile \
+    uip/repl \
+    uip/rmf \
+    uip/rmm \
+    uip/scan \
+    uip/send \
+    uip/show \
+    uip/sortm \
+    uip/whatnow \
+    uip/whom \
+    #
 
-bin_SCRIPTS = uip/mhmail etc/sendfiles
+bin_SCRIPTS = \
+    etc/sendfiles \
+    uip/mhmail \
+    #
 
 ##
 ## This is all programs that get installed in the "libexec/nmh" directory
 ##
-nmhlibexec_PROGRAMS = uip/ap uip/dp uip/fmtdump uip/mhl uip/mkstemp \
-		   uip/post uip/rcvdist uip/rcvpack uip/rcvstore uip/rcvtty \
-		   uip/slocal uip/viamail
+nmhlibexec_PROGRAMS = \
+    uip/ap \
+    uip/dp \
+    uip/fmtdump \
+    uip/mhl \
+    uip/mkstemp \
+    uip/post \
+    uip/rcvdist \
+    uip/rcvpack \
+    uip/rcvstore \
+    uip/rcvtty \
+    uip/slocal \
+    uip/viamail \
+    #
 
 nmhlibexec_SCRIPTS = uip/spost
 
@@ -187,124 +321,326 @@ nmhlibexec_SCRIPTS = uip/spost
 ## Internal libraries that we create as part of the build process
 ## but do not install
 ##
-noinst_LIBRARIES = sbr/libmh.a mts/libmts.a
+noinst_LIBRARIES = \
+    mts/libmts.a \
+    sbr/libmh.a \
+    #
 
 ##
 ## These are all of our header files.  Right now we don't install any of
 ## them, but that might change in the future.
 ##
-noinst_HEADERS = h/addrsbr.h h/aliasbr.h h/crawl_folders.h h/dropsbr.h \
-		 h/fmt_compile.h h/fmt_scan.h h/icalendar.h h/md5.h h/mf.h \
-		 h/mh.h h/mhcachesbr.h h/mhparse.h h/mime.h \
-		 h/mts.h h/nmh.h h/netsec.h h/picksbr.h h/popsbr.h \
-		 h/prototypes.h h/rcvmail.h h/scansbr.h h/signals.h h/tws.h \
-		 h/utils.h mts/smtp/smtp.h sbr/ctype-checked.h h/oauth.h \
-		 thirdparty/jsmn/jsmn.h
+noinst_HEADERS = \
+    h/addrsbr.h \
+    h/aliasbr.h \
+    h/crawl_folders.h \
+    h/dropsbr.h \
+    h/fmt_compile.h \
+    h/fmt_scan.h \
+    h/icalendar.h \
+    h/md5.h \
+    h/mf.h \
+    h/mh.h \
+    h/mhcachesbr.h \
+    h/mhparse.h \
+    h/mime.h \
+    h/mts.h \
+    h/netsec.h \
+    h/nmh.h \
+    h/oauth.h \
+    h/picksbr.h \
+    h/popsbr.h \
+    h/prototypes.h \
+    h/rcvmail.h \
+    h/scansbr.h \
+    h/signals.h \
+    h/tws.h \
+    h/utils.h \
+    mts/smtp/smtp.h \
+    sbr/ctype-checked.h \
+    thirdparty/jsmn/jsmn.h \
+    #
 
 ##
 ## Extra files we need to install in various places
 ##
-dist_nmhetc_DATA = etc/MailAliases etc/components etc/digestcomps \
-		   etc/distcomps etc/forwcomps \
-		   etc/mhical.12hour etc/mhical.24hour \
-		   etc/mhl.body etc/mhl.digest etc/mhl.format etc/mhl.forward \
-		   etc/mhl.headers etc/mhl.reply etc/mhl.replywithoutbody \
-		   etc/mhshow.marker etc/rcvdistcomps etc/rcvdistcomps.outbox \
-		   etc/replcomps etc/replgroupcomps etc/rmmproc.messageid \
-		   etc/scan.MMDDYY \
-		   etc/scan.YYYYMMDD etc/scan.curses etc/scan.default \
-		   etc/scan.highlighted \
-		   etc/scan.mailx etc/scan.nomime etc/scan.size etc/scan.time \
-		   etc/scan.timely etc/scan.unseen
+dist_nmhetc_DATA = \
+    etc/MailAliases \
+    etc/components \
+    etc/digestcomps \
+    etc/distcomps \
+    etc/forwcomps \
+    etc/mhical.12hour \
+    etc/mhical.24hour \
+    etc/mhl.body \
+    etc/mhl.digest \
+    etc/mhl.format \
+    etc/mhl.forward \
+    etc/mhl.headers \
+    etc/mhl.reply \
+    etc/mhl.replywithoutbody \
+    etc/mhshow.marker \
+    etc/rcvdistcomps \
+    etc/rcvdistcomps.outbox \
+    etc/replcomps \
+    etc/replgroupcomps \
+    etc/rmmproc.messageid \
+    etc/scan.MMDDYY \
+    etc/scan.YYYYMMDD \
+    etc/scan.curses \
+    etc/scan.default \
+    etc/scan.highlighted \
+    etc/scan.mailx \
+    etc/scan.nomime \
+    etc/scan.size \
+    etc/scan.time \
+    etc/scan.timely \
+    etc/scan.unseen \
+    #
 
 ##
 ## The same as above, but we don't include these in the distribution
 ## (because they're generated at compile time)
 ##
-nmhetc_DATA = etc/bash_completion_nmh etc/mhn.defaults etc/mts.conf
+nmhetc_DATA = \
+    etc/bash_completion_nmh \
+    etc/mhn.defaults \
+    etc/mts.conf \
+    #
 
 ##
 ## Documentation that gets installed in docdir
 ##
-dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
-		docs/COMPLETION-TCSH docs/COMPLETION-ZSH \
-		docs/DIFFERENCES docs/FAQ \
-		docs/MAIL.FILTERING docs/MAILING-LISTS docs/README-ATTACHMENTS \
-		docs/README-HOOKS docs/README-components docs/README.about \
-		docs/README.SASL docs/README.developers docs/README.manpages \
-		docs/TODO
+dist_doc_DATA = \
+    COPYRIGHT \
+    INSTALL \
+    NEWS \
+    README \
+    VERSION \
+    docs/COMPLETION-TCSH \
+    docs/COMPLETION-ZSH \
+    docs/DIFFERENCES \
+    docs/FAQ \
+    docs/MAIL.FILTERING \
+    docs/MAILING-LISTS \
+    docs/README-ATTACHMENTS \
+    docs/README-HOOKS \
+    docs/README-components \
+    docs/README.SASL \
+    docs/README.about \
+    docs/README.developers \
+    docs/README.manpages \
+    docs/TODO \
+    #
 
 ##
 ## Contribs that get installed in docdir/contrib/
 ##
 docs_contribdir = $(docdir)/contrib
-dist_docs_contrib_SCRIPTS = docs/contrib/replyfilter \
-			    docs/contrib/localpostproc docs/contrib/ml \
-			    docs/contrib/vpick docs/contrib/replaliases
+dist_docs_contrib_SCRIPTS = \
+    docs/contrib/localpostproc \
+    docs/contrib/ml \
+    docs/contrib/replaliases \
+    docs/contrib/replyfilter \
+    docs/contrib/vpick \
+    #
+
 dist_docs_contrib_DATA = docs/contrib/replaliases
 
 ##
 ## Our man pages
 ##
-man_MANS = man/MH.7 man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
-	   man/dist.1 man/dp.8 man/flist.1 man/flists.1 \
-	   man/fmtdump.8 man/fmttest.1 man/fnext.1 man/folder.1 man/folders.1 \
-	   man/forw.1 man/fprev.1 man/inc.1 man/install-mh.1 man/mark.1 \
-	   man/mh-alias.5 man/mh-chart.7 man/mh-draft.5 man/mh-folders.5 \
-	   man/mh-format.5 man/mh-mail.5 man/mh-mime.7 man/mh-profile.5 \
-	   man/mh_profile.5 man/mh-sequence.5 man/mh-tailor.5 man/mhbuild.1 \
-	   man/mhfixmsg.1 man/mhical.1 man/mhl.1 man/mhlist.1 man/mhmail.1 \
-	   man/mhn.1 man/mhparam.1 man/mhpath.1 man/mhshow.1 man/mhstore.1 \
-	   man/mh-mkstemp.1 man/msgchk.1 man/mts.conf.5 man/new.1 \
-	   man/next.1 man/nmh.7 man/packf.1 man/pick.1 man/post.8 man/prev.1 \
-	   man/prompter.1 man/rcvdist.1 man/rcvpack.1 man/rcvstore.1 \
-	   man/rcvtty.1 man/refile.1 man/repl.1 man/rmf.1 man/rmm.1 \
-	   man/scan.1 man/send.1 man/sendfiles.1 man/show.1 man/slocal.1 \
-	   man/sortm.1 man/unseen.1 man/whatnow.1 man/whom.1 man/mhlogin.1
+man_MANS = \
+    man/MH.7 \
+    man/ali.1 \
+    man/anno.1 \
+    man/ap.8 \
+    man/burst.1 \
+    man/comp.1 \
+    man/dist.1 \
+    man/dp.8 \
+    man/flist.1 \
+    man/flists.1 \
+    man/fmtdump.8 \
+    man/fmttest.1 \
+    man/fnext.1 \
+    man/folder.1 \
+    man/folders.1 \
+    man/forw.1 \
+    man/fprev.1 \
+    man/inc.1 \
+    man/install-mh.1 \
+    man/mark.1 \
+    man/mh-alias.5 \
+    man/mh-chart.7 \
+    man/mh-draft.5 \
+    man/mh-folders.5 \
+    man/mh-format.5 \
+    man/mh-mail.5 \
+    man/mh-mime.7 \
+    man/mh-mkstemp.1 \
+    man/mh-profile.5 \
+    man/mh-sequence.5 \
+    man/mh-tailor.5 \
+    man/mh_profile.5 \
+    man/mhbuild.1 \
+    man/mhfixmsg.1 \
+    man/mhical.1 \
+    man/mhl.1 \
+    man/mhlist.1 \
+    man/mhlogin.1 \
+    man/mhmail.1 \
+    man/mhn.1 \
+    man/mhparam.1 \
+    man/mhpath.1 \
+    man/mhshow.1 \
+    man/mhstore.1 \
+    man/msgchk.1 \
+    man/mts.conf.5 \
+    man/new.1 \
+    man/next.1 \
+    man/nmh.7 \
+    man/packf.1 \
+    man/pick.1 \
+    man/post.8 \
+    man/prev.1 \
+    man/prompter.1 \
+    man/rcvdist.1 \
+    man/rcvpack.1 \
+    man/rcvstore.1 \
+    man/rcvtty.1 \
+    man/refile.1 \
+    man/repl.1 \
+    man/rmf.1 \
+    man/rmm.1 \
+    man/scan.1 \
+    man/send.1 \
+    man/sendfiles.1 \
+    man/show.1 \
+    man/slocal.1 \
+    man/sortm.1 \
+    man/unseen.1 \
+    man/whatnow.1 \
+    man/whom.1 \
+    #
 
 ##
 ## Sources for our man pages
 ##
-man_SRCS = man/MH.man man/ali.man man/anno.man man/ap.man man/burst.man  \
-	   man/comp.man man/dist.man man/dp.man man/flist.man \
-	   man/flists.man man/fmtdump.man man/fmttest.man man/fnext.man \
-	   man/folder.man man/folders.man man/forw.man man/fprev.man \
-	   man/inc.man man/install-mh.man man/mark.man man/mh-alias.man \
-	   man/mh-chart-gen.sh man/mh-draft.man man/mh-folders.man \
-	   man/mh-format.man man/mh-mail.man man/mh-mime.man \
-	   man/mh-profile.man man/mh_profile.man man/mh-sequence.man \
-	   man/mh-tailor.man man/mhbuild.man man/mhfixmsg.man man/mhical.man \
-	   man/mhl.man man/mhlist.man man/mhmail.man man/mhn.man \
-	   man/mhparam.man man/mhpath.man man/mhshow.man man/mhstore.man \
-	   man/mh-mkstemp.man man/msgchk.man man/mts.conf.man man/new.man \
-	   man/next.man man/nmh.man man/packf.man man/pick.man man/post.man \
-	   man/prev.man man/prompter.man man/rcvdist.man man/rcvpack.man \
-	   man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
-	   man/rmf.man man/rmm.man man/scan.man man/send.man \
-	   man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
-	   man/unseen.man man/whatnow.man man/whom.man man/mhlogin.man
+man_SRCS = \
+    man/MH.man \
+    man/ali.man \
+    man/anno.man \
+    man/ap.man \
+    man/burst.man \
+    man/comp.man \
+    man/dist.man \
+    man/dp.man \
+    man/flist.man \
+    man/flists.man \
+    man/fmtdump.man \
+    man/fmttest.man \
+    man/fnext.man \
+    man/folder.man \
+    man/folders.man \
+    man/forw.man \
+    man/fprev.man \
+    man/inc.man \
+    man/install-mh.man \
+    man/mark.man \
+    man/mh-alias.man \
+    man/mh-chart-gen.sh \
+    man/mh-draft.man \
+    man/mh-folders.man \
+    man/mh-format.man \
+    man/mh-mail.man \
+    man/mh-mime.man \
+    man/mh-mkstemp.man \
+    man/mh-profile.man \
+    man/mh-sequence.man \
+    man/mh-tailor.man \
+    man/mh_profile.man \
+    man/mhbuild.man \
+    man/mhfixmsg.man \
+    man/mhical.man \
+    man/mhl.man \
+    man/mhlist.man \
+    man/mhlogin.man \
+    man/mhmail.man \
+    man/mhn.man \
+    man/mhparam.man \
+    man/mhpath.man \
+    man/mhshow.man \
+    man/mhstore.man \
+    man/msgchk.man \
+    man/mts.conf.man \
+    man/new.man \
+    man/next.man \
+    man/nmh.man \
+    man/packf.man \
+    man/pick.man \
+    man/post.man \
+    man/prev.man \
+    man/prompter.man \
+    man/rcvdist.man \
+    man/rcvpack.man \
+    man/rcvstore.man \
+    man/rcvtty.man \
+    man/refile.man \
+    man/repl.man \
+    man/rmf.man \
+    man/rmm.man \
+    man/scan.man \
+    man/send.man \
+    man/sendfiles.man \
+    man/show.man \
+    man/slocal.man \
+    man/sortm.man \
+    man/unseen.man \
+    man/whatnow.man \
+    man/whom.man \
+    #
 
 ##
 ## Files we need to include in the distribution which aren't found by
 ## Automake using the automatic rules
 ##
-EXTRA_DIST = autogen.sh build_nmh config/version.sh sbr/icalparse.h \
-	     etc/bash_completion_nmh-gen etc/mhn.defaults.sh etc/mts.conf.in \
-	     etc/sendfiles \
-	     $(MHNSEARCHPROG) DATE MACHINES \
-	     docs/ChangeLog_MH-3_to_MH-6.6 \
-	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
-	     test/README test/fakesendmail $(TESTS) test/inc/deb359167.mbox \
-	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
-	     test/inc/md5sums test/mhmail/attachment.txt \
-	     test/mhbuild/tiny.jpg \
-	     test/mhbuild/somebinary \
-	     test/mhbuild/nulls \
-	     test/mhbuild/textplain \
-	     test/post/test-post-common.sh test/send/README \
-	     test/oauth/common.sh \
-	     test/valgrind.supp uip/mhmail \
-	     SPECS/nmh.spec SPECS/nmh.cygport $(man_SRCS)
+EXTRA_DIST = \
+    $(MHNSEARCHPROG) \
+    $(TESTS) \
+    $(man_SRCS) \
+    DATE \
+    MACHINES \
+    SPECS/nmh.cygport \
+    SPECS/nmh.spec \
+    autogen.sh \
+    build_nmh \
+    config/version.sh \
+    docs/ChangeLog_MH-3_to_MH-6.6 \
+    docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
+    etc/bash_completion_nmh-gen \
+    etc/mhn.defaults.sh \
+    etc/mts.conf.in \
+    etc/sendfiles \
+    sbr/icalparse.h \
+    test/README \
+    test/fakesendmail \
+    test/inc/deb359167.mbox \
+    test/inc/filler.txt \
+    test/inc/fromline.txt \
+    test/inc/md5sums \
+    test/inc/msgheader.txt \
+    test/mhbuild/nulls \
+    test/mhbuild/somebinary \
+    test/mhbuild/textplain \
+    test/mhbuild/tiny.jpg \
+    test/mhmail/attachment.txt \
+    test/oauth/common.sh \
+    test/post/test-post-common.sh \
+    test/send/README \
+    test/valgrind.supp \
+    uip/mhmail \
+    #
 
 ##
 ## These are all of the definitions for each of the programs listed above.
@@ -581,52 +917,127 @@ uninstall-hook:
 ##
 ## Our rules to build our internal libraries (libmh.a, libmts.a)
 ##
-sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
-		      sbr/base64.c sbr/brkstring.c \
-		      sbr/charstring.c sbr/check_charset.c sbr/client.c \
-		      sbr/closefds.c sbr/concat.c sbr/context_del.c \
-		      sbr/context_find.c sbr/context_foil.c sbr/context_read.c \
-		      sbr/context_replace.c sbr/context_save.c \
-		      sbr/copyip.c sbr/cpydata.c \
-		      sbr/cpydgst.c sbr/crawl_folders.c sbr/credentials.c \
-		      sbr/discard.c sbr/done.c sbr/dtimep.l sbr/dtime.c \
-		      sbr/encode_rfc2047.c \
-		      sbr/escape_addresses.c \
-		      sbr/error.c sbr/ext_hook.c sbr/fdcompare.c \
-		      sbr/folder_addmsg.c sbr/folder_delmsgs.c \
-		      sbr/folder_free.c sbr/folder_pack.c \
-		      sbr/folder_read.c sbr/folder_realloc.c sbr/read_switch.c \
-		      sbr/read_switch_multiword.c sbr/read_switch_multiword_via_readline.c \
-		      sbr/read_yes_or_no_if_tty.c sbr/getarguments.c \
-		      sbr/getcpy.c sbr/geteditor.c sbr/getfolder.c \
-		      sbr/getpass.c sbr/read_line.c \
-		      sbr/fmt_addr.c sbr/fmt_compile.c sbr/fmt_new.c \
-		      sbr/fmt_rfc2047.c sbr/fmt_scan.c \
-		      sbr/icalparse.y sbr/icalendar.l sbr/datetime.c \
-		      sbr/lock_file.c \
-		      sbr/m_atoi.c sbr/m_backup.c sbr/m_convert.c \
-		      sbr/m_draft.c sbr/m_getfld.c sbr/m_gmprot.c \
-		      sbr/m_maildir.c sbr/m_name.c sbr/m_popen.c sbr/m_rand.c \
-		      sbr/makedir.c sbr/md5.c sbr/message_id.c \
-		      sbr/mime_type.c sbr/mts.c sbr/netsec.c \
-		      sbr/norm_charmap.c sbr/path.c \
-		      sbr/pidwait.c sbr/pidstatus.c \
-		      sbr/print_help.c sbr/print_sw.c sbr/print_version.c \
-		      sbr/push.c sbr/putenv.c sbr/refile.c sbr/remdir.c \
-		      sbr/r1bindex.c sbr/readconfig.c sbr/ruserpass.c \
-		      sbr/seq_add.c sbr/seq_bits.c sbr/seq_del.c \
-		      sbr/seq_getnum.c sbr/seq_list.c sbr/seq_nameok.c \
-		      sbr/seq_print.c sbr/seq_read.c sbr/seq_save.c \
-		      sbr/seq_setcur.c sbr/seq_setprev.c sbr/seq_setunseen.c \
-		      sbr/showfile.c sbr/signals.c sbr/smatch.c \
-		      sbr/snprintb.c sbr/ssequal.c \
-		      sbr/strindex.c sbr/terminal.c \
-		      sbr/trimcpy.c sbr/unquote.c \
-		      sbr/uprf.c sbr/vfgets.c \
-		      sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
-		      sbr/m_mktemp.c sbr/vector.c sbr/oauth.c sbr/oauth_prof.c \
-		      config/config.c config/version.c \
-		      thirdparty/jsmn/jsmn.c
+sbr_libmh_a_SOURCES = \
+    config/config.c \
+    config/version.c \
+    sbr/addrsbr.c \
+    sbr/ambigsw.c \
+    sbr/arglist.c \
+    sbr/atooi.c \
+    sbr/base64.c \
+    sbr/brkstring.c \
+    sbr/charstring.c \
+    sbr/check_charset.c \
+    sbr/client.c \
+    sbr/closefds.c \
+    sbr/concat.c \
+    sbr/context_del.c \
+    sbr/context_find.c \
+    sbr/context_foil.c \
+    sbr/context_read.c \
+    sbr/context_replace.c \
+    sbr/context_save.c \
+    sbr/copyip.c \
+    sbr/cpydata.c \
+    sbr/cpydgst.c \
+    sbr/crawl_folders.c \
+    sbr/credentials.c \
+    sbr/ctype-checked.c \
+    sbr/datetime.c \
+    sbr/discard.c \
+    sbr/done.c \
+    sbr/dtime.c \
+    sbr/dtimep.l \
+    sbr/encode_rfc2047.c \
+    sbr/error.c \
+    sbr/escape_addresses.c \
+    sbr/ext_hook.c \
+    sbr/fdcompare.c \
+    sbr/fmt_addr.c \
+    sbr/fmt_compile.c \
+    sbr/fmt_new.c \
+    sbr/fmt_rfc2047.c \
+    sbr/fmt_scan.c \
+    sbr/folder_addmsg.c \
+    sbr/folder_delmsgs.c \
+    sbr/folder_free.c \
+    sbr/folder_pack.c \
+    sbr/folder_read.c \
+    sbr/folder_realloc.c \
+    sbr/getarguments.c \
+    sbr/getcpy.c \
+    sbr/geteditor.c \
+    sbr/getfolder.c \
+    sbr/getpass.c \
+    sbr/icalendar.l \
+    sbr/icalparse.y \
+    sbr/lock_file.c \
+    sbr/m_atoi.c \
+    sbr/m_backup.c \
+    sbr/m_convert.c \
+    sbr/m_draft.c \
+    sbr/m_getfld.c \
+    sbr/m_gmprot.c \
+    sbr/m_maildir.c \
+    sbr/m_mktemp.c \
+    sbr/m_name.c \
+    sbr/m_popen.c \
+    sbr/m_rand.c \
+    sbr/makedir.c \
+    sbr/md5.c \
+    sbr/message_id.c \
+    sbr/mf.c \
+    sbr/mime_type.c \
+    sbr/mts.c \
+    sbr/netsec.c \
+    sbr/norm_charmap.c \
+    sbr/oauth.c \
+    sbr/oauth_prof.c \
+    sbr/path.c \
+    sbr/pidstatus.c \
+    sbr/pidwait.c \
+    sbr/print_help.c \
+    sbr/print_sw.c \
+    sbr/print_version.c \
+    sbr/push.c \
+    sbr/putenv.c \
+    sbr/r1bindex.c \
+    sbr/read_line.c \
+    sbr/read_switch.c \
+    sbr/read_switch_multiword.c \
+    sbr/read_switch_multiword_via_readline.c \
+    sbr/read_yes_or_no_if_tty.c \
+    sbr/readconfig.c \
+    sbr/refile.c \
+    sbr/remdir.c \
+    sbr/ruserpass.c \
+    sbr/seq_add.c \
+    sbr/seq_bits.c \
+    sbr/seq_del.c \
+    sbr/seq_getnum.c \
+    sbr/seq_list.c \
+    sbr/seq_nameok.c \
+    sbr/seq_print.c \
+    sbr/seq_read.c \
+    sbr/seq_save.c \
+    sbr/seq_setcur.c \
+    sbr/seq_setprev.c \
+    sbr/seq_setunseen.c \
+    sbr/showfile.c \
+    sbr/signals.c \
+    sbr/smatch.c \
+    sbr/snprintb.c \
+    sbr/ssequal.c \
+    sbr/strindex.c \
+    sbr/terminal.c \
+    sbr/trimcpy.c \
+    sbr/unquote.c \
+    sbr/uprf.c \
+    sbr/utils.c \
+    sbr/vector.c \
+    sbr/vfgets.c \
+    thirdparty/jsmn/jsmn.c \
+    #
 
 sbr_libmh_a_LIBADD = $(LIBOBJS)
 
