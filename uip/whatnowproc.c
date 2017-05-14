@@ -35,7 +35,7 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
     if (mp)
 	setenv("mhfolder", mp->foldpath, 1);
     else
-	unputenv ("mhfolder");
+	unsetenv("mhfolder");
     if (altmsg) {
 	if (mp == NULL || *altmsg == '/' || cwd == NULL)
 	    setenv("mhaltmsg", altmsg, 1);
@@ -44,14 +44,14 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
 	    setenv("mhaltmsg", buffer, 1);
 	}
     } else {
-	unputenv ("mhaltmsg");
+	unsetenv("mhaltmsg");
     }
     if ((bp = getenv ("mhaltmsg")))/* XXX */
 	setenv("editalt", bp, 1);
     snprintf (buffer, sizeof(buffer), "%d", dist);
     setenv("mhdist", buffer, 1);
     if (nedit) {
-	unputenv ("mheditor");
+	unsetenv("mheditor");
     } else {
         if (!ed)
             ed = get_default_editor();
@@ -62,9 +62,9 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
     snprintf (buffer, sizeof(buffer), "%d", atfile);
     setenv("mhatfile", buffer, 1);
 
-    unputenv ("mhmessages");
-    unputenv ("mhannotate");
-    unputenv ("mhinplace");
+    unsetenv("mhmessages");
+    unsetenv("mhannotate");
+    unsetenv("mhinplace");
 
     if (text && mp && !is_readonly(mp)) {
 	found = 0;

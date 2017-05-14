@@ -1000,7 +1000,6 @@ sbr_libmh_a_SOURCES = \
     sbr/print_sw.c \
     sbr/print_version.c \
     sbr/push.c \
-    sbr/putenv.c \
     sbr/r1bindex.c \
     sbr/read_line.c \
     sbr/read_switch.c \

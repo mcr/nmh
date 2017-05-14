@@ -414,7 +414,6 @@ char *snprintb (char *buffer, size_t size, unsigned flags, char *bitfield);
 int ssequal (const char *, const char *);
 int stringdex (char *, char *);
 char *trimcpy (char *);
-int unputenv (char *);
 
 /*
  * Remove quotes and quoted-pair sequences from RFC-5322 atoms.
