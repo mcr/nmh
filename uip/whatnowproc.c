@@ -31,34 +31,36 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
     vec[vecp++] = r1bindex (whatnowproc, '/');
     vec[vecp] = NULL;
 
-    m_putenv ("mhdraft", file);
+    setenv("mhdraft", file, 1);
     if (mp)
-	m_putenv ("mhfolder", mp->foldpath);
+	setenv("mhfolder", mp->foldpath, 1);
     else
 	unputenv ("mhfolder");
     if (altmsg) {
 	if (mp == NULL || *altmsg == '/' || cwd == NULL)
-	    m_putenv ("mhaltmsg", altmsg);
+	    setenv("mhaltmsg", altmsg, 1);
 	else {
 	    snprintf (buffer, sizeof(buffer), "%s/%s", mp->foldpath, altmsg);
-	    m_putenv ("mhaltmsg", buffer);
+	    setenv("mhaltmsg", buffer, 1);
 	}
     } else {
 	unputenv ("mhaltmsg");
     }
     if ((bp = getenv ("mhaltmsg")))/* XXX */
-	m_putenv ("editalt", bp);
+	setenv("editalt", bp, 1);
     snprintf (buffer, sizeof(buffer), "%d", dist);
-    m_putenv ("mhdist", buffer);
+    setenv("mhdist", buffer, 1);
     if (nedit) {
 	unputenv ("mheditor");
     } else {
-	m_putenv ("mheditor", ed ? ed : (ed = get_default_editor()));
+        if (!ed)
+            ed = get_default_editor();
+	setenv("mheditor", ed, 1);
     }
     snprintf (buffer, sizeof(buffer), "%d", use);
-    m_putenv ("mhuse", buffer);
+    setenv("mhuse", buffer, 1);
     snprintf (buffer, sizeof(buffer), "%d", atfile);
-    m_putenv ("mhatfile", buffer);
+    setenv("mhatfile", buffer, 1);
 
     unputenv ("mhmessages");
     unputenv ("mhannotate");
@@ -87,10 +89,10 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
 	    }
 	}
 	if (found) {
-	    m_putenv ("mhmessages", buffer);
-	    m_putenv ("mhannotate", text);
+	    setenv("mhmessages", buffer, 1);
+	    setenv("mhannotate", text, 1);
 	    snprintf (buffer, sizeof(buffer), "%d", inplace);
-	    m_putenv ("mhinplace", buffer);
+	    setenv("mhinplace", buffer, 1);
 	}
     }
 

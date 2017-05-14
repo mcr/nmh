@@ -297,7 +297,7 @@ go_to_it: ;
     }
 
     if (folder && !draftsw && !file)
-	m_putenv ("mhfolder", folder);
+	setenv("mhfolder", folder, 1);
 
     if (strcmp (r1bindex (proc, '/'), "cat") == 0) {
 

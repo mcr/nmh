@@ -1093,9 +1093,9 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 	    setpgid ((pid_t) 0, getpid ());	/* put in own process group */
 
 	    *environ = NULL;
-	    m_putenv ("USER", pw->pw_name);
-	    m_putenv ("HOME", pw->pw_dir);
-	    m_putenv ("SHELL", pw->pw_shell);
+	    setenv("USER", pw->pw_name, 1);
+	    setenv("HOME", pw->pw_dir, 1);
+	    setenv("SHELL", pw->pw_shell, 1);
 
 	    execvp (pgm, vec);
 	    _exit (-1);

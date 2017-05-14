@@ -706,8 +706,8 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    }
 	    if (altmsg) {
 		if (mp)
-		    m_putenv ("mhfolder", mp->foldpath);
-		m_putenv ("editalt", altpath);
+		    setenv("mhfolder", mp->foldpath, 1);
+		setenv("editalt", altpath, 1);
 	    }
 
 	    vec = argsplit(*ed, &prog, &vecp);
@@ -1194,7 +1194,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 
     if ((cp = getenv ("SIGNATURE")) == NULL || *cp == 0)
 	if ((cp = context_find ("signature")) && *cp)
-	    m_putenv ("SIGNATURE", cp);
+	    setenv("SIGNATURE", cp, 1);
 
     if ((annotext = getenv ("mhannotate")) == NULL || *annotext == 0)
 	annotext = NULL;

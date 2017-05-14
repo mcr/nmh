@@ -256,7 +256,6 @@ int m_gmprot (void);
 char *m_maildir (char *);
 char *m_mailpath (char *);
 char *m_name (int);
-int m_putenv (char *, char *);
 int m_rand (unsigned char *, size_t);
 char *m_mktemp(const char *, int *, FILE **);
 char *m_mktemp2(const char *, const char *, int *, FILE **);

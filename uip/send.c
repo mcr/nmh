@@ -381,7 +381,7 @@ go_to_it:
 
     if ((cp = getenv ("SIGNATURE")) == NULL || *cp == 0)
 	if ((cp = context_find ("signature")) && *cp)
-	    m_putenv ("SIGNATURE", cp);
+	    setenv("SIGNATURE", cp, 1);
 
     for (msgnum = 0; msgnum < msgp; msgnum++)
 	if (stat (msgs[msgnum], &st) == NOTOK)
