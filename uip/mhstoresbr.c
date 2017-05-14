@@ -947,7 +947,9 @@ parse_format_string (CT ct, char *cp, char *buffer, int buflen, char *dir)
      * appropriate directory.
      */
     if (*cp != '/' && *cp != '|' && *cp != '!') {
-	snprintf (bp, buflen, "%s/", dir[1] ? dir : "");
+        if (!strcmp(dir, "/"))
+            dir = ""; /* Don't start with "//". */
+	snprintf (bp, buflen, "%s/", dir);
 	len = strlen (bp);
 	bp += len;
 	buflen -= len;

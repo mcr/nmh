@@ -350,9 +350,9 @@ set -e
 
 cd ..
 
-# check with relative nmh-storage profile component
-start_test 'with relative nmh-storage profile component'
-storagedir=storagedir
+# check with short relative nmh-storage profile component
+start_test 'with short relative nmh-storage profile component'
+storagedir=s
 dir="$MH_TEST_DIR/Mail/inbox/$storagedir"
 mkdir "$dir"
 printf '%s\n' "nmh-storage: $storagedir" >>"$MH"
@@ -360,6 +360,19 @@ cat >"$expected" <<'EOF'
 This is the fourth text/plain part.
 This test has multiple lines.
 EOF
+run_test 'mhstore 11 -part 4' \
+"storing message 11 part 4 as file $storagedir/11.4.txt"
+check "$expected" "$dir/11.4.txt" 'keep first'
+rmdir "$dir"
+sed '$d' "$MH" >"$MH.new"
+mv "$MH.new" "$MH"
+
+# check with relative nmh-storage profile component
+start_test 'with relative nmh-storage profile component'
+storagedir=storagedir
+dir="$MH_TEST_DIR/Mail/inbox/$storagedir"
+mkdir "$dir"
+printf '%s\n' "nmh-storage: $storagedir" >>"$MH"
 run_test 'mhstore 11 -part 4' \
 "storing message 11 part 4 as file $storagedir/11.4.txt"
 check "$expected" "$dir/11.4.txt" 'keep first'
