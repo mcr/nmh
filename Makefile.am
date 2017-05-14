@@ -1041,6 +1041,11 @@ sbr_libmh_a_SOURCES = \
 sbr_libmh_a_LIBADD = $(LIBOBJS)
 
 ##
+## Need explicit dependency so that YACC is run before LEX.
+##
+sbr/icalendar.c: sbr/icalparse.c
+
+##
 ## Because these files use the definitions in the libmh rule below,
 ## they need to be rebuilt if the Makefile changes.
 ##
