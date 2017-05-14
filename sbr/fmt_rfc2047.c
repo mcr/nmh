@@ -126,7 +126,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	equals_pending = 1;	/* we have a '=' pending */
 
 	/* Check for initial =? */
-	if (*p == '=' && p[1] && p[1] == '?' && p[2]) {
+	if (*p == '=' && p[1] == '?' && p[2]) {
 	    startofmime = p + 2;
 
 	    /* Scan ahead for the next '?' character */
