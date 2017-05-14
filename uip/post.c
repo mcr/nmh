@@ -1986,7 +1986,7 @@ fcc (char *file, char *folder)
 		if (!verbose)
 		    fprintf (stderr, "  %sFcc %s: ",
 			    msgstate == RESENT ? "Resent-" : "", folder);
-		pidstatus (status, verbose ? stdout : stderr, NULL);
+		pidstatus (status, verbose ? stdout : stderr, fileproc);
 	    } else {
 		if (verbose)
 		    puts("folder ok");
