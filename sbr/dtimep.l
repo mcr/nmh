@@ -180,32 +180,32 @@ zonehack (struct tws *tw)
 }
 %}
 
-sun	([Ss]un(day)?)
-mon	([Mm]on(day)?)
-tue	([Tt]ue(sday)?)
-wed	([Ww]ed(nesday)?)
-thu	([Tt]hu(rsday)?)
-fri	([Ff]ri(day)?)
-sat	([Ss]at(urday)?)
+sun	[Ss]un(day)?
+mon	[Mm]on(day)?
+tue	[Tt]ue(sday)?
+wed	[Ww]ed(nesday)?
+thu	[Tt]hu(rsday)?
+fri	[Ff]ri(day)?
+sat	[Ss]at(urday)?
 
-DAY	({sun}|{mon}|{tue}|{wed}|{thu}|{fri}|{sat})
+DAY	{sun}|{mon}|{tue}|{wed}|{thu}|{fri}|{sat}
 
-jan	([Jj]an(uary)?)
-feb	([Ff]eb(ruary)?)
-mar	([Mm]ar(ch)?)
-apr	([Aa]pr(il)?)
-may	([Mm]ay)
-jun	([Jj]un(e)?)
-jul	([Jj]ul(y)?)
-aug	([Aa]ug(ust)?)
-sep	([Ss]ep(tember)?)
-oct	([Oo]ct(ober)?)
-nov	([Nn]ov(ember)?)
-dec	([Dd]ec(ember)?)
+jan	[Jj]an(uary)?
+feb	[Ff]eb(ruary)?
+mar	[Mm]ar(ch)?
+apr	[Aa]pr(il)?
+may	[Mm]ay
+jun	[Jj]une?
+jul	[Jj]uly?
+aug	[Aa]ug(ust)?
+sep	[Ss]ep(tember)?
+oct	[Oo]ct(ober)?
+nov	[Nn]ov(ember)?
+dec	[Dd]ec(ember)?
 
-MONTH	({jan}|{feb}|{mar}|{apr}|{may}|{jun}|{jul}|{aug}|{sep}|{oct}|{nov}|{dec})
+MONTH	{jan}|{feb}|{mar}|{apr}|{may}|{jun}|{jul}|{aug}|{sep}|{oct}|{nov}|{dec}
 
-TIME    ({D}:{d}{d}(:{d}{d})?)
+TIME    {D}:{d}{d}(:{d}{d})?
 
      /* The year can either be 2 digits, or 4. However, after
 	Y2K, we found that some MUA were reporting the year 100, hence
@@ -213,11 +213,11 @@ TIME    ({D}:{d}{d}(:{d}{d})?)
         issues with 2-digit years.
      */
 
-YEAR    (({d}{d})|(1{d}{d})|({d}{4}))
+YEAR    ({d}{d})|(1{d}{d})|({d}{4})
 
-w	([ \t]*)
-W	([ \t]+)
-D	([0-9]?[0-9])
+w	[ \t]*
+W	[ \t]+
+D	[0-9]?[0-9]
 d	[0-9]
 nl      [ \t\n()]
 
