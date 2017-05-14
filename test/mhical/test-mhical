@@ -31,6 +31,7 @@ actual_err="$MH_TEST_DIR/test-mhical$$.actual_err"
 
 
 # check -help
+start_test "-help"
 cat >"$expected" <<EOF
 Usage: mhical [switches]
   switches are:
@@ -53,6 +54,7 @@ check "$expected" "$actual"
 
 
 # check -version
+start_test "-version"
 case `mhical -version` in
   mhical\ --*) ;;
   *) printf '%s: mhical -version generated unexpected output\n' "$0" >&2
@@ -61,6 +63,7 @@ esac
 
 
 # check display with timezone that only has standard time
+start_test "display with timezone that only has standard time"
 cat >"$expected" <<'EOF'
 Summary: Santa Watch
 Description: See Santa here first!
@@ -98,6 +101,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check display with 24 hour time format and -outfile
+start_test "display with 24 hour time format and -outfile"
 cat >"$expected" <<'EOF'
 Summary: 4 pm meeting
 At: Mon, 05 Jan 2015 16:00
@@ -124,6 +128,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check display with 12 hour time format and -infile
+start_test "display with 12 hour time format and -infile"
 cat >"$expected" <<'EOF'
 Summary: 4 pm meeting
 At: Mon, 05 Jan 2015  4:00 PM
@@ -151,6 +156,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check display with DST
+start_test "display with DST"
 cat >"$expected" <<'EOF'
 Method: REQUEST
 Organizer: Requester
@@ -219,6 +225,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check timezone boundary at transition to daylight saving time
+start_test "timezone boundary at transition to daylight saving time"
 # The default mhical display format doesn't show the timezone for the
 # To: time, but it is different than that of the At: time.
 cat >"$expected" <<'EOF'
@@ -260,6 +267,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check -format, and that timezone is correct in end time
+start_test "-format, and that timezone is correct in end time"
 cat >"$expected" <<'EOF'
 Sun, 09 Mar 2014 03:30:00 -0400
 EOF
@@ -270,6 +278,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check timezone boundary at transition from daylight saving time
+start_test "timezone boundary at transition from daylight saving time"
 cat >"$expected" <<'EOF'
 Summary: EDT to EST
 At: Sun, 02 Nov 2014 01:59 -0400
@@ -309,6 +318,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check -format, and that timezone is correct in end time
+start_test "-format, and that timezone is correct in end time"
 cat >"$expected" <<'EOF'
 Sun, 02 Nov 2014 02:00:00 -0500
 EOF
@@ -321,6 +331,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 printf 'Local-Mailbox: Requestee2 <requestee2@example.com>\n' >> "$MH"
 
 # check accept of request
+start_test "accept of request"
 cat >"$expected" <<'EOF'
 BEGIN:VCALENDAR
 METHOD:REPLY
@@ -411,6 +422,7 @@ mhical -reply accept <"$MH_TEST_DIR/test1.ics" | egrep -v '^DTSTAMP:' \
 check "$expected" "$MH_TEST_DIR/test1.txt"
 
 # check accept of multiple vevent requests in single vcalendar
+start_test "accept of multiple vevent requests in single vcalendar"
 cat >"$expected" <<'EOF'
 BEGIN:VCALENDAR
 METHOD:REPLY
@@ -544,6 +556,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check decline of request
+start_test "decline of request"
 cat >"$expected" <<'EOF'
 BEGIN:VCALENDAR
 METHOD:REPLY
@@ -605,6 +618,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check response of tentative to request, and -nocontenttype
+start_test "response of tentative to request, and -nocontenttype"
 cat >"$expected" <<'EOF'
 BEGIN:VCALENDAR
 METHOD:REPLY
@@ -667,6 +681,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # check cancel request, and -contenttype
+start_test "cancel request, and -contenttype"
 cat >"$expected" <<'EOF'
 Content-Type: text/calendar; method="CANCEL"; charset="UTF-8"
 
@@ -731,6 +746,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # Check TZID name wrapped with quotes, this used to cause a segfault.
+start_test "TZID name wrapped with quotes, this used to cause a segfault."
 cat >"$expected" <<'EOF'
 Method: REQUEST
 Summary: Quoted timezone ID
@@ -766,6 +782,7 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 
 
 # Check start datetime without a time, and missing end datetime.
+start_test "start datetime without a time, and missing end datetime."
 cat >"$expected" <<'EOF'
 Method: PUBLISH
 Summary: Test datetime without time
@@ -799,4 +816,30 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 rm -f "$MH_TEST_DIR/test1.ics"
 
 
+# check missing final newline
+start_test "missing final newline"
+
+cat >"$expected" <<'EOF'
+Summary: test
+Description: this file does not end with a newline
+At: Sun, 14 May 2017 09:00 -0400
+To: Sun, 14 May 2017 10:00
+EOF
+
+printf %s \
+"BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:RevenueWell
+BEGIN:VEVENT
+DTSTAMP:20170514T122300Z
+DTSTART:20170514T130000Z
+DTEND:20170514T140000Z
+SUMMARY:test
+DESCRIPTION:this file does not end with a newline
+END:VEVENT
+END:VCALENDAR" | mhical >"$actual"
+check "$expected" "$actual"
+
+
+finish_test
 exit $failed

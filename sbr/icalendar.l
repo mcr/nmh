@@ -260,9 +260,21 @@ folded-value         {VALUE-CHAR}*({fold}{VALUE-CHAR}*)+
     inform("unexpected input: |%s|\n", icaltext);
 }
 
+<INITIAL>
 <<EOF>> {
+    /* See next rule for when start state is not INITIAL. */
     destroy_icallex ();
     yyterminate ();
+}
+
+<<EOF>> {
+    /* Missing a final newline after a token.  The input does not conform
+       to RFC 5545 § 3.1, which requires that each contentline end with a
+       CRLF.  (Assume that the token is at the end of a contentline.)  Be
+       liberal in what we accept by faking a newline here, and setting the
+       start state to terminate on the next call. */
+    BEGIN (INITIAL);
+    return ICAL_CRLF;
 }
 
 %%
