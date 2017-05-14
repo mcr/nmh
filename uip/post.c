@@ -1566,18 +1566,16 @@ find_prefix (void)
 }
 
 
-#define	plural(x) (x == 1 ? "" : "s")
-
 static void
 chkadr (void)
 {
     if (badadr && unkadr)
 	die (NULL, "%d address%s unparsable, %d addressee%s undeliverable",
-		badadr, plural (badadr), unkadr, plural (badadr));
+		badadr, PLURALS(badadr), unkadr, PLURALS(badadr));
     if (badadr)
-	die (NULL, "%d address%s unparsable", badadr, plural (badadr));
+	die (NULL, "%d address%s unparsable", badadr, PLURALS(badadr));
     if (unkadr)
-	die (NULL, "%d addressee%s undeliverable", unkadr, plural (unkadr));
+	die (NULL, "%d addressee%s undeliverable", unkadr, PLURALS(unkadr));
 }
 
 

@@ -521,7 +521,7 @@ mhl (int argc, char **argv)
 	}
 	else
 	    printf ("\n------- End of Forwarded Message%s\n",
-		    vecp > 1 ? "s" : "");
+		    PLURALS(vecp));
     }
 
     fflush(stdout);
@@ -946,7 +946,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 	else {
 	    printf ("\n-------");
 	    if (ofilen == 1)
-		printf (" Forwarded Message%s", ofilec > 1 ? "s" : "");
+		printf (" Forwarded Message%s", PLURALS(ofilec));
 	    else
 		printf (" Message %d", ofilen);
 	    printf ("\n\n");

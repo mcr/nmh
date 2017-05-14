@@ -570,7 +570,7 @@ print_folders (void)
 	    } else {
 		printf ("has %*d message%1s  (%*d-%*d)",
 			nummsgdigits, fi[i].nummsg,
-			(fi[i].nummsg == 1) ? "" : "s",
+			PLURALS(fi[i].nummsg),
 			lowmsgdigits, fi[i].lowmsg,
 			hghmsgdigits, fi[i].hghmsg);
 		if (fi[i].curmsg >= fi[i].lowmsg && fi[i].curmsg <= fi[i].hghmsg) {
@@ -592,8 +592,8 @@ print_folders (void)
 	if (all)
 	    putchar('\n');
 	printf ("TOTAL = %d message%s in %d folder%s.\n",
-		total_msgs, total_msgs != 1 ? "s" : "",
-		total_folders, total_folders != 1 ? "s" : "");
+		total_msgs, PLURALS(total_msgs),
+		total_folders, PLURALS(total_folders));
     }
 
     fflush (stdout);

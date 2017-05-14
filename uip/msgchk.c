@@ -399,7 +399,7 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 		printf ("%s has ", user);
 
 	    printf ("%d message%s (%d bytes)",
-		    nmsgs, nmsgs != 1 ? "s" : "", nbytes);
+		    nmsgs, PLURALS(nmsgs), nbytes);
 	}
 	else
 	    notifysw = 0;

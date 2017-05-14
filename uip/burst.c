@@ -172,7 +172,7 @@ main (int argc, char **argv)
 	    if ((numburst = find_delim (msgnum, smsgs, &mimesw)) >= 1) {
 		if (verbosw)
 		    printf ("%d message%s exploded from digest %d\n",
-			    numburst, numburst > 1 ? "s" : "", msgnum);
+			    numburst, PLURALS(numburst), msgnum);
 		burst (&mp, msgnum, smsgs, numburst, inplace, verbosw,
 		       maildir, mimesw);
 	    } else {

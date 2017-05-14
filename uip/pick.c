@@ -304,7 +304,7 @@ main (int argc, char **argv)
      * Print total matched if not printing each matched message number.
      */
     if (!listsw) {
-	printf ("%d hit%s\n", mp2->numsel, mp2->numsel == 1 ? "" : "s");
+	printf ("%d hit%s\n", mp2->numsel, PLURALS(mp2->numsel));
     }
 
     svector_free (seqs);

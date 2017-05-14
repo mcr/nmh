@@ -588,7 +588,7 @@ copy_draft (int out, char *digest, char *file, int volume, int issue, int dashst
 
 		if (msgnum == mp->lowsel) {
 		    snprintf (bp, buflen, " Forwarded Message%s",
-			mp->numsel > 1 ? "s" : "");
+			PLURALS(mp->numsel));
 		} else {
 		    snprintf (bp, buflen, " Message %d", msgcnt);
 		}
@@ -625,7 +625,7 @@ copy_draft (int out, char *digest, char *file, int volume, int issue, int dashst
 	strncpy (buffer, delim4, sizeof(buffer));
     } else {
 	snprintf (buffer, sizeof(buffer), "\n------- End of Forwarded Message%s\n",
-		mp->numsel > 1 ? "s" : "");
+		PLURALS(mp->numsel));
     }
     if (write (out, buffer, strlen (buffer)) < 0) {
 	advise (drft, "write");
@@ -657,7 +657,7 @@ copy_mime_draft (int out)
     char buffer[BUFSIZ];
 
     snprintf (buffer, sizeof(buffer), "#forw [forwarded message%s] +%s",
-	mp->numsel == 1 ? "" : "s", mp->foldpath);
+	PLURALS(mp->numsel), mp->foldpath);
     if (write (out, buffer, strlen (buffer)) < 0) {
 	advise (drft, "write");
     }

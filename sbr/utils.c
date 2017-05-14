@@ -17,6 +17,11 @@ extern void remove_registered_files_atexit();
 
 extern char *mhdocdir;
 
+/* plurals gives the letter ess to indicate a plural noun, or an empty
+ * string as plurals+1 for the singular noun.  Used by the PLURALS
+ * macro. */
+const char plurals[] = "s";
+
 /*
  * We allocate space for messages (msgs array)
  * this number of elements at a time.
