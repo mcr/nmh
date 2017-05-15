@@ -313,7 +313,6 @@ void print_intro (FILE *, int);
 void print_sw (const char *, const struct swit *, char *, FILE *);
 void print_version (char *);
 void push (void);
-char *pwd (void);
 char *r1bindex(char *, int);
 void readconfig (struct node **, FILE *, const char *, int);
 int refile (char **, char *);
