@@ -7,9 +7,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
-
-/* sbr/m_mktemp.c */
-extern void remove_registered_files(int);
+#include "m_mktemp.h"
 
 
 /*

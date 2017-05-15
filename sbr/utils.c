@@ -8,10 +8,8 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/signals.h>
+#include "m_mktemp.h"
 #include <fcntl.h>
-
-/* sbr/m_mktemp.c */
-extern void remove_registered_files_atexit(void);
 
 extern char *mhdocdir;
 

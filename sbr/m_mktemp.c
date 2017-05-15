@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/signals.h>
+#include "m_mktemp.h"
 
 static void register_for_removal(const char *);
 
