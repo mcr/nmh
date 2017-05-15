@@ -220,7 +220,7 @@ main (int argc, char **argv)
 /*
  * Clean up and exit
  */
-static void
+static void NORETURN
 unlink_done(int status)
 {
     if (tmpfilenam && *tmpfilenam)

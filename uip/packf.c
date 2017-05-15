@@ -173,7 +173,7 @@ main (int argc, char **argv)
     return 1;
 }
 
-static void
+static void NORETURN
 mbxclose_done (int status)
 {
     mbx_close (file, md);

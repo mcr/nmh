@@ -1002,7 +1002,7 @@ skip:
 }
 
 
-static void
+static void NORETURN
 inc_done (int status)
 {
     done = exit;

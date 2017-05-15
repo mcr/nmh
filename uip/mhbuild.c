@@ -431,7 +431,7 @@ main (int argc, char **argv)
 }
 
 
-static void
+static void NORETURN
 unlink_done (int status)
 {
     /*

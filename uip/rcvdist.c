@@ -247,7 +247,7 @@ finished: ;
 }
 
 
-static void
+static void NORETURN
 unlink_done (int status)
 {
     if (backup[0])

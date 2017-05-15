@@ -273,7 +273,7 @@ free_encoding (CT ct, int toplevel)
 }
 
 
-void
+void NORETURN
 freects_done (int status)
 {
     CT *ctp;

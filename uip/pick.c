@@ -318,7 +318,7 @@ main (int argc, char **argv)
 }
 
 
-static void
+static void NORETURN
 putzero_done (int status)
 {
     if (listsw && status && !isatty (fileno (stdout)))

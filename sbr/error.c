@@ -45,7 +45,7 @@ advise (const char *what, const char *fmt, ...)
  * straightforward, e.g. longjmp(3), but it must not return to adios().
  * If it does then it's a bug and adios() will abort(3) as callers do
  * not expect execution to continue. */
-void
+void NORETURN
 adios (const char *what, const char *fmt, ...)
 {
     va_list ap;

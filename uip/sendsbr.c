@@ -1009,7 +1009,7 @@ merge_profile_entry(const char *addr, const char *host, char *vec[], int *vecp) 
 }
 
 
-static void
+static void NORETURN
 armed_done (int status)
 {
     longjmp (env, status ? status : NOTOK);
