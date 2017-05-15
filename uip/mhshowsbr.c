@@ -15,6 +15,7 @@
 #include <h/mhparse.h>
 #include <h/fmt_scan.h>
 #include <h/utils.h>
+#include "../sbr/m_mktemp.h"
 #ifdef HAVE_ICONV
 #   include <iconv.h>
 #endif /* ! HAVE_ICONV */

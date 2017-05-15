@@ -12,6 +12,7 @@
 #include <h/dropsbr.h>
 #include <h/mts.h>
 #include <h/tws.h>
+#include "../sbr/m_mktemp.h"
 
 #ifdef NTOHLSWAP
 # include <netinet/in.h>

@@ -8,6 +8,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
+#include "../sbr/m_mktemp.h"
 #include <fcntl.h>
 
 #define REFILE_SWITCHES \

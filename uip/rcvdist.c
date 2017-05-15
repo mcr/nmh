@@ -11,6 +11,7 @@
 #include <h/tws.h>
 #include <h/mts.h>
 #include <h/utils.h>
+#include "../sbr/m_mktemp.h"
 
 #define RCVDIST_SWITCHES \
     X("form formfile", 4, FORMSW) \

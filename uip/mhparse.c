@@ -13,6 +13,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include "../sbr/m_mktemp.h"
 #include "mhfree.h"
 #ifdef HAVE_ICONV
 # include <iconv.h>

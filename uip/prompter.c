@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <fcntl.h>
 #include <h/signals.h>
+#include "../sbr/m_mktemp.h"
 #include <setjmp.h>
 
 #include <termios.h>

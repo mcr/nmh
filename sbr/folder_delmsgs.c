@@ -7,6 +7,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
+#include "m_mktemp.h"
 
 /*
  * 1) If we are using an external rmmproc, then exec it.

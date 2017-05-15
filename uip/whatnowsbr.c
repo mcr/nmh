@@ -41,10 +41,10 @@
 #include <fcntl.h>
 #include <h/mime.h>
 #include <h/utils.h>
-
 #ifdef OAUTH_SUPPORT
 # include <h/oauth.h>
 #endif
+#include "../sbr/m_mktemp.h"
 
 #define WHATNOW_SWITCHES \
     X("draftfolder +folder", 0, DFOLDSW) \

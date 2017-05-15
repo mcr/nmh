@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "m_mktemp.h"
 
 
 char *

@@ -13,6 +13,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include "../sbr/m_mktemp.h"
 
 enum clobber_policy_t {
   NMH_CLOBBER_ALWAYS = 0,

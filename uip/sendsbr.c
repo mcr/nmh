@@ -23,7 +23,10 @@
 
 #ifdef OAUTH_SUPPORT
 #include <h/oauth.h>
+#endif
+#include "../sbr/m_mktemp.h"
 
+#ifdef OAUTH_SUPPORT
 static int setup_oauth_params(char *[], int *, const char *, const char **);
 #endif /* OAUTH_SUPPORT */
 

@@ -257,10 +257,6 @@ char *m_maildir (char *);
 char *m_mailpath (char *);
 char *m_name (int);
 int m_rand (unsigned char *, size_t);
-char *m_mktemp(const char *, int *, FILE **);
-char *m_mktemp2(const char *, const char *, int *, FILE **);
-char *m_mktemps(const char *pfx, const char *suffix, int *, FILE **);
-char *get_temp_dir(void);
 
 /*
  * Create a subprocess and redirect our standard output to it.
@@ -558,9 +554,3 @@ void nmh_credentials_free(nmh_creds_t creds);
  *              - 2: read context, don't check nmh version
  */
 int nmh_init(const char *argv0, int read_context);
-
-/*
- * temporary file management
- */
-int m_unlink(const char *);
-void unregister_for_removal(int remove_files);

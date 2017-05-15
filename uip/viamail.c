@@ -12,6 +12,7 @@
 #include <h/tws.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
+#include "../sbr/m_mktemp.h"
 
 #define VIAMAIL_SWITCHES \
     X("to mailpath", 0, TOSW) \

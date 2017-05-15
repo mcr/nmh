@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <h/signals.h>
 #include <h/mts.h>
+#include "../sbr/m_mktemp.h"
 
 #define RCVSTORE_SWITCHES \
     X("create", 0, CRETSW) \

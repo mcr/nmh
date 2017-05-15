@@ -14,6 +14,7 @@
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
+#include "../sbr/m_mktemp.h"
 #include "mhfree.h"
 
 #define MHBUILD_SWITCHES \
