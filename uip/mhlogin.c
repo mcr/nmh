@@ -12,6 +12,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/oauth.h>
+#include "../sbr/lock_file.h"
 
 #define MHLOGIN_SWITCHES \
     X("user username", 0, USERSW) \

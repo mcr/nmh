@@ -17,6 +17,7 @@
 #include <h/signals.h>
 #include <h/utils.h>
 #include <h/mts.h>
+#include "lock_file.h"
 #include "m_mktemp.h"
 
 #ifdef HAVE_SYS_TIME_H

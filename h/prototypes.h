@@ -221,28 +221,6 @@ char *get_term_stringparm(char *capability, long arg1, long arg2);
  */
 int get_term_numcap(char *capability);
 
-/*
- * Lock open/close routines.
- *
- * The lk[f]opendata() functions are designed to open "data" files (anything
- * not a mail spool file) using the locking mechanism configured for data
- * files.  The lk[f]openspool() functions are for opening the mail spool
- * file, which will use the locking algorithm configured for the mail
- * spool.
- *
- * Files opened for reading are locked with a read lock (if possible by
- * the underlying lock mechanism), files opened for writing are locked
- * using an exclusive lock.  The int * argument is used to indicate failure
- * to acquire a lock.
- */
-int lkclosedata(int, const char *);
-int lkclosespool(int, const char *);
-int lkfclosedata(FILE *, const char *);
-int lkfclosespool(FILE *, const char *);
-FILE *lkfopendata(const char *, const char *, int *);
-int lkopendata(const char *, int, mode_t, int *);
-FILE *lkfopenspool(const char *, const char *);
-int lkopenspool(const char *, int, mode_t, int *);
 int m_atoi (char *);
 char *m_backup (const char *);
 int m_convert (struct msgs *, char *);

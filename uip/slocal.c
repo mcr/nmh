@@ -27,6 +27,7 @@
 #include <h/tws.h>
 #include <h/mts.h>
 #include <h/utils.h>
+#include "../sbr/lock_file.h"
 #include "../sbr/m_mktemp.h"
 
 #include <pwd.h>

@@ -22,6 +22,7 @@
  */
 
 #include <h/mh.h>				/* mh internals */
+#include "lock_file.h"
 #include <pwd.h>				/* structure for getpwuid() results */
 
 void

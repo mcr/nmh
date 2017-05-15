@@ -13,6 +13,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
+#include "lock_file.h"
 
 void
 context_save (void)

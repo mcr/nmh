@@ -8,6 +8,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
+#include "lock_file.h"
 
 /*
  * static prototypes

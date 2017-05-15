@@ -24,6 +24,7 @@
 
 #include <h/oauth.h>
 #include <h/utils.h>
+#include "lock_file.h"
 
 #define JSON_TYPE "application/json"
 

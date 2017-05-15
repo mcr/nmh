@@ -8,6 +8,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
+#include "lock_file.h"
 #include "m_mktemp.h"
 
 
