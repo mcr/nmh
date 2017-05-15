@@ -822,8 +822,8 @@ start_test "missing final newline"
 cat >"$expected" <<'EOF'
 Summary: test
 Description: this file does not end with a newline
-At: Sun, 14 May 2017 09:00 -0400
-To: Sun, 14 May 2017 10:00
+At: Sun, 14 May 2017 13:00 +0000
+To: Sun, 14 May 2017 14:00
 EOF
 
 printf %s \
@@ -837,7 +837,7 @@ DTEND:20170514T140000Z
 SUMMARY:test
 DESCRIPTION:this file does not end with a newline
 END:VEVENT
-END:VCALENDAR" | mhical >"$actual"
+END:VCALENDAR" | TZ=UTC mhical >"$actual"
 check "$expected" "$actual"
 
 
