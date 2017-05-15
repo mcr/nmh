@@ -44,6 +44,6 @@ int ctype_identity[257] = {
 
 /* Need to put a symbol in the .c file with NDEBUG so the compilation
  * unit isn't empty. */
-void ctype_checked();
+void ctype_checked(void);
 
 #endif

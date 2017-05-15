@@ -13,7 +13,7 @@
 #include "sbr/icalparse.h"
 
 static char *unfold (char *, size_t *);
-static void destroy_icallex ();
+static void destroy_icallex(void);
 %}
 
 /*
@@ -312,7 +312,7 @@ unfold (char *text, size_t *leng) {
  * with something other than flex.
  */
 static void
-destroy_icallex () {
+destroy_icallex(void) {
 #if defined FLEX_SCANNER  &&  defined YY_FLEX_SUBMINOR_VERSION
     /* Hack:  rely on fact that the the YY_FLEX_SUBMINOR_VERSION
        #define was added to flex (flex.skl v. 2.163) after

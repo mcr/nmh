@@ -319,7 +319,7 @@ m_unlink(const char *pathname) {
  * Remove all registered temporary files.
  */
 void
-remove_registered_files_atexit() {
+remove_registered_files_atexit(void) {
     unregister_for_removal(1);
 }
 

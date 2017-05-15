@@ -17,7 +17,7 @@ char *norm_charmap(char *);
  * Get the current character set
  */
 char *
-get_charset ()
+get_charset(void)
 {
     return norm_charmap(nl_langinfo (CODESET));
 }

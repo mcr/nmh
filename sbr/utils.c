@@ -10,10 +10,10 @@
 #include <fcntl.h>
 
 /* sbr/signals.c */
-extern int setup_signal_handlers();
+extern int setup_signal_handlers(void);
 
 /* sbr/m_mktemp.c */
-extern void remove_registered_files_atexit();
+extern void remove_registered_files_atexit(void);
 
 extern char *mhdocdir;
 

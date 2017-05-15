@@ -240,7 +240,7 @@ set_err_http(mh_oauth_ctx *ctx, const struct curl_ctx *curl_ctx)
 }
 
 static char *
-make_user_agent()
+make_user_agent(void)
 {
     const char *curl = curl_version_info(CURLVERSION_NOW)->version;
     return concat(user_agent, " libcurl/", curl, NULL);

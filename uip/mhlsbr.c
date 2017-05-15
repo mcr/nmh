@@ -302,7 +302,7 @@ static char delim3[] =		/* from forw.c */
     "\n----------------------------------------------------------------------\n\n";
 static char delim4[] = "\n------------------------------\n\n";
 
-static FILE *(*mhl_action) () = (FILE *(*) ()) 0;
+static FILE *(*mhl_action)(char *);
 
 /*
  * prototypes

@@ -84,7 +84,7 @@ SIGNAL2 (int sig, SIGNAL_HANDLER func)
  * For use by nmh_init().
  */
 int
-setup_signal_handlers() {
+setup_signal_handlers(void) {
     /*
      * Catch HUP, INT, QUIT, and TERM so that we can clean up tmp
      * files when the user terminates the process early.  And also a
