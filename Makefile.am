@@ -359,6 +359,7 @@ noinst_HEADERS = \
     mts/smtp/smtp.h \
     sbr/ctype-checked.h \
     sbr/lock_file.h \
+    sbr/m_maildir.h \
     sbr/m_mktemp.h \
     sbr/m_rand.h \
     thirdparty/jsmn/jsmn.h \

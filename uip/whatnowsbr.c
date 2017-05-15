@@ -44,6 +44,7 @@
 #ifdef OAUTH_SUPPORT
 # include <h/oauth.h>
 #endif
+#include "../sbr/m_maildir.h"
 #include "../sbr/m_mktemp.h"
 
 #define WHATNOW_SWITCHES \

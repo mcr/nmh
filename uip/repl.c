@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/mime.h>
 #include <h/utils.h>
+#include "../sbr/m_maildir.h"
 
 #define REPL_SWITCHES \
     X("group", 0, GROUPSW) \

@@ -7,6 +7,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
+#include "../sbr/m_maildir.h"
 
 #define RMM_SWITCHES \
     X("unlink", 0, UNLINKSW) \

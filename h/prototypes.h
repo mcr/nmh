@@ -230,8 +230,6 @@ void m_getfld_state_destroy (m_getfld_state_t *);
 void m_getfld_track_filepos (m_getfld_state_t *, FILE *);
 int m_getfld (m_getfld_state_t *, char[NAMESZ], char *, int *, FILE *);
 int m_gmprot (void);
-char *m_maildir (char *);
-char *m_mailpath (char *);
 char *m_name (int);
 
 /*

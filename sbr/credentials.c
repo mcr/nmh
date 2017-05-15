@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/mts.h>
+#include "m_maildir.h"
 
 struct nmh_creds {
     char *host;		/* Hostname corresponding to credentials */

@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/signals.h>
+#include "../sbr/m_maildir.h"
 #include "../sbr/m_mktemp.h"
 
 #ifndef CYRUS_SASL

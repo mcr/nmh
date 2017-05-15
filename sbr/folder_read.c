@@ -7,6 +7,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
+#include "m_maildir.h"
 
 /* We allocate the `mi' array 1024 elements at a time */
 #define	NUMMSGS  1024

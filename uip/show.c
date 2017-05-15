@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/mime.h>
 #include <h/utils.h>
+#include "../sbr/m_maildir.h"
 
 #define SHOW_SWITCHES \
     X("checkmime", 0, CHECKMIMESW) \

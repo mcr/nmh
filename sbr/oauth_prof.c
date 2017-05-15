@@ -20,6 +20,7 @@
 
 #include <h/oauth.h>
 #include <h/utils.h>
+#include "m_maildir.h"
 
 static const struct mh_oauth_service_info SERVICES[] = {
     /* https://developers.google.com/accounts/docs/OAuth2InstalledApp */

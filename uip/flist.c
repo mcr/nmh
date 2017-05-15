@@ -15,6 +15,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
+#include "../sbr/m_maildir.h"
 
 /*
  * We allocate space to record the names of folders

@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <h/tws.h>
 #include <h/utils.h>
+#include "../sbr/m_maildir.h"
 
 
 #define	IFORMAT	"digest-issue-%s"
