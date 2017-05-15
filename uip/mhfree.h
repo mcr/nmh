@@ -5,6 +5,7 @@
  * complete copyright information.
  */
 
+void free_content(CT ct);
 void free_ctinfo(CT);
 void free_encoding(CT, int);
 void freects_done(int) NORETURN;

@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/mhparse.h>
+#include "mhfree.h"
 
 #define BURST_SWITCHES \
     X("inplace", 0, INPLSW) \

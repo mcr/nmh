@@ -357,7 +357,6 @@ int get_ctinfo (char *, CT, int);
 int params_external (CT, int);
 int open7Bit (CT, char **);
 void close_encoding (CT);
-void free_content (CT);
 char *ct_type_str (int);
 char *ct_subtype_str (int, int);
 int ct_str_type (const char *);

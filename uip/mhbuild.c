@@ -14,6 +14,7 @@
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
+#include "mhfree.h"
 
 #define MHBUILD_SWITCHES \
     X("auto", 0, AUTOSW) \
