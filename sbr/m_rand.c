@@ -11,6 +11,7 @@
 #include <time.h>    /* for time() */
 
 #include <config.h>
+#include "m_rand.h"
 
 #if !HAVE_ARC4RANDOM
 static int seeded = 0;

@@ -7,6 +7,7 @@
  */
 
 #include <h/mh.h>
+#include "m_rand.h"
 #include <sys/time.h>  /* for gettimeofday() */
 
 

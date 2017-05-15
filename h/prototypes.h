@@ -233,7 +233,6 @@ int m_gmprot (void);
 char *m_maildir (char *);
 char *m_mailpath (char *);
 char *m_name (int);
-int m_rand (unsigned char *, size_t);
 
 /*
  * Create a subprocess and redirect our standard output to it.
