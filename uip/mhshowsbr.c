@@ -98,7 +98,7 @@ static struct param_comp_list *dispo_pc_list = NULL;
  */
 
 void
-show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly)
+show_all_messages(CT *cts, int concat, int textonly, int inlineonly)
 {
     CT ct, *ctp;
     struct format *hfmt, *mfmt;
@@ -129,7 +129,7 @@ show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly)
 	if (type_ok (ct, 1)) {
 	    if (headersw) output_header(ct, hfmt);
 
-	    show_single_message (ct, formsw, concatsw, textonly, inlineonly,
+	    show_single_message (ct, formsw, concat, textonly, inlineonly,
 				 mfmt);
 	}
     }

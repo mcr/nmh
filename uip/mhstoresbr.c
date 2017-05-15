@@ -10,9 +10,11 @@
 #include <h/md5.h>
 #include <h/mts.h>
 #include <h/tws.h>
+#include <h/fmt_scan.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include "mhshowsbr.h"
 #include "../sbr/m_mktemp.h"
 
 enum clobber_policy_t {

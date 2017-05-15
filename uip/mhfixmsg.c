@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include <h/fmt_scan.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
@@ -13,6 +14,7 @@
 #include "../sbr/m_mktemp.h"
 #include "mhfree.h"
 #include "mhoutsbr.h"
+#include "mhshowsbr.h"
 #include <fcntl.h>
 
 #define MHFIXMSG_SWITCHES \
