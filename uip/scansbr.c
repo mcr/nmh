@@ -336,7 +336,7 @@ finished:
 
 /* The following two functions allow access to the global gstate above. */
 void
-scan_finished () {
+scan_finished(void) {
     m_getfld_state_destroy (&gstate);
 }
 

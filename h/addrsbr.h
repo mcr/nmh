@@ -42,7 +42,7 @@ int ismymbox(struct mailname *);
  * Enable Email Address Internationalization, which requires
  * support of 8-bit addresses.
  */
-void enable_eai();
+void enable_eai(void);
 
 /*
  * Parse an address header, and return a sequence of email addresses.

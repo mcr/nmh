@@ -228,7 +228,7 @@ m_mktemps(
 
 
 char *
-get_temp_dir()
+get_temp_dir(void)
 {
     /* Ignore envvars if we are setuid */
     if ((getuid()==geteuid()) && (getgid()==getegid())) {

@@ -116,7 +116,7 @@ char *new_fs (char *form, char *format, char *default_fs);
  * Free memory allocated by new_fs().  It allocates to a static so
  * no argument is necessary.
  */
-void free_fs ();
+void free_fs(void);
 
 /*
  * Compile a format string into a set of format instructions.  Arguments are:

@@ -16,7 +16,7 @@ struct nmh_creds {
 };
 
 void
-init_credentials_file () {
+init_credentials_file(void) {
     if (credentials_file == NULL) {
         char *cred_style = context_find ("credentials");
 

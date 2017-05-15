@@ -260,7 +260,7 @@ int m_rand (unsigned char *, size_t);
 char *m_mktemp(const char *, int *, FILE **);
 char *m_mktemp2(const char *, const char *, int *, FILE **);
 char *m_mktemps(const char *pfx, const char *suffix, int *, FILE **);
-char *get_temp_dir();
+char *get_temp_dir(void);
 
 /*
  * Create a subprocess and redirect our standard output to it.
@@ -340,7 +340,7 @@ void ruserpass (const char *host, char **aname, char **apass, int flags);
 
 int remdir (char *);
 void scan_detect_mbox_style (FILE *);
-void scan_finished ();
+void scan_finished(void);
 void scan_reset_m_getfld_state ();
 int seq_addmsg (struct msgs *, char *, int, int, int);
 int seq_addsel (struct msgs *, char *, int, int);
@@ -507,7 +507,7 @@ void hexify (const unsigned char *, size_t, char **);
 /*
  * credentials management
  */
-void init_credentials_file ();
+void init_credentials_file(void);
 
 /*
  * Allocate and return a credentials structure.  The credentials structure

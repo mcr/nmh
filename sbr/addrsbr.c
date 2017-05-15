@@ -77,7 +77,7 @@ static char adr[BUFSIZ];
 static int eai = 0;
 
 void
-enable_eai() {
+enable_eai(void) {
     eai = 1;
 }
 
