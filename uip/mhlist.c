@@ -15,6 +15,7 @@
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
+#include "mhfree.h"
 
 #define MHLIST_SWITCHES \
     X("check", 0, CHECKSW) \
@@ -81,10 +82,6 @@ CT parse_mime (char *);
 int part_ok (CT);
 int type_ok (CT, int);
 void flush_errors (void);
-
-/* mhfree.c */
-extern CT *cts;
-void freects_done (int) NORETURN;
 
 /*
  * static prototypes

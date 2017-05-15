@@ -10,16 +10,10 @@
 #include <h/utils.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
+#include "mhfree.h"
 
 /* The list of top-level contents to display */
 CT *cts = NULL;
-
-/*
- * prototypes
- */
-void free_ctinfo (CT);
-void free_encoding (CT, int);
-void freects_done (int);
 
 /*
  * static prototypes

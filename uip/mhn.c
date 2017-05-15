@@ -15,6 +15,7 @@
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
+#include "mhfree.h"
 
 #define MHN_SWITCHES \
     X("auto", 0, AUTOSW) \
@@ -119,10 +120,6 @@ void flush_errors (void);
 
 /* mhcachesbr.c */
 void cache_all_messages (CT *);
-
-/* mhfree.c */
-extern CT *cts;
-void freects_done (int) NORETURN;
 
 /*
  * static prototypes

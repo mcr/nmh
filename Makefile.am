@@ -359,6 +359,7 @@ noinst_HEADERS = \
     mts/smtp/smtp.h \
     sbr/ctype-checked.h \
     thirdparty/jsmn/jsmn.h \
+    uip/mhfree.h \
     #
 
 ##

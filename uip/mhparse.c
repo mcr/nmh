@@ -13,6 +13,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include "mhfree.h"
 #ifdef HAVE_ICONV
 # include <iconv.h>
 #endif /* HAVE_ICONV */
@@ -114,9 +115,6 @@ int find_cache (CT, int, int *, char *, char *, int);
 int part_ok (CT);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
-
-/* mhfree.c */
-void free_encoding (CT, int);
 
 /*
  * static prototypes

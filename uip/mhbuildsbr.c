@@ -21,6 +21,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include "mhfree.h"
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -58,12 +59,6 @@ void content_error (char *, CT, char *, ...);
 
 /* mhcachesbr.c */
 int find_cache (CT, int, int *, char *, char *, int);
-
-/* mhfree.c */
-extern CT *cts;
-void freects_done (int) NORETURN;
-void free_ctinfo (CT);
-void free_encoding (CT, int);
 
 /*
  * static prototypes

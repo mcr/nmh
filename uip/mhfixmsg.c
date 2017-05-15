@@ -10,6 +10,7 @@
 #include <h/mhparse.h>
 #include <h/utils.h>
 #include <h/signals.h>
+#include "mhfree.h"
 #include <fcntl.h>
 
 #define MHFIXMSG_SWITCHES \
@@ -66,9 +67,6 @@ int output_message_fp (CT, FILE *, char *);
 
 /* mhmisc.c */
 void flush_errors (void);
-
-/* mhfree.c */
-extern CT *cts;
 
 /*
  * static prototypes
