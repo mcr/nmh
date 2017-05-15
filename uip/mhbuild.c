@@ -16,6 +16,7 @@
 #include <h/utils.h>
 #include "../sbr/m_mktemp.h"
 #include "mhfree.h"
+#include "mhoutsbr.h"
 
 #define MHBUILD_SWITCHES \
     X("auto", 0, AUTOSW) \
@@ -92,9 +93,6 @@ static char outfile[BUFSIZ];
 static int unlink_outfile = 0;
 
 static void unlink_done (int) NORETURN;
-
-/* mhbuildsbr.c */
-int output_message_fp (CT, FILE *, char*);
 
 
 int

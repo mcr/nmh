@@ -14,12 +14,8 @@
 #include <h/tws.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
+#include "mhoutsbr.h"
 
-
-/*
- * prototypes
- */
-int output_message_fp (CT, FILE *, char *);
 
 /*
  * static prototypes

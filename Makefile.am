@@ -361,6 +361,7 @@ noinst_HEADERS = \
     sbr/m_mktemp.h \
     thirdparty/jsmn/jsmn.h \
     uip/mhfree.h \
+    uip/mhoutsbr.h \
     #
 
 ##
