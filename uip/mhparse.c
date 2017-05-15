@@ -13,6 +13,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include <h/mhcachesbr.h>
 #include "../sbr/m_mktemp.h"
 #include "mhfree.h"
 #ifdef HAVE_ICONV
@@ -21,10 +22,6 @@
 
 
 extern int debugsw;
-
-/* cache policies */
-extern int rcachesw;	/* mhcachesbr.c */
-extern int wcachesw;	/* mhcachesbr.c */
 
 int checksw = 0;	/* check Content-MD5 field */
 
@@ -108,9 +105,6 @@ static struct k2v EncodingType[] = {
     { NULL,			0 },
 };
 
-
-/* mhcachesbr.c */
-int find_cache (CT, int, int *, char *, char *, int);
 
 /* mhmisc.c */
 int part_ok (CT);

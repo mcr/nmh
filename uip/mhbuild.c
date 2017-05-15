@@ -71,12 +71,6 @@ DEFINE_SWITCH_ENUM(MIMEENCODING);
 DEFINE_SWITCH_ARRAY(MIMEENCODING, encodingswitches);
 #undef X
 
-/* mhcachesbr.c */
-extern int rcachesw;
-extern int wcachesw;
-extern char *cache_public;
-extern char *cache_private;
-
 int debugsw = 0;
 
 int listsw   = 0;
@@ -166,9 +160,9 @@ main (int argc, char **argv)
 	    do_cache: ;
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
-		switch (*icachesw = smatch (cp, caches)) {
+		switch (*icachesw = smatch (cp, cache_policy)) {
 		case AMBIGSW:
-		    ambigsw (cp, caches);
+		    ambigsw (cp, cache_policy);
 		    done (1);
 		case UNKWNSW:
 		    adios (NULL, "%s unknown", cp);

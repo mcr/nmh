@@ -14,7 +14,14 @@
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(CACHE);
 #undef X
+extern struct swit *cache_policy;
 
-#define X(sw, minchars, id) { sw, minchars, id },
-DEFINE_SWITCH_ARRAY(CACHE, caches);
-#undef X
+void cache_all_messages(CT *cts);
+int find_cache(CT ct, int policy, int *writing, char *id,
+    char *buffer, int buflen);
+
+extern int rcachesw;
+extern int wcachesw;
+
+extern char *cache_public;
+extern char *cache_private;

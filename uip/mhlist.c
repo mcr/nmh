@@ -49,12 +49,6 @@ DEFINE_SWITCH_ARRAY(MHLIST, switches);
 #undef X
 
 
-/* mhcachesbr.c */
-extern int rcachesw;
-extern int wcachesw;
-extern char *cache_public;
-extern char *cache_private;
-
 /* mhmisc.c */
 extern int npart;
 extern int ntype;
@@ -137,9 +131,9 @@ main (int argc, char **argv)
 do_cache:
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
-		switch (*icachesw = smatch (cp, caches)) {
+		switch (*icachesw = smatch (cp, cache_policy)) {
 		case AMBIGSW:
-		    ambigsw (cp, caches);
+		    ambigsw (cp, cache_policy);
 		    done (1);
 		case UNKWNSW:
 		    adios (NULL, "%s unknown", cp);

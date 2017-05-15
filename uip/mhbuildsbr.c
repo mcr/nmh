@@ -36,10 +36,6 @@ extern int listsw;
 extern int rfc934sw;
 extern int contentidsw;
 
-/* cache policies */
-extern int rcachesw;	/* mhcachesbr.c */
-extern int wcachesw;	/* mhcachesbr.c */
-
 static char prefix[] = "----- =_aaaaaaaaaa";
 
 struct attach_list {

@@ -21,6 +21,11 @@
 #endif
 #include <time.h>
 
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(CACHE, caches);
+#undef X
+struct swit *cache_policy = caches;
+
 extern int debugsw;
 
 /* cache policies */
@@ -40,12 +45,6 @@ int part_ok (CT);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
-
-/*
- * prototypes
- */
-void cache_all_messages (CT *);
-int find_cache (CT, int, int *, char *, char *, int);
 
 /*
  * static prototypes
