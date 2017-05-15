@@ -59,7 +59,6 @@ char *cpytrim (const char *);
 char *rtrim (char *);
 int decode_rfc2047 (char *, char *, size_t);
 void discard (FILE *);
-char *upcase (const char *);
 
 /*
  * Decode two characters into their quoted-printable representation.

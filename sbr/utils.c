@@ -546,18 +546,6 @@ nmh_version_changed (int older) {
 }
 
 
-/* Returns copy of argument str with all characters converted to upper
-   case, and trimmed whitespace (see cpytrim()) . */
-char *
-upcase (const char *str) {
-    char *up = cpytrim (str);
-
-    to_upper(up);
-
-    return up;
-}
-
-
 /*
  * Scan for any 8-bit characters.  Return 1 if they exist.
  *
