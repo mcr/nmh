@@ -16,6 +16,7 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 #include "mhfree.h"
+#include "mhshowsbr.h"
 
 #define MHN_SWITCHES \
     X("auto", 0, AUTOSW) \
@@ -71,12 +72,6 @@ DEFINE_SWITCH_ENUM(MHN);
 DEFINE_SWITCH_ARRAY(MHN, switches);
 #undef X
 
-
-/* mhshowsbr.c */
-extern char *progsw;
-extern int nolist;
-extern int nomore;	/* flags for moreproc/header display */
-extern char *formsw;
 
 /* mhmisc.c */
 extern int npart;

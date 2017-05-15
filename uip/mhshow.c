@@ -16,6 +16,7 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 #include "mhfree.h"
+#include "mhshowsbr.h"
 
 #define MHSHOW_SWITCHES \
     X("check", 0, CHECKSW) \
@@ -61,15 +62,6 @@ DEFINE_SWITCH_ENUM(MHSHOW);
 DEFINE_SWITCH_ARRAY(MHSHOW, switches);
 #undef X
 
-
-/* mhshowsbr.c */
-extern char *progsw;
-extern int nomore;	/* flags for moreproc/header display */
-extern char *formsw;
-extern char *folder;
-extern char *headerform;
-extern char *markerform;
-extern int headersw;
 
 /* mhmisc.c */
 extern int npart;

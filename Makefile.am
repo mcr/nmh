@@ -362,6 +362,7 @@ noinst_HEADERS = \
     thirdparty/jsmn/jsmn.h \
     uip/mhfree.h \
     uip/mhoutsbr.h \
+    uip/mhshowsbr.h \
     #
 
 ##
