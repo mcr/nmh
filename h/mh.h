@@ -51,15 +51,6 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 /* FENDNULL fends off NULL by giving an empty string instead. */
 #define FENDNULL(s) ((s) ? (s) : "")
 
-/* PLURALS gives a pointer to the string "s" when n isn't 1, and to the
- * empty string "" when it is.  Suitable for obtaining the plural `s'
- * used for English nouns.  It treats -1 as plural, as does GNU gettext.
- * Having output vary for plurals is annoying for those writing parsers;
- * better to phrase the output such that no test is needed, e.g.
- * "messages found: 42". */
-extern const char plurals[];
-#define PLURALS(n) (plurals + ((n) == 1))
-
 /*
  * char array that keeps track of size in both bytes and characters
  * Usage note:
