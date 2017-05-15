@@ -180,13 +180,19 @@ static struct nexus *parse(void);
 static struct nexus *nexp1(void);
 static struct nexus *nexp2(void);
 static struct nexus *nexp3(void);
-static struct nexus *newnexus(int (*)());
+static struct nexus *newnexus(int (*)(struct nexus *n,
+    FILE *fp, int msgnum, long start, long stop));
 
-static int ORaction();
-static int ANDaction();
-static int NOTaction();
-static int GREPaction();
-static int TWSaction();
+static int ORaction(struct nexus *n, FILE *fp, int msgnum,
+    long start, long stop);
+static int ANDaction(struct nexus *n, FILE *fp, int msgnum,
+    long start, long stop);
+static int NOTaction(struct nexus *n, FILE *fp, int msgnum,
+    long start, long stop);
+static int GREPaction(struct nexus *n, FILE *fp, int msgnum,
+    long start, long stop);
+static int TWSaction(struct nexus *n, FILE *fp, int msgnum,
+    long start, long stop);
 
 
 int
@@ -453,7 +459,8 @@ nexp3 (void)
 
 
 static struct nexus *
-newnexus (int (*action)())
+newnexus(int (*action)(struct nexus *n, FILE *fp, int msgnum,
+    long start, long stop))
 {
     struct nexus *p;
 
@@ -462,15 +469,6 @@ newnexus (int (*action)())
     return p;
 }
 
-
-#define	args(a)	a, fp, msgnum, start, stop
-#define	params	args (n)
-#define	plist	\
-	    struct nexus  *n; \
-	    FILE *fp; \
-	    int	msgnum; \
-	    long    start, \
-		    stop;
 
 int
 pmatches (FILE *fp, int msgnum, long start, long stop, int debug)
@@ -481,7 +479,7 @@ pmatches (FILE *fp, int msgnum, long start, long stop, int debug)
     if (!talked++ && debug)
 	PRaction (head, 0);
 
-    return (*head->n_action) (args (head));
+    return (*head->n_action)(head, fp, msgnum, start, stop);
 }
 
 
@@ -527,30 +525,27 @@ PRaction (struct nexus *n, int level)
 
 
 static int
-ORaction (params)
-plist
+ORaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 {
-    if ((*n->n_L_child->n_action) (args (n->n_L_child)))
+    if ((*n->n_L_child->n_action)(n->n_L_child, fp, msgnum, start, stop))
 	return 1;
-    return (*n->n_R_child->n_action) (args (n->n_R_child));
+    return (*n->n_R_child->n_action)(n->n_R_child, fp, msgnum, start, stop);
 }
 
 
 static int
-ANDaction (params)
-plist
+ANDaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 {
-    if (!(*n->n_L_child->n_action) (args (n->n_L_child)))
+    if (!(*n->n_L_child->n_action)(n->n_L_child, fp, msgnum, start, stop))
 	return 0;
-    return (*n->n_R_child->n_action) (args (n->n_R_child));
+    return (*n->n_R_child->n_action)(n->n_R_child, fp, msgnum, start, stop);
 }
 
 
 static int
-NOTaction (params)
-plist
+NOTaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 {
-    return (!(*n->n_L_child->n_action) (args (n->n_L_child)));
+    return (!(*n->n_L_child->n_action)(n->n_L_child, fp, msgnum, start, stop));
 }
 
 
@@ -645,8 +640,7 @@ cerror: ;
 
 
 static int
-GREPaction (params)
-plist
+GREPaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 {
     int c, body, lf;
     long pos = start;
@@ -925,8 +919,7 @@ tws_special (char *ap)
 
 
 static int
-TWSaction (params)
-plist
+TWSaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 {
     int state;
     char *bp;
