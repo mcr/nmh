@@ -17,3 +17,4 @@ typedef void (*SIGNAL_HANDLER)(int);
  */
 SIGNAL_HANDLER SIGNAL (int, SIGNAL_HANDLER);
 SIGNAL_HANDLER SIGNAL2 (int, SIGNAL_HANDLER);
+int setup_signal_handlers(void);
