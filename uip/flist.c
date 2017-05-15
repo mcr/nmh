@@ -89,17 +89,17 @@ static char *nmhdir;		/* base nmh mail directory    */
 typedef int (*qsort_comp) (const void *, const void *);
 
 /*
- * prototypes
+ * static prototypes
  */
-int CompareFolders(struct Folder *, struct Folder *);
-void GetFolderOrder(void);
-void ScanFolders(void);
-int AddFolder(char *, int);
-void BuildFolderList(char *, int);
-void BuildFolderListRecurse(char *, struct stat *, int);
-void PrintFolders(void);
-void AllocFolders(struct Folder **, int *, int);
-int AssignPriority(char *);
+static int CompareFolders(struct Folder *, struct Folder *);
+static void GetFolderOrder(void);
+static void ScanFolders(void);
+static int AddFolder(char *, int);
+static void BuildFolderList(char *, int);
+static void BuildFolderListRecurse(char *, struct stat *, int);
+static void PrintFolders(void);
+static void AllocFolders(struct Folder **, int *, int);
+static int AssignPriority(char *);
 static void do_readonly_folders(void);
 
 
@@ -253,7 +253,7 @@ main(int argc, char **argv)
  * how to sort folders for output.
  */
 
-void
+static void
 GetFolderOrder(void)
 {
     char *p, *s;
@@ -285,7 +285,7 @@ GetFolderOrder(void)
  * Scan all the necessary folders
  */
 
-void
+static void
 ScanFolders(void)
 {
     int i;
@@ -334,7 +334,7 @@ ScanFolders(void)
  * the top of our search tree.
  */
 
-void
+static void
 BuildFolderList(char *dirName, int searchdepth)
 {
     struct stat st;
@@ -365,7 +365,7 @@ BuildFolderList(char *dirName, int searchdepth)
  * Recursive building of folder list
  */
 
-void
+static void
 BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
 {
     char *base, name[PATH_MAX];
@@ -437,7 +437,7 @@ BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
  * messages and the number of messages in each sequence.
  */
 
-int
+static int
 AddFolder(char *name, int force)
 {
     unsigned int i;
@@ -515,7 +515,7 @@ AddFolder(char *name, int force)
  * Print the folder/sequence information
  */
 
-void
+static void
 PrintFolders(void)
 {
     char tmpname[BUFSIZ];
@@ -594,7 +594,7 @@ PrintFolders(void)
  * Put them in priority order.
  */
 
-int
+static int
 CompareFolders(struct Folder *f1, struct Folder *f2)
 {
     if (!alphaOrder && f1->priority != f2->priority)
@@ -606,7 +606,7 @@ CompareFolders(struct Folder *f1, struct Folder *f2)
  * Make sure we have at least n folders allocated.
  */
 
-void
+static void
 AllocFolders(struct Folder **f, int *nfa, int n)
 {
     if (n <= *nfa)
@@ -624,7 +624,7 @@ AllocFolders(struct Folder **f, int *nfa, int n)
  * Return the priority for a name.  The highest comes from an exact match.
  * After that, the longest match (then first) assigns the priority.
  */
-int
+static int
 AssignPriority(char *name)
 {
     int i, ol, nl;
