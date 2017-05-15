@@ -543,14 +543,3 @@ const char *nmh_cred_get_password(nmh_creds_t creds);
  * Free an allocated nmh_creds structure.
  */
 void nmh_credentials_free(nmh_creds_t creds);
-
-/*
- * program initialization
- *
- * argv0        - argv[0], presumably the program name
- * read_context - 0: don't read context
- *              - 1: read context, check nmh version, and issue warning message
- *                   if non-existent or old
- *              - 2: read context, don't check nmh version
- */
-int nmh_init(const char *argv0, int read_context);

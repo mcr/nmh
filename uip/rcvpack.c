@@ -10,6 +10,7 @@
 #include <h/rcvmail.h>
 #include <h/tws.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 #define RCVPACK_SWITCHES \
     X("mbox", 0, MBOXSW) \

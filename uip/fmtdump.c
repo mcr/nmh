@@ -9,6 +9,7 @@
 #include <h/fmt_scan.h>
 #include <h/fmt_compile.h>
 #include <h/scansbr.h>
+#include <h/utils.h>
 
 #define FMTDUMP_SWITCHES \
     X("form formatfile", 0, FORMSW) \

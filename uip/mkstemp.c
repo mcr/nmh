@@ -15,8 +15,11 @@
 #endif /* HAVE_CONFIG_H */
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
+
+#include <h/utils.h>
 
 #if ! defined HAVE_MKSTEMPS
 #   define HAVE_MKSTEMPS 0
