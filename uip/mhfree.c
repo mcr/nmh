@@ -17,7 +17,6 @@ CT *cts = NULL;
 /*
  * prototypes
  */
-void free_header (CT);
 void free_ctinfo (CT);
 void free_encoding (CT, int);
 void freects_done (int);
@@ -25,6 +24,7 @@ void freects_done (int);
 /*
  * static prototypes
  */
+static void free_header (CT);
 static void free_text (CT);
 static void free_multi (CT);
 static void free_partial (CT);
@@ -124,7 +124,7 @@ free_content (CT ct)
  * for this content.
  */
 
-void
+static void
 free_header (CT ct)
 {
     HF hp1, hp2;
