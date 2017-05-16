@@ -7,6 +7,7 @@
  */
 
 #include <h/mh.h>
+#include "unquote.h"
 
 /*
  * Remove quotes (and handle escape strings) from RFC 5322 quoted-strings.

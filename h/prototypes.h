@@ -345,22 +345,6 @@ int ssequal (const char *, const char *);
 int stringdex (char *, char *);
 char *trimcpy (char *);
 
-/*
- * Remove quotes and quoted-pair sequences from RFC-5322 atoms.
- *
- * Currently the actual algorithm is simpler than it technically should
- * be: any quotes are simply eaten, unless they're preceded by the escape
- * character (\).  This seems to be sufficient for our needs for now.
- *
- * Arguments:
- *
- * input	- The input string
- * output	- The output string; is assumed to have at least as much
- *		  room as the input string.  At worst the output string will
- *		  be the same size as the input string; it might be smaller.
- *
- */
-void unquote_string(const char *input, char *output);
 int uprf (const char *, const char *);
 int vfgets (FILE *, char **);
 

@@ -14,6 +14,7 @@
 #include <h/tws.h>
 #include <h/fmt_compile.h>
 #include <h/utils.h>
+#include "unquote.h"
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>

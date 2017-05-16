@@ -9,6 +9,7 @@
 #include <h/mhparse.h>
 #include <h/addrsbr.h>
 #include <h/utils.h>
+#include "unquote.h"
 
 /*
  * List of headers that contain addresses and as a result require special

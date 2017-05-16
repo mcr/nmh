@@ -10,6 +10,7 @@
 #include <h/fmt_scan.h>
 #include "h/tws.h"
 #include "h/utils.h"
+#include "unquote.h"
 
 /*
  * This doesn't try to support all of the myriad date-time formats
