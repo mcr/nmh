@@ -1002,7 +1002,6 @@ sbr_libmh_a_SOURCES = \
     sbr/mime_type.c \
     sbr/mts.c \
     sbr/netsec.c \
-    sbr/norm_charmap.c \
     sbr/oauth.c \
     sbr/oauth_prof.c \
     sbr/path.c \
