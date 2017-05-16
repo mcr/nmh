@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/tws.h>
+#include "mime_type.h"
 
 #ifdef MIMETYPEPROC
 static char *get_file_info(const char *, const char *);

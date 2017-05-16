@@ -24,6 +24,7 @@
 #include <h/utils.h>
 #include "../sbr/m_mktemp.h"
 #include "../sbr/message_id.h"
+#include "../sbr/mime_type.h"
 #include "mhfree.h"
 #include "mhshowsbr.h"
 

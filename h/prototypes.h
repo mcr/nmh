@@ -235,26 +235,6 @@ char *m_name (int);
 void m_unknown(m_getfld_state_t *, FILE *);
 
 /*
- * Return a MIME content-type string for the specified file.
- *
- * If the system supports it, will use the "file" command to determine
- * the appropriate content-type.  Otherwise it will try to determine the
- * content-type from the suffix.  If that fails, the file will be scanned
- * and either assigned a MIME type of text/plain or application/octet-stream
- * depending if binary content is present.
- *
- * Arguments:
- *
- * filename	- The name of the file to determine the MIME type of.
- *
- * Returns a pointer to a content-type string (which may include MIME
- * parameters, such as charset).  Returns a NULL if it cannot determine
- * the MIME type of the file.  Returns allocated storage that must be
- * free'd.
- */
-char *mime_type(const char *filename);
-
-/*
  * Clear the screen, using the appropriate entry from the terminfo database
  */
 void nmh_clear_screen(void);

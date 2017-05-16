@@ -46,6 +46,7 @@
 #endif
 #include "../sbr/m_maildir.h"
 #include "../sbr/m_mktemp.h"
+#include "../sbr/mime_type.h"
 
 #define WHATNOW_SWITCHES \
     X("draftfolder +folder", 0, DFOLDSW) \

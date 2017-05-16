@@ -365,6 +365,7 @@ noinst_HEADERS = \
     sbr/m_rand.h \
     sbr/makedir.h \
     sbr/message_id.h \
+    sbr/mime_type.h \
     thirdparty/jsmn/jsmn.h \
     uip/mhfree.h \
     uip/mhoutsbr.h \
