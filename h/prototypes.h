@@ -233,7 +233,6 @@ int m_gmprot (void);
 char *m_name (int);
 
 void m_unknown(m_getfld_state_t *, FILE *);
-char *message_id (time_t, int);
 
 /*
  * Return a MIME content-type string for the specified file.

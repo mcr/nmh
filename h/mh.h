@@ -432,13 +432,6 @@ extern char *defpath;		/* pathname of user's profile      */
 extern char *ctxpath;		/* pathname of user's context      */
 extern struct node *m_defs;	/* list of profile/context entries */
 
-/* What style to use for generated Message-ID and Content-ID header
-   fields.  The localname style is pid.time@localname, where time is
-   in seconds.  The random style replaces the localname with some
-   (pseudo)random bytes and uses microsecond-resolution time. */
-int save_message_id_style (const char *);
-char *message_id (time_t, int);
-
 /*
  * These standard strings are defined in config.c.  They are the
  * only system-dependent parameters in nmh, and thus by redefining

@@ -364,6 +364,7 @@ noinst_HEADERS = \
     sbr/m_popen.h \
     sbr/m_rand.h \
     sbr/makedir.h \
+    sbr/message_id.h \
     thirdparty/jsmn/jsmn.h \
     uip/mhfree.h \
     uip/mhoutsbr.h \

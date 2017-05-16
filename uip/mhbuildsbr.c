@@ -23,6 +23,7 @@
 #include <h/mhparse.h>
 #include <h/utils.h>
 #include "../sbr/m_mktemp.h"
+#include "../sbr/message_id.h"
 #include "mhfree.h"
 #include "mhshowsbr.h"
 
