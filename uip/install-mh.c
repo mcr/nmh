@@ -8,6 +8,7 @@
 #include <h/mh.h>				/* mh internals */
 #include <h/utils.h>
 #include "../sbr/m_maildir.h"
+#include "../sbr/makedir.h"
 #include <pwd.h>				/* structure for getpwuid() results */
 
 #define INSTALLMH_SWITCHES \

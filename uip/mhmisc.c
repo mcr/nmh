@@ -9,6 +9,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include "../sbr/makedir.h"
 
 extern int debugsw;
 

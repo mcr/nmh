@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include "makedir.h"
 #include <sys/file.h>
 
 int

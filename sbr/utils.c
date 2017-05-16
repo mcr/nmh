@@ -9,6 +9,7 @@
 #include <h/utils.h>
 #include <h/signals.h>
 #include "m_mktemp.h"
+#include "makedir.h"
 #include <fcntl.h>
 
 extern char *mhdocdir;
