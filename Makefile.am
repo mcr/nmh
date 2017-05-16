@@ -361,6 +361,7 @@ noinst_HEADERS = \
     sbr/lock_file.h \
     sbr/m_maildir.h \
     sbr/m_mktemp.h \
+    sbr/m_popen.h \
     sbr/m_rand.h \
     thirdparty/jsmn/jsmn.h \
     uip/mhfree.h \
