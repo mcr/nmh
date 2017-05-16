@@ -10,7 +10,7 @@
 #include <string.h>
 #include <langinfo.h>
 
-static char *norm_charmap(char *name);
+static const char *norm_charmap(char *name);
 
 /*
  * Get the current character set
@@ -18,7 +18,7 @@ static char *norm_charmap(char *name);
 char *
 get_charset(void)
 {
-    return norm_charmap(nl_langinfo (CODESET));
+    return (char *)norm_charmap(nl_langinfo(CODESET));
 }
 
 
@@ -105,87 +105,80 @@ write_charset_8bit (void)
  *   http://www.cl.cam.ac.uk/~mgk25/ucs/norm_charmap.c
  */
 
-#define digit(x) ((x) >= '0' && (x) <= '9')
-
-static char buf[16];
-
-static char *
-norm_charmap(char *name)
+static const char *norm_charmap(char *name)
 {
-  char *p;
-  
-  if (!name)
+    static const char *correct[] = {
+        "UTF-8",
+        "US-ASCII",
+        NULL
+    }, **cor;
+    static struct {
+        const char *alias;
+        const char *name;
+    } *ali, aliases[] = {
+        /* Names for US-ASCII. */
+        { "ANSI_X3.4-1968", "US-ASCII" }, /* LC_ALL=C. */
+        { "ASCII", "US-ASCII" },
+        { "646", "US-ASCII" },
+        { "ISO646", "US-ASCII" },
+        { "ISO_646.IRV", "US-ASCII" },
+        /* Case differs. */
+        { "BIG5", "Big5" },
+        { "BIG5HKSCS", "Big5HKSCS" },
+        /* Names for ISO-8859-11. */
+        { "TIS-620", "ISO-8859-11" },
+        { "TIS620.2533", "ISO-8859-11" },
+        { NULL }
+    };
+    static struct {
+        const char *substr;
+        const char *name;
+    } *sub, substrs[] = {
+        { "8859-1", "ISO-8859-1" },
+        { "8859-2", "ISO-8859-2" },
+        { "8859-3", "ISO-8859-3" },
+        { "8859-4", "ISO-8859-4" },
+        { "8859-5", "ISO-8859-5" },
+        { "8859-6", "ISO-8859-6" },
+        { "8859-7", "ISO-8859-7" },
+        { "8859-8", "ISO-8859-8" },
+        { "8859-9", "ISO-8859-9" },
+        { "8859-10", "ISO-8859-10" },
+        { "8859-11", "ISO-8859-11" },
+        /* 12, Latin/Devanagari, not completed. */
+        { "8859-13", "ISO-8859-13" },
+        { "8859-14", "ISO-8859-14" },
+        { "8859-15", "ISO-8859-15" },
+        { "8859-16", "ISO-8859-16" },
+        { "CP1200", "WINDOWS-1200" },
+        { "CP1201", "WINDOWS-1201" },
+        { "CP1250", "WINDOWS-1250" },
+        { "CP1251", "WINDOWS-1251" },
+        { "CP1252", "WINDOWS-1252" },
+        { "CP1253", "WINDOWS-1253" },
+        { "CP1254", "WINDOWS-1254" },
+        { "CP1255", "WINDOWS-1255" },
+        { "CP1256", "WINDOWS-1256" },
+        { "CP1257", "WINDOWS-1257" },
+        { "CP1258", "WINDOWS-1258" },
+        { NULL }
+    };
+
+    if (!name)
+        return name;
+
+    /* Avoid lots of tests for common correct names. */
+    for (cor = correct; *cor; cor++)
+        if (!strcmp(name, *cor))
+            return name;
+
+    for (ali = aliases; ali->alias; ali++)
+        if (!strcmp(name, ali->alias))
+            return ali->name;
+
+    for (sub = substrs; sub->substr; sub++)
+        if (strstr(name, sub->substr))
+            return sub->name;
+
     return name;
-  
-  /* Many need no remapping, but they are listed here so you
-   * can see what output to expect, and modify for your needs
-   * as necessary. */
-  if (!strcmp(name, "UTF-8"))
-    return "UTF-8";
-  if (!strcmp(name, "EUC-JP"))
-    return "EUC-JP";
-  if (!strcmp(name, "EUC-KR"))
-    return "EUC-KR";
-  if (!strcmp(name, "EUC-TW"))
-    return "EUC-TW";
-  if (!strcmp(name, "KOI8-R"))
-    return "KOI8-R";
-  if (!strcmp(name, "KOI8-U"))
-    return "KOI8-U";
-  if (!strcmp(name, "GBK"))
-    return "GBK";
-  if (!strcmp(name, "GB2312"))
-    return "GB2312";
-  if (!strcmp(name, "GB18030"))
-    return "GB18030";
-  if (!strcmp(name, "VSCII"))
-    return "VSCII";
-  
-  /* ASCII comes in many names */
-  if (!strcmp(name, "ASCII") ||
-      !strcmp(name, "US-ASCII") ||
-      !strcmp(name, "ANSI_X3.4-1968") ||
-      !strcmp(name, "646") ||
-      !strcmp(name, "ISO646") ||
-      !strcmp(name, "ISO_646.IRV"))
-    return "US-ASCII";
-
-  /* ISO 8859 will be converted to "ISO-8859-x" */
-  if ((p = strstr(name, "8859-"))) {
-    memcpy(buf, "ISO-8859-\0\0", 12);
-    p += 5;
-    if (digit(*p)) {
-      buf[9] = *p++;
-      if (digit(*p)) buf[10] = *p++;
-      return buf;
-    }
-  }
-
-  /* Windows code pages will be converted to "WINDOWS-12xx" */
-  if ((p = strstr(name, "CP12"))) {
-    memcpy(buf, "WINDOWS-12\0\0", 13);
-    p += 4;
-    if (digit(*p)) {
-      buf[10] = *p++;
-      if (digit(*p)) buf[11] = *p++;
-      return buf;
-    }
-  }
-
-  /* TIS-620 comes in at least the following two forms */
-  if (!strcmp(name, "TIS-620") ||
-      !strcmp(name, "TIS620.2533"))
-    return "ISO-8859-11";
-
-  /* For some, uppercase/lowercase might differ */
-  if (!strcmp(name, "Big5") || !strcmp(name, "BIG5"))
-    return "Big5";
-  if (!strcmp(name, "Big5HKSCS") || !strcmp(name, "BIG5HKSCS"))
-    return "Big5HKSCS";
-
-  /* I don't know of any implementation of nl_langinfo(CODESET) out
-   * there that returns anything else (and I'm not even certain all of
-   * the above occur in the wild), but just in case, as a fallback,
-   * return the unmodified name. */
-  return name;
 }
