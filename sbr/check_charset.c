@@ -128,7 +128,7 @@ static const char *norm_charmap(char *name)
         /* Names for ISO-8859-11. */
         { "TIS-620", "ISO-8859-11" },
         { "TIS620.2533", "ISO-8859-11" },
-        { NULL }
+        { NULL, NULL }
     };
     static struct {
         const char *substr;
@@ -161,7 +161,7 @@ static const char *norm_charmap(char *name)
         { "CP1256", "WINDOWS-1256" },
         { "CP1257", "WINDOWS-1257" },
         { "CP1258", "WINDOWS-1258" },
-        { NULL }
+        { NULL, NULL }
     };
 
     if (!name)
