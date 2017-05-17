@@ -8,7 +8,7 @@ set -e
 version=${1?}
 host=`uname -n`
 if test -d "$srcdir/.git"; then
-    git=" `git describe --long --dirty`"
+    git=" `git -C $srcdir describe --long --dirty`"
 else
     git=
 fi
