@@ -645,7 +645,7 @@ user_content (FILE *in, char *buf, CT *ctp, const char *infilename)
 {
     int	extrnal, vrsn;
     char *cp, **ap;
-    char buffer[BUFSIZ];
+    char buffer[NMH_BUFSIZ];
     struct multipart *m;
     struct part **pp;
     struct stat st;
