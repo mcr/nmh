@@ -35,8 +35,6 @@ Fcc: +outbox
 This is a test of a message with a shørt line.
 EOF
 
-run_prog mhbuild "$draft"
-
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
@@ -48,6 +46,7 @@ Content-Transfer-Encoding: quoted-printable
 This is a test of a message with a sh=C3=B8rt line.
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 #
@@ -66,8 +65,6 @@ Fcc: +outbox
 This is a test of a message with a shørt line.
 EOF
 
-run_prog mhbuild "$draft"
-
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
@@ -79,6 +76,7 @@ Content-Transfer-Encoding: base64
 VGhpcyBpcyBhIHRlc3Qgb2YgYSBtZXNzYWdlIHdpdGggYSBzaMO4cnQgbGluZS4NCg==
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 cat > "$draft" <<EOF
@@ -89,8 +87,6 @@ Fcc: +outbox
 #<text/plain *b64
 This is a test of a mëssage with a shørt line.
 EOF
-
-run_prog mhbuild "$draft"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
@@ -103,6 +99,7 @@ Content-Transfer-Encoding: base64
 VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc2FnZSB3aXRoIGEgc2jDuHJ0IGxpbmUuDQo=
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 cat > "$draft" <<EOF
@@ -113,8 +110,6 @@ Fcc: +outbox
 #<text/plain *b64
 This is a test of a mëssäge with a shørt line.
 EOF
-
-run_prog mhbuild "$draft"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
@@ -127,6 +122,7 @@ Content-Transfer-Encoding: base64
 VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc8OkZ2Ugd2l0aCBhIHNow7hydCBsaW5lLg0K
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 cat > "$draft" <<EOF
@@ -138,8 +134,6 @@ Fcc: +outbox
 This is a test of a message with a shørt line.
 This is a second line.
 EOF
-
-run_prog mhbuild "$draft"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
@@ -153,6 +147,7 @@ VGhpcyBpcyBhIHRlc3Qgb2YgYSBtZXNzYWdlIHdpdGggYSBzaMO4cnQgbGluZS4NClRoaXMgaXMg
 YSBzZWNvbmQgbGluZS4NCg==
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 cat > "$draft" <<EOF
@@ -164,8 +159,6 @@ Fcc: +outbox
 This is a test of a mëssage with a shørt line.
 This is a second line.
 EOF
-
-run_prog mhbuild "$draft"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
@@ -179,6 +172,7 @@ VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc2FnZSB3aXRoIGEgc2jDuHJ0IGxpbmUuDQpUaGlzIGlz
 IGEgc2Vjb25kIGxpbmUuDQo=
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 cat > "$draft" <<EOF
@@ -190,8 +184,6 @@ Fcc: +outbox
 This is a test of a mëssäge with a shørt line.
 This is a second line.
 EOF
-
-run_prog mhbuild "$draft"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
@@ -205,6 +197,7 @@ VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc8OkZ2Ugd2l0aCBhIHNow7hydCBsaW5lLg0KVGhpcyBp
 cyBhIHNlY29uZCBsaW5lLg0K
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 cat > "$draft" <<EOF
@@ -223,8 +216,6 @@ This is a second line.
 
 EOF
 
-run_prog mhbuild "$draft"
-
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
@@ -237,6 +228,7 @@ VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc8OkZ2Ugd2l0aCBhIHNow7hydCBsaW5lLg0KDQoNClRo
 aXMgaXMgYSBzZWNvbmQgbGluZS4NCg0KDQoNCg0K
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 #
@@ -254,8 +246,6 @@ This is a test of a messege with a long line.  This line needs to be longer than
 
 This is a second line.
 EOF
-
-run_prog mhbuild "$draft"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
@@ -288,6 +278,7 @@ the airs from that infernal nonsense Pinafore. =
 This is a second line.
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 cat > "$draft" <<EOF
@@ -299,8 +290,6 @@ This is a test of a messege with a long line.  This line needs to be longer than
 
 This is a secönd line.
 EOF
-
-run_prog mhbuild "$draft"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
@@ -333,6 +322,7 @@ the airs from that infernal nonsense Pinafore. =
 This is a sec=C3=B6nd line.
 EOF
 
+run_prog mhbuild "$draft"
 check "$draft" "$expected"
 
 cat > "$draft" <<EOF
@@ -362,8 +352,6 @@ Fcc: +outbox
 This is the test of a lønger line than the usual limit.  Assuming we set the maxunencded parameter properly, this should end up as 8bit?
 EOF
 
-run_prog mhbuild -maxunencoded 200 "$draft"
-
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
@@ -375,6 +363,7 @@ Content-Transfer-Encoding: 8bit
 This is the test of a lønger line than the usual limit.  Assuming we set the maxunencded parameter properly, this should end up as 8bit?
 EOF
 
+run_prog mhbuild -maxunencoded 200 "$draft"
 check "$draft" "$expected"
 
 [ ${failed:=0} -eq 0 ]  &&  rm -f ${backup}
