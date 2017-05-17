@@ -48,6 +48,8 @@ Content-Transfer-Encoding: quoted-printable
 This is a test of a message with a sh=C3=B8rt line.
 EOF
 
+check "$draft" "$expected"
+
 #
 # Force some text to be base64, to test out the encoder.  Try at different
 # line lengths to check out the padding on the routines to convert LF to
