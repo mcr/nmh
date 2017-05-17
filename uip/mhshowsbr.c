@@ -344,7 +344,7 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked, struct format *
 {
     int fd;
     int xstdin = 0, xlist = 0;
-    char *file = NULL, buffer[BUFSIZ];
+    char *file = NULL, buffer[NMH_BUFSIZ];
 
     if (!ct->c_ceopenfnx) {
 	if (!alternate)
