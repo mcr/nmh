@@ -311,7 +311,7 @@ cleanup() {
     #### 1) Set test name before running the test, use start_test().
     #### 2) Unset upon successful completion, use finish_test().
     if test -n "$nmh_tests_testname"; then
-        echo "first test failure: $nmh_tests_testname"
+        echo "first named test failure: $nmh_tests_testname"
     fi
 
     #### Exit with non-zero status if failure.  Failure is defined as either
