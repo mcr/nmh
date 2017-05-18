@@ -136,12 +136,7 @@ main(int argc, char *argv[])
 	if (cc > 0 && FD_ISSET(master, &readfds)) {
 	    cc = read(master, readbuf, sizeof(readbuf));
 
-	    if (cc < 0) {
-		fprintf(stderr, "read() failed: %s\n", strerror(errno));
-		exit(1);
-	    }
-
-	    if (cc == 0)
+	    if (cc <= 0)
 		break;
 
 	    fwrite(readbuf, 1, cc, output);
