@@ -83,6 +83,8 @@ OBSOLETE FEATURES
   deprecated in nmh 1.6, and was removed in this release.
 - Support for multiple hostnames in the "servers" entry of mts.conf has
   been removed.
+- Support in alias files for expanding aliases based on group membership
+  (=) and primary group (+) has been removed.
 
 -------------------
 DEPRECATED FEATURES

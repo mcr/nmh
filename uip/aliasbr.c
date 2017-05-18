@@ -9,7 +9,6 @@
 #include <h/aliasbr.h>
 #include <h/addrsbr.h>
 #include <h/utils.h>
-#include <grp.h>
 #include <pwd.h>
 
 static int akvis;
@@ -37,8 +36,6 @@ static char *scanp (char *);
 static char *getp (char *);
 static char *seekp (char *, char *, char **);
 static int addfile (struct aka *, char *);
-static int addgroup (struct aka *, char *);
-static int addmember (struct aka *, char *);
 static char *getalias (char *);
 static void add_aka (struct aka *, char *);
 static struct aka *akalloc (char *);
@@ -249,28 +246,6 @@ alias (char *file)
 		}
 		break;
 
-	    case '=': 		/* UNIX group */
-		if (!*(cp = getp (pp + 1))) {
-		    fclose (fp);
-		    return AK_ERROR;
-		}
-		if (!addgroup (ak, cp)) {
-		    fclose (fp);
-		    return AK_NOGROUP;
-		}
-		break;
-
-	    case '+': 		/* UNIX group members */
-		if (!*(cp = getp (pp + 1))) {
-		    fclose (fp);
-		    return AK_ERROR;
-		}
-		if (!addmember (ak, cp)) {
-		    fclose (fp);
-		    return AK_NOGROUP;
-		}
-		break;
-
 	    default: 		/* list */
 		while ((cp = getalias (pp)))
 		    add_aka (ak, cp);
@@ -370,67 +345,6 @@ addfile (struct aka *ak, char *file)
 	    add_aka (ak, cp);
 
     fclose (fp);
-    return 1;
-}
-
-
-static int
-addgroup (struct aka *ak, char *grp)
-{
-    char *gp;
-    struct group *gr = getgrnam (grp);
-    struct home *hm = NULL;
-
-    if (!gr)
-	gr = getgrgid (atoi (grp));
-    if (!gr) {
-	akerrst = grp;
-	return 0;
-    }
-
-    while ((gp = *gr->gr_mem++))
-    {
-	struct passwd *pw;
-	for (hm = homehead; hm; hm = hm->h_next)
-	    if (!strcmp (hm->h_name, gp)) {
-		add_aka (ak, hm->h_name);
-		break;
-	    }
-        if ((pw = getpwnam(gp)))
-	{
-		hmalloc(pw);
-		add_aka (ak, gp);
-	}
-    }
-
-    return 1;
-}
-
-
-static int
-addmember (struct aka *ak, char *grp)
-{
-    gid_t gid;
-    struct group *gr = getgrnam (grp);
-    struct home *hm = NULL;
-
-    if (gr)
-	gid = gr->gr_gid;
-    else {
-	gid = atoi (grp);
-	gr = getgrgid (gid);
-    }
-    if (!gr) {
-	akerrst = grp;
-	return 0;
-    }
-
-    init_pw ();
-
-    for (hm = homehead; hm; hm = hm->h_next)
-	if (hm->h_gid == gid)
-	    add_aka (ak, hm->h_name);
-
     return 1;
 }
 

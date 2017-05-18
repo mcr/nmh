@@ -42,8 +42,6 @@ where:
 .nf
 .IR address-group "	:= " address-list
 .RI "			|  < " file
-.RI "			|  = " Unix-group
-.RI "			|  + " Unix-group
 
 .IR address-list "	:= " address
 .RI "			|  " address-list ", " address
@@ -60,9 +58,6 @@ that comment line.
 and
 .I file
 are Unix file names.
-.I Unix-group
-is a group name or number from
-the system's group database.
 Alias file contents are case-insensitive, with the exception
 of filesystem path names.
 .PP
@@ -74,26 +69,6 @@ If the
 .I address-group
 starts with a \*(lq<\*(rq, the file named after the
 \*(lq<\*(rq is read and its contents are added to the
-.I address-list
-for the alias.
-.PP
-If the
-.I address-group
-starts with an \*(lq=\*(rq, the
-system's group database
-is consulted for the Unix-group named after the \*(lq=\*(rq.  Each login name
-occurring as a member of the group is added to the
-.I address-list
-for the alias.
-.PP
-In contrast, if the
-.I address-group
-starts with a \*(lq+\*(rq, the system's group database
-is consulted to determine the group-id of the
-Unix-group named after the \*(lq+\*(rq.  Each login name occurring in the
-system's password database
-whose group-id is indicated by this group is
-added to the
 .I address-list
 for the alias.
 .PP
@@ -132,8 +107,6 @@ sgroup: fred, fear, freida
 fred: frated@UCI.example
 b-people: Blind List: bill, betty
 Unix\-committee: <unix.aliases
-staff: =staff
-wheels: +wheel
 news.*: news
 .fi
 .RE
@@ -160,13 +133,6 @@ reading the file
 in the user's
 .B nmh
 directory.
-.PP
-\*(lqstaff\*(rq is defined as all users who are listed as members of the
-group \*(lqstaff\*(rq in the
-system's group database, and \*(lqwheels\*(rq
-is defined as all users whose group-id in
-the system's password database
-is equivalent to the \*(lqwheel\*(rq group.
 .PP
 Lastly,
 .RI \*(lqnews. anything \*(rq
