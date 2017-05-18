@@ -177,6 +177,7 @@ check_PROGRAMS = \
     test/getcanon \
     test/getcwidth \
     test/getfullname \
+    test/runpty \
     #
 
 ## So they can be built without builing the `check' target.
@@ -855,6 +856,9 @@ test_fakehttp_LDADD = $(LDADD) $(POSTLINK)
 
 test_getcwidth_SOURCES = test/getcwidth.c
 test_getcwidth_LDADD = $(POSTLINK)
+
+test_runpty_SOURCES = test/runpty.c
+test_runpty_LDADD = $(POSTLINK)
 
 ##
 ## Our rebuild rules for files that aren't built via the normal mechanisms
