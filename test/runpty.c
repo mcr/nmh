@@ -23,7 +23,7 @@
 int
 main(int argc, char *argv[])
 {
-    int master, slave, cc, sendeof = 0, status;
+    int master_in, master_out, slave, cc, status;
     time_t starttime;
     const char *slavename;
     pid_t child;
@@ -36,48 +36,80 @@ main(int argc, char *argv[])
 	exit(1);
     }
 
-    if ((master = posix_openpt(O_RDWR | O_NOCTTY)) < 0) {
+    if ((master_in = posix_openpt(O_RDWR | O_NOCTTY)) < 0) {
 	fprintf(stderr, "Unable to open master pseudo-tty: %s\n",
 		strerror(errno));
 	exit(1);
     }
 
-    if (grantpt(master) < 0) {
+    if ((master_out = posix_openpt(O_RDWR | O_NOCTTY)) < 0) {
+	fprintf(stderr, "Unable to open master pseudo-tty: %s\n",
+		strerror(errno));
+	exit(1);
+    }
+
+    if (grantpt(master_in) < 0) {
 	fprintf(stderr, "Unable to grant permissions to master pty: %s\n",
 		strerror(errno));
 	exit(1);
     }
 
-    if (unlockpt(master) < 0) {
+    if (grantpt(master_out) < 0) {
+	fprintf(stderr, "Unable to grant permissions to master pty: %s\n",
+		strerror(errno));
+	exit(1);
+    }
+
+    if (unlockpt(master_in) < 0) {
 	fprintf(stderr, "Unable to unlock master pty: %s\n", strerror(errno));
 	exit(1);
     }
 
-    if (!(slavename = ptsname(master))) {
-	fprintf(stderr, "Unable to determine name of slave pty: %s\n",
-		strerror(errno));
-	exit(1);
-    }
-
-    if ((slave = open(slavename, O_RDWR | O_NOCTTY)) < 0) {
-	fprintf(stderr, "Unable to open slave pty \"%s\": %s\n", slavename,
-		strerror(errno));
+    if (unlockpt(master_out) < 0) {
+	fprintf(stderr, "Unable to unlock master pty: %s\n", strerror(errno));
 	exit(1);
     }
 
     child = fork();
 
     /*
-     * Start the child process if we are in the child; close the master
-     * as we are supposed to only use the slave ptys here.
+     * Start the child process if we are in the child; open the two
+     * slave pseudo-ttys and close the masters after we are done with them.
      */
 
     if (child == 0) {
-	close(master);
+	if (!(slavename = ptsname(master_in))) {
+	    fprintf(stderr, "Unable to determine name of slave pty: %s\n",
+		    strerror(errno));
+	    exit(1);
+	}
+
+	if ((slave = open(slavename, O_RDWR)) < 0) {
+	    fprintf(stderr, "Unable to open slave pty \"%s\": %s\n", slavename,
+		    strerror(errno));
+	    exit(1);
+	}
+
 	dup2(slave, STDIN_FILENO);
+	close(slave);
+	close(master_in);
+
+	if (!(slavename = ptsname(master_out))) {
+	    fprintf(stderr, "Unable to determine name of slave pty: %s\n",
+		    strerror(errno));
+	    exit(1);
+	}
+
+	if ((slave = open(slavename, O_RDWR | O_NOCTTY)) < 0) {
+	    fprintf(stderr, "Unable to open slave pty \"%s\": %s\n", slavename,
+		    strerror(errno));
+	    exit(1);
+	}
+
 	dup2(slave, STDOUT_FILENO);
 	dup2(slave, STDERR_FILENO);
 	close(slave);
+	close(master_out);
 
 	execvp(argv[2], argv + 2);
 
@@ -86,8 +118,6 @@ main(int argc, char *argv[])
 	fprintf(stderr, "fork() failed: %s\n", strerror(errno));
 	exit(1);
     }
-
-    close(slave);
 
     if (!(output = fopen(argv[1], "w"))) {
 	fprintf(stderr, "Unable to open \"%s\" for output: %s\n", argv[1],
@@ -103,65 +133,49 @@ main(int argc, char *argv[])
 
 	FD_ZERO(&readfds);
 
-	FD_SET(master, &readfds);
+	FD_SET(master_out, &readfds);
 
 	/*
-	 * Okay, what's going on here?
-	 *
-	 * We want to send the EOF character (to simulate a "end of file",
-	 * as if we redirected stdin to /dev/null).  We can't just close
-	 * master, because we won't be able to get any data back.  So,
-	 * after we get SOME data, set sendeof, and that will cause us to
-	 * send the EOF character after the first select call.  If we are
-	 * doing sendeof, set the timeout to 1 second; otherwise, set the
-	 * timeout to COMMAND_TIMEOUT seconds remaining.
+	 * After we get our first bit of data, close the master pty
+	 * connected to standard input on our slave; that will generate
+	 * an EOF.
 	 */
 
-	if (sendeof) {
-	    tv.tv_sec = 1;
-	} else {
-	    tv.tv_sec = starttime + COMMAND_TIMEOUT - time(NULL);
-	    if (tv.tv_sec < 0)
-		tv.tv_sec = 0;
-	}
+	tv.tv_sec = starttime + COMMAND_TIMEOUT - time(NULL);
+	if (tv.tv_sec < 0)
+	    tv.tv_sec = 0;
 	tv.tv_usec = 0;
 
-	cc = select(master + 1, &readfds, NULL, NULL, &tv);
+	cc = select(master_out + 1, &readfds, NULL, NULL, &tv);
 
 	if (cc < 0) {
 	    fprintf(stderr, "select() failed: %s\n", strerror(errno));
 	    exit(1);
 	}
 
-	if (cc > 0 && FD_ISSET(master, &readfds)) {
-	    cc = read(master, readbuf, sizeof(readbuf));
+	if (cc > 0 && FD_ISSET(master_out, &readfds)) {
+	    cc = read(master_out, readbuf, sizeof(readbuf));
 
 	    if (cc <= 0)
 		break;
 
 	    fwrite(readbuf, 1, cc, output);
+
+	    if (master_in != -1) {
+		close(master_in);
+		master_in = -1;
+	    }
 	}
 
-	if (cc == 0 && sendeof) {
-	    struct termios rtty;
-
-	    if (tcgetattr(master, &rtty) < 0) {
-		fprintf(stderr, "tcgetattr() failed: %s\n", strerror(errno));
-		exit(1);
-	    }
-
-	    if (rtty.c_lflag & ICANON)
-		write(master, &rtty.c_cc[VEOF], 1);
-	} else if (!sendeof)
-	    sendeof = 1;
-
-	if (time(NULL) > starttime + COMMAND_TIMEOUT) {
+	if (time(NULL) >= starttime + COMMAND_TIMEOUT) {
 	    fprintf(stderr, "Command execution timed out\n");
 	    break;
 	}
     }
 
-    close(master);
+    if (master_in != -1)
+	close(master_in);
+    close(master_out);
     fclose(output);
 
     waitpid(child, &status, 0);
