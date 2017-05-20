@@ -18,24 +18,10 @@ struct adr {
 };
 
 /*
- * in-core version of /etc/passwd
- */
-struct home {
-    char *h_name;		/* user name                             */
-    uid_t h_uid;		/* user id                               */
-    gid_t h_gid;		/* user's group                          */
-    char *h_home;		/* user's home directory                 */
-    char *h_shell;		/* user's shell                          */
-    int	h_ngrps;		/* number of groups this user belongs to */
-    struct home *h_next;	/* next home in list                     */
-};
-
-/*
  * prototypes
  */
 int alias (char *);
 int akvisible (void);
-void init_pw (void);
 char *akresult (struct aka *);
 char *akvalue (char *);
 char *akerror (int);
@@ -46,4 +32,3 @@ char *akerror (int);
 #define	AK_NOFILE	1	/* couldn't read file 	 */
 #define	AK_ERROR	2	/* error parsing file 	 */
 #define	AK_LIMIT	3	/* memory limit exceeded */
-#define	AK_NOGROUP	4	/* no such group 	 */

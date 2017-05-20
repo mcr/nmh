@@ -17,15 +17,11 @@ static char *akerrst;
 struct aka *akahead = NULL;
 struct aka *akatail = NULL;
 
-struct home *homehead = NULL;
-struct home *hometail = NULL;
-
 /*
  * prototypes
  */
 int alias (char *);
 int akvisible (void);
-void init_pw (void);
 char *akresult (struct aka *);
 char *akvalue (char *);
 char *akerror (int);
@@ -39,7 +35,6 @@ static int addfile (struct aka *, char *);
 static char *getalias (char *);
 static void add_aka (struct aka *, char *);
 static struct aka *akalloc (char *);
-static struct home *hmalloc (struct passwd *);
 
 
 /* Do mh alias substitution on 's' and return the results. */
@@ -276,10 +271,6 @@ akerror (int i)
 	    snprintf (buffer, sizeof(buffer), "out of memory while on '%s'", akerrst);
 	    break;
 
-	case AK_NOGROUP: 
-	    snprintf (buffer, sizeof(buffer), "no such group as '%s'", akerrst);
-	    break;
-
 	default: 
 	    snprintf (buffer, sizeof(buffer), "unknown error (%d)", i);
 	    break;
@@ -404,31 +395,6 @@ add_aka (struct aka *ak, char *pp)
 }
 
 
-void
-init_pw (void)
-{
-    struct passwd  *pw;
-    static int init;
-  
-    if (!init)
-    {
-	/* if the list has yet to be initialized */
-	/* zap the list, and rebuild from scratch */
-	homehead=NULL;
-	hometail=NULL;
-	init++;
-
-	setpwent ();
-
-	while ((pw = getpwent ()))
-	    if (!hmalloc (pw))
-		break;
-
-	endpwent ();
-    }
-}
-
-
 static struct aka *
 akalloc (char *id)
 {
@@ -444,29 +410,6 @@ akalloc (char *id)
     if (akahead == NULL)
 	akahead = p;
     akatail = p;
-
-    return p;
-}
-
-
-static struct home *
-hmalloc (struct passwd *pw)
-{
-    struct home *p;
-
-    NEW(p);
-    p->h_name = getcpy (pw->pw_name);
-    p->h_uid = pw->pw_uid;
-    p->h_gid = pw->pw_gid;
-    p->h_home = getcpy (pw->pw_dir);
-    p->h_shell = getcpy (pw->pw_shell);
-    p->h_ngrps = 0;
-    p->h_next = NULL;
-    if (hometail != NULL)
-	hometail->h_next = p;
-    if (homehead == NULL)
-	homehead = p;
-    hometail = p;
 
     return p;
 }
