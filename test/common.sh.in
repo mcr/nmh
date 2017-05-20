@@ -70,8 +70,8 @@ fi
 
 test_skip ()
 {
-  WHY="$1"
-  echo "$Test $0 SKIP ($WHY)"
+  why="$1"
+  echo "$0: skipped: $why"
   exit 77
 }
 
