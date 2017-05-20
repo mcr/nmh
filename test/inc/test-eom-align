@@ -95,7 +95,7 @@ makembox_B () {
 # Do a single test with message one's body of size sz.
 do_one_test_A () {
   SZ=$1
-  makembox_A "$MH_TEST_DIR/eom-align.mbox" $STDIO_BUFSZ
+  makembox_A "$MH_TEST_DIR/eom-align.mbox" $SZ
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the messages should be 11 and 12 in inbox
   # Now get the bodies back out.
@@ -112,7 +112,7 @@ do_one_test_A () {
 # Do a test type B
 do_one_test_B () {
   SZ=$1
-  makembox_B "$MH_TEST_DIR/eom-align.mbox" $STDIO_BUFSZ
+  makembox_B "$MH_TEST_DIR/eom-align.mbox" $SZ
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the message should be 11 in the inbox
   body1="$MH_TEST_DIR/eom-align.inbox.body1"
