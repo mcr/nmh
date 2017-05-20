@@ -130,12 +130,12 @@ arith_eval $STDIO_BUFSZ + $HDRSZ + $FROMLINESZ + 32; FINISH=$arith_val
 "Testing inc of files with various alignments of eom marker with buffer size..."
 i="$START"
 while test $i -le $FINISH; do
-  progress_update $i $START $FINISH
+  printf '  %s' $i
   do_one_test_A $i
   do_one_test_B $i
   i=`expr $i + 1`
 done
-progress_done
+printf '\n'
 
 test ${failed:-0} -eq 0  &&  \
 rm "$MH_TEST_DIR/eom-align.mbox" "$MH_TEST_DIR/eom-align.mbox.body"
