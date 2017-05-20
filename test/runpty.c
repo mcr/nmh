@@ -114,6 +114,8 @@ main(int argc, char *argv[])
 	execvp(argv[2], argv + 2);
 
 	fprintf(stderr, "execvp(%s) failed: %s\n", argv[2], strerror(errno));
+	exit(1);
+
     } else if (child < 0) {
 	fprintf(stderr, "fork() failed: %s\n", strerror(errno));
 	exit(1);
