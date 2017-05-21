@@ -823,16 +823,22 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
     if (s->edelimlen <= 1)
 	adios (NULL, "maildrop delimiter must be at least 2 bytes");
 
-    /* Now malloc'd memory at s->fdelim-1 referenced several times:
+    /* Now malloc'd memory at s->fdelim-1 is referenced several times,
+     * containing a copy of the string constant from delimstr.
      *
-     *     delimstr         "\nFrom "      "\001\001\001\001\n"
-     *     c                6              5
-     *     s->fdelim      \0"\n\nFrom "  \0"\n\001\001\001\001\n"
-     *     s->fdelimlen     6              5
-     *     s->msg_delim     "\nFrom "      "\001\001\001\001\n"
-     *     s->edelim        "From "        "\001\001\001\n"
-     *     s->edelimlen     5              4
-     *     s->delimend      " "            "\n"
+     *     "\nFrom \0"   7                  "\001\001\001\001\n\0"  6
+     *       |                                  |
+     *       delimstr   c=6                     delimstr   c=5
+     *
+     *     "\0\n\nFrom \0"   9              "\0\n\001\001\001\001\n\0"   8
+     *         | ||   |                         |   |   |         |
+     *         | ||   s->delimend               |   |   |         s->delimend
+     *         | ||                             |   |   |
+     *         | |s->edelim  s->edelimlen=5     |   |   s->edelim  s->edelimlen=4
+     *         | |                              |   |
+     *         | s->msg_delim                   |   s->msg_delim
+     *         |                                |
+     *         s->fdelim  s->fdelimlen=7        s->fdelim  s->fdelimlen=6
      */
 
     /*
