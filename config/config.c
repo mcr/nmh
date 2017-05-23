@@ -63,9 +63,9 @@ etcpath (char *file)
 
 	    if (access (epath, R_OK) != NOTOK)
 		return epath;
-		/* FALLTHRU */
-try_it:
 
+            /* FALLTHRU */
+try_it:
 	default: 
 	    /* Check nmh Mail directory */
 	    if (access ((cp = m_mailpath (file)), R_OK) != NOTOK) {
