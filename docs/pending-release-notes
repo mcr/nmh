@@ -15,7 +15,7 @@ NEW FEATURES
 - An "rtrim" flag has been added to mhl to remove any trailing
   whitespace from filtered text lines.  A corresponding "nortrim" flag
   has also been added.
-- The default locations for configuration files and suppoooort binaries
+- The default locations for configuration files and support binaries
   have been changed.  Configuration files now install into ${sysconfdir}/nmh,
   and support binaries are placed in ${libexecdir}/nmh.  If you are upgrading
   an existing installation you should look for old configuration files in
@@ -111,7 +111,7 @@ BUG FIXES
   header, not just those with a character set not specified.
 - mhbuild no longer parses lines that start with # as directives with
   -nodirectives.
-- repl now make sure that any Fcc header in a replied-to message is not
+- repl now makes sure that any Fcc header in a replied-to message is not
   copied into the outgoing draft by default, and that the -fcc switch
   actually works in the absence of a Fcc header in the replied-to message.
 - A Content-ID is generated for message/external-body entities as required
