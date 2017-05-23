@@ -414,7 +414,7 @@ invalid:
 			    continue;
 			case '(':
 			    i++;
-			    /* FALLTHRU */
+			    continue;
 			default:
 			    continue;
 			case ')':

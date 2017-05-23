@@ -367,7 +367,7 @@ again: ;
 			strcpy (err, "extraneous semi-colon");
 			return NOTOK;
 		    }
-		    /* FALLTHRU */
+		    return OK;
 		case LX_COMA: 
 		case LX_END: 
 		    return OK;

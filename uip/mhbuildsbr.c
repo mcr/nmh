@@ -331,7 +331,7 @@ finish_field:
 
 	case BODY:
 	    fseek (in, (long) (-strlen (buf)), SEEK_CUR);
-	    /* FALLTHRU */
+	    break;
 	case FILEEOF:
 	    break;
 

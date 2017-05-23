@@ -647,7 +647,7 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
 
 		fmt_addcomptext("body", rbuf);
 	    }
-	    /* FALLTHRU */
+	    goto finished;
 
 	default:
 	    goto finished;

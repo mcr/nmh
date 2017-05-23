@@ -164,7 +164,7 @@ rmf (char *folder)
 		if (strcmp (dp->d_name, ".") == 0
 			|| strcmp (dp->d_name, "..") == 0)
 		    continue;
-		/* FALLTHRU */
+		break;
 
 	    case ',': 
 		break;

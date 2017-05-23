@@ -194,7 +194,7 @@ alias (char *file)
 		    fclose (fp);
 		    return i;
 		}
-		/* FALLTHRU */
+		continue;
 	    case ':': 		/* comment */
 	    case ';': 
 	    case '#':

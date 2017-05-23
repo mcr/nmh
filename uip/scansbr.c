@@ -260,7 +260,7 @@ body:;
 		    state = BODY;
 		    goto body;
 		}
-		/* FALLTHRU */
+		goto finished;
 
 	    case FILEEOF:
 		goto finished;

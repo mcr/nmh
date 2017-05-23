@@ -103,7 +103,7 @@ seq_public (struct msgs *mp, int lockflag, int *failed_to_lock)
 	    case BODY:
 	    	lkfclosedata (fp, seqfile);
 		adios (NULL, "no blank lines are permitted in %s", seqfile);
-		/* FALLTHRU */
+		break;
 
 	    case FILEEOF:
 		break;

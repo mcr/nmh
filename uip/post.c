@@ -1866,7 +1866,7 @@ do_text (char *file, int fd)
 	case RP_NO: 
 	case RP_NDEL: 
 	    die (NULL, "posting failed; %s", rp_string (retval));
-	    /* FALLTHRU */
+	    break;
 
 	default: 
 	    die (NULL, "unexpected response; %s", rp_string (retval));

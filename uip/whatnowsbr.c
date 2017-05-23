@@ -1174,7 +1174,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 			inform("missing argument to %s", argp[-2]);
 			return;
 		    }
-		    /* FALLTHRU */
+		    continue;
 		case SNDRFSW:
 		    continue;
 	    }
