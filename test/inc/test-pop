@@ -105,25 +105,7 @@ check "$testmessage" `mhpath +inbox 11` 'keep first'
 check "${testmessage}.2" `mhpath +inbox 12`
 check "${testmessage}.3" `mhpath +inbox 13`
 
-# check -pack
-pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" \
-			"$TESTUSER" "$TESTPASS" "$testmessage"`
-
-touch "$MH_TEST_DIR/inc.mbox"
-run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 80 \
-          -pack $MH_TEST_DIR/inc.mbox" \
-	"Incorporating new mail into (null)...
-
-   1  12/17 No Such User       Hello<<Hey man, how's it going? . Hope you're do\
-i"
-run_test "inc -file $MH_TEST_DIR/inc.mbox -truncate -width 80" \
-	"Incorporating new mail into inbox...
-
-  11+ 12/17 No Such User       Hello<<Hey man, how's it going? . Hope you're do\
-i"
-
-check $testmessage `mhpath +inbox 11` 'keep first'
-rm -f "$MH_TEST_DIR/inc.mbox" "$MH_TEST_DIR/.inc.map" "$netrc"
+rm -f "$netrc"
 
 # check credentials: file
 # Redirect stdin so that inc doesn't wait on the user if it can't
@@ -139,18 +121,12 @@ echo "credentials: file:${netrc}" >>$MH
 pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" \
 			"$TESTUSER" "$TESTPASS" "$testmessage"`
 
-touch "$MH_TEST_DIR/inc.mbox"
-run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 65 \
-          -pack $MH_TEST_DIR/inc.mbox" \
-	"Incorporating new mail into (null)...
-
-   1  12/17 No Such User       Hello<<Hey man, how's it going? . " </dev/null
-run_test "inc -file $MH_TEST_DIR/inc.mbox -truncate -width 65" \
+run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 65" \
 	"Incorporating new mail into inbox...
 
   11+ 12/17 No Such User       Hello<<Hey man, how's it going? . " </dev/null
-
 check $testmessage `mhpath +inbox 11`
-rm -f "$MH_TEST_DIR/inc.mbox" "$MH_TEST_DIR/.inc.map" "$netrc"
+
+rm -f "$netrc"
 
 exit ${failed:-0}

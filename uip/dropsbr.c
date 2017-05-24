@@ -417,7 +417,7 @@ mbx_close (char *mailbox, int md)
  *     bb->bb_map = map_name (bb->bb_file);
  */
 
-char *
+static char *
 map_name (char *file)
 {
     char *cp, *dp;

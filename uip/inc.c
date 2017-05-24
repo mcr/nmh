@@ -60,8 +60,6 @@
     X("format string", 5, FMTSW) \
     X("host hostname", 0, HOSTSW) \
     X("user username", 0, USERSW) \
-    X("pack file", 0, PACKSW) \
-    X("nopack", 0, NPACKSW) \
     X("port name/number", 0, PORTSW) \
     X("silent", 0, SILSW) \
     X("nosilent", 0, NSILSW) \
@@ -105,16 +103,9 @@ static int snoop = 0;
 
 extern char response[];
 
-static int size;
-static long pos;
-
-static int mbx_style = MMDF_FORMAT;
-static int pd = NOTOK;
-
 static long start;
 static long stop;
 
-static char *packfile = NULL;
 static FILE *pf = NULL;
 
 /* This is an attempt to simplify things by putting all the
@@ -166,12 +157,8 @@ static FILE *in;
 /*
  * prototypes
  */
-char *map_name(char *);
-
 static void inc_done(int) NORETURN;
 static int pop_action(char *);
-static int pop_pack(char *);
-static int map_count(void);
 
 int
 maildir_srt(const void *va, const void *vb)
@@ -336,14 +323,6 @@ main (int argc, char **argv)
 	    case USERSW:
 		if (!(user = *argp++) || *user == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
-		continue;
-
-	    case PACKSW:
-		if (!(packfile = *argp++) || *packfile == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
-		continue;
-	    case NPACKSW:
-		packfile = NULL;
 		continue;
 
 	    case SNOOPSW:
@@ -533,10 +512,6 @@ main (int argc, char **argv)
 	newmail = cp;
     }
 
-    /* skip the folder setup */
-    if ((inc_type == INC_POP) && packfile)
-	goto go_to_it;
-
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
     if (!folder)
@@ -560,8 +535,6 @@ main (int argc, char **argv)
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 0)))
 	adios (NULL, "unable to read folder %s", folder);
-
-go_to_it:
 
     if (inc_type == INC_FILE && Maildir == NULL) {
 	if (access (newmail, W_OK) != NOTOK) {
@@ -623,65 +596,26 @@ go_to_it:
      */
     if (inc_type == INC_POP) {
 	int i;
-	if (packfile) {
-	    packfile = path (packfile, TFILE);
-	    if (stat (packfile, &st) == NOTOK) {
-		if (errno != ENOENT)
-		    adios (packfile, "error on file");
-		cp = concat ("Create file \"", packfile, "\"? ", NULL);
-		if (noisy && !read_yes_or_no_if_tty (cp))
-		    done (1);
-		free (cp);
-	    }
-	    msgnum = map_count ();
-	    if ((pd = mbx_open (packfile, mbx_style, getuid(), getgid(), m_gmprot()))
-		== NOTOK)
-		adios (packfile, "unable to open");
-	    if ((pf = fdopen (pd, "w+")) == NULL)
-		adios (NULL, "unable to fdopen %s", packfile);
-	} else {
-	    hghnum = msgnum = mp->hghmsg;
-	}
 
+        hghnum = msgnum = mp->hghmsg;
 	for (i = 1; i <= nmsgs; i++) {
 	    charstring_t scanl = NULL;
 
 	    msgnum++;
-	    if (packfile) {
-                size_t len;
+            cp = mh_xstrdup(m_name (msgnum));
+            if ((pf = fopen (cp, "w+")) == NULL)
+                adios (cp, "unable to write");
+            chmod (cp, m_gmprot ());
+            start = stop = 0L;
 
-		fseek (pf, 0L, SEEK_CUR);
-		pos = ftell (pf);
-		size = 0;
-                len = strlen(mmdlm1);
-		if (fwrite(mmdlm1, 1, len, pf) < len)
-		    advise (mmdlm1, "fwrite");
-		start = ftell (pf);
+            if (pop_retr (i, pop_action) == NOTOK)
+                adios (NULL, "%s", response);
 
-		if (pop_retr (i, pop_pack) == NOTOK)
-		    adios (NULL, "%s", response);
-
-		fseek (pf, 0L, SEEK_CUR);
-		stop = ftell (pf);
-		if (fflush (pf))
-		    adios (packfile, "write error on");
-		fseek (pf, start, SEEK_SET);
-	    } else {
-		cp = mh_xstrdup(m_name (msgnum));
-		if ((pf = fopen (cp, "w+")) == NULL)
-		    adios (cp, "unable to write");
-		chmod (cp, m_gmprot ());
-		start = stop = 0L;
-
-		if (pop_retr (i, pop_action) == NOTOK)
-		    adios (NULL, "%s", response);
-
-		if (fflush (pf))
-		    adios (cp, "write error on");
-		fseek (pf, 0L, SEEK_SET);
-	    }
+            if (fflush (pf))
+                adios (cp, "write error on");
+            fseek (pf, 0L, SEEK_SET);
 	    switch (incerr = scan (pf, msgnum, 0, nfs, width,
-			      packfile ? 0 : msgnum == mp->hghmsg + 1 && chgflag,
+			      msgnum == mp->hghmsg + 1 && chgflag,
 			      1, NULL, stop - start, noisy, &scanl)) {
 	    case SCNEOF:
 		printf ("%*d  empty\n", DMAXFOLDER, msgnum);
@@ -708,30 +642,14 @@ go_to_it:
 	    }
 	    charstring_free (scanl);
 
-	    if (packfile) {
-                size_t len;
-
-		fseek (pf, stop, SEEK_SET);
-                len = strlen(mmdlm2);
-		if (fwrite(mmdlm2, 1, len, pf) < len)
-		    advise (mmdlm2, "fwrite");
-		if (fflush (pf) || ferror (pf)) {
-		    int e = errno;
-		    pop_quit ();
-		    errno = e;
-		    adios (packfile, "write error on");
-		}
-		map_write (packfile, pd, 0, 0L, start, stop, pos, size, noisy);
-	    } else {
-		if (ferror(pf) || fclose (pf)) {
-		    int e = errno;
-		    (void) m_unlink (cp);
-		    pop_quit ();
-		    errno = e;
-		    adios (cp, "write error on");
-		}
-		free (cp);
-	    }
+            if (ferror(pf) || fclose (pf)) {
+                int e = errno;
+                (void) m_unlink (cp);
+                pop_quit ();
+                errno = e;
+                adios (cp, "write error on");
+            }
+            free (cp);
 
 	    if (trnflag && pop_dele (i) == NOTOK)
 		adios (NULL, "%s", response);
@@ -741,10 +659,6 @@ go_to_it:
 
 	if (pop_quit () == NOTOK)
 	    adios (NULL, "%s", response);
-	if (packfile) {
-	    mbx_close (packfile, pd);
-	    pd = NOTOK;
-	}
     }
 
     /*
@@ -913,9 +827,6 @@ go_to_it:
     if (noisy)
 	fflush (stdout);
 
-    if ((inc_type == INC_POP) && packfile)
-	done (0);
-
     /*
      * truncate file we are incorporating from
      */
@@ -929,7 +840,6 @@ go_to_it:
 		    close (newfd);
 		else
 		    admonish (newmail, "error zero'ing");
-		(void) m_unlink(map_name(newmail));
 	    }
 	} else {
 	    if (noisy)
@@ -1009,8 +919,6 @@ static void NORETURN
 inc_done (int status)
 {
     done = exit;
-    if (packfile && pd != NOTOK)
-	mbx_close (packfile, pd);
     if (locked)
     {
         GETGROUPPRIVS();
@@ -1026,40 +934,4 @@ pop_action (char *s)
     fprintf (pf, "%s\n", s);
     stop += strlen (s) + 1;
     return 0;  /* Is return value used?  This was missing before 1999-07-15. */
-}
-
-static int
-pop_pack (char *s)
-{
-    int j;
-    char buffer[BUFSIZ];
-
-    snprintf (buffer, sizeof(buffer), "%s\n", s);
-    for ( ; (j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
-	continue;
-    for ( ; (j = stringdex (mmdlm2, buffer)) >= 0; buffer[j]++)
-	continue;
-    fputs (buffer, pf);
-    size += strlen (buffer) + 1;
-    return 0;  /* Is return value used?  This was missing before 1999-07-15. */
-}
-
-static int
-map_count (void)
-{
-    int md;
-    char *cp;
-    struct drop d;
-    struct stat st;
-
-    if (stat (packfile, &st) == NOTOK)
-	return 0;
-    if ((md = open (cp = map_name (packfile), O_RDONLY)) == NOTOK
-	    || map_chk (cp, md, &d, (long) st.st_size, 1)) {
-	if (md != NOTOK)
-	    close (md);
-	return 0;
-    }
-    close (md);
-    return (d.d_id);
 }

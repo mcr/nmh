@@ -47,6 +47,5 @@ int mbx_read (FILE *, long, struct drop **);
 int mbx_copy (char *, int, int, int, int, char *, int);
 int mbx_size (int, off_t, off_t);
 int mbx_close (char *, int);
-char *map_name (char *);
 int map_write (char *, int, int, long, off_t, off_t, long, int, int);
 int map_chk (char *, int, struct drop *, long, int);

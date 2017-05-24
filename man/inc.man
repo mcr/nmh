@@ -31,9 +31,6 @@ inc \- incorporate new mail to an nmh folder
 .IR portname/number ]
 .RB [ \-user
 .IR username ]
-.RB [ \-pack
-.IR file ]
-.RB [ \-nopack ]
 .RB [ \-proxy
 .IR command ]
 .RB [ \-sasl " | " \-nosasl ]
@@ -234,15 +231,6 @@ server.  The string
 .I %h
 in the command will be substituted by the hostname to connect to.
 .PP
-When using POP, if the
-.B \-pack
-.I file
-switch is given then
-.B inc
-will
-.IR packf (1)
-the user's mail drop from the POP service host to the named file.
-.PP
 For debugging purposes, you may give the switch
 .BR \-snoop ,
 which will allow you to monitor the POP transaction.  If
@@ -385,8 +373,6 @@ is given.
 .TP
 \-width
 The width of the terminal.
-.TP
-\-nopack
 .PD
 .SH CONTEXT
 The folder into which messages are being incorporated will become the
