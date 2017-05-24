@@ -214,50 +214,6 @@ mbx_read (FILE *fp, long pos, struct drop **drops)
 }
 
 
-int
-mbx_write(char *mailbox, int md, FILE *fp, int id, long last,
-           long pos, off_t stop, int mapping, int noisy)
-{
-    int i, j, size;
-    off_t start;
-    long off;
-    char *cp;
-    char buffer[BUFSIZ];
-
-    off = (long) lseek (md, (off_t) 0, SEEK_CUR);
-    j = strlen (mmdlm1);
-    if (write (md, mmdlm1, j) != j)
-	return NOTOK;
-    start = lseek (md, (off_t) 0, SEEK_CUR);
-    size = 0;
-
-    fseek (fp, pos, SEEK_SET);
-    while (fgets (buffer, sizeof(buffer), fp) && (pos < stop)) {
-	i = strlen (buffer);
-	for ( ; (j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
-	    continue;
-	for ( ; (j = stringdex (mmdlm2, buffer)) >= 0; buffer[j]++)
-	    continue;
-	if (write (md, buffer, i) != i)
-	    return NOTOK;
-	pos += (long) i;
-	if (mapping)
-	    for (cp = buffer; i-- > 0; size++)
-		if (*cp++ == '\n')
-		    size++;
-    }
-
-    stop = lseek (md, (off_t) 0, SEEK_CUR);
-    j = strlen (mmdlm2);
-    if (write (md, mmdlm2, j) != j)
-	return NOTOK;
-    if (mapping)
-	map_write (mailbox, md, id, last, start, stop, off, size, noisy);
-
-    return OK;
-}
-
-
 /*
  * Append message to end of file or maildrop.
  */
@@ -476,51 +432,6 @@ map_name (char *file)
 		(int)(cp - file), file, (int)(dp - cp), cp, ".map");
 
     return buffer;
-}
-
-
-int
-map_read (char *file, long pos, struct drop **drops, int noisy)
-{
-    int i, md, msgp;
-    char *cp;
-    struct drop d;
-    struct drop *mp, *dp;
-
-    if ((md = open (cp = map_name (file), O_RDONLY)) == NOTOK
-	    || map_chk (cp, md, mp = &d, pos, noisy)) {
-	if (md != NOTOK)
-	    close (md);
-	return 0;
-    }
-
-    msgp = mp->d_id;
-    dp = mh_xcalloc(msgp + 1, sizeof *dp);
-    memcpy((char *) dp, (char *) mp, sizeof(*dp));
-
-    lseek (md, (off_t) sizeof(*mp), SEEK_SET);
-    if ((i = read (md, (char *) (dp + 1), msgp * sizeof(*dp))) <
-        (int) sizeof(*dp)) {
-	i = 0;
-	free(dp);
-    } else {
-#ifdef NTOHLSWAP
-	struct drop *tdp;
-	int j;
-
-	for (j = 0, tdp = dp; j < i / sizeof(*dp); j++, tdp++) {
-	    tdp->d_id = ntohl(tdp->d_id);
-	    tdp->d_size = ntohl(tdp->d_size);
-	    tdp->d_start = ntohl(tdp->d_start);
-	    tdp->d_stop = ntohl(tdp->d_stop);
-	}
-#endif
-	*drops = dp;
-    }
-
-    close (md);
-
-    return (i / sizeof(*dp));
 }
 
 
