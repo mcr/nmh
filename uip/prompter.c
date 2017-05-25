@@ -47,7 +47,7 @@ static jmp_buf sigenv;
 /*
  * prototypes
  */
-int getln (char *, int);
+static int getln (char *, int);
 static int chrcnv (char *);
 static void chrdsp (char *, char);
 static void intrser (int);
@@ -312,7 +312,7 @@ abort:
 }
 
 
-int
+static int
 getln (char *buffer, int n)
 {
     int c;
