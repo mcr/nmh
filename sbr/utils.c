@@ -267,22 +267,6 @@ app_msgnum(struct msgnum_array *msgs, int msgnum)
 	msgs->msgnums[msgs->size++] = msgnum;
 }
 
-/* Open a form or components file */
-int
-open_form(char **form, char *def)
-{
-	int in;
-	if (*form) {
-		if ((in = open (etcpath (*form), O_RDONLY)) == NOTOK)
-			adios (*form, "unable to open form file");
-	} else {
-		if ((in = open (etcpath (def), O_RDONLY)) == NOTOK)
-			adios (def, "unable to open default components file");
-		*form = def;
-	}
-	return in;
-}
-
 
 /*
  * Finds first occurrence of str in buf.  buf is not a C string but a

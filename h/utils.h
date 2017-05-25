@@ -65,7 +65,6 @@ struct msgnum_array {
 void app_msgarg(struct msgs_array *, char *);
 void app_msgnum(struct msgnum_array *, int);
 
-int open_form(char **, char *);
 char *find_str (const char [], size_t, const char *);
 char *rfind_str (const char [], size_t, const char *);
 char *nmh_strcasestr (const char *, const char *);
