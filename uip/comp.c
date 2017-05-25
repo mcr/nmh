@@ -396,7 +396,7 @@ edit_it:
 
     if (nwhat)
 	done (0);
-    what_now (ed, nedit, use, drft, NULL, 0, NULLMP, NULL, 0, cwd, 0);
+    what_now (ed, nedit, use, drft, NULL, 0, NULL, NULL, 0, cwd, 0);
     done (1);
     return 1;
 }

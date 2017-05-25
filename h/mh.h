@@ -353,8 +353,6 @@ struct msgs {
 #define other_files(mp)     ((mp)->msgflags & OTHERS)
 #define set_other_files(mp) ((mp)->msgflags |= OTHERS)
 
-#define	NULLMP	((struct msgs *) 0)
-
 /*
  * m_getfld() message parsing
  */
