@@ -24,7 +24,7 @@ int
 main(int argc, char *argv[])
 {
     int master_in, master_out, slave, cc, status;
-    time_t starttime;
+    time_t starttime, now;
     const char *slavename;
     pid_t child;
     unsigned char readbuf[1024];
@@ -169,8 +169,10 @@ main(int argc, char *argv[])
 	    }
 	}
 
-	if (time(NULL) >= starttime + COMMAND_TIMEOUT) {
-	    fprintf(stderr, "Command execution timed out\n");
+        now = time(NULL);
+	if (now >= starttime + COMMAND_TIMEOUT) {
+	    fprintf(stderr, "Command execution timed out: %ld to %ld: %d\n",
+                starttime, now, cc);
 	    break;
 	}
     }
