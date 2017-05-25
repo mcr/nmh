@@ -16,14 +16,6 @@
 
 #define	QUOTE '\\'
 
-#ifndef	CKILL
-# define CKILL '@'
-#endif
-
-#ifndef	CERASE
-# define CERASE '#'
-#endif
-
 #define PROMPTER_SWITCHES \
     X("erase chr", 0, ERASESW) \
     X("kill chr", 0, KILLSW) \
