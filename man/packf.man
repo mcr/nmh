@@ -62,7 +62,6 @@ can be unpacked using
 .nf
 .ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/.mh_profile~^The user profile
-^.msgbox.map~^A binary index of the file
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

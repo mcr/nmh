@@ -58,7 +58,7 @@ test_sendfiles ()
   # fakesendmail drops the message and any cc's into this mbox.
   mbox="$MH_TEST_DIR"/Mail/fakesendmail.mbox
   inc -silent -file "$mbox"
-  rm -f "$mbox" "$mbox.map"
+  rm -f "$mbox"
 
   mhlist -verbose last | sed -e 's/ *$//' -e 's/\(octet-stream\).*$/\1/' \
     >"$actual"

@@ -53,7 +53,7 @@ printf 'y\n' >Mail/yes
 # check with no switches
 run_prog packf <Mail/yes
 inc +inbox2 -file msgbox <Mail/yes >/dev/null
-rm -f msgbox .msgbox.map
+rm -f msgbox
 for i in `pick +inbox`; do
   diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
 done
@@ -63,7 +63,7 @@ rmm +inbox2 -unlink `pick +inbox2`
 # check +folder
 run_prog packf +inbox <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
-rm -f msgbox .msgbox.map
+rm -f msgbox
 for i in `pick +inbox`; do
   diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
 done
@@ -73,7 +73,7 @@ rmm +inbox2 -unlink `pick +inbox2`
 # check msgs
 run_prog packf +inbox 1 2 3 <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
-rm -f msgbox .msgbox.map
+rm -f msgbox
 for i in `pick +inbox2`; do
   diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
 done
@@ -92,7 +92,7 @@ rmm +inbox2 -unlink `pick +inbox2`
 # check append to existing mbox file
 run_prog packf +inbox -file msgbox2 <Mail/yes
 inc +inbox2 -file msgbox2 >/dev/null
-rm -f msgbox2 .msgbox2.map
+rm -f msgbox2
 for i in `pick +inbox2`; do
   if [ $i -le 10 ]; then
     diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
@@ -107,7 +107,7 @@ rmm +inbox2 -unlink `pick +inbox2`
 # check -mbox
 run_prog packf +inbox -mbox <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
-rm -f msgbox .msgbox.map
+rm -f msgbox
 for i in `pick +inbox2`; do
   diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
 done
@@ -117,7 +117,7 @@ rmm +inbox2 -unlink `pick +inbox2`
 # check -mmdf
 run_prog packf +inbox -mmdf <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
-rm -f msgbox .msgbox.map
+rm -f msgbox
 for i in `pick +inbox2`; do
   diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
 done
@@ -127,7 +127,7 @@ rmm +inbox2 -unlink `pick +inbox2`
 # check append to existing mmdf file
 run_prog packf +inbox -mmdf <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
-rm -f msgbox .msgbox.map
+rm -f msgbox
 for i in `pick +inbox2`; do
   if [ $i -le 10 ]; then
     diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"

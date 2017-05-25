@@ -29,7 +29,6 @@
  */
 static int mbx_chk_mbox (int);
 static int mbx_chk_mmdf (int);
-static int map_open (char *, int);
 
 
 /*
@@ -152,83 +151,18 @@ mbx_chk_mmdf (int fd)
 }
 
 
-int
-mbx_read (FILE *fp, long pos, struct drop **drops)
-{
-    int len, size;
-    long ld1, ld2;
-    char *bp;
-    char buffer[BUFSIZ];
-    struct drop *cp, *dp, *ep, *pp;
-
-    len = MAXFOLDER;
-    pp = mh_xcalloc(len, sizeof *pp);
-
-    ld1 = (long) strlen (mmdlm1);
-    ld2 = (long) strlen (mmdlm2);
-
-    fseek (fp, pos, SEEK_SET);
-    for (ep = (dp = pp) + len - 1; fgets (buffer, sizeof(buffer), fp);) {
-	size = 0;
-	if (strcmp (buffer, mmdlm1) == 0)
-	    pos += ld1, dp->d_start = (long) pos;
-	else {
-	    dp->d_start = (long)pos , pos += (long) strlen (buffer);
-	    for (bp = buffer; *bp; bp++, size++)
-		if (*bp == '\n')
-		    size++;
-	}
-
-	while (fgets (buffer, sizeof(buffer), fp) != NULL)
-	    if (strcmp (buffer, mmdlm2) == 0)
-		break;
-	    else {
-		pos += (long) strlen (buffer);
-		for (bp = buffer; *bp; bp++, size++)
-		    if (*bp == '\n')
-			size++;
-	    }
-
-	if (dp->d_start != (long) pos) {
-	    dp->d_id = 0;
-	    dp->d_size = (long) size;
-	    dp->d_stop = pos;
-	    dp++;
-	}
-	pos += ld2;
-
-	if (dp >= ep) {
-	    int    curlen = dp - pp;
-
-	    cp = (struct drop *) mh_xrealloc ((char *) pp,
-		                    (size_t) (len += MAXFOLDER) * sizeof(*pp));
-	    dp = cp + curlen, ep = (pp = cp) + len - 1;
-	}
-    }
-
-    if (dp == pp)
-	free(pp);
-    else
-	*drops = pp;
-    return (dp - pp);
-}
-
-
 /*
  * Append message to end of file or maildrop.
  */
 
 int
 mbx_copy (char *mailbox, int mbx_style, int md, int fd,
-          int mapping, char *text, int noisy)
+          char *text)
 {
     int i, j, size;
-    off_t start, stop;
-    long pos;
     char *cp, buffer[BUFSIZ + 1];   /* Space for NUL. */
     FILE *fp;
 
-    pos = (long) lseek (md, (off_t) 0, SEEK_CUR);
     size = 0;
 
     switch (mbx_style) {
@@ -237,7 +171,6 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 	    j = strlen (mmdlm1);
 	    if (write (md, mmdlm1, j) != j)
 		return NOTOK;
-	    start = lseek (md, (off_t) 0, SEEK_CUR);
 
 	    if (text) {
 		i = strlen (text);
@@ -257,18 +190,11 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 		    continue;
 		if (write (md, buffer, i) != i)
 		    return NOTOK;
-		if (mapping)
-		    for (cp = buffer; i-- > 0; size++)
-			if (*cp++ == '\n')
-			    size++;
 	    }
 
-	    stop = lseek (md, (off_t) 0, SEEK_CUR);
 	    j = strlen (mmdlm2);
 	    if (write (md, mmdlm2, j) != j)
 		return NOTOK;
-	    if (mapping)
-		map_write (mailbox, md, 0, (long) 0, start, stop, pos, size, noisy);
 
 	    return (i != NOTOK ? OK : NOTOK);
 
@@ -279,7 +205,6 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 		close (j);
 		return NOTOK;
 	    }
-	    start = lseek (md, (off_t) 0, SEEK_CUR);
 
 	    /* If text is given, we add it to top of message */
 	    if (text) {
@@ -353,49 +278,17 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 		    fclose (fp);
 		    return NOTOK;
 		}
-		if (mapping)
-		    for (cp = buffer; i-- > 0; size++)
-			if (*cp++ == '\n')
-			    size++;
 	    }
 	    if (write (md, "\n", 1) != 1) {
 		fclose (fp);
 		return NOTOK;
 	    }
-	    if (mapping)
-		size += 2;
 
 	    fclose (fp);
 	    lseek (fd, (off_t) 0, SEEK_END);
-	    stop = lseek (md, (off_t) 0, SEEK_CUR);
-	    if (mapping)
-		map_write (mailbox, md, 0, (long) 0, start, stop, pos, size, noisy);
 
 	    return OK;
     }
-}
-
-
-int
-mbx_size (int md, off_t start, off_t stop)
-{
-    int i, fd;
-    long pos;
-    FILE *fp;
-
-    if ((fd = dup (md)) == NOTOK || (fp = fdopen (fd, "r")) == NULL) {
-	if (fd != NOTOK)
-	    close (fd);
-	return NOTOK;
-    }
-
-    fseek (fp, start, SEEK_SET);
-    for (i = 0, pos = stop - start; pos-- > 0; i++)
-	if (fgetc (fp) == '\n')
-	    i++;
-
-    fclose (fp);
-    return i;
 }
 
 
@@ -409,198 +302,4 @@ mbx_close (char *mailbox, int md)
     if (lkclosespool (md, mailbox) == 0)
         return OK;
     return NOTOK;
-}
-
-
-/*
- * This function is performed implicitly by getbbent.c:
- *     bb->bb_map = map_name (bb->bb_file);
- */
-
-static char *
-map_name (char *file)
-{
-    char *cp, *dp;
-    static char buffer[BUFSIZ];
-
-    if ((dp = strchr(cp = r1bindex (file, '/'), '.')) == NULL)
-	dp = cp + strlen (cp);
-    if (cp == file)
-	snprintf (buffer, sizeof(buffer), ".%.*s%s", (int)(dp - cp), cp, ".map");
-    else
-	snprintf (buffer, sizeof(buffer), "%.*s.%.*s%s",
-		(int)(cp - file), file, (int)(dp - cp), cp, ".map");
-
-    return buffer;
-}
-
-
-int
-map_write (char *mailbox, int md, int id, long last, off_t start,
-           off_t stop, long pos, int size, int noisy)
-{
-    int i;
-    int clear, fd, td;
-    char *file;
-    struct drop *dp;
-    struct drop d1, d2, *rp;
-    FILE *fp;
-    struct stat st;
-
-    if ((fd = map_open (file = map_name (mailbox), md)) == NOTOK)
-	return NOTOK;
-
-    if ((fstat (fd, &st) == OK) && (st.st_size > 0))
-	clear = 0;
-    else
-	clear = 1;
-
-    if (!clear && map_chk (file, fd, &d1, pos, noisy)) {
-	(void) m_unlink (file);
-	mbx_close (file, fd);
-	if ((fd = map_open (file, md)) == NOTOK)
-	    return NOTOK;
-	clear++;
-    }
-
-    if (clear) {
-	if ((td = dup (md)) == NOTOK || (fp = fdopen (td, "r")) == NULL) {
-	    if (noisy)
-		admonish (file, "unable to %s", td != NOTOK ? "fdopen" : "dup");
-	    if (td != NOTOK)
-		close (td);
-	    mbx_close (file, fd);
-	    return NOTOK;
-	}
-
-	switch (i = mbx_read (fp, 0, &rp)) {
-	    case NOTOK:
-		fclose (fp);
-		mbx_close (file, fd);
-		return NOTOK;
-
-	    case OK:
-		fclose (fp);
-		break;
-
-	    default:
-		d1.d_id = 0;
-		for (dp = rp; i-- >0; dp++) {
-		    if (dp->d_start == start)
-			dp->d_id = id;
-		    lseek (fd, (off_t) (++d1.d_id * sizeof(*dp)), SEEK_SET);
-		    if (write (fd, (char *) dp, sizeof(*dp)) != sizeof(*dp)) {
-			if (noisy)
-			    admonish (file, "write error");
-			mbx_close (file, fd);
-			fclose (fp);
-			return NOTOK;
-		    }
-		}
-		free(rp);
-		fclose (fp);
-		break;
-	}
-    }
-    else {
-	if (last == 0)
-	    last = d1.d_start;
-	dp = &d2;
-	dp->d_id = id;
-	dp->d_size = (long) (size ? size : mbx_size (fd, start, stop));
-	dp->d_start = start;
-	dp->d_stop = stop;
-	lseek (fd, (off_t) (++d1.d_id * sizeof(*dp)), SEEK_SET);
-	if (write (fd, (char *) dp, sizeof(*dp)) != sizeof(*dp)) {
-	    if (noisy)
-		admonish (file, "write error");
-	    mbx_close (file, fd);
-	    return NOTOK;
-	}
-    }
-
-    dp = &d1;
-    dp->d_size = DRVRSN;
-    dp->d_start = (long) last;
-    dp->d_stop = lseek (md, (off_t) 0, SEEK_CUR);
-
-    lseek (fd, (off_t) 0, SEEK_SET);
-    if (write (fd, (char *) dp, sizeof(*dp)) != sizeof(*dp)) {
-	if (noisy)
-	    admonish (file, "write error");
-	mbx_close (file, fd);
-	return NOTOK;
-    }
-
-    mbx_close (file, fd);
-
-    return OK;
-}
-
-
-static int
-map_open (char *file, int md)
-{
-    mode_t mode;
-    struct stat st;
-
-    mode = fstat (md, &st) != NOTOK ? (int) (st.st_mode & 0777) : m_gmprot ();
-    return mbx_open (file, OTHER_FORMAT, st.st_uid, st.st_gid, mode);
-}
-
-
-int
-map_chk (char *file, int fd, struct drop *dp, long pos, int noisy)
-{
-    ssize_t count;
-    struct drop d, tmpd;
-    struct drop *dl;
-
-    if (read (fd, (char *) &tmpd, sizeof(*dp)) != sizeof(*dp)) {
-#ifdef notdef
-	inform("%s: missing or partial index, continuing...", file);
-#endif /* notdef */
-	return NOTOK;
-    }
-#ifndef	NTOHLSWAP
-    *dp = tmpd;		/* if ntohl(n)=(n), can use struct assign */
-#else
-    dp->d_id    = ntohl(tmpd.d_id);
-    dp->d_size  = ntohl(tmpd.d_size);
-    dp->d_start = ntohl(tmpd.d_start);
-    dp->d_stop  = ntohl(tmpd.d_stop);
-#endif
-    
-    if (dp->d_size != DRVRSN) {
-	if (noisy)
-	    inform("%s: version mismatch (%d != %d), continuing...", file,
-				dp->d_size, DRVRSN);
-	return NOTOK;
-    }
-
-    if (dp->d_stop != pos) {
-	if (noisy && pos != (long) 0)
-	    inform("%s: pointer mismatch or incomplete index (%ld!=%ld), "
-		"continuing...", file, dp->d_stop, (long) pos);
-	return NOTOK;
-    }
-
-    if ((long) ((dp->d_id + 1) * sizeof(*dp)) != (long) lseek (fd, (off_t) 0, SEEK_END)) {
-	if (noisy)
-	    inform("%s: corrupt index(1), continuing...", file);
-	return NOTOK;
-    }
-
-    dl = &d;
-    count = strlen (mmdlm2);
-    lseek (fd, (off_t) (dp->d_id * sizeof(*dp)), SEEK_SET);
-    if (read (fd, (char *) dl, sizeof(*dl)) != sizeof(*dl)
-	    || (ntohl(dl->d_stop) != dp->d_stop
-		&& ntohl(dl->d_stop) + count != dp->d_stop)) {
-	if (noisy)
-	    inform("%s: corrupt index(2), continuing...", file);
-	return NOTOK;
-    }
-
-    return OK;
 }

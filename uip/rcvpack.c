@@ -87,7 +87,7 @@ main (int argc, char **argv)
 	done (RCV_MBX);
 
     /* append the message */
-    if (mbx_copy (file, mbx_style, md, fileno(stdin), 1, NULL, 0) == NOTOK) {
+    if (mbx_copy (file, mbx_style, md, fileno(stdin), NULL) == NOTOK) {
 	mbx_close (file, md);
 	done (RCV_MBX);
     }

@@ -971,7 +971,7 @@ timely (char *t1, char *t2)
 static int
 usr_file (int fd, char *mailbox, int mbx_style)
 {
-    int	md, mapping;
+    int	md;
 
     if (verbose)
 	verbose_printf ("delivering to file \"%s\"", mailbox);
@@ -979,11 +979,9 @@ usr_file (int fd, char *mailbox, int mbx_style)
     if (mbx_style == MBOX_FORMAT) {
 	if (verbose)
 	    verbose_printf (" (mbox style)");
-	mapping = 0;
     } else {
 	if (verbose)
 	    verbose_printf (" (mmdf style)");
-	mapping = 1;
     }
 
     /* open and lock the file */
@@ -996,7 +994,7 @@ usr_file (int fd, char *mailbox, int mbx_style)
     lseek (fd, (off_t) 0, SEEK_SET);
 
     /* append message to file */
-    if (mbx_copy (mailbox, mbx_style, md, fd, mapping, NULL, verbose) == -1) {
+    if (mbx_copy (mailbox, mbx_style, md, fd, NULL) == -1) {
 	if (verbose)
 	    adorn ("", "error writing to:");
 	return -1;

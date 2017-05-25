@@ -58,7 +58,7 @@ test_dist ()
   # fakesendmail drops the message and any cc's into this mbox.
   mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox
   inc -silent -file "$mbox"
-  rm -f "$mbox" "$mbox.map"
+  rm -f "$mbox"
 
   # It's hard to calculate the exact Date: header post is going to
   # use, so we'll just use sed to remove the actual date so we can

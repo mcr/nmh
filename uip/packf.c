@@ -28,7 +28,6 @@ DEFINE_SWITCH_ARRAY(PACKF, switches);
 
 static int md = NOTOK;
 static int mbx_style = MBOX_FORMAT;
-static int mapping = 0;
 
 static void mbxclose_done(int) NORETURN;
 
@@ -82,11 +81,9 @@ main (int argc, char **argv)
 
 		case MBOXSW:
 		    mbx_style = MBOX_FORMAT;
-		    mapping = 0;
 		    continue;
 		case MMDFSW:
 		    mbx_style = MMDF_FORMAT;
-		    mapping = 1;
 		    continue;
 	    }
 	}
@@ -155,7 +152,7 @@ main (int argc, char **argv)
 		break;
 	    }
 
-	    if (mbx_copy (file, mbx_style, md, fd, mapping, NULL, 1) == NOTOK)
+	    if (mbx_copy (file, mbx_style, md, fd, NULL) == NOTOK)
 		adios (file, "error writing to file");
 
 	    close (fd);
