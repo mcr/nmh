@@ -481,58 +481,6 @@ pop_stat (int *nmsgs, int *nbytes)
 
 
 int
-pop_list (int msgno, int *nmsgs, int *msgs, int *bytes)
-{
-    int i;
-    int *ids = NULL;
-
-    if (msgno) {
-	if (command ("LIST %d", msgno) == NOTOK)
-	    return NOTOK;
-	*msgs = *bytes = 0;
-	if (ids) {
-	    *ids = 0;
-	    sscanf (response, "+OK %d %d %d", msgs, bytes, ids);
-	}
-	else
-	    sscanf (response, "+OK %d %d", msgs, bytes);
-	return OK;
-    }
-
-    if (command ("LIST") == NOTOK)
-	return NOTOK;
-
-    for (i = 0; i < *nmsgs; i++)
-	switch (multiline ()) {
-	    case NOTOK: 
-		return NOTOK;
-	    case DONE: 
-		*nmsgs = ++i;
-		return OK;
-	    case OK: 
-		*msgs = *bytes = 0;
-		if (ids) {
-		    *ids = 0;
-		    sscanf (response, "%d %d %d",
-			    msgs++, bytes++, ids++);
-		}
-		else
-		    sscanf (response, "%d %d", msgs++, bytes++);
-		break;
-	}
-    for (;;)
-	switch (multiline ()) {
-	    case NOTOK: 
-		return NOTOK;
-	    case DONE: 
-		return OK;
-	    case OK: 
-		break;
-	}
-}
-
-
-int
 pop_retr (int msgno, int (*action)(char *))
 {
     return traverse (action, "RETR %d", msgno);
@@ -579,27 +527,6 @@ int
 pop_dele (int msgno)
 {
     return command ("DELE %d", msgno);
-}
-
-
-int
-pop_noop (void)
-{
-    return command ("NOOP");
-}
-
-
-int
-pop_rset (void)
-{
-    return command ("RSET");
-}
-
-
-int
-pop_top (int msgno, int lines, int (*action)(char *))
-{
-    return traverse (action, "TOP %d %d", msgno, lines);
 }
 
 
