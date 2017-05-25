@@ -296,9 +296,8 @@ static struct colormap colortable[] = {
 	wantcomp[i] = cm; \
 	} while (0)
 
-#define NEWFMT (next_fp++)
 #define NEW_FP(type,fill,wid) do {\
-	fp=NEWFMT; fp->f_type=(type); fp->f_fill=(fill); fp->f_width=(wid); \
+	fp=next_fp++; fp->f_type=(type); fp->f_fill=(fill); fp->f_width=(wid); \
 	} while (0)
 
 /* Add (possibly new) component to the hash table */
