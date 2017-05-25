@@ -973,15 +973,9 @@ usr_file (int fd, char *mailbox, int mbx_style)
 {
     int	md;
 
-    if (verbose)
-	verbose_printf ("delivering to file \"%s\"", mailbox);
-
-    if (mbx_style == MBOX_FORMAT) {
-	if (verbose)
-	    verbose_printf (" (mbox style)");
-    } else {
-	if (verbose)
-	    verbose_printf (" (mmdf style)");
+    if (verbose) {
+        verbose_printf("delivering to file \"%s\" (%s style)", mailbox,
+            mbx_style == MBOX_FORMAT ? "mbox" : "mmdf");
     }
 
     /* open and lock the file */
