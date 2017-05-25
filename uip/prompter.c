@@ -38,11 +38,7 @@ DEFINE_SWITCH_ENUM(PROMPTER);
 DEFINE_SWITCH_ARRAY(PROMPTER, switches);
 #undef X
 
-
 static struct termios tio;
-#define ERASE tio.c_cc[VERASE]
-#define KILL  tio.c_cc[VKILL]
-#define INTR  tio.c_cc[VINTR]
 
 static int wtuser = 0;
 static int sigint = 0;
@@ -154,20 +150,20 @@ main (int argc, char **argv)
 	tcgetattr(0, &tio);
 
 	/* save original kill, erase character for later */
-	save_kill = KILL;
-	save_erase = ERASE;
+	save_kill = tio.c_cc[VKILL];
+	save_erase = tio.c_cc[VERASE];
 
 	/* set new kill, erase character in terminal structure */
-	KILL = killp ? chrcnv (killp) : save_kill;
-	ERASE = erasep ? chrcnv (erasep) : save_erase;
+	tio.c_cc[VKILL] = killp ? chrcnv (killp) : save_kill;
+	tio.c_cc[VERASE] = erasep ? chrcnv (erasep) : save_erase;
 
 	/* set the new terminal attributes */
 	 tcsetattr(0, TCSADRAIN, &tio);
 
 	/* print out new kill erase characters */
-	chrdsp ("erase", ERASE);
-	chrdsp (", kill", KILL);
-	chrdsp (", intr", INTR);
+	chrdsp ("erase", tio.c_cc[VERASE]);
+	chrdsp (", kill", tio.c_cc[VKILL]);
+	chrdsp (", intr", tio.c_cc[VINTR]);
 	putchar ('\n');
 	fflush (stdout);
 
@@ -176,8 +172,8 @@ main (int argc, char **argv)
 	 * setup in terminal structure so we can easily
 	 * restore it upon exit.
 	 */
-	KILL = save_kill;
-	ERASE = save_erase;
+	tio.c_cc[VKILL] = save_kill;
+	tio.c_cc[VERASE] = save_erase;
     }
 
     sigint = 0;
