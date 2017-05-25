@@ -561,7 +561,7 @@ scan_input (int fd, int *eightbit) {
     char buf[BUFSIZ];
 
     *eightbit = 0;
-    lseek (fd, (off_t) 0, SEEK_SET);
+    lseek(fd, 0, SEEK_SET);
 
     while ((state = read (fd, buf, sizeof buf)) > 0) {
         if (contains8bit (buf, buf + state)) {

@@ -402,7 +402,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 	if ((tmpfd = open (tmpfil, O_RDONLY)) == NOTOK)
 	    adios (tmpfil, "unable to open for re-reading");
 
-	lseek (fd, (off_t) 0, SEEK_SET);
+	lseek(fd, 0, SEEK_SET);
 
 	/*
 	 *  We're making the file shorter if we're deleting a header field

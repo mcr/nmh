@@ -189,7 +189,7 @@ finished:
     if (fclose (tmp))
 	adios (tmpfil, "error writing");
 
-    lseek (in, (off_t) 0, SEEK_SET);
+    lseek(in, 0, SEEK_SET);
 
     /*
      * Free any component buffers that we allocated

@@ -426,7 +426,7 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 	adios (filter, "unable to read");
 
     rewind (in);
-    lseek (fileno(in), (off_t) 0, SEEK_SET);
+    lseek(fileno(in), 0, SEEK_SET);
 
     arglist = argsplit(mhlproc, &mhl, &argnum);
 

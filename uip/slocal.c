@@ -985,7 +985,7 @@ usr_file (int fd, char *mailbox, int mbx_style)
 	return -1;
     }
 
-    lseek (fd, (off_t) 0, SEEK_SET);
+    lseek(fd, 0, SEEK_SET);
 
     /* append message to file */
     if (mbx_copy (mailbox, mbx_style, md, fd, NULL) == -1) {
@@ -1051,7 +1051,7 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
     if (verbose && !suppress)
 	verbose_printf ("delivering to pipe \"%s\"", cmd);
 
-    lseek (fd, (off_t) 0, SEEK_SET);
+    lseek(fd, 0, SEEK_SET);
 
     for (i = 0; (child_id = fork()) == -1 && i < 5; i++)
 	sleep (5);
@@ -1212,7 +1212,7 @@ you_lose:
 	    }
 	if (i == -1)
 	    goto you_lose;
-	lseek (fd1, (off_t) 0, SEEK_SET);
+	lseek(fd1, 0, SEEK_SET);
 	return fd1;
     }
 
@@ -1277,7 +1277,7 @@ you_lose:
 	return -1;
     }
     fclose (qfp);
-    lseek (fd1, (off_t) 0, SEEK_SET);
+    lseek(fd1, 0, SEEK_SET);
     return fd1;
 
 

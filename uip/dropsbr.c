@@ -82,7 +82,7 @@ mbx_open (char *file, int mbx_style, uid_t uid, gid_t gid, mode_t mode)
 	if (chmod (file, mode) < 0) {
 	    advise (file, "chmod");
 	}
-    } else if (st.st_size > (off_t) 0) {
+    } else if (st.st_size > 0) {
 	int status;
 
 	/* check the maildrop */
@@ -116,7 +116,7 @@ static int
 mbx_chk_mbox (int fd)
 {
     /* just seek to the end */
-    if (lseek (fd, (off_t) 0, SEEK_END) == (off_t) NOTOK)
+    if (lseek(fd, 0, SEEK_END) == (off_t) NOTOK)
 	return NOTOK;
 
     return OK;
@@ -285,7 +285,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 	    }
 
 	    fclose (fp);
-	    lseek (fd, (off_t) 0, SEEK_END);
+	    lseek(fd, 0, SEEK_END);
 
 	    return OK;
     }

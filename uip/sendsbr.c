@@ -537,7 +537,7 @@ alert (char *file, int out)
 		if ((in = open (file, O_RDONLY)) == NOTOK) {
 		    admonish (file, "unable to re-open");
 		} else {
-		    lseek (out, (off_t) 0, SEEK_END);
+		    lseek(out, 0, SEEK_END);
 		    strncpy (buf, "\nMessage not delivered to anyone.\n", sizeof(buf));
 		    if (write (out, buf, strlen (buf)) < 0) {
 			advise (file, "write");
@@ -556,7 +556,7 @@ alert (char *file, int out)
 			admonish (buf, "unable to rename %s to", file);
 		}
 	    }
-	    lseek (out, (off_t) 0, SEEK_SET);
+	    lseek(out, 0, SEEK_SET);
 	    dup2 (out, fileno (stdin));
 	    close (out);
 	    /* create subject for error notification */
@@ -714,7 +714,7 @@ annoaux (int fd)
 	goto oops;
     }
 
-    lseek (fd, (off_t) 0, SEEK_SET);
+    lseek(fd, 0, SEEK_SET);
     if ((fp = fdopen (fd, "r")) == NULL) {
 	if (debugsw)
 	    inform("unable to fdopen annotation list, continuing...");

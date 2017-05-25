@@ -32,7 +32,7 @@ fdcompare (int fd1, int fd2)
     resp = 0;
 
 leave: ;
-    lseek (fd1, (off_t) 0, SEEK_SET);
-    lseek (fd2, (off_t) 0, SEEK_SET);
+    lseek(fd1, 0, SEEK_SET);
+    lseek(fd2, 0, SEEK_SET);
     return resp;
 }

@@ -219,7 +219,7 @@ message_fd (char **vec)
 	    pidwait(child_id, OK);
 	    alarm (0);
 
-	    if (fstat (fd, &st) != NOTOK && st.st_size > (off_t) 0)
+	    if (fstat (fd, &st) != NOTOK && st.st_size > 0)
 		return fd;
 	} else {
 	    /*
@@ -315,7 +315,7 @@ alert (char *tty, int md)
 	return;
     }
 
-    lseek (md, (off_t) 0, SEEK_SET);
+    lseek(md, 0, SEEK_SET);
 
     while ((i = read (md, buffer, sizeof(buffer))) > 0)
 	if (write (td, buffer, i) != i)

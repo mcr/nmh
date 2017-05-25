@@ -1849,7 +1849,7 @@ do_text (char *file, int fd)
     int retval, state;
     char buf[BUFSIZ];
 
-    lseek (fd, (off_t) 0, SEEK_SET);
+    lseek(fd, 0, SEEK_SET);
 
     while ((state = read (fd, buf, sizeof(buf))) > 0) {
 	if (rp_isbad (retval = sm_wtxt (buf, state)))

@@ -42,7 +42,7 @@ distout (char *drft, char *msgnam, char *backup)
     chmod (drft, m_gmprot ());
 
     ready_msg (msgnam);
-    lseek (hdrfd, (off_t) 0, SEEK_SET); /* msgnam not accurate */
+    lseek(hdrfd, 0, SEEK_SET); /* msgnam not accurate */
     cpydata (hdrfd, fileno (ofp), msgnam, drft);
 
     for (resent = NULL;;) {
@@ -111,7 +111,7 @@ process: ;
     free (resent);
 
     if (txtfd != NOTOK) {
-	lseek (txtfd, (off_t) 0, SEEK_SET); /* msgnam not accurate */
+	lseek(txtfd, 0, SEEK_SET); /* msgnam not accurate */
 	cpydata (txtfd, fileno (ofp), msgnam, drft);
     }
 
