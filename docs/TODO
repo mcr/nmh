@@ -1,6 +1,5 @@
 [TODO]
 
-* fix msh/mmdf problems.
 * Add IPv6 support.
 * Write different function to read configuration files, instead
   of using m_getfld.c
@@ -112,15 +111,6 @@ MHN/MHSHOW/MHLIST/MHSTORE
 * when storing to a folder, should we save the folder context
   first, so that storage string of "+" stores to the new
   folder?
-
-MSH
----
-* Add -version to mshcmd.c for each command.
-* Change msh to use mbox style files, instead of mmdf.  Add options -mbox,
-  -mmdf to choose.
-*) There are couple calls to copyip() which should be changed to
-   getarguments().  One problem is freeing the string getcopy'ed by
-   getarguments().
 
 PICK
 ----

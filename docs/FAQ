@@ -437,7 +437,7 @@ Date: Sun, 23 Sep 2007 23:51:41 -0700
       http://sourceforge.net/project/showfiles.php?group_id=143658&package_id=188462
 
     There are directions in the release notes. Basically, you can use
-    either "msh" or the individual commands "inc -file" to get the
+    the individual commands "inc -file" to get the
     messages into a folder, and then "scan", "pick", "show", and so on
     (or your favorite commands in xmh, MH-E, etc.). --Jerry Peek
     <jpeek at jpeek.com>

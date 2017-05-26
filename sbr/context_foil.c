@@ -22,7 +22,7 @@ context_foil (char *path)
      * it's been set by us -- the uses in the source tree are:
      *  1 sbr/context_read.c uses it only after setting it itself
      *  2 uip/install_mh.c uses it only after setting it itself
-     *  3 uip/mshcmds.c and uip/mark.c print it if given the -debug switch
+     *  3 uip/mark.c prints it if given the -debug switch
      * A worthwhile piece of code cleanup would be to make 1 and
      * 2 use a local variable and just delete 3.
      *
