@@ -334,12 +334,25 @@ get_content (FILE *in, char *file, int toplevel)
 	    continue;
 
 	case BODY:
+            /* There are two cases.  The unusual one is when there is no
+             * blank line between the headers and the body.  This is
+             * indicated by the name of the header starting with `:'.
+             *
+             * For both cases, normal first, `1' is the desired c_begin
+             * file position for the start of the body, and `2' is the
+             * file position when buf is returned.
+             *
+             *     f o o :   b a r \n \n b o d y \n    bufsz = 6
+             *                          1          2   move -5
+             *     f o o :   b a r \n b o d y \n       bufsz = 4
+             *                       1       2         move -4
+             *
+             * For the normal case, bufsz includes the
+             * header-terminating `\n', even though it is not in buf,
+             * but bufsz isn't affected when it's missing in the unusual
+             * case. */
 	    if (name[0] == ':') {
-		/* Special case:  no blank line between header and body.  The
-		   file position indicator is on the newline at the end of the
-		   line, but it needs to be one prior to the beginning of the
-		   line.  So subtract the length of the line, bufsz, plus 1. */
-		ct->c_begin = ftell (in) - (bufsz + 1);
+		ct->c_begin = ftell(in) - bufsz;
 	    } else {
 		ct->c_begin = ftell (in) - (bufsz - 1);
 	    }

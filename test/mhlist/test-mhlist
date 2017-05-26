@@ -61,6 +61,23 @@ EOF
 run_prog mhlist -file - < "$MH_TEST_DIR/Mail/inbox/5" > $actual 2>&1
 check $expected $actual
 
+# Check message with no blank line separating the headers from the body.
+# Shouldn't make a difference to the size of the body part.
+# Bug meant no-blank-line case was one bigger by including the `\n'
+# ending the last header.
+f=$MH_TEST_DIR/$$.blank
+cat >$f-yes <<\E
+foo: bar
+
+body1
+body2
+E
+sed '/^$/d' $f-yes >$f-no
+run_prog mhlist -file $f-yes >$actual-yes
+run_prog mhlist -file $f-no >$actual-no
+check $actual-yes $actual-no
+rm $f-yes $f-no
+
 # check message number greater than highest
 run_test 'mhlist 11' "mhlist: message 11 doesn't exist"
 

@@ -69,8 +69,7 @@ From:    foo@example.edu
 Subject: test
 
 
-[ part  - text/plain -   70B  ]
-
+[ part  - text/plain -   69B  ]
 This is a multi-part message in MIME format.
 
 I am a stupid spammer.
