@@ -39,7 +39,7 @@
     X("width columns", 0, WIDTHSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
-    X("file file", 4, FILESW) /* interface from msh */ \
+    X("file file", 4, FILESW) \
     X("build", 5, BILDSW) /* interface from mhe */ \
     X("atfile", 0, ATFILESW) \
     X("noatfile", 0, NOATFILESW) \

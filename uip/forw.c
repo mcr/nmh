@@ -40,7 +40,7 @@
     X("nodashstuffing", 0, NBITSTUFFSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
-    X("file file", 4, FILESW)                 /* interface from msh */ \
+    X("file file", 4, FILESW) \
     X("build", 5, BILDSW)                     /* interface from mhe */ \
     X("from address", 0, FROMSW) \
     X("to address", 0, TOSW) \
