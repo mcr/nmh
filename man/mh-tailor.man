@@ -159,18 +159,6 @@ If this is empty, the user's login name is used.  This overrides the default
 value (which is empty).
 .RE
 .PP
-.BR mmdelim1 :
-\\001\\001\\001\\001\\n
-.RS 5
-The beginning-of-message delimiter for mail drops.
-.RE
-.PP
-.BR mmdelim2 :
-\\001\\001\\001\\001\\n
-.RS 5
-The end-of-message delimiter for mail drops.
-.RE
-.PP
 .BR spoollocking :
 %default_locking%
 .RS 5

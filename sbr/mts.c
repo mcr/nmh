@@ -95,8 +95,6 @@ static struct bind binds[] = {
     { "spoollocking", &spoollocking },
     { "uucpldir", &uucpldir },
     { "uucplfil", &uucplfil },
-    { "mmdelim1", &mmdlm1 },
-    { "mmdelim2", &mmdlm2 },
     { "mts",      &mts_method },
     { "sendmail", &sendmail  },
     { "clientname",  &clientname },
