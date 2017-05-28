@@ -27,7 +27,6 @@ char *getlocalmbox(void);
  * Separators
  */
 extern char *mmdlm1;
-extern char *mmdlm2;
 
 /*
  * Read mts.conf file

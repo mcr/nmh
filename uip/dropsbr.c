@@ -133,7 +133,7 @@ mbx_chk_mmdf (int fd)
     ssize_t count;
     char ldelim[BUFSIZ];
 
-    count = strlen (mmdlm2);
+    count = strlen (mmdlm1);
 
     if (lseek (fd, -count, SEEK_END) == (off_t) NOTOK)
 	return NOTOK;
@@ -142,9 +142,9 @@ mbx_chk_mmdf (int fd)
 
     ldelim[count] = 0;
 
-    if (strcmp (ldelim, mmdlm2)
+    if (strcmp (ldelim, mmdlm1)
 	    && write (fd, "\n", 1) != 1
-	    && write (fd, mmdlm2, count) != count)
+	    && write (fd, mmdlm1, count) != count)
 	return NOTOK;
 
     return OK;
@@ -186,14 +186,14 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 
 		for ( ;	(j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
 		    continue;
-		for ( ;	(j = stringdex (mmdlm2, buffer)) >= 0; buffer[j]++)
+		for ( ;	(j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
 		    continue;
 		if (write (md, buffer, i) != i)
 		    return NOTOK;
 	    }
 
-	    j = strlen (mmdlm2);
-	    if (write (md, mmdlm2, j) != j)
+	    j = strlen (mmdlm1);
+	    if (write (md, mmdlm1, j) != j)
 		return NOTOK;
 
 	    return (i != NOTOK ? OK : NOTOK);

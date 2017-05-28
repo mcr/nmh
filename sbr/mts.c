@@ -47,7 +47,6 @@ char *uucpldir = "/usr/spool/mail";
 char *uucplfil = "";
 
 char *mmdlm1 = "\001\001\001\001\n";
-char *mmdlm2 = "\001\001\001\001\n";
 
 char *spoollocking = DEFAULT_LOCKING;
 
