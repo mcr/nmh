@@ -26,7 +26,7 @@ char *getlocalmbox(void);
 /*
  * Separators
  */
-extern char *mmdlm1;
+#define MMDF_DELIM "\001\001\001\001\n"
 
 /*
  * Read mts.conf file

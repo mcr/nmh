@@ -133,7 +133,7 @@ mbx_chk_mmdf (int fd)
     ssize_t count;
     char ldelim[BUFSIZ];
 
-    count = strlen (mmdlm1);
+    count = LEN(MMDF_DELIM);
 
     if (lseek (fd, -count, SEEK_END) == (off_t) NOTOK)
 	return NOTOK;
@@ -142,9 +142,9 @@ mbx_chk_mmdf (int fd)
 
     ldelim[count] = 0;
 
-    if (strcmp (ldelim, mmdlm1)
+    if (strcmp (ldelim, MMDF_DELIM)
 	    && write (fd, "\n", 1) != 1
-	    && write (fd, mmdlm1, count) != count)
+	    && write (fd, MMDF_DELIM, count) != count)
 	return NOTOK;
 
     return OK;
@@ -168,8 +168,8 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
     switch (mbx_style) {
 	case MMDF_FORMAT: 
 	default: 
-	    j = strlen (mmdlm1);
-	    if (write (md, mmdlm1, j) != j)
+	    j = LEN(MMDF_DELIM);
+	    if (write (md, MMDF_DELIM, j) != j)
 		return NOTOK;
 
 	    if (text) {
@@ -184,16 +184,16 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 	    while ((i = read (fd, buffer, sizeof buffer - 1)) > 0) {
                 buffer[i] = '\0';   /* Terminate for stringdex(). */
 
-		for ( ;	(j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
+		for ( ;	(j = stringdex (MMDF_DELIM, buffer)) >= 0; buffer[j]++)
 		    continue;
-		for ( ;	(j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
+		for ( ;	(j = stringdex (MMDF_DELIM, buffer)) >= 0; buffer[j]++)
 		    continue;
 		if (write (md, buffer, i) != i)
 		    return NOTOK;
 	    }
 
-	    j = strlen (mmdlm1);
-	    if (write (md, mmdlm1, j) != j)
+	    j = LEN(MMDF_DELIM);
+	    if (write (md, MMDF_DELIM, j) != j)
 		return NOTOK;
 
 	    return (i != NOTOK ? OK : NOTOK);

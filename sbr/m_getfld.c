@@ -806,7 +806,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
 	/* not a Unix style maildrop */
 	s->readpos -= s->bytes_read;
 	s->bytes_read = 0;
-	delimstr = mmdlm1;
+	delimstr = MMDF_DELIM;
 	s->msg_style = MS_MMDF;
     }
 

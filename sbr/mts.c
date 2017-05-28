@@ -46,8 +46,6 @@ char *mmdflfil = "";
 char *uucpldir = "/usr/spool/mail";
 char *uucplfil = "";
 
-char *mmdlm1 = "\001\001\001\001\n";
-
 char *spoollocking = DEFAULT_LOCKING;
 
 /* Cache the username, fullname, and mailbox of the user */
