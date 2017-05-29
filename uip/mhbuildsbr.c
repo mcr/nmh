@@ -1918,7 +1918,7 @@ calculate_digest (CT ct, int asciiP)
 	unsigned char *ep;
 
 	fprintf (stderr, "MD5 digest=");
-	for (ep = (dp = digest) + sizeof(digest) / sizeof(digest[0]);
+	for (ep = (dp = digest) + sizeof digest;
 	         dp < ep; dp++)
 	    fprintf (stderr, "%02x", *dp & 0xff);
 	fprintf (stderr, "\n");
@@ -1926,7 +1926,7 @@ calculate_digest (CT ct, int asciiP)
 
     /* encode the digest using base64 */
     for (dp = digest, op = (char *) outbuf,
-				cc = sizeof(digest) / sizeof(digest[0]);
+				cc = sizeof digest;
 		cc > 0; cc -= 3, op += 4) {
 	unsigned long bits;
 	char *bp;

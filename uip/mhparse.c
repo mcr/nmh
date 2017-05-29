@@ -1854,7 +1854,7 @@ openBase64 (CT ct, char **file)
 
         if (ct->c_digested) {
             if (memcmp(digest, ct->c_digest,
-                       sizeof(digest) / sizeof(digest[0]))) {
+                       sizeof digest)) {
                 content_error (NULL, ct,
                                "content integrity suspect (digest mismatch) -- continuing");
             } else {
@@ -2106,7 +2106,7 @@ openQuoted (CT ct, char **file)
 
 	MD5Final (digest, &mdContext);
 	if (memcmp((char *) digest, (char *) ct->c_digest,
-		   sizeof(digest) / sizeof(digest[0])))
+		   sizeof digest))
 	    content_error (NULL, ct,
 			   "content integrity suspect (digest mismatch) -- continuing");
 	else
@@ -2911,7 +2911,7 @@ readDigest (CT ct, char *cp)
 
     size_t len;
     if (decodeBase64 (cp, &digest, &len, 0, NULL) == OK) {
-        const size_t maxlen = sizeof ct->c_digest / sizeof ct->c_digest[0];
+        const size_t maxlen = sizeof ct->c_digest;
 
         if (strlen ((char *) digest) <= maxlen) {
             memcpy (ct->c_digest, digest, maxlen);
