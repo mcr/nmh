@@ -31,6 +31,15 @@ static m_getfld_state_t gstate;		/* for accessor functions below    */
 		    DIEWRERR();\
 		}
 
+/* outnum determines how the input from inb is copied.  If positive then
+ * it is the number of the message to create, e.g. for inc(1), and all
+ * of the email is copied into that message, with some tweaks.  If 0,
+ * e.g. `scan 42', then reading inb can dubiously stop after a whole
+ * buffer of body, even though this might not be enough to fulfill the
+ * scan format and width.  Or if -1 then no copy is being created, but
+ * all of inb must be read because the next message must be found, e.g.
+ * `scan -file foo.mbox'. */
+
 int
 scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
       int unseen, char *folder, long size, int noisy, charstring_t *scanl)
@@ -143,16 +152,12 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
         return SCNEOF;
     }
 
-    if (outnum) {
-	if (outnum > 0) {
-	    scnmsg = m_name (outnum);
-	    if (*scnmsg == '?')		/* msg num out of range */
-		return SCNNUM;
-	} else {
-	    scnmsg = "/dev/null";
-	}
-	if ((scnout = fopen (scnmsg, "w")) == NULL)
-	    adios (scnmsg, "unable to write");
+    if (outnum > 0) {
+        scnmsg = m_name (outnum);
+        if (*scnmsg == '?')		/* msg num out of range */
+            return SCNNUM;
+        if ((scnout = fopen (scnmsg, "w")) == NULL)
+            adios (scnmsg, "unable to write");
     }
 
     /* scan - main loop */
@@ -162,7 +167,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	    case FLD: 
 	    case FLDPLUS: 
 		compnum++;
-		if (outnum) {
+		if (scnout) {
 		    FPUTS (name);
 		    if ( putc (':', scnout) == EOF) DIEWRERR();
 		    FPUTS (tmpbuf);
@@ -190,7 +195,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		while (state == FLDPLUS) {
 		    bufsz = rlwidth;
 		    state = m_getfld (&gstate, name, tmpbuf, &bufsz, inb);
-		    if (outnum)
+		    if (scnout)
 			FPUTS (tmpbuf);
 		}
 		break;
@@ -206,14 +211,16 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		    state = m_getfld (&gstate, name, tmpbuf + i, &bufsz, inb);
 		}
 
-		if (! outnum) {
+		if (outnum == 0) {
 		    state = FILEEOF; /* stop now if scan cmd */
 		    if (bodycomp && startbody == NULL)
 		    	startbody = tmpbuf;
 		    goto finished;
 		}
-		if (putc ('\n', scnout) == EOF) DIEWRERR();
-		FPUTS (tmpbuf);
+                if (scnout) {
+                    if (putc ('\n', scnout) == EOF) DIEWRERR();
+                    FPUTS (tmpbuf);
+                }
 		/*
                  * The previous code here used to call m_getfld() using
                  * pointers to the underlying output stdio buffers to
@@ -239,7 +246,8 @@ body:;
 		while (state == BODY) {
 		    bufsz = rlwidth;
 		    state = m_getfld (&gstate, name, tmpbuf, &bufsz, inb);
-		    FPUTS(tmpbuf);
+                    if (scnout)
+                        FPUTS(tmpbuf);
 		}
 		goto finished;
 
@@ -253,7 +261,7 @@ body:;
 
 		fprintf (stderr, "component %d\n", compnum);
 
-		if (outnum) {
+		if (scnout) {
 		    FPUTS ("\n\nBAD MSG:\n");
 		    FPUTS (name);
 		    if (putc ('\n', scnout) == EOF) DIEWRERR();
@@ -287,7 +295,7 @@ finished:
 
     if (size)
 	dat[2] = size;
-    else if (outnum > 0)
+    else if (scnout)
     {
 	dat[2] = ftell(scnout);
 	if (dat[2] == EOF) DIEWRERR();
@@ -327,7 +335,7 @@ finished:
 	cptr->c_text = NULL;
     }
 
-    if (outnum && (ferror(scnout) || fclose (scnout) == EOF))
+    if (scnout && (ferror(scnout) || fclose (scnout) == EOF))
 	DIEWRERR();
 
     return (state != FILEEOF ? SCNERR : encrypted ? SCNENC : SCNMSG);
