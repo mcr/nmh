@@ -26,6 +26,10 @@ static m_getfld_state_t gstate;		/* for accessor functions below    */
 
 #define DIEWRERR() adios (scnmsg, "write error on")
 
+#define PUTC(c) \
+    if (putc((c), scnout) == EOF) \
+        DIEWRERR();
+
 #define FPUTS(buf) {\
 		if (fputs(buf,scnout) == EOF)\
 		    DIEWRERR();\
@@ -169,7 +173,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		compnum++;
 		if (scnout) {
 		    FPUTS (name);
-		    if ( putc (':', scnout) == EOF) DIEWRERR();
+		    PUTC(':');
 		    FPUTS (tmpbuf);
 		}
 		/*
@@ -218,7 +222,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		    goto finished;
 		}
                 if (scnout) {
-                    if (putc ('\n', scnout) == EOF) DIEWRERR();
+                    PUTC('\n');
                     FPUTS (tmpbuf);
                 }
 		/*
@@ -264,7 +268,7 @@ body:;
 		if (scnout) {
 		    FPUTS ("\n\nBAD MSG:\n");
 		    FPUTS (name);
-		    if (putc ('\n', scnout) == EOF) DIEWRERR();
+		    PUTC('\n');
 		    state = BODY;
 		    goto body;
 		}
