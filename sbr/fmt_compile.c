@@ -965,7 +965,7 @@ fmt_freecomptext(void)
     unsigned int i;
     struct comp *cm;
 
-    for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++)
+    for (i = 0; i < DIM(wantcomp); i++)
         for (cm = wantcomp[i]; cm; cm = cm->c_next) {
             mh_xfree(cm->c_text);
             cm->c_text = NULL;
@@ -1101,7 +1101,7 @@ fmt_nextcomp(struct comp *comp, unsigned int *bucket)
     else
 	comp = comp->c_next;
 
-    while (comp == NULL && *bucket < sizeof(wantcomp)/sizeof(wantcomp[0])) {
+    while (comp == NULL && *bucket < DIM(wantcomp)) {
 	comp = wantcomp[(*bucket)++];
     }
 
@@ -1118,7 +1118,7 @@ free_comptable(void)
     unsigned int i;
     struct comp *cm, *cm2;
 
-    for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++) {
+    for (i = 0; i < DIM(wantcomp); i++) {
     	cm = wantcomp[i];
 	while (cm != NULL) {
 	    cm2 = cm->c_next;

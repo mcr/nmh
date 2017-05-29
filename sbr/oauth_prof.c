@@ -117,7 +117,7 @@ mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
     svcinfo->client_secret = svcinfo->auth_endpoint = NULL;
     svcinfo->token_endpoint = svcinfo->redirect_uri = NULL;
 
-    for (i = 0; i < (int) (sizeof SERVICES / sizeof SERVICES[0]); i++) {
+    for (i = 0; i < (int)DIM(SERVICES); i++) {
         if (strcmp(SERVICES[i].name, svc_name) == 0) {
             copy_svc(svcinfo, &SERVICES[i]);
             break;
