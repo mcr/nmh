@@ -79,12 +79,5 @@ brkstring (char *str, char *brksep, char *brkterm)
 static int
 brkany (char c, char *str)
 {
-    char *s;
-
-    if (str) {
-	for (s = str; *s; s++)
-	    if (c == *s)
-		return 1;
-    }
-    return 0;
+    return str && c && strchr(str, c);
 }
