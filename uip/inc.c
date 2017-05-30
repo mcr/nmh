@@ -623,7 +623,7 @@ main (int argc, char **argv)
 
 	    case SCNFAT:
 		trnflag = 0;
-		noisy++;
+		noisy = true;
 		/* advise (cp, "unable to read"); already advised */
 		break;
 
@@ -764,7 +764,7 @@ main (int argc, char **argv)
 
 	    case SCNFAT:
 		trnflag = 0;
-		noisy++;
+		noisy = true;
 		/* advise (cp, "unable to read"); already advised */
 		break;
 
