@@ -15,15 +15,15 @@ netsec_context *netsec_init(void);
 
 /*
  * Shuts down the security context for a connection and frees all
- * associated resources.
+ * associated resources.  Will unconditionally close the network socket
+ * as well.
  *
  * Arguments:
  *
  * ns_context	- Network security context
- * closeflag	- If set to 1, close the socket descriptor as well.
  */
 
-void netsec_shutdown(netsec_context *ns_context, int closeflag);
+void netsec_shutdown(netsec_context *ns_context);
 
 /*
  * Sets the file descriptor for this connection.  This will be used by

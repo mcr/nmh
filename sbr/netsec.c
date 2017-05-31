@@ -54,6 +54,7 @@ static SSL_CTX *sslctx = NULL;		/* SSL Context */
 struct _netsec_context {
     int ns_readfd;		/* Read descriptor for network connection */
     int ns_writefd;		/* Write descriptor for network connection */
+    int ns_noclose;		/* Do not close file descriptors if set */
     int ns_snoop;		/* If true, display network data */
     int ns_snoop_noend;		/* If true, didn't get a CR/LF on last line */
     netsec_snoop_callback *ns_snoop_cb; /* Snoop output callback */
@@ -140,6 +141,7 @@ netsec_init(void)
     NEW(nsc);
     nsc->ns_readfd = -1;
     nsc->ns_writefd = -1;
+    nsc->ns_noclose = 0;
     nsc->ns_snoop = 0;
     nsc->ns_snoop_noend = 0;
     nsc->ns_snoop_cb = NULL;
@@ -180,11 +182,10 @@ netsec_init(void)
 
 /*
  * Shutdown the connection completely and free all resources.
- * The connection is only closed if the flag is given.
  */
 
 void
-netsec_shutdown(netsec_context *nsc, int closeflag)
+netsec_shutdown(netsec_context *nsc)
 {
     mh_xfree(nsc->ns_userid);
     mh_xfree(nsc->ns_hostname);
@@ -218,7 +219,7 @@ netsec_shutdown(netsec_context *nsc, int closeflag)
 	BIO_free_all(nsc->ssl_io);
 #endif /* TLS_SUPPORT */
 
-    if (closeflag) {
+    if (! nsc->ns_noclose) {
 	if (nsc->ns_readfd != -1)
 	    close(nsc->ns_readfd);
 	if (nsc->ns_writefd != -1 && nsc->ns_writefd != nsc->ns_readfd)
@@ -1507,7 +1508,7 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 	 * SSL BIO -> socket BIO.
 	 */
 
-	rbio = BIO_new_socket(nsc->ns_readfd, BIO_NOCLOSE);
+	rbio = BIO_new_socket(nsc->ns_readfd, BIO_CLOSE);
 
 	if (! rbio) {
 	    netsec_err(errstr, "Unable to create a read socket BIO: %s",
@@ -1516,7 +1517,7 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 	    return NOTOK;
 	}
 
-	wbio = BIO_new_socket(nsc->ns_writefd, BIO_NOCLOSE);
+	wbio = BIO_new_socket(nsc->ns_writefd, BIO_CLOSE);
 
 	if (! wbio) {
 	    netsec_err(errstr, "Unable to create a write socket BIO: %s",
@@ -1576,6 +1577,13 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 
 	BIO_set_ssl(ssl_bio, ssl, BIO_CLOSE);
 	nsc->ssl_io = ssl_bio;
+
+	/*
+	 * Since SSL now owns these file descriptors, have it handle the
+	 * closing of them instead of netsec_shutdown().
+	 */
+
+	nsc->ns_noclose = 1;
 
 	return OK;
     }

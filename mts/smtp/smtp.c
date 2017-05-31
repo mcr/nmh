@@ -649,7 +649,7 @@ sm_end (int type)
     }
 
     if (nsc != NULL) {
-	netsec_shutdown(nsc, 1);
+	netsec_shutdown(nsc);
 	nsc = NULL;
     }
 

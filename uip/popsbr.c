@@ -277,7 +277,7 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 	case DONE: 
 	    if (poprint)	    
 		fprintf (stderr, "%s\n", response);
-	    netsec_shutdown(nsc, 1);
+	    netsec_shutdown(nsc);
 	    nsc = NULL;
 	    return NOTOK;
     }
@@ -546,7 +546,7 @@ int
 pop_done (void)
 {
     if (nsc)
-	netsec_shutdown(nsc, 1);
+	netsec_shutdown(nsc);
 
     return OK;
 }
