@@ -1631,7 +1631,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 	    }
 	} else {
 	    netsec_err(errstr, "TLS negotiation failed: %s",
-		       ERR_error_string(ERR_get_error(), NULL));
+		       ERR_error_string(errcode, NULL));
 	}
 
 	/*
