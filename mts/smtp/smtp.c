@@ -21,13 +21,6 @@
  * RP_-style codes.
  */
 
-/*
- * On older 4.2BSD machines without the POSIX function `sigaction',
- * the alarm handing stuff for time-outs will NOT work due to the way
- * syscalls get restarted.  This is not really crucial, since SendMail
- * is generally well-behaved in this area.
- */
-
 #ifdef SENDMAILBUG
 /*
  * It appears that some versions of Sendmail will return Code 451
