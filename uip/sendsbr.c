@@ -887,8 +887,7 @@ get_from_header_info(const char *filename, const char **addr, const char **host,
 
         /* Use the hostformat that corresponds to the successful addrformat. */
         if ((*host = get_message_header_info(in, hostformat)) == NULL) {
-            fclose(in);
-            *message = "unable to find sender host in";
+            *message = "unable to find sender host";
             fclose(in);
             return NOTOK;
         }
