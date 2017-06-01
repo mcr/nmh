@@ -21,17 +21,6 @@
  * RP_-style codes.
  */
 
-#ifdef SENDMAILBUG
-/*
- * It appears that some versions of Sendmail will return Code 451
- * when they don't really want to indicate a failure.
- * "Code 451 almost always means sendmail has deferred; we don't
- * really want bomb out at this point since sendmail will rectify
- * things later."  So, if you define SENDMAILBUG, Code 451 is
- * considered the same as Code 250.  Yuck!
- */
-#endif
-
 #define	NBITS ((sizeof (int)) * 8)
 
 /* Timeout in seconds for SMTP commands.
@@ -493,10 +482,6 @@ sm_wadr (char *mbox, char *host, char *path)
 	    return RP_OK;
 
 	case 451: 
-#ifdef SENDMAILBUG
-	    sm_addrs++;
-	    return RP_OK;
-#endif /* SENDMAILBUG */
 	case 421: 
 	case 450: 
 	case 452: 
@@ -527,10 +512,6 @@ sm_waend (void)
 	    return RP_OK;
 
 	case 451: 
-#ifdef SENDMAILBUG
-	    sm_nl = TRUE;
-	    return RP_OK;
-#endif /* SENDMAILBUG */
 	case 421: 
 	    return RP_NO;
 
@@ -569,9 +550,6 @@ sm_wtend (void)
 	    return RP_OK;
 
 	case 451: 
-#ifdef SENDMAILBUG
-	    return RP_OK;
-#endif /* SENDMAILBUG */
 	case 452: 
 	default: 
 	    return RP_NO;
