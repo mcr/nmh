@@ -1631,7 +1631,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 	    if (BIO_get_ssl(nsc->ssl_io, &ssl) < 1) {
 		netsec_err(errstr, "Certificate verification failed, but "
 			   "cannot retrieve SSL handle: %s",
-			   ERR_error_string(ERR_get_error(), NULL));
+                           ERR_error_string(errcode, NULL));
 	    } else {
 		netsec_err(errstr, "Server certificate verification failed: %s",
 			   X509_verify_cert_error_string(
@@ -1639,7 +1639,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 	    }
 	} else {
 	    netsec_err(errstr, "TLS negotiation failed: %s",
-		       ERR_error_string(errcode, NULL));
+                       ERR_error_string(errcode, NULL));
 	}
 
 	/*
