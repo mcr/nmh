@@ -2205,7 +2205,6 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     struct str2init *s2i;
     CT reply_ct;
     struct part *part;
-    int eightbit = 0;
     int status;
 
     type_p = getcpy (type);
@@ -2220,15 +2219,13 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     free (type_p);
 
     if (! (convert)) {
-        /* No mhbuild-convert- entry in mhn.defaults or profile
-           for type. */
+        /* No mhbuild-convert- entry in mhn.defaults or profile for type. */
         return;
     }
     /* reply_file is used to pass the output of the convert. */
     reply_file = getcpy (m_mktemp2 (NULL, invo_name, NULL, NULL));
     convert_command =
-        concat (convert, " ", FENDNULL(argstring), " >", reply_file,
-                NULL);
+        concat (convert, " ", FENDNULL(argstring), " >", reply_file, NULL);
 
     /* Convert here . . . */
     ct->c_storeproc = mh_xstrdup(convert_command);
@@ -2251,19 +2248,6 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
         return;
     }
 
-    /* For text content only, see if it is 8-bit text. */
-    if (reply_ct->c_type == CT_TEXT) {
-        int fd;
-
-        if ((fd = open (reply_file, O_RDONLY)) == NOTOK  ||
-            scan_input (fd, &eightbit) == NOTOK) {
-            free (reply_file);
-            inform("failed to read %s, continuing...", reply_file);
-            return;
-        } 
-        (void) close (fd);
-    }
-
     /* This sets reply_ct->c_ctparams, and reply_ct->c_termproc if the
        charset can't be handled natively. */
     for (s2i = str2cts; s2i->si_key; s2i++) {
@@ -2276,45 +2260,22 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
         (*reply_ct->c_ctinitfnx)(reply_ct);
     }
 
-    if ((cp =
-         get_param (reply_ct->c_ctinfo.ci_first_pm, "charset", '?', 1))) {
+    if ((cp = get_param (reply_ct->c_ctinfo.ci_first_pm, "charset", '?', 1))) {
         /* The reply Content-Type had the charset. */
         charset = cp;
     } else {
         set_charset (reply_ct, -1);
         charset = get_param (reply_ct->c_ctinfo.ci_first_pm, "charset", '?', 1);
-        if (reply_ct->c_reqencoding == CE_UNKNOWN  &&
-            reply_ct->c_type == CT_TEXT) {
-            /* Assume that 8bit is sufficient (for text).  In other words,
-               don't allow it to be encoded as quoted printable if lines
-               are too long.  This also sidesteps the check for whether
-               it needs to be encoded as binary; instead, it relies on
-               the applicable mhbuild-convert-text directive to ensure
-               that the resultant text is not binary. */
-            reply_ct->c_reqencoding = eightbit  ?  CE_8BIT  :  CE_7BIT;
-        }
     }
 
     /* Concatenate text/plain parts. */
-    if (reply_ct->c_type == CT_TEXT  &&
-        reply_ct->c_subtype == TEXT_PLAIN) {
+    if (reply_ct->c_type == CT_TEXT  &&  reply_ct->c_subtype == TEXT_PLAIN) {
         if (! *text_plain_ct  &&  m->mp_parts  &&  m->mp_parts->mp_part  &&
             m->mp_parts->mp_part->c_type == CT_TEXT  &&
             m->mp_parts->mp_part->c_subtype == TEXT_PLAIN) {
             *text_plain_ct = m->mp_parts->mp_part;
-            /* Make sure that the charset is set in the text/plain
-               part. */
+            /* Make sure that the charset is set in the text/plain part. */
             set_charset (*text_plain_ct, -1);
-            if ((*text_plain_ct)->c_reqencoding == CE_UNKNOWN) {
-                /* Assume that 8bit is sufficient (for text).  In other words,
-                   don't allow it to be encoded as quoted printable if lines
-                   are too long.  This also sidesteps the check for whether
-                   it needs to be encoded as binary; instead, it relies on
-                   the applicable mhbuild-convert-text directive to ensure
-                   that the resultant text is not binary. */
-                (*text_plain_ct)->c_reqencoding =
-                    eightbit  ?  CE_8BIT  :  CE_7BIT;
-            }
         }
 
         if (*text_plain_ct) {

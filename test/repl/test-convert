@@ -74,10 +74,10 @@ mhbuild "$actual"
 check "$actual" "$expected"
 
 
-# check that text is not quoted-printable encoded
+# check that text is quoted-printable encoded due to long text line
 # This tests the setting of reply_ct->c_reqencoding and
 # (*text_plain_ct)->c_reqencoding in expand_pseudoheader().
-start_test "don't encode text as quoted-printable"
+start_test "encode text as quoted-printable due to long text line"
 cat >"$expected" <<'EOF'
 From: recipient@example.com
 To: sender@example.com
@@ -88,10 +88,12 @@ Comments: In-reply-to sender@example.com
    message dated "Thu, 11 Dec 2014 08:19:02 -0600."
 MIME-Version: 1.0
 Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
 sender@example.com writes:
 
-> This is a very, very, very, very, very, very, very, very, very, very, very, long line.
+> This is a very, very, very, very, very, very, very, very, very, very, ve=
+ry, long line.
 EOF
 
 cat >`mhpath new` <<'EOF'
