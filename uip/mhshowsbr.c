@@ -499,10 +499,19 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 
 	default: {
 	    int status;
+            char *display_prog = NULL;
 
-	    arglist_free(file, vec);
+            if (vecp > 2  &&  vec[2][0] != '\0') {
+                /* Copy the real display program name.  This relies on the
+                   specific construction of vec[] by argsplit(). */
+                display_prog = mh_xstrdup(vec[2]);
+            }
 
-	    pidcheck ((status = pidXwait (child_id, NULL)));
+            arglist_free(file, vec);
+
+            pidcheck ((status = pidXwait (child_id, display_prog)));
+
+            mh_xfree(display_prog);
 
 	    if (fd != NOTOK)
 		(*ct->c_ceclosefnx) (ct);
