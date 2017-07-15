@@ -569,7 +569,9 @@ AS_IF([test "$LEX" = flex],
                [flex\ 2.6.0], [AM_LFLAGS=\
 '; sed "s/, num_to_read/, (size_t) num_to_read/" $@ >$@.tmp && mv -f $@.tmp $@'],
                [flex\ 2.6.1], [AM_LFLAGS=\
-'; sed '\''/\<int num_to_read\>/s/int/size_t/; s/\<yy_size_t i\>/int i/'\'' $@ >$@.tmp && mv -f $@.tmp $@'])
+'; sed '\''/\<int num_to_read\>/s/int/size_t/; \
+                s/\<yy_size_t i\>/int i/; \
+                s/int n; \\/yy_size_t n; \\/'\'' $@ >$@.tmp && mv -f $@.tmp $@'])
        AC_SUBST([AM_LFLAGS])])
 
 dnl ------------------
