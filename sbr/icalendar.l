@@ -257,7 +257,15 @@ folded-value         {VALUE-CHAR}*({fold}{VALUE-CHAR}*)+
 
 . {
     /* By default, flex will just pass unmatched text.  Catch it instead. */
-    inform("unexpected input: |%s|\n", icaltext);
+    contentline *clines = vevents.last->contentlines;
+    contentline *cline;
+
+    if (clines  &&  (cline = clines->last)) {
+        if (cline->unexpected == NULL) {
+            cline->unexpected = charstring_create (0);
+        }
+        charstring_append_cstring (cline->unexpected, icaltext);
+    }
 }
 
 <INITIAL>

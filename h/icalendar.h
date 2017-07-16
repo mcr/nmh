@@ -39,6 +39,7 @@ typedef struct contentline {
     char *input_line;          /* The (unfolded) input line. */
     size_t input_line_len;     /* Amount of text stored in input_line. */
     size_t input_line_size;    /* Size of allocated input_line. */
+    charstring_t unexpected;   /* Accumulate unexpected characters in input. */
 
     cr_indicator cr_before_lf; /* To support CR before LF.  If the first
                                   line of the input has a CR before its LF,
@@ -92,12 +93,13 @@ extern int icaldebug;
 int icalparse (void);
 extern vevent vevents;
 int icallex (void);
+extern int parser_status;
 
 /* And this is for the icalendar scanner. */
 extern YYSTYPE icallval;
 
 /*
- * For directing the scanner to use a files other than stdin/stdout.
+ * For directing the scanner to use files other than stdin/stdout.
  * These don't use the accessors provided by modern flex because
  * flex 2.5.4 doesn't supply them.
  */

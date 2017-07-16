@@ -841,5 +841,38 @@ END:VCALENDAR" | TZ=UTC mhical >"$actual"
 check "$expected" "$actual"
 
 
+# check invalid line folding
+start_test "invalid line folding"
+
+cat >"$expected" <<'EOF'
+Summary: test
+Description: this file does not end with a newline
+At: Sun, 14 May 2017 13:00 +0000
+To: Sun, 14 May 2017 14:00
+EOF
+
+cat >"$expected_err" <<'EOF'
+mhical: syntax error, unexpected ICAL_COMMA, expecting ICAL_COLON after " this line is not folded"
+EOF
+
+set +e
+printf %s \
+"BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//TDP v3.0//EN
+BEGIN:VEVENT
+DTSTAMP:20170514T122300Z
+DTSTART:20170514T130000Z
+DTEND:20170514T140000Z
+SUMMARY:test
+DESCRIPTION:this file does not end with a newline
+and this line is not folded,
+END:VEVENT
+END:VCALENDAR" | TZ=UTC mhical >"$actual" 2>"$actual_err"
+set -e
+check "$expected" "$actual"
+check "$expected_err" "$actual_err"
+
+
 finish_test
 exit $failed

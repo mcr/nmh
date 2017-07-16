@@ -56,6 +56,7 @@ DEFINE_SWITCH_ARRAY(MHICAL, switches);
 #undef X
 
 vevent vevents = { NULL, NULL, NULL};
+int parser_status = 0;
 
 int
 main (int argc, char *argv[]) {
@@ -236,7 +237,7 @@ main (int argc, char *argv[]) {
         free (outfile);
     }
 
-    return 0;
+    return parser_status;
 }
 
 /*

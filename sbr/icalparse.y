@@ -38,7 +38,7 @@
 #include "h/utils.h"
 
 static char *append (contentline *, const char *, const size_t);
-static void new_input_line (contentline **);
+static void new_content_line (contentline **);
 static void new_vevent (vevent *);
 static void free_param_names (param_list *);
 static void free_param_values (value_list *);
@@ -62,7 +62,7 @@ contentline_list
     /* contentline = name *(";" param ) ":" value CRLF */
 contentline
     : ICAL_NAME {
-          new_input_line (&vevents.last->contentlines);
+          new_content_line (&vevents.last->contentlines);
           append (vevents.last->contentlines->last, $1, strlen ($1));
           vevents.last->contentlines->last->name = $1;
       } ICAL_COLON {
@@ -87,7 +87,7 @@ contentline
           }
       }
     | ICAL_NAME {
-          new_input_line (&vevents.last->contentlines);
+          new_content_line (&vevents.last->contentlines);
           append (vevents.last->contentlines->last, $1, strlen ($1));
           vevents.last->contentlines->last->name = $1;
       } param_list ICAL_COLON {
@@ -211,7 +211,7 @@ append (contentline *cline, const char *src, const size_t src_len) {
 }
 
 static void
-new_input_line (contentline **cline) {
+new_content_line (contentline **cline) {
     contentline *new_node;
 
     NEW0(new_node);
@@ -296,6 +296,7 @@ free_contentlines (contentline *root) {
         }
         free (i->value);
         free (i->input_line);
+        charstring_free (i->unexpected);
         next = i->next;
         free (i);
     }
@@ -326,11 +327,27 @@ free_param_values (value_list *v) {
 
 static int
 icalerror (const char *error) {
+    contentline *c;
+    charstring_t context = NULL;
+
+    /* Find last chunk of unexpected text. */
+    for (c = vevents.last->contentlines; c; c = c->next) {
+        if (c->unexpected) {
+            context = c->unexpected;
+        }
+    }
+
     if (! strcmp ("syntax error, unexpected $end, expecting ICAL_NAME",
                   error)) {
         /* Empty input: produce no output. */
     } else {
-        adios (NULL, "%s", error);
+        if (context) {
+            inform ("%s after \"%s\"", error, charstring_buffer (context));
+        } else {
+            inform ("%s", error);
+        }
+        parser_status = -1;
+        return -1;
     }
 
     return 0;  /* The return value isn't used anyway. */
