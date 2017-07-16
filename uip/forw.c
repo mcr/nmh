@@ -111,7 +111,7 @@ main (int argc, char **argv)
     char *dmsg = NULL, *digest = NULL, *ed = NULL;
     char *file = NULL, *filter = NULL, *folder = NULL, *fwdmsg = NULL;
     char *from = NULL, *to = NULL, *cc = NULL, *subject = NULL, *fcc = NULL;
-    char *form = NULL, buf[BUFSIZ], value[10];
+    char *form = NULL, buf[BUFSIZ];
     char **argp, **arguments;
     struct stat st;
     struct msgs_array msgs = { 0, 0, NULL };
@@ -454,11 +454,9 @@ try_it_again:
 
 	if (digest) {
 	    snprintf (buf, sizeof(buf), IFORMAT, digest);
-	    snprintf (value, sizeof(value), "%d", issue);
-	    context_replace (buf, mh_xstrdup(value));
+	    context_replace (buf, mh_xstrdup(m_name(issue)));
 	    snprintf (buf, sizeof(buf), VFORMAT, digest);
-	    snprintf (value, sizeof(value), "%d", volume);
-	    context_replace (buf, mh_xstrdup(value));
+	    context_replace (buf, mh_xstrdup(m_name(volume)));
 	}
 
 	context_replace (pfolder, folder);	/* update current folder   */
