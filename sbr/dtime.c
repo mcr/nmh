@@ -178,7 +178,7 @@ dgmtime (time_t *clock)
 char *
 dctime (struct tws *tw)
 {
-    static char buffer[26];
+    static char buffer[64];
 
     if (!tw)
 	return NULL;
@@ -288,7 +288,7 @@ char *
 dtimezone (int offset, int flags)
 {
     int hours, mins;
-    static char buffer[10];
+    static char buffer[64];
 
     if (offset < 0) {
 	mins = -((-offset) % 60);
