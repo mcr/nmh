@@ -870,7 +870,8 @@ char *
 rp_string (int code)
 {
     char *text;
-    static char buffer[BUFSIZ];
+    /* The additional space is to avoid warning from gcc -Wformat-truncation. */
+    static char buffer[BUFSIZ + 19];
 
     switch (sm_reply.code != NOTOK ? code : NOTOK) {
 	case RP_AOK:
