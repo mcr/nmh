@@ -886,7 +886,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
     if ((msgstate == RESENT) ? (hdr->set & MRFM) : (hdr->set & MFRM)) {
 	savehdr = fullfrom;
 	savehdr[0] = '\0';
-	savehdlen = sizeof(fullfrom);
+	savehdrlen = sizeof(fullfrom);
     }
 
     tmpaddrs.m_next = NULL;
@@ -1068,13 +1068,12 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 		mnfree (mp);
 	}
 
-#error
-    	strncpy(fullfrom, str, sizeof(fullfrom));
-	fullfrom[sizeof(fullfrom) - 1] = 0;
-	/*
-	 * Strip off any trailing newlines
-	 */
+    /*
+     * If it was a From header, strip off any trailing newlines from
+     * the alias-expanded From line.
+     */
 
+    if ((msgstate == RESENT) ? (hdr->set & MRFM) : (hdr->set & MFRM)) {
 	while (*fullfrom && fullfrom[strlen(fullfrom) - 1] == '\n') {
 	    fullfrom[strlen(fullfrom) - 1] = '\0';
 	}
@@ -1298,7 +1297,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out,
     fputs (cp, out);
 
     if (saveappend && shlen + len < savehdrsize)
-	strncat(savehdr, out);
+	strncat(savehdr, cp, savehdrsize - shlen + len);
 
     linepos += len;
 
