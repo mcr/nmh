@@ -876,10 +876,13 @@ m_Eom (m_getfld_state_t s)
     char *cp;
 
     for (i = 0, cp = text; i < s->edelimlen; ++i, ++cp) {
-	if ((*cp = Getc (s)) == EOF) {
+	int c2;
+
+	if ((c2 = Getc (s)) == EOF) {
 	    *cp = '\0';
 	    break;
 	}
+        *cp = c2;
     }
 
     if (i != s->edelimlen  ||
