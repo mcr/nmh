@@ -7,6 +7,7 @@
 
 #include <h/mh.h>   /* for snprintf() */
 #include <h/nmh.h>
+#include <h/utils.h>
 #include <h/tws.h>
 #include <time.h>
 
@@ -178,15 +179,15 @@ dgmtime (time_t *clock)
 char *
 dctime (struct tws *tw)
 {
-    static char buffer[64];
+    static char buffer[26];
 
     if (!tw)
 	return NULL;
 
-    snprintf (buffer, sizeof(buffer), "%.3s %.3s %02d %02d:%02d:%02d %.4d\n",
+    snprintf (buffer, sizeof(buffer), "%.3s %.3s %02d %02d:%02d:%02d %s\n",
 	    tw_dotw[tw->tw_wday], tw_moty[tw->tw_mon], tw->tw_mday,
 	    tw->tw_hour, tw->tw_min, tw->tw_sec,
-	    tw->tw_year < 100 ? tw->tw_year + 1900 : tw->tw_year);
+	    m_strn(tw->tw_year < 100 ? tw->tw_year + 1900 : tw->tw_year, 4));
 
     return buffer;
 }
