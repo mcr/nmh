@@ -284,24 +284,23 @@ dasctime (struct tws *tw, int flags)
  * return the string representation of the numeric offset.
  */
 
-char *
-dtimezone (int offset, int flags)
+char *dtimezone(int offset, int flags)
 {
-    int hours, mins;
-    static char buffer[64];
+    static char buffer[sizeof "+3579139459"]; /* 2,147,483,648 / 60 = 35,791,394 */
+    bool pos;
+    unsigned os, hours, mins;
 
-    if (offset < 0) {
-	mins = -((-offset) % 60);
-	hours = -((-offset) / 60);
-    } else {
-	mins = offset % 60;
-	hours = offset / 60;
-    }
+    pos = offset >= 0;
+    os = pos ? offset : ~offset + 1;
+    hours = os / 60;
+    mins = os % 60;
 
-    if (flags & TW_DST)
-	hours++;
-    snprintf (buffer, sizeof(buffer), "%s%02d%02d",
-		offset < 0 ? "-" : "+", abs (hours), abs (mins));
+    if (flags & TW_DST) /* Shift towards +infinity. */
+        hours += pos ? 1 : -1;
+
+    snprintf(buffer, sizeof(buffer), "%c%02u%02u",
+        pos ? '+' : '-', hours, mins);
+
     return buffer;
 }
 
