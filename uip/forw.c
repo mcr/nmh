@@ -454,9 +454,9 @@ try_it_again:
 
 	if (digest) {
 	    snprintf (buf, sizeof(buf), IFORMAT, digest);
-	    context_replace (buf, mh_xstrdup(m_name(issue)));
+	    context_replace (buf, mh_xstrdup(m_str(issue)));
 	    snprintf (buf, sizeof(buf), VFORMAT, digest);
-	    context_replace (buf, mh_xstrdup(m_name(volume)));
+	    context_replace (buf, mh_xstrdup(m_str(volume)));
 	}
 
 	context_replace (pfolder, folder);	/* update current folder   */

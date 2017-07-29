@@ -11,6 +11,7 @@
 #include "m_mktemp.h"
 #include "makedir.h"
 #include <fcntl.h>
+#include <limits.h>
 
 extern char *mhdocdir;
 
@@ -571,4 +572,44 @@ scan_input (int fd, int *eightbit) {
     }
 
     return state == NOTOK  ?  NOTOK  :  OK;
+}
+
+
+/*
+ * Convert an int to a char string.
+ */
+char *
+m_str(int value) {
+    return m_strn(value, 0);
+}
+
+
+/*
+ * Convert an int to a char string, of limited width if > 0.
+ */
+#define STR(s) #s
+#define SIZE(n) (sizeof STR(n)) /* Includes NUL. */
+
+char *
+m_strn(int value, unsigned int width) {
+    /* +1 to allow negative sign. */
+    static char buffer[SIZE(INT_MAX) + 1];
+
+    if (width == 0) {
+        snprintf(buffer, sizeof buffer, "%d", value);
+    } else {
+        int max_val = 1;
+        unsigned int i;
+        for (i = 0; i < (value >= 0 ? width : width-1); ++i) {
+            max_val *= 10;
+        }
+
+        if (abs(value) <= max_val  &&  width > 0) {
+            snprintf(buffer, sizeof buffer, "%d", value);
+        } else {
+            snprintf(buffer, sizeof buffer, "%c", '?');
+        }
+    }
+
+    return buffer;
 }
