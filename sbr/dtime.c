@@ -291,7 +291,7 @@ char *dtimezone(int offset, int flags)
     unsigned os, hours, mins;
 
     pos = offset >= 0;
-    os = pos ? offset : ~offset + 1;
+    os = pos ? offset : ~offset + 1; /* abs(3) undefined on INT_MIN. */
     hours = os / 60;
     mins = os % 60;
 
