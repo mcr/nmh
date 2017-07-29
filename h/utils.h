@@ -115,7 +115,7 @@ char *m_str(int value);
  * Returns string representation of an int, in static memory.  If width
  * == 0, does not limit the width.  If width > 0 and value will not fit
  * in field of that size, including any negative sign but excluding
- * terminating null, then returns "?".  If width < 0, returns "?".
+ * terminating null, then returns "?".
  */
 char *m_strn(int value, unsigned int width);
 

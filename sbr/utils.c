@@ -588,28 +588,17 @@ m_str(int value) {
  * Convert an int to a char string, of limited width if > 0.
  */
 #define STR(s) #s
-#define SIZE(n) (sizeof STR(n)) /* Includes NUL. */
+/* SIZE(n) includes NUL.  n must just be digits, not an equation. */
+#define SIZE(n) (sizeof STR(n))
 
 char *
 m_strn(int value, unsigned int width) {
-    /* +1 to allow negative sign. */
-    static char buffer[SIZE(INT_MAX) + 1];
+    /* Need to include space for negative sign.  But don't use INT_MIN
+       because it could be a macro that would fool SIZE(n). */
+    static char buffer[SIZE(-INT_MAX)];
+    const int num_chars = snprintf(buffer, sizeof buffer, "%d", value);
 
-    if (width == 0) {
-        snprintf(buffer, sizeof buffer, "%d", value);
-    } else {
-        int max_val = 1;
-        unsigned int i;
-        for (i = 0; i < (value >= 0 ? width : width-1); ++i) {
-            max_val *= 10;
-        }
-
-        if (abs(value) <= max_val  &&  width > 0) {
-            snprintf(buffer, sizeof buffer, "%d", value);
-        } else {
-            snprintf(buffer, sizeof buffer, "%c", '?');
-        }
-    }
-
-    return buffer;
+    return num_chars > 0  &&  (width == 0 || (unsigned int) num_chars <= width)
+        ? buffer
+        : "?";
 }
