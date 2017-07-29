@@ -876,22 +876,20 @@ m_Eom (m_getfld_state_t s)
     char *cp;
 
     for (i = 0, cp = text; i < s->edelimlen; ++i, ++cp) {
-	int c2;
-
-	if ((c2 = Getc (s)) == EOF) {
+	if ((*cp = Getc (s)) == EOF) {
 	    *cp = '\0';
 	    break;
 	}
-        *cp = c2;
     }
 
     if (i != s->edelimlen  ||
         strncmp (text, (char *)s->edelim, s->edelimlen)) {
-	if (i == 0 && s->msg_style == MS_MBOX)
+	if (i == 0 && s->msg_style == MS_MBOX) {
 	    /* the final newline in the (brain damaged) unix-format
 	     * maildrop is part of the delimiter - delete it.
 	     */
 	    return 1;
+	}
 
 	/* Did not find delimiter, so restore the read position.
 	   Note that on input, a character had already been read
