@@ -166,9 +166,7 @@ TESTS = \
     test/whom/test-whom \
     test/cleanup ## The "cleanup" test should always be last.
 
-XFAIL_TESTS = \
-    test/inc/test-eom-align \
-    #
+XFAIL_TESTS =
 
 check_SCRIPTS = test/common.sh
 

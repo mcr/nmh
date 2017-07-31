@@ -874,6 +874,7 @@ m_Eom (m_getfld_state_t s)
     int i;
     char text[MAX_DELIMITER_SIZE];
     char *cp;
+    int adjust = 1;
 
     for (i = 0, cp = text; i < s->edelimlen; ++i, ++cp) {
 	int c2;
@@ -882,7 +883,7 @@ m_Eom (m_getfld_state_t s)
 	    *cp = '\0';
 	    break;
 	}
-        *cp = c2;
+	*cp = c2;
     }
 
     if (i != s->edelimlen  ||
@@ -894,11 +895,18 @@ m_Eom (m_getfld_state_t s)
 	    return 1;
 	}
 
+	if (i != s->edelimlen  &&  ! strncmp(text, s->fdelim, i)) {
+            /* If all or part of fdelim appeared at the end of the file,
+               back up even more so that the bytes are included in the
+               message. */
+	    adjust = 2;
+	}
+
 	/* Did not find delimiter, so restore the read position.
 	   Note that on input, a character had already been read
 	   with Getc().  It will be unget by m_getfld () on return. */
-	s->readpos -= s->bytes_read - 1;
-	s->bytes_read = 1;
+	s->readpos -= s->bytes_read - adjust;
+	s->bytes_read = adjust;
 	return 0;
     }
 
