@@ -895,10 +895,11 @@ m_Eom (m_getfld_state_t s)
 	    return 1;
 	}
 
-	if (i != s->edelimlen  &&  ! strncmp(text, s->fdelim, i)) {
-            /* If all or part of fdelim appeared at the end of the file,
-               back up even more so that the bytes are included in the
-               message. */
+	if (i <= 2  &&  s->msg_style == MS_MBOX  &&
+	    i != s->edelimlen  &&  ! strncmp(text, s->fdelim, i)) {
+	    /* If all or part of fdelim appeared at the end of the file,
+	       back up even more so that the bytes are included in the
+	       message. */
 	    adjust = 2;
 	}
 

@@ -95,6 +95,7 @@ makembox_B () {
 # Do a single test with message one's body of size sz.
 do_one_test_A () {
   SZ=$1
+  printf '%5s A\r' $SZ
   makembox_A "$MH_TEST_DIR/eom-align.mbox" $SZ
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the messages should be 11 and 12 in inbox
@@ -112,6 +113,7 @@ do_one_test_A () {
 # Do a test type B
 do_one_test_B () {
   SZ=$1
+  printf '%5s B\r' $SZ
   makembox_B "$MH_TEST_DIR/eom-align.mbox" $SZ
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the message should be 11 in the inbox
@@ -131,22 +133,18 @@ arith_eval $STDIO_BUFSZ + $HDRSZ + $FROMLINESZ + 32; FINISH=$arith_val
 
 #### Trouble spots for the particular input, with BUFSZ of 8192:
 for sz in 3146 3147 7241 7242 7243 11338 11339 15433 15434 15435; do
-  printf '%5s A\r' $sz
   do_one_test_A $sz
 done
 
 # Also 155, 174, 175, but they're too small for makembox_B to handle.
 for sz in 684 4074 4097 4148 4610 4611 5121 5122 6654 6655 8170 \
           8193 8244 8364 12266 12289 12340 16362 16385 16436; do
-  printf '%5s B\r' $sz
   do_one_test_B $sz
 done
 
 i="$START"
 while test $i -le $FINISH; do
-  printf '%5s A\r' $i
   do_one_test_A $i
-  printf '%5s B\r' $i
   do_one_test_B $i
   i=`expr $i + 1`
 done
