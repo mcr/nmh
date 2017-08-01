@@ -205,6 +205,14 @@ static int m_Eom (m_getfld_state_t);
 #define eom(c,s)	(s->msg_style != MS_DEFAULT && \
 			 ((c) == *s->msg_delim && m_Eom(s)))
 
+/*
+ * Maildrop styles
+ */
+#define	MS_DEFAULT	0	/* default (one msg per file) */
+#define	MS_UNKNOWN	1	/* type not known yet         */
+#define	MS_MBOX		2	/* Unix-style "from" lines    */
+#define	MS_MMDF		3	/* string MMDF_DELIM          */
+
 /* This replaces the old approach, with its direct access to stdio
  * internals.  It uses one fread() to load a buffer that we manage.
  *

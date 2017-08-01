@@ -376,14 +376,6 @@ struct msgs {
 
 typedef struct m_getfld_state *m_getfld_state_t;
 
-/*
- * Maildrop styles
- */
-#define	MS_DEFAULT	0	/* default (one msg per file) */
-#define	MS_UNKNOWN	1	/* type not known yet         */
-#define	MS_MBOX		2	/* Unix-style "from" lines    */
-#define	MS_MMDF		3	/* string MMDF_DELIM          */
-
 #define	NOUSE	0		/* draft being re-used */
 
 #define TFOLDER 0		/* path() given a +folder */
