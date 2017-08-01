@@ -22,6 +22,7 @@ named.list; one@example.com, two@example.com
 one: one@example.com
 two: two@example.com
 three: three@example.com
+four: Mister Four <four@example.com>
 EOF
 
 #### Rely on sendmail/smtp or sendmail/pipe below to override default mts.
@@ -157,6 +158,62 @@ send: message not delivered to anyone
 EOF
 
 test_alias sendmail/pipe "${testname}.expected"
+
+# check that alias expansion happens in the From: line when doing a bcc
+cat >"${MH_TEST_DIR}/Mail/draft" <<EOF
+From: four
+To: one
+Bcc: two
+Subject: from bcc expansion test
+
+This is test of from line expansion for a bcc.
+EOF
+
+cat >"${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<four@example.com>
+RCPT TO:<one@example.com>
+RCPT TO:<two@example.com>
+RSET
+MAIL FROM:<four@example.com>
+RCPT TO:<one@example.com>
+DATA
+From: Mister Four <four@example.com>
+To: one@example.com
+Subject: from bcc expansion test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date:
+
+This is test of from line expansion for a bcc.
+.
+RSET
+MAIL FROM:<four@example.com>
+RCPT TO:<two@example.com>
+DATA
+From: Mister Four <four@example.com>
+Date:
+Subject: from bcc expansion test
+BCC:
+
+------- Blind-Carbon-Copy
+
+From: Mister Four <four@example.com>
+To: one@example.com
+Subject: from bcc expansion test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date:
+
+This is test of from line expansion for a bcc.
+
+------- End of Blind-Carbon-Copy
+.
+QUIT
+EOF
+
+test_post "${testname}.actual" "${testname}.expected" \
+  "-alias ${MH_TEST_DIR}/Mail/aliases"
 
 
 exit ${failed:-0}

@@ -291,7 +291,8 @@ static void putfmt (char *, char *, int *, FILE *);
 static void start_headers (void);
 static void finish_headers (FILE *);
 static int get_header (char *, struct headers *);
-static int putadr (char *, char *, struct mailname *, FILE *, unsigned int);
+static int putadr (char *, char *, struct mailname *, FILE *, unsigned int,
+		   char *, unsigned int);
 static void putgrp (char *, char *, FILE *, unsigned int);
 static int insert (struct mailname *);
 static void pl (void);
@@ -790,6 +791,8 @@ putfmt (char *name, char *str, int *eai, FILE *out)
     int count, grp, i, keep;
     char *cp, *pp, *qp;
     char namep[BUFSIZ], error[BUFSIZ];
+    char *savehdr = NULL;
+    unsigned int savehdrlen = 0;
     struct mailname *mp = NULL, *np = NULL;
     struct headers *hdr;
 
@@ -871,6 +874,19 @@ putfmt (char *name, char *str, int *eai, FILE *out)
     if (!(hdr->flags & HADR)) {
 	fprintf (out, "%s: %s", name, str);
 	return;
+    }
+
+    /*
+     * If this is a From:/Resent-From: header, save the full thing for
+     * later in case we need it for use when constructing a Bcc draft message.
+     * Because we want to capture the results of alias expansion, save
+     * the output from putadr().
+     */
+
+    if ((msgstate == RESENT) ? (hdr->set & MRFM) : (hdr->set & MFRM)) {
+	savehdr = fullfrom;
+	savehdr[0] = '\0';
+	savehdrlen = sizeof(fullfrom);
     }
 
     tmpaddrs.m_next = NULL;
@@ -992,7 +1008,8 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 
 		    grp++;
 		}
-		if (putadr (namep, qp, mp, out, hdr->flags))
+		if (putadr (namep, qp, mp, out, hdr->flags, savehdr,
+			    savehdrlen))
 		    msgflags |= (hdr->set & (MVIS | MINV));
 		else
 		    mnfree (mp);
@@ -1041,7 +1058,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 		putgrp (namep, mp->m_gname, out, hdr->flags);
 	    if (mp->m_ingrp)
 		grp++;
-	    keep = putadr (namep, "", mp, out, hdr->flags);
+	    keep = putadr (namep, "", mp, out, hdr->flags, savehdr, savehdrlen);
 	    np = mp->m_next;
 	    if (keep) {
 		mp->m_next = NULL;
@@ -1052,17 +1069,11 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	}
 
     /*
-     * If this is a From:/Resent-From: header, save the full thing for
-     * later in case we need it for use when constructing a Bcc draft message
+     * If it was a From header, strip off any trailing newlines from
+     * the alias-expanded From line.
      */
 
     if ((msgstate == RESENT) ? (hdr->set & MRFM) : (hdr->set & MFRM)) {
-    	strncpy(fullfrom, str, sizeof(fullfrom));
-	fullfrom[sizeof(fullfrom) - 1] = 0;
-	/*
-	 * Strip off any trailing newlines
-	 */
-
 	while (*fullfrom && fullfrom[strlen(fullfrom) - 1] == '\n') {
 	    fullfrom[strlen(fullfrom) - 1] = '\0';
 	}
@@ -1221,9 +1232,11 @@ get_header (char *header, struct headers *table)
 
 
 static int
-putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flags)
+putadr (char *name, char *aka, struct mailname *mp, FILE *out,
+	unsigned int flags, char *savehdr, unsigned int savehdrsize)
 {
-    int len;
+    int len, saveappend = 0;
+    unsigned int shlen;
     char *cp;
     char buffer[BUFSIZ];
 
@@ -1236,6 +1249,11 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flag
     if (!nameoutput) {
 	fprintf (out, "%s: ", name);
 	linepos += (nameoutput = strlen (name) + 2);
+    }
+
+    if (savehdr) {
+	shlen = strlen(savehdr);
+	saveappend = 1;
     }
 
     if (*aka && mp->m_type != UUCPHOST && !mp->m_pers)
@@ -1253,15 +1271,34 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flag
     len = strlen (cp);
 
     if (linepos != nameoutput) {
-	if (len + linepos + 2 > outputlinelen)
+	if (len + linepos + 2 > outputlinelen) {
 	    fprintf (out, ",\n%*s", linepos = nameoutput, "");
-	else {
+	    if (saveappend) {
+		if (shlen + 2 + nameoutput + len >= savehdrsize) {
+		    saveappend = 0;
+		} else {
+		    snprintf(savehdr + shlen, savehdrsize - shlen, ",\n%*s",
+			     linepos, "");
+		}
+	    }
+	} else {
 	    fputs (", ", out);
 	    linepos += 2;
+	    if (saveappend) {
+		if (shlen + 2 + len >= savehdrsize) {
+		    saveappend = 0;
+		} else {
+		    strncat(savehdr, ", ", savehdrsize - shlen);
+		}
+	    }
 	}
     }
 
     fputs (cp, out);
+
+    if (saveappend && shlen + len < savehdrsize)
+	strncat(savehdr, cp, savehdrsize - shlen + len);
+
     linepos += len;
 
     return (flags & HTRY);
