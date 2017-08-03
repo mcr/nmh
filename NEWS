@@ -36,6 +36,18 @@ NEW FEATURES
 
 The following are new features for the 1.7 release of nmh:
 
+- When building from source, configure will derive ${prefix} from an existing
+  nmh installation if it finds one in your $PATH.
+- Added welcome message when nmh detects that its version changed.
+- The default locations for configuration files and support binaries
+  have been changed.  Configuration files now install into ${sysconfdir}/nmh,
+  and support binaries are placed in ${libexecdir}/nmh.  If you are upgrading
+  an existing installation you should look for old configuration files in
+  ${sysconfdir} and merge any local customizations into the new files in
+  ${sysconfdir}/nmh, then remove the old files.  ${libdir} will also contain
+  obsolete support programs that should be removed.
+- All TLS connections now perform certificate validation (including hostname
+  matching) by default; can be disabled on a per-application basis.
 - post now defaults to port 587 on 'smtp' message submission.
 - A value of 0 for the width switch of scan(1), inc(1), ap(1), dp(1),
   fmttest(1), and mhl(1) now means as many characters as the format
@@ -46,15 +58,6 @@ The following are new features for the 1.7 release of nmh:
 - An "rtrim" flag has been added to mhl to remove any trailing
   whitespace from filtered text lines.  A corresponding "nortrim" flag
   has also been added.
-- The default locations for configuration files and support binaries
-  have been changed.  Configuration files now install into ${sysconfdir}/nmh,
-  and support binaries are placed in ${libexecdir}/nmh.  If you are upgrading
-  an existing installation you should look for old configuration files in
-  ${sysconfdir} and merge any local customizations into the new files in
-  ${sysconfdir}/nmh, then remove the old files.  ${libdir} will also contain
-  obsolete support programs that should be removed.
-- When building from source, configure will derive ${prefix} from an existing
-  nmh installation if it finds one in your $PATH.
 - Added getmymbox and getmyaddr mh-format(5) function escapes.
 - New -[no]changecur, -fixtype, -decodetypes, and -[no]crlflinebreaks switches
   have been added to mhfixmsg(1).
@@ -80,8 +83,6 @@ The following are new features for the 1.7 release of nmh:
 - folder(1) -nocreate now prints a warning message for a non-existent folder.
 - mhfixmsg(1) now allows -decodetext binary, though 8bit is still the default.
 - inc(1) and msgchk(1) now support TLS encryption natively.
-- All TLS connections now perform certificate validation (including hostname
-  matching) by default; can be disabled on a per-application basis.
 - All network protocols support the XOAUTH authentication mechanism.
 - Support for SMTPUTF8 (RFC 6531) has been added.  mhshow(1) already supported
   RFC 6532, assuming all 8-bit message header field bodies are UTF-8 and use
@@ -92,7 +93,6 @@ The following are new features for the 1.7 release of nmh:
 - If a message body contains 8-bit bytes, post(8) uses SMTP 8BITMIME if the
   server supports it.  If not, post fails with a message to the user to
   encode the message for 7-bit transport.
-- Added welcome message when nmh detects that its version changed.
 - Fewer lseek(2)s will be used when reading headers in the common case.
 - Single-character headers can be reliably formatted, etc., instead of
   apparently being missing.
