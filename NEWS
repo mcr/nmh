@@ -9,6 +9,27 @@ MH and nmh uses should read careful the NOTEABLE CHANGES section, as there
 are some significant changes to nmh behavior.  Otherwise, please see the
 README and INSTALL files for help on getting started with nmh.
 
+---------------
+NOTABLE CHANGES
+---------------
+
+The largest notable changes in the 1.7 release are:
+
+- Complete unification of network security support.  All network protocols
+  (currently, POP and SMTP) have been refactored to use a common set of
+  security routines.  This means all protocols support all SASL mechanisms
+  (via the Cyrus-SASL library) and TLS.  TLS support has been strengthened
+  to perform certificate name validation and to require TLS 1.1 as a
+  minimum protocol.  Also, all protocols can make use of the OAuth2/XOAUTH
+  SASL mechanism, which is supported by gmail.
+- send(1) now supports adding switches to post(8) based on the address or
+  domain of the email address in the From: header; this more easily allows
+  users to support multiple identities.
+- A generic facility for passing arguments to filter programs in repl(1)
+  by use of the -convertargs switch.
+- Native support for the manipulation of iCalendar requests; see mhical(1)
+  for more details.
+
 ------------
 NEW FEATURES
 ------------
@@ -81,32 +102,6 @@ The following are new features for the 1.7 release of nmh:
 - Moved build_nmh to top-level directory.
 - Better error reporting for connections to network services
 
------------------
-OBSOLETE FEATURES
------------------
-
-- The undocumented -queue switch to post was deprecated in nmh 1.6, and was
-  removed in this release.
-- conflict(8) was deprecated in nmh 1.6, and was removed in this release.
-- mhtest(8) was deprecated in nmh 1.6, and was removed in this release.
-- msh(1) was deprecated in nmh 1.6, and was removed in this release.
-- Support in alias files for the the "*" address-group (everyone) was
-  deprecated in nmh 1.6, and was removed in this release.
-- Support for multiple hostnames in the "servers" entry of mts.conf has
-  been removed.
-- Support in alias files for expanding aliases based on group membership
-  (=) and primary group (+) has been removed.
-
--------------------
-DEPRECATED FEATURES
--------------------
-
-- Support for the MHPDEBUG environment variable is deprecated and will be
-  removed from a future nmh release.  Instead, use the -debug switch to pick.
-- With the move of support binaries from ${libdir} to ${libexecdir}/nmh, the
-  mostly undocumented 'libdir' mhparam(1) component has been replaced by a
-  new 'libexecdir' component.  'libdir' will be removed in a future release.
-
 ---------
 BUG FIXES
 ---------
@@ -129,26 +124,31 @@ BUG FIXES
   by RFC 2045, even if -nocontentid is supplied to mhbuild.
 - Post will now expand aliases on a "From" line when doing a BCC (bug #51098)
 
----------------
-NOTABLE CHANGES
----------------
+-------------------
+DEPRECATED FEATURES
+-------------------
 
-The largest notable changes in the 1.7 release are:
+- Support for the MHPDEBUG environment variable is deprecated and will be
+  removed from a future nmh release.  Instead, use the -debug switch to pick.
+- With the move of support binaries from ${libdir} to ${libexecdir}/nmh, the
+  mostly undocumented 'libdir' mhparam(1) component has been replaced by a
+  new 'libexecdir' component.  'libdir' will be removed in a future release.
 
-- Complete unification of network security support.  All network protocols
-  (currently, POP and SMTP) have been refactored to use a common set of
-  security routines.  This means all protocols support all SASL mechanisms
-  (via the Cyrus-SASL library) and TLS.  TLS support has been strengthened
-  to perform certificate name validation and to require TLS 1.1 as a
-  minimum protocol.  Also, all protocols can make use of the OAuth2/XOAUTH
-  SASL mechanism, which is supported by gmail.
-- send(1) now supports adding switches to post(8) based on the address or
-  domain of the email address in the From: header; this more easily allows
-  users to support multiple identities.
-- A generic facility for passing arguments to filter programs in repl(1)
-  by use of the -convertargs switch.
-- Native support for the manipulation of iCalendar requests; see mhical(1)
-  for more details.
+-----------------
+OBSOLETE FEATURES
+-----------------
+
+- The undocumented -queue switch to post was deprecated in nmh 1.6, and was
+  removed in this release.
+- conflict(8) was deprecated in nmh 1.6, and was removed in this release.
+- mhtest(8) was deprecated in nmh 1.6, and was removed in this release.
+- msh(1) was deprecated in nmh 1.6, and was removed in this release.
+- Support in alias files for the the "*" address-group (everyone) was
+  deprecated in nmh 1.6, and was removed in this release.
+- Support for multiple hostnames in the "servers" entry of mts.conf has
+  been removed.
+- Support in alias files for expanding aliases based on group membership
+  (=) and primary group (+) has been removed.
 
 As always, feedback is welcome.
 
