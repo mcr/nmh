@@ -218,16 +218,15 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
     }
 }
 
+#ifdef MULTIBYTE_SUPPORT
 static void
 cpstripped (charstring_t dest, size_t max, char *str)
 {
     int prevCtrl = 1;	/* This is 1 so we strip out leading spaces */
     int len;
-#ifdef MULTIBYTE_SUPPORT
     int char_len, w;
     wchar_t wide_char;
     char *altstr = NULL;
-#endif /* MULTIBYTE_SUPPORT */
 
     if (!str) {
 	return;
@@ -235,9 +234,7 @@ cpstripped (charstring_t dest, size_t max, char *str)
 
     len = strlen(str);
 
-#ifdef MULTIBYTE_SUPPORT
     if (mbtowc(NULL, NULL, 0)) {}  /* Reset shift state */
-#endif /* MULTIBYTE_SUPPORT */
 
     /*
      * Process each character at a time; if we have multibyte support
@@ -245,7 +242,6 @@ cpstripped (charstring_t dest, size_t max, char *str)
      */
 
     while (*str != '\0' && len > 0 && max > 0) {
-#ifdef MULTIBYTE_SUPPORT
 	char_len = mbtowc(&wide_char, str, len);
 
 	/*
@@ -269,12 +265,6 @@ cpstripped (charstring_t dest, size_t max, char *str)
 
 	if (iswcntrl(wide_char) || iswspace(wide_char)) {
 	    str += char_len;
-#else /* MULTIBYTE_SUPPORT */
-	int c = (unsigned char) *str;
-	len--;
-	if (iscntrl(c) || isspace(c)) {
-	    str++;
-#endif /* MULTIBYTE_SUPPORT */
 	    if (! prevCtrl) {
 		charstring_push_back (dest, ' ');
 		--max;
@@ -286,7 +276,6 @@ cpstripped (charstring_t dest, size_t max, char *str)
 
 	prevCtrl = 0;
 
-#ifdef MULTIBYTE_SUPPORT
 	w = wcwidth(wide_char);
 	assert(w >= 0);
 	if (max >= (size_t) w) {
@@ -302,12 +291,49 @@ cpstripped (charstring_t dest, size_t max, char *str)
 	    }
 	    break;
 	}
-#else /* MULTIBYE_SUPPORT */
-	charstring_push_back (dest, *str++);
-        --max;
-#endif /* MULTIBYTE_SUPPORT */
     }
 }
+#endif
+
+#ifndef MULTIBYTE_SUPPORT
+static void
+cpstripped (charstring_t dest, size_t max, char *str)
+{
+    int prevCtrl = 1;	/* This is 1 so we strip out leading spaces */
+    int len;
+
+    if (!str) {
+	return;
+    }
+
+    len = strlen(str);
+
+    /*
+     * Process each character at a time; if we have multibyte support
+     * then deal with that here.
+     */
+
+    while (*str != '\0' && len > 0 && max > 0) {
+	int c = (unsigned char) *str;
+	len--;
+	if (iscntrl(c) || isspace(c)) {
+	    str++;
+	    if (! prevCtrl) {
+		charstring_push_back (dest, ' ');
+		--max;
+	    }
+
+	    prevCtrl = 1;
+	    continue;
+	}
+
+	prevCtrl = 0;
+
+	charstring_push_back (dest, *str++);
+        --max;
+    }
+}
+#endif
 
 static char *lmonth[] = { "January",  "February","March",   "April",
 			  "May",      "June",    "July",    "August",
