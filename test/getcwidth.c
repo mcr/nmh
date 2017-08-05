@@ -147,22 +147,43 @@ getwidth(const char *string)
 static void
 dumpwidth(void)
 {
-	wchar_t wc, low;
+	static struct {
+		wchar_t min, max;
+	} range[] = {
+		/* https://en.wikipedia.org/wiki/Unicode#Code_point_planes_and_blocks */
+		{  L'\x0000',  L'\xffff' },
+		{ L'\x10000', L'\x14fff' },
+		{ L'\x16000', L'\x18fff' },
+		{ L'\x1b000', L'\x1bfff' },
+		{ L'\x1d000', L'\x1ffff' },
+		{ L'\x20000', L'\x2ffff' },
+		{ L'\xe0000', L'\xe0fff' },
+		{ L'\0', L'\0' }, /* Terminates list. */
+	}, *r;
+	int first;
+	wchar_t wc, start;
 	int width, lastwidth;
 
-	for (wc = 0, low = 1, lastwidth = wcwidth(1); wc < 0xffff; wc++) {
-		width = wcwidth(wc+1);
-		if (width != lastwidth) {
-			printf("%04lX - %04lX = %d\n", (unsigned long int) low,
-			       (unsigned long int) (wc), lastwidth);
-			low = wc+1;
+	for (r = range; r->max; r++) {
+		first = 1;
+		for (wc = r->min; wc <= r->max; wc++) {
+			width = wcwidth(wc);
+			if (first) {
+				start = wc;
+				lastwidth = width;
+				first = 0;
+				continue;
+			}
+			if (width != lastwidth) {
+				printf("%04lX - %04lX = %d\n", (unsigned long)start,
+					   (unsigned long int)wc - 1, lastwidth);
+				start = wc;
+				lastwidth = width;
+			}
+			if (wc == r->max)
+				printf("%04lX - %04lX = %d\n", (unsigned long)start,
+					   (unsigned long int)wc, lastwidth);
 		}
-		lastwidth = width;
 	}
-
-	width = wcwidth(wc);
-	if (width == lastwidth)
-		printf("%04lX - %04lX = %d\n", (unsigned long int) low,
-		       (unsigned long int) (wc), width);
 #endif /* MULTIBYTE_SUPPORT */
 }
