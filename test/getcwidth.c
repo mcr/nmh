@@ -18,11 +18,13 @@
 #ifdef MULTIBYTE_SUPPORT
 #include <locale.h>
 #include <wchar.h>
+#include <wctype.h>
 #endif
 
 #ifdef MULTIBYTE_SUPPORT
 static void usage(char *);
 static void dumpwidth(void);
+static void dumpctype(void);
 static void getwidth(const char *);
 #endif /* MULTIBYTE_SUPPORT */
 
@@ -55,6 +57,15 @@ main(int argc, char *argv[])
 				"other arguments\n");
 			exit(1);
 		}
+	}
+
+	if (strcmp(argv[1], "--ctype") == 0) {
+		if (argc != 2) {
+			fprintf(stderr, "--ctype cannot be combined with other arguments\n");
+			exit(1);
+		}
+		dumpctype();
+		exit(0);
 	}
 
 	/*
@@ -144,22 +155,26 @@ getwidth(const char *string)
 	printf("%d\n", length);
 }
 
+typedef struct {
+	wchar_t min, max;
+} unicode_range;
+
+static unicode_range range[] = {
+	/* https://en.wikipedia.org/wiki/Unicode#Code_point_planes_and_blocks */
+	{  L'\x0000',  L'\xffff' },
+	{ L'\x10000', L'\x14fff' },
+	{ L'\x16000', L'\x18fff' },
+	{ L'\x1b000', L'\x1bfff' },
+	{ L'\x1d000', L'\x1ffff' },
+	{ L'\x20000', L'\x2ffff' },
+	{ L'\xe0000', L'\xe0fff' },
+	{ L'\0', L'\0' }, /* Terminates list. */
+};
+
 static void
 dumpwidth(void)
 {
-	static struct {
-		wchar_t min, max;
-	} range[] = {
-		/* https://en.wikipedia.org/wiki/Unicode#Code_point_planes_and_blocks */
-		{  L'\x0000',  L'\xffff' },
-		{ L'\x10000', L'\x14fff' },
-		{ L'\x16000', L'\x18fff' },
-		{ L'\x1b000', L'\x1bfff' },
-		{ L'\x1d000', L'\x1ffff' },
-		{ L'\x20000', L'\x2ffff' },
-		{ L'\xe0000', L'\xe0fff' },
-		{ L'\0', L'\0' }, /* Terminates list. */
-	}, *r;
+	unicode_range *r;
 	int first;
 	wchar_t wc, start;
 	int width, lastwidth;
@@ -183,6 +198,32 @@ dumpwidth(void)
 			if (wc == r->max)
 				printf("%04lX - %04lX = %d\n", (unsigned long)start,
 					   (unsigned long int)wc, lastwidth);
+		}
+	}
+}
+
+static void
+dumpctype(void)
+{
+	unicode_range *r;
+	wchar_t wc;
+
+	for (r = range; r->max; r++) {
+		for (wc = r->min; wc <= r->max; wc++) {
+			printf("%6x  %2d  %c%c%c%c%c%c%c%c%c%c%c%c\n",
+				wc, wcwidth(wc),
+				iswcntrl(wc) ? 'c' : '-',
+				iswprint(wc) ? 'p' : '-',
+				iswgraph(wc) ? 'g' : '-',
+				iswalpha(wc) ? 'a' : '-',
+				iswupper(wc) ? 'u' : '-',
+				iswlower(wc) ? 'l' : '-',
+				iswdigit(wc) ? 'd' : '-',
+				iswxdigit(wc) ? 'x' : '-',
+				iswalnum(wc) ? 'N' : '-',
+				iswpunct(wc) ? '@' : '-',
+				iswspace(wc) ? 's' : '-',
+				iswblank(wc) ? 'b' : '-');
 		}
 	}
 #endif /* MULTIBYTE_SUPPORT */
