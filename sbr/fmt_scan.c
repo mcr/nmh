@@ -299,38 +299,27 @@ cpstripped (charstring_t dest, size_t max, char *str)
 static void
 cpstripped (charstring_t dest, size_t max, char *str)
 {
-    int prevCtrl = 1;	/* This is 1 so we strip out leading spaces */
-    int len;
+    bool squash;
+    int c;
 
-    if (!str) {
+    if (!str)
 	return;
-    }
 
-    len = strlen(str);
+    squash = true; /* Strip leading cases. */
+    while (max--) {
+        c = (unsigned char)*str++;
+        if (!c)
+            return;
 
-    /*
-     * Process each character at a time; if we have multibyte support
-     * then deal with that here.
-     */
+	if (isspace(c) || iscntrl(c)) {
+            if (squash)
+                continue;
+            c = ' ';
+            squash = true;
+        } else
+            squash = false;
 
-    while (*str != '\0' && len > 0 && max > 0) {
-	int c = (unsigned char) *str;
-	len--;
-	if (iscntrl(c) || isspace(c)) {
-	    str++;
-	    if (! prevCtrl) {
-		charstring_push_back (dest, ' ');
-		--max;
-	    }
-
-	    prevCtrl = 1;
-	    continue;
-	}
-
-	prevCtrl = 0;
-
-	charstring_push_back (dest, *str++);
-        --max;
+	charstring_push_back(dest, (char)c);
     }
 }
 #endif
