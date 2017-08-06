@@ -222,75 +222,87 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
 static void
 cpstripped (charstring_t dest, size_t max, char *str)
 {
-    int prevCtrl = 1;	/* This is 1 so we strip out leading spaces */
-    int len;
-    int char_len, w;
-    wchar_t wide_char;
-    char *altstr = NULL;
+    static bool deja_vu;
+    static char *oddchar;
+    static size_t oddlen;
+    static char *spacechar;
+    static size_t spacelen;
+    char *end;
+    bool squash;
+    char *src;
+    int srclen;
+    wchar_t rune;
+    int w;
 
-    if (!str) {
-	return;
+    if (!deja_vu) {
+        size_t two;
+
+        deja_vu = true;
+
+        two = MB_CUR_MAX * 2; /* Varies at run-time. */
+
+        oddchar = mh_xmalloc(two);
+        oddlen = wcstombs(oddchar, L"?", two);
+        assert(oddlen > 0);
+
+        assert(wcwidth(L' ') == 1); /* Need to pad in ones. */
+        spacechar = mh_xmalloc(two);
+        spacelen = wcstombs(spacechar, L" ", two);
+        assert(spacelen > 0);
     }
 
-    len = strlen(str);
+    if (!str)
+        return; /* It's unclear why no padding in this case. */
+    end = str + strlen(str);
 
-    if (mbtowc(NULL, NULL, 0)) {}  /* Reset shift state */
+    if (mbtowc(NULL, NULL, 0))
+        {} /* Reset shift state. */
 
-    /*
-     * Process each character at a time; if we have multibyte support
-     * then deal with that here.
-     */
+    squash = true; /* Trim `space' or `cntrl' from the start. */
+    while (max) {
+        if (!*str)
+            return; /* It's unclear why no padding in this case. */
 
-    while (*str != '\0' && len > 0 && max > 0) {
-	char_len = mbtowc(&wide_char, str, len);
+        srclen = mbtowc(&rune, str, end - str);
+        if (srclen == -1) {
+            /* Invalid rune, or not enough bytes to finish it. */
+            rune = L'?';
+            src = oddchar;
+            srclen = oddlen;
+            str++; /* Skip one byte. */
+        } else {
+            src = str;
+            str += srclen;
+        }
 
-	/*
-	 * If mbrtowc() failed, then we have a character that isn't valid
-	 * in the current encoding, or len wasn't enough for the whole
-	 * multi-byte rune to be read.  Replace it with a '?'.  We do that by
-	 * setting the alstr variable to the value of the replacement string;
-	 * altstr is used below when the bytes are copied into the output
-	 * buffer.
-	 */
-	if (char_len < 0) {
-	    altstr = "?";
-	    char_len = mbtowc(&wide_char, altstr, 1);
-	}
+        if (iswspace(rune) || iswcntrl(rune)) {
+            if (squash)
+                continue; /* Amidst a run of these. */
+            rune = L' ';
+            src = spacechar;
+            srclen = spacelen;
+            squash = true;
+        } else
+            squash = false;
 
-	if (char_len <= 0) {
-	    break;
-	}
+        w = wcwidth(rune);
+        if (w == -1) {
+            rune = L'?';
+            w = wcwidth(rune);
+            assert(w != -1);
+            src = oddchar;
+            srclen = oddlen;
+        }
 
-	len -= char_len;
+        if ((size_t)w > max) {
+            /* No room for rune;  pad. */
+            while (max--)
+                charstring_push_back_chars(dest, spacechar, spacelen, 1);
+            return;
+        }
 
-	if (iswcntrl(wide_char) || iswspace(wide_char)) {
-	    str += char_len;
-	    if (! prevCtrl) {
-		charstring_push_back (dest, ' ');
-		--max;
-	    }
-
-	    prevCtrl = 1;
-	    continue;
-	}
-
-	prevCtrl = 0;
-
-	w = wcwidth(wide_char);
-	assert(w >= 0);
-	if (max >= (size_t) w) {
-	    charstring_push_back_chars (dest, altstr ? altstr : str, char_len, w);
-	    max -= w;
-	    str += char_len;
-	    altstr = NULL;
-	} else {
-	    /* Not enough width available for the last character.  Output
-	       space(s) to fill. */
-	    while (max-- > 0) {
-		charstring_push_back (dest, ' ');
-	    }
-	    break;
-	}
+        charstring_push_back_chars(dest, src, srclen, w);
+        max -= w;
     }
 }
 #endif
