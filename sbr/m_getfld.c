@@ -525,17 +525,15 @@ Peek (m_getfld_state_t s) {
 }
 
 /* If there's room, undo the consumption of one character from msg_buf,
- * rewinding so it's read next.  If the previous character isn't
- * available because we're at the start of msg_buf then return EOF, else
- * return the character that will be read next, a la Peek(). */
-static int
+ * rewinding so it's read next, else die. */
+static void
 Ungetc(m_getfld_state_t s)
 {
-    if (s->readpos == s->msg_buf) {
-	return EOF;
-    }
-    --s->bytes_read;
-    return *--s->readpos;
+    if (s->readpos == s->msg_buf)
+        adios(NULL, "Ungetc() at start of message buffer.");
+
+    s->readpos--;
+    s->bytes_read--;
 }
 
 
