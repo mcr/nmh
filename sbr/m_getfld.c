@@ -472,8 +472,8 @@ leave_getfld (m_getfld_state_t s) {
         if (fseeko(s->iob, s->total_bytes_read, SEEK_SET) == -1)
             adios("getfld's iob", "failed to set offset: %ld",
                 s->total_bytes_read);
-        if ((s->last_caller_pos = ftello(s->iob)) == -1)
-            adios("getfld's iob", "failed to get offset after seek");
+
+        s->last_caller_pos = s->total_bytes_read;
     }
 }
 
