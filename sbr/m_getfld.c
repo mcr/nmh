@@ -201,6 +201,7 @@
 /*
  * static prototypes
  */
+static void Ungetc(m_getfld_state_t s);
 static int m_Eom (m_getfld_state_t);
 
 #define eom(c,s)	(s->msg_style != MS_DEFAULT && \
@@ -515,16 +516,17 @@ Getc (m_getfld_state_t s) {
     return (unsigned char)*s->readpos++;
 }
 
-/* Return the next character that would be read by Getc() without
- * consuming it, fetching more of the input for the buffer if required,
- * or EOF on end of file. */
+/* Return the next character that Getc() would return, which may be EOF. */
 static int
-Peek (m_getfld_state_t s) {
-    if ((s->end - s->readpos < 1 && read_more (s) == 0) ||
-        s->readpos >= s->end)
-        return EOF;
+Peek (m_getfld_state_t s)
+{
+    int c;
 
-    return (unsigned char)*s->readpos;
+    c = Getc(s);
+    if (c != EOF)
+        Ungetc(s);
+
+    return c;
 }
 
 /* If there's room, undo the consumption of one character from msg_buf,
