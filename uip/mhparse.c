@@ -864,8 +864,8 @@ magic_skip:
 	    }
         }
 	else
-	    inform("extraneous information in message %s's %s: field\n%*s(%s)",
-                ct->c_file, TYPE_FIELD, (int)strlen(invo_name) + 2, "", cp);
+            inform("extraneous information in message %s's %s: field\n"
+                "    (%s)", ct->c_file, TYPE_FIELD, cp);
     }
 
     return OK;
@@ -933,8 +933,8 @@ get_dispo (char *cp, CT ct, int buildflag)
 	    return NOTOK;
 	}
     } else if (*cp) {
-	inform("extraneous information in message %s's %s: field\n%*s(%s)",
-            ct->c_file, DISPO_FIELD, (int)strlen(invo_name) + 2, "", cp);
+        inform("extraneous information in message %s's %s: field\n    (%s)",
+            ct->c_file, DISPO_FIELD, cp);
     }
 
     if (buildflag)
@@ -3304,10 +3304,9 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	for (up = dp; isspace ((unsigned char) *dp);)
 	    dp++;
 	if (dp == cp || *dp != '=') {
-	    inform("invalid parameter in message %s's %s: "
-                "field\n%*sparameter %s (error detected at offset %ld)",
-                filename, fieldname, (int)strlen(invo_name) + 2, "",
-                cp, dp - cp);
+            inform("invalid parameter in message %s's %s: field\n"
+                "    parameter %s (error detected at offset %ld)",
+                filename, fieldname, cp, dp - cp);
 	    return NOTOK;
 	}
 
@@ -3338,9 +3337,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		if (isdigit((unsigned char) *vp))
 		    index = *vp - '0' + index * 10;
 		else {
-		    inform("invalid parameter index in message %s's "
-			    "%s: field\n%*s(parameter %s)", filename,
-                            fieldname, (int)strlen(invo_name) + 2, "", cp);
+                    inform("invalid parameter index in message %s's %s: field"
+                        "\n    (parameter %s)", filename, fieldname, cp);
 		    return NOTOK;
 		}
 	    } else {
@@ -3382,9 +3380,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		    }
 		    vp++;
 		} else {
-		    inform("missing charset in message %s's %s: "
-			   "field\n%*s(parameter %s)", filename, fieldname,
-                           (int)strlen(invo_name) + 2, "", nameptr);
+                    inform("missing charset in message %s's %s: field\n"
+                        "    (parameter %s)", filename, fieldname, nameptr);
 		    free(nameptr);
 		    return NOTOK;
 		}
@@ -3405,9 +3402,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		    }
 		    vp++;
 		} else {
-		    inform("missing language tag in message %s's %s: "
-			   "field\n%*s(parameter %s)", filename, fieldname,
-                           (int)strlen(invo_name) + 2, "", nameptr);
+                    inform("missing language tag in message %s's %s: field\n"
+                        "    (parameter %s)", filename, fieldname, nameptr);
 		    free(nameptr);
                     mh_xfree(charset);
 		    return NOTOK;
@@ -3429,10 +3425,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 				!isxdigit((unsigned char) *(vp + 1)) ||
 				*(vp + 2) == '\0' ||
 				!isxdigit((unsigned char) *(vp + 2))) {
-			inform("invalid encoded sequence in message "
-			       "%s's %s: field\n%*s(parameter %s)",
-                               filename, fieldname,
-                            (int)strlen(invo_name) + 2, "", nameptr);
+                        inform("invalid encoded sequence in message %s's %s: field\n"
+                            "    (parameter %s)", filename, fieldname, nameptr);
 			free(nameptr);
                         mh_xfree(charset);
                         mh_xfree(lang);
@@ -3472,9 +3466,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		    switch (*cp++) {
 		    case '\0':
 bad_quote:
-		        inform("invalid quoted-string in message %s's %s: "
-                            "field\n%*s(parameter %s)", filename, fieldname,
-                            (int)strlen(invo_name) + 2, "", nameptr);
+                        inform("invalid quoted-string in message %s's %s: field\n"
+                            "    (parameter %s)", filename, fieldname, nameptr);
 			free(nameptr);
                         mh_xfree(charset);
                         mh_xfree(lang);
@@ -3558,10 +3551,9 @@ bad_quote:
 	    } else {
 		for (sp2 = pp->sechead; sp2 != NULL; sp2 = sp2->next) {
 		    if (sp2->index == sp->index) {
-			inform("duplicate index (%d) in message "
-				"%s's %s: field\n%*s(parameter %s)", sp->index,
-                                filename, fieldname,
-                            (int)strlen(invo_name) + 2, "", nameptr);
+                        inform("duplicate index (%d) in message %s's %s: field"
+                            "\n    (parameter %s)", sp->index, filename,
+                            fieldname, nameptr);
 			return NOTOK;
 		    }
 		    if (sp2->index < sp->index &&
@@ -3573,10 +3565,9 @@ bad_quote:
 		}
 
 		if (sp2 == NULL) {
-		    inform("Internal error: cannot insert partial "
-		    	   "param in message %s's %s: field\n%*s(parameter %s)",
-                           filename, fieldname,
-                        (int)strlen(invo_name) + 2, "", nameptr);
+                    inform("Internal error: cannot insert partial param "
+                        "in message %s's %s: field\n    (parameter %s)",
+                        filename, fieldname, nameptr);
 		    return NOTOK;
 		}
 	    }
@@ -3616,10 +3607,9 @@ bad_quote:
 	int pindex = 0;
 	for (sp = pp->sechead; sp != NULL; sp = sp->next) {
 	    if (sp->index != pindex++) {
-		inform("missing section %d for parameter in "
-		       "message %s's %s: field\n%*s(parameter %s)", pindex - 1,
-                       filename, fieldname,
-                    (int)strlen(invo_name) + 2, "", pp->name);
+                inform("missing section %d for parameter in message "
+                    "%s's %s: field\n    (parameter %s)", pindex - 1,
+                    filename, fieldname, pp->name);
 		return NOTOK;
 	    }
 	    tlen += sp->len;

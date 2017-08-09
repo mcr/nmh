@@ -1683,7 +1683,7 @@ check "$expected" "$actual"
 start_test "input is passed through to output when there's a parse error"
 cat >"$expected.err" <<EOF
 mhfixmsg: invalid quoted-string in message 31's Content-Type: field
-          (parameter charset)
+    (parameter charset)
 mhfixmsg: unable to parse message 31
 EOF
 
