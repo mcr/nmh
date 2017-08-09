@@ -446,7 +446,7 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
                chunks of size MSG_INPUT_SIZE. */
             off = pos / MSG_INPUT_SIZE * MSG_INPUT_SIZE;
             if (fseeko(iob, off, SEEK_SET) == -1)
-                adios("getfld's iob", "failed to set offset to skip: %d",
+                adios("getfld's iob", "failed to set offset to skip: %ld",
                     off);
             num_read = fread (s->msg_buf, 1, MSG_INPUT_SIZE, iob);
             s->readpos = s->msg_buf  +  pos % MSG_INPUT_SIZE;
@@ -456,7 +456,7 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
     }
 
     if (fseeko(iob, pos, SEEK_SET) == -1)
-        adios("getfld's iob", "failed to set offset on entry: %d", pos);
+        adios("getfld's iob", "failed to set offset on entry: %ld", pos);
 }
 
 static void
@@ -470,7 +470,7 @@ leave_getfld (m_getfld_state_t s) {
 
 	/* Set file stream position so that callers can use ftell(). */
         if (fseeko(s->iob, s->total_bytes_read, SEEK_SET) == -1)
-            adios("getfld's iob", "failed to set offset: %d",
+            adios("getfld's iob", "failed to set offset: %ld",
                 s->total_bytes_read);
         if ((s->last_caller_pos = ftello(s->iob)) == -1)
             adios("getfld's iob", "failed to get offset after seek");

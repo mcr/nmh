@@ -16,11 +16,11 @@ char *etcpath(char *);
 struct msgs_array;
 
 void add_profile_entry (const char *, const char *);
-void inform(char *fmt, ...);
-void adios (const char *, const char *, ...) NORETURN;
-void admonish (char *, char *, ...);
-void advertise (const char *, char *, const char *, va_list);
-void advise (const char *, const char *, ...);
+void inform(char *fmt, ...) CHECK_PRINTF(1, 2);
+void adios (const char *, const char *, ...) CHECK_PRINTF(2, 3) NORETURN;
+void admonish (char *, char *, ...) CHECK_PRINTF(2, 3);
+void advertise (const char *, char *, const char *, va_list) CHECK_PRINTF(3, 0);
+void advise (const char *, const char *, ...) CHECK_PRINTF(2, 3);
 char **argsplit (char *, char **, int *);
 void argsplit_msgarg (struct msgs_array *, char *, char **);
 void argsplit_insert (struct msgs_array *, char *, char **);

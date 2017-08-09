@@ -287,8 +287,7 @@ main (int argc, char **argv)
      */
 
    if (!dump && compargs.size == 0 && msgs.size == 0) {
-   	adios (NULL, "usage: [switches] [+folder] msgs | strings...",
-	       invo_name);
+        adios(NULL, "usage: [switches] [+folder] msgs | strings...");
    }
 
    /*

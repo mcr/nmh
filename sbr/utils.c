@@ -35,7 +35,7 @@ void *mh_xmalloc(size_t size)
         size = 1; /* Some mallocs don't like 0. */
     p = malloc(size);
     if (!p)
-        adios(NULL, "malloc failed, size wanted: %zu", size);
+        adios(NULL, "malloc failed, size wanted: %lu", (unsigned long)size);
 
     return p;
 }
@@ -55,7 +55,7 @@ void *mh_xrealloc(void *ptr, size_t size)
 
     new = realloc(ptr, size);
     if (!new)
-        adios(NULL, "realloc failed, size wanted: %zu", size);
+        adios(NULL, "realloc failed, size wanted: %lu", (unsigned long)size);
 
     return new;
 }
@@ -70,7 +70,8 @@ void *mh_xcalloc(size_t nelem, size_t elsize)
 
     p = calloc(nelem, elsize);
     if (!p)
-        adios(NULL, "calloc failed, size wanted: %zu * %zu", nelem, elsize);
+        adios(NULL, "calloc failed, size wanted: %lu * %lu",
+            (unsigned long)nelem, (unsigned long)elsize);
 
     return p;
 }

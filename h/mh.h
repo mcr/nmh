@@ -30,14 +30,15 @@
 #endif
 typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 
-/* If we're using gcc then give it some information about
- * functions that abort.
- */
+/* If we're using gcc then tell it extra information so it can do more
+ * compile-time checks. */
 #if __GNUC__ > 2
 #define NORETURN __attribute__((__noreturn__))
+#define CHECK_PRINTF(fmt, arg) __attribute__((format(printf, fmt, arg)))
 #define NMH_UNUSED(i) (void) i
 #else
 #define NORETURN
+#define CHECK_PRINTF(fmt, arg)
 #define NMH_UNUSED(i) i
 #endif
 
