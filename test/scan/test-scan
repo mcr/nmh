@@ -19,6 +19,9 @@ check_exit '-eq 1' scan -
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 
+
+# check -width
+start_test '-width'
 cat >"$expected" <<EOF
    1  09/29 Test1              Testing message 1<<This is message number 1 >>
    2  09/29 Test2              Testing message 2<<This is message number 2 >>
@@ -35,7 +38,9 @@ EOF
 run_prog scan +inbox -width 80 >"$actual" || exit 1
 check "$expected" "$actual"
 
+
 # check highlighting
+start_test 'highlighting'
 cat >"$expected" <<EOF
    1  09/29 Test1              Testing message 1<<This is message number 1 >>[m
    2  09/29 Test2              Testing message 2<<This is message number 2 >>[m
@@ -56,4 +61,10 @@ run_prog scan -form scan.highlighted -width 80 >"$actual" || exit 1
 check "$expected" "$actual"
 
 
+# check null input
+start_test 'null input'
+run_test 'scan -format "" -file /dev/null' ''
+
+
+finish_test
 exit $failed

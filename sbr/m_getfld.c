@@ -432,17 +432,20 @@ leave_getfld (m_getfld_state_t s) {
 
 static size_t
 read_more (m_getfld_state_t s) {
-    /* Retain at least edelimlen characters that have already been
-       read so that we can back up to them in m_Eom(). */
-    ssize_t retain = s->edelimlen;
+    /* Retain at least edelimlen characters that have already been read,
+       if at least edelimlen have been read, so that we can back up to them
+       in m_Eom(). */
+    ssize_t retain = s->end - s->msg_buf < s->edelimlen ? 0 : s->edelimlen;
     size_t num_read;
 
-    if (retain < s->end - s->readpos)
-        retain = s->end - s->readpos;
-    assert (retain <= s->readpos - s->msg_buf);
+    if (retain > 0) {
+        if (retain < s->end - s->readpos)
+            retain = s->end - s->readpos;
+        assert (retain <= s->readpos - s->msg_buf);
 
-    /* Move what we want to retain at end of the buffer to the beginning. */
-    memmove (s->msg_buf, s->readpos - retain, retain);
+        /* Move what we want to retain at end of the buffer to the beginning. */
+        memmove (s->msg_buf, s->readpos - retain, retain);
+    }
 
     s->readpos = s->msg_buf + retain;
     num_read = fread (s->readpos, 1, MSG_INPUT_SIZE, s->iob);

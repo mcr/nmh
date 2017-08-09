@@ -122,7 +122,8 @@ BUG FIXES
   actually works in the absence of a Fcc header in the replied-to message.
 - A Content-ID is generated for message/external-body entities as required
   by RFC 2045, even if -nocontentid is supplied to mhbuild.
-- Post will now expand aliases on a "From" line when doing a BCC (bug #51098)
+- post will now expand aliases on a "From" line when doing a BCC [Bug #51098].
+- scan can now handle empty files without violating an assert [Bug #51693].
 
 -------------------
 DEPRECATED FEATURES
