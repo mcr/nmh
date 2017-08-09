@@ -524,16 +524,18 @@ Peek (m_getfld_state_t s) {
     return s->readpos < s->end  ?  (unsigned char) *s->readpos  :  EOF;
 }
 
-/* If there's room, put non-EOF c back into msg_buf and rewind so it's
- * read next.  c need not be the value already in the buffer.  If there
- * isn't room then return EOF, else return c. */
+/* If there's room, undo the consumption of one character from msg_buf,
+ * rewinding so it's read next.  If the previous character isn't
+ * available because we're at the start of msg_buf then return EOF, else
+ * return the character that will be read next, a la Peek(). */
 static int
-Ungetc (int c, m_getfld_state_t s) {
+Ungetc(m_getfld_state_t s)
+{
     if (s->readpos == s->msg_buf) {
 	return EOF;
     }
     --s->bytes_read;
-    return *--s->readpos = (unsigned char) c;
+    return *--s->readpos;
 }
 
 
@@ -559,7 +561,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 	    ;
 
 	if (c != EOF)
-	    Ungetc(c, s);
+            Ungetc(s);
 	*bufsz = *buf = 0;
 	leave_getfld (s);
 	return s->state = FILEEOF;
@@ -577,7 +579,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 		    while ((c = Getc(s)) != EOF && eom (c, s))
 			;
 		    if (c != EOF)
-			Ungetc(c, s);
+                        Ungetc(s);
 		    *bufsz = *buf = 0;
 		    leave_getfld (s);
 		    return s->state = FILEEOF;
@@ -909,7 +911,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
 	while ((c = Getc(s)) != EOF && eom (c, s))
 	    ;
 	if (c != EOF)
-	    Ungetc(c, s);
+            Ungetc(s);
     }
 
     leave_getfld (s);
