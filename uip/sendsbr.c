@@ -135,7 +135,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 #ifdef OAUTH_SUPPORT
 		const char *errmsg;
 		if (setup_oauth_params(vec, nvecsp, auth_svc, &errmsg) != OK) {
-			adios(NULL, errmsg);
+                        adios(NULL, "%s", errmsg);
 		}
 #else
                 adios(NULL, "send built without OAUTH_SUPPORT, "
@@ -751,7 +751,7 @@ handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc) {
 
     /* Extract address and host from From: header line in draft. */
     if (get_from_header_info(draft, &addr, &host, &message) != OK) {
-        adios(draft, message);
+        adios(draft, "%s", message);
     }
 
     /* Merge in any address or host specific switches to post(1) from profile. */
@@ -768,7 +768,7 @@ handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc) {
             if (strcmp(*vp, "xoauth2") == 0) {
 #ifdef OAUTH_SUPPORT
                 if (setup_oauth_params(vec, vecp, auth_svc, &message) != OK) {
-                    adios(NULL, message);
+                    adios(NULL, "%s", message);
                 }
                 break;
 #else

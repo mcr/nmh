@@ -52,7 +52,7 @@ annotate (char *file, char *comp, char *text, int inplace, int datesw, int delet
     }
 
     if (stat(file, &s) == -1) {
-	advise("can't get access and modification times for %s", file);
+        inform("can't get access and modification times for %s", file);
     	preserve_actime_and_modtime = 0;
     }
 
@@ -62,7 +62,7 @@ annotate (char *file, char *comp, char *text, int inplace, int datesw, int delet
     i = annosbr (fd, file, comp, text, inplace, datesw, delete, append);
 
     if (preserve_actime_and_modtime && utime(file, &b) == -1)
-	advise("can't set access and modification times for %s", file);
+        inform("can't set access and modification times for %s", file);
 
     lkclosedata (fd, file);
     return i;

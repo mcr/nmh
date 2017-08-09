@@ -64,7 +64,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
     }
 
     if (!mh_oauth_new(&ctx, svc)) {
-        adios(NULL, mh_oauth_get_err_string(ctx));
+        adios(NULL, "%s", mh_oauth_get_err_string(ctx));
     }
 
     if (snoop) {
@@ -74,7 +74,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
     fn = mh_xstrdup(mh_oauth_cred_fn(svc));
 
     if ((url = mh_oauth_get_authorize_url(ctx)) == NULL) {
-      adios(NULL, mh_oauth_get_err_string(ctx));
+      adios(NULL, "%s", mh_oauth_get_err_string(ctx));
     }
 
     if (browser) {
@@ -110,7 +110,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
     }
     if (cred == NULL) {
       inform("error exchanging code for OAuth2 token");
-      adios(NULL, mh_oauth_get_err_string(ctx));
+      adios(NULL, "%s", mh_oauth_get_err_string(ctx));
     }
 
     cred_file = lkfopendata(fn, "r+", &failed_to_lock);
@@ -121,7 +121,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
       adios(fn, "oops");
     }
     if (!mh_oauth_cred_save(cred_file, cred, user)) {
-      adios(NULL, mh_oauth_get_err_string(ctx));
+      adios(NULL, "%s", mh_oauth_get_err_string(ctx));
     }
     if (lkfclosedata(cred_file, fn) != 0) {
       adios (fn, "oops");

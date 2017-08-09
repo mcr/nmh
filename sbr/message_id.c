@@ -38,18 +38,19 @@ char *
 message_id (time_t tclock, int content_id) {
   switch (message_id_style) {
     case NMH_MESSAGE_ID_LOCALNAME: {
-      char *format = content_id  ?  "<%d.%ld.%%d@%s>"  :  "<%d.%ld@%s>";
+#define P(fmt) \
+    snprintf(message_id_, sizeof message_id_, \
+        (fmt), (int)getpid(), (long)tclock, LocalName(1))
 
-      snprintf (message_id_, sizeof message_id_, format,
-                (int) getpid (), (long) tclock, LocalName (1));
-
+            if (content_id)
+                P("<%d.%ld.%%d@%s>");
+            else
+                P("<%d.%ld@%s>");
+#undef P
       break;
     }
 
     case NMH_MESSAGE_ID_RANDOM: {
-      char *format = content_id
-        ?  "<%d-%ld.%06ld%%d@%.*s.%.*s.%.*s>"
-        :  "<%d-%ld.%06ld@%.*s.%.*s.%.*s>";
       /* Use a sequence of digits divisible by 3 because that will
          expand to base64 without any waste.  Must be shorter than 58,
          see below. */
@@ -95,11 +96,18 @@ message_id (time_t tclock, int content_id) {
         /* The format string inserts a couple of dots, for the benefit
            of spam filters that want to see a message id with a final
            part that resembles a hostname. */
-        snprintf (message_id_, sizeof message_id_, format,
-                  getpid (), (long) now.tv_sec, (long) now.tv_usec,
-                  one_third, rnd_base64,
-                  one_third, &rnd_base64[one_third],
-                  one_third, &rnd_base64[2*one_third]);
+#define P(fmt) \
+    snprintf(message_id_, sizeof message_id_, (fmt), \
+        getpid(), (long)now.tv_sec, (long)now.tv_usec, \
+        (int)one_third, rnd_base64, \
+        (int)one_third, &rnd_base64[one_third], \
+        (int)one_third, &rnd_base64[2*one_third])
+
+            if (content_id)
+                P("<%d-%ld.%06ld%%d@%.*s.%.*s.%.*s>");
+            else
+                P("<%d-%ld.%06ld@%.*s.%.*s.%.*s>");
+#undef P
       }
 
       break;

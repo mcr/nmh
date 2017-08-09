@@ -140,7 +140,8 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
     FILE *fp;
     char *client_res;
 
-    if (!mh_oauth_new (&ctx, svc)) adios(NULL, mh_oauth_get_err_string(ctx));
+    if (!mh_oauth_new (&ctx, svc))
+        adios(NULL, "%s", mh_oauth_get_err_string(ctx));
 
     if (log != NULL) mh_oauth_log_to(stderr, ctx);
 
@@ -157,7 +158,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
     }
 
     if ((cred = mh_oauth_cred_load(fp, ctx, user)) == NULL) {
-        adios(NULL, mh_oauth_get_err_string(ctx));
+        adios(NULL, "%s", mh_oauth_get_err_string(ctx));
     }
 
     if (!mh_oauth_access_token_valid(time(NULL), cred)) {
@@ -169,12 +170,12 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
                 adios(NULL, "credentials rejected -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
             }
             inform("error refreshing OAuth2 token");
-            adios(NULL, mh_oauth_get_err_string(ctx));
+            adios(NULL, "%s", mh_oauth_get_err_string(ctx));
         }
 
         fseek(fp, 0, SEEK_SET);
         if (!mh_oauth_cred_save(fp, cred, user)) {
-            adios(NULL, mh_oauth_get_err_string(ctx));
+            adios(NULL, "%s", mh_oauth_get_err_string(ctx));
         }
     }
 
