@@ -520,10 +520,11 @@ Getc (m_getfld_state_t s) {
  * or EOF on end of file. */
 static int
 Peek (m_getfld_state_t s) {
-    if (s->end - s->readpos < 1  &&  read_more (s) == 0) {
+    if ((s->end - s->readpos < 1 && read_more (s) == 0) ||
+        s->readpos >= s->end)
         return EOF;
-    }
-    return s->readpos < s->end  ?  (unsigned char) *s->readpos  :  EOF;
+
+    return (unsigned char)*s->readpos;
 }
 
 /* If there's room, undo the consumption of one character from msg_buf,
