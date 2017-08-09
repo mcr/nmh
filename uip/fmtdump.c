@@ -409,6 +409,7 @@ f_typestr(int t)
 	case FT_LS_FRIENDLY: return("LS_FRIENDLY");
 	case FT_LV_HOSTTYPE: return("LV_HOSTTYPE");
 	case FT_LV_INGRPF: return("LV_INGRPF");
+	case FT_LS_UNQUOTE: return("LS_UNQUOTE");
 	case FT_LV_NOHOSTF: return("LV_NOHOSTF");
 	case FT_LOCALDATE: return("LOCALDATE");
 	case FT_GMTDATE: return("GMTDATE");
