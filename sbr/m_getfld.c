@@ -227,6 +227,11 @@ static int m_Eom (m_getfld_state_t);
 #define MAX_DELIMITER_SIZE 5
 
 struct m_getfld_state {
+    /* The file to read from;  I/O block.  Caller keeps passing it after
+     * initialisation due to historic interface so it keeps getting
+     * updated, presumably to the same value. */
+    FILE *iob;
+
     /* Holds content of iob. */
     char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
     /* Points to the next byte to read from msg_buf. */
@@ -235,41 +240,24 @@ struct m_getfld_state {
      * equals end then msg_buf is empty. */
     char *end;
 
-    /* Bytes of iob consumed during this call. */
-    off_t bytes_read;
+    /* Whether the caller intends to ftell(3)/fseek(3) iob's position,
+     * and thus whether m_getfld() needs to detect that and compensate. */
+    int track_filepos;
     /* Position in iob given what's been consumed ready for returning to
      * the caller.  Further than this may have been read into msg_buf. */
     off_t total_bytes_read;
+    /* Bytes of iob consumed during this call. */
+    off_t bytes_read;
     /* What fseeko(3) tells us iob's position is having just explicitly
      * set it to total_bytes_read.  Surely always the same? */
     off_t last_caller_pos;
     /* Saved position in iob from filling msg_buf, prior to returning. */
     off_t last_internal_pos;
-    /* The file to read from;  I/O block.  Caller keeps passing it after
-     * initialisation due to historic interface so it keeps getting
-     * updated, presumably to the same value. */
-    FILE *iob;
 
-    /* Maps all the bytes of msg_delim, apart from the last two,
-     * including the NUL, onto the last position in msg_delim where they
-     * occur.  Bytes not present are NULL. */
-    char **pat_map;
     /* One of the MS_* macros tracking the type of iob's content and
      * thus if it's a single email, or several with delimeters.  Default
      * is MS_DEFAULT. */
     int msg_style;
-    /*
-     * The "full" delimiter string for a packed maildrop consists
-     * of a newline followed by the actual delimiter.  E.g., the
-     * full string for a Unix maildrop would be: "\n\nFrom ".
-     * "fdelim" points to the start of the full string and is used
-     * in the BODY case of the main routine to search the buffer for
-     * a possible eom.  Msg_delim points to the first character of
-     * the actual delim. string (i.e., fdelim+1).  edelim
-     * points to the 2nd character of actual delimiter string.  It
-     * is used in m_Eom because the first character of the string
-     * has been read and matched before m_Eom is called.
-     */
 
     /* The message delimeter if iob has multiple emails, else NULL.  For
      * MS_MBOX it's the string that separates two emails, "\nFrom ",
@@ -277,13 +265,13 @@ struct m_getfld_state {
      * starting From_ line of the next, but for MS_MMDF it's
      * "\001\001\001\001\n" that may start or terminate an email. */
     char *msg_delim;
+    /* The last non-NUL char of msg_delim. */
+    char *delimend;
     /* When searching for msg_delim after an email, it's only of
      * interest at the start of the line, i.e. when preceded by a
      * linefeed.  fdelim points to msg_delim[-1] that contains '\n' so
      * it can be used as the needle. */
     char *fdelim;
-    /* The last non-NUL char of msg_delim. */
-    char *delimend;
     /* strlen(fdelim). */
     int fdelimlen;
     /* The second char of msg_delim.  Used when the first char has
@@ -305,13 +293,15 @@ struct m_getfld_state {
      *         s->fdelim  s->fdelimlen=7        s->fdelim  s->fdelimlen=6
      */
 
+    /* Maps all the bytes of msg_delim, apart from the last two,
+     * including the NUL, onto the last position in msg_delim where they
+     * occur.  Bytes not present are NULL. */
+    char **pat_map;
+
     /* The parser's current state.  Also returned to the caller, amongst
      * other possible values, to indicate the token consumed.  One of
      * FLD, FLDPLUS, BODY, or FILEEOF. */
     int state;
-    /* Whether the caller intends to ftell(3)/fseek(3) iob's position,
-     * and thus whether m_getfld() needs to detect that and compensate. */
-    int track_filepos;
 };
 
 static
