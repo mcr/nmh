@@ -367,12 +367,28 @@ struct msgs {
 				   followed by a colon.	 Add one for
 				   terminating NULL. */
 
-#define LENERR  (-2)		/* Name too long error from getfld  */
-#define FMTERR  (-3)		/* Message Format error             */
-#define FLD      0		/* Field returned                   */
-#define FLDPLUS  1		/* Field returned with more to come */
-#define BODY     3		/* Body  returned with more to come */
-#define FILEEOF  5		/* Reached end of input file        */
+/* Token type or error returned from m_getfld(), and its internal state
+ * for the next call. */
+/* FLD detects the header's name is too long to fit in the fixed size
+ * array. */
+#define LENERR  (-2)
+/* FLD reaches EOF after the header's name, or the name is followed by
+ * a linefeed rather than a colon and the body buffer isn't large enough
+ * to pretend this header line starts the body. */
+#define FMTERR  (-3)
+/* The initial state, looking for headers.  Returned when the header's
+ * value finishes. */
+#define FLD      0
+/* Another chunk of the header's value has been returned, but there's
+ * more to come. */
+#define FLDPLUS  1
+/* A chunk of the email's body has been returned. */
+#define BODY     3
+/* Either the end of the input file has been reached, or the delimiter
+ * between emails has been found and the caller should
+ * m_getfld_state_reset() to reset the state to FLD for continuing
+ * through the file. */
+#define FILEEOF  5
 
 typedef struct m_getfld_state *m_getfld_state_t;
 

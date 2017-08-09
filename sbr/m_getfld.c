@@ -227,23 +227,36 @@ static int m_Eom (m_getfld_state_t);
 #define MAX_DELIMITER_SIZE 5
 
 struct m_getfld_state {
+    /* Holds content of iob. */
     char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
+    /* Points to the next byte to read from msg_buf. */
     char *readpos;
-    char *end;  /* One past the last character read in. */
-    /* The following support tracking of the read position in the
-       input file stream so that callers can interleave m_getfld()
-       calls with ftell() and fseek().  bytes_read replaces the old
-       m_getfld() msg_count global.  last_caller_pos is stored when
-       leaving m_getfld()/m_unknown(), then checked on the next entry.
-       last_internal_pos is used to remember the position used
-       internally by m_getfld() (read_more(), actually). */
+    /* Points to just after the last valid byte in msg_buf.  If readpos
+     * equals end then msg_buf is empty. */
+    char *end;
+
+    /* Bytes of iob consumed during this call. */
     off_t bytes_read;
-    off_t total_bytes_read; /* by caller, not necessarily from input file */
+    /* Position in iob given what's been consumed ready for returning to
+     * the caller.  Further than this may have been read into msg_buf. */
+    off_t total_bytes_read;
+    /* What fseeko(3) tells us iob's position is having just explicitly
+     * set it to total_bytes_read.  Surely always the same? */
     off_t last_caller_pos;
+    /* Saved position in iob from filling msg_buf, prior to returning. */
     off_t last_internal_pos;
+    /* The file to read from;  I/O block.  Caller keeps passing it after
+     * initialisation due to historic interface so it keeps getting
+     * updated, presumably to the same value. */
     FILE *iob;
 
+    /* Maps all the bytes of msg_delim, apart from the last two,
+     * including the NUL, onto the last position in msg_delim where they
+     * occur.  Bytes not present are NULL. */
     char **pat_map;
+    /* One of the MS_* macros tracking the type of iob's content and
+     * thus if it's a single email, or several with delimeters.  Default
+     * is MS_DEFAULT. */
     int msg_style;
     /*
      * The "full" delimiter string for a packed maildrop consists
@@ -257,13 +270,47 @@ struct m_getfld_state {
      * is used in m_Eom because the first character of the string
      * has been read and matched before m_Eom is called.
      */
+
+    /* The message delimeter if iob has multiple emails, else NULL.  For
+     * MS_MBOX it's the string that separates two emails, "\nFrom ",
+     * i.e. the terminating blank line of the previous email, and the
+     * starting From_ line of the next, but for MS_MMDF it's
+     * "\001\001\001\001\n" that may start or terminate an email. */
     char *msg_delim;
+    /* When searching for msg_delim after an email, it's only of
+     * interest at the start of the line, i.e. when preceded by a
+     * linefeed.  fdelim points to msg_delim[-1] that contains '\n' so
+     * it can be used as the needle. */
     char *fdelim;
+    /* The last non-NUL char of msg_delim. */
     char *delimend;
+    /* strlen(fdelim). */
     int fdelimlen;
+    /* The second char of msg_delim.  Used when the first char has
+     * already been matched to test the rest. */
     char *edelim;
+    /* strlen(edelim). */
     int edelimlen;
+    /* The relationship between all of these pointers and lengths for
+     * the two possible msg_delim values.
+     *
+     *     "\0\n\nFrom \0"   9              "\0\n\001\001\001\001\n\0"   8
+     *         | ||   |                         |   |   |         |
+     *         | ||   s->delimend               |   |   |         s->delimend
+     *         | ||                             |   |   |
+     *         | |s->edelim  s->edelimlen=5     |   |   s->edelim  s->edelimlen=4
+     *         | |                              |   |
+     *         | s->msg_delim                   |   s->msg_delim
+     *         |                                |
+     *         s->fdelim  s->fdelimlen=7        s->fdelim  s->fdelimlen=6
+     */
+
+    /* The parser's current state.  Also returned to the caller, amongst
+     * other possible values, to indicate the token consumed.  One of
+     * FLD, FLDPLUS, BODY, or FILEEOF. */
     int state;
+    /* Whether the caller intends to ftell(3)/fseek(3) iob's position,
+     * and thus whether m_getfld() needs to detect that and compensate. */
     int track_filepos;
 };
 
@@ -287,7 +334,7 @@ m_getfld_state_init (m_getfld_state_t *gstate, FILE *iob) {
     s->track_filepos = 0;
 }
 
-/* scan() needs to force a state an initial state of FLD for each message. */
+/* scan() needs to force an initial state of FLD for each message. */
 void
 m_getfld_state_reset (m_getfld_state_t *gstate) {
     if (*gstate) {
@@ -454,9 +501,8 @@ read_more (m_getfld_state_t s) {
     return num_read;
 }
 
-/* The return values of the following functions are a bit
-   subtle.  They can return 0x00 - 0xff as a valid character,
-   but EOF is typically 0xffffffff. */
+/* Return the next character consumed from the input, fetching more of
+ * the input for the buffer if required, or EOF on end of file. */
 static int
 Getc (m_getfld_state_t s) {
     if ((s->end - s->readpos < 1 && read_more (s) == 0) ||
@@ -467,6 +513,9 @@ Getc (m_getfld_state_t s) {
     return (unsigned char)*s->readpos++;
 }
 
+/* Return the next character that would be read by Getc() without
+ * consuming it, fetching more of the input for the buffer if required,
+ * or EOF on end of file. */
 static int
 Peek (m_getfld_state_t s) {
     if (s->end - s->readpos < 1  &&  read_more (s) == 0) {
@@ -475,6 +524,9 @@ Peek (m_getfld_state_t s) {
     return s->readpos < s->end  ?  (unsigned char) *s->readpos  :  EOF;
 }
 
+/* If there's room, put non-EOF c back into msg_buf and rewind so it's
+ * read next.  c need not be the value already in the buffer.  If there
+ * isn't room then return EOF, else return c. */
 static int
 Ungetc (int c, m_getfld_state_t s) {
     if (s->readpos == s->msg_buf) {
@@ -692,6 +744,9 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 		char *ep;
 
                 if ((ep = memmem(bp, c, s->fdelim, s->fdelimlen)))
+                    /* Plus one to nab the '\n' that starts fdelim as
+                     * that ends the previous line;  it isn't part of
+                     * msg_delim. */
 		    c = ep - bp + 1;
 		else {
 		    /*
@@ -709,7 +764,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 		     */
 		    char *sp;
 
-		    ep = bp + c - 1;
+                    ep = bp + c - 1; /* The last byte. */
 		    if ((sp = s->pat_map[(unsigned char) *ep])) {
 			do {
 			    /* This if() is true unless (a) the buffer is too
@@ -821,6 +876,10 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
 	s->msg_style = MS_MMDF;
     }
 
+    /*     "\nFrom \0"   7                  "\001\001\001\001\n\0"  6
+     *       |                                  |
+     *       delimstr   c=6                     delimstr   c=5
+     */
     c = strlen (delimstr);
     s->fdelim = mh_xmalloc (c + 3); /* \0, \n, delimstr, \0 */
     *s->fdelim++ = '\0';
@@ -833,24 +892,6 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
     s->delimend = s->msg_delim + s->edelimlen;
     if (s->edelimlen <= 1)
 	adios (NULL, "maildrop delimiter must be at least 2 bytes");
-
-    /* Now malloc'd memory at s->fdelim-1 is referenced several times,
-     * containing a copy of the string constant from delimstr.
-     *
-     *     "\nFrom \0"   7                  "\001\001\001\001\n\0"  6
-     *       |                                  |
-     *       delimstr   c=6                     delimstr   c=5
-     *
-     *     "\0\n\nFrom \0"   9              "\0\n\001\001\001\001\n\0"   8
-     *         | ||   |                         |   |   |         |
-     *         | ||   s->delimend               |   |   |         s->delimend
-     *         | ||                             |   |   |
-     *         | |s->edelim  s->edelimlen=5     |   |   s->edelim  s->edelimlen=4
-     *         | |                              |   |
-     *         | s->msg_delim                   |   s->msg_delim
-     *         |                                |
-     *         s->fdelim  s->fdelimlen=7        s->fdelim  s->fdelimlen=6
-     */
 
     /*
      * build a Boyer-Moore end-position map for the matcher in m_getfld.
