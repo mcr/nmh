@@ -409,7 +409,8 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
     if (!s->track_filepos)
         return;
 
-    pos = ftello(iob);
+    if ((pos = ftello(iob)) == -1)
+        adios("getfld's iob", "failed to get offset on entry");
     if (pos == 0 && s->last_internal_pos == 0)
         return;
 
@@ -438,11 +439,15 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
             s->total_bytes_read += pos_movement;
             pos = s->last_internal_pos;
         } else {
+            off_t off;
             size_t num_read;
 
             /* This seek skips past an integral number of
                chunks of size MSG_INPUT_SIZE. */
-            fseeko (iob, pos/MSG_INPUT_SIZE * MSG_INPUT_SIZE, SEEK_SET);
+            off = pos / MSG_INPUT_SIZE * MSG_INPUT_SIZE;
+            if (fseeko(iob, off, SEEK_SET) == -1)
+                adios("getfld's iob", "failed to set offset to skip: %d",
+                    off);
             num_read = fread (s->msg_buf, 1, MSG_INPUT_SIZE, iob);
             s->readpos = s->msg_buf  +  pos % MSG_INPUT_SIZE;
             s->end = s->msg_buf + num_read;
@@ -450,7 +455,8 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
         }
     }
 
-    fseeko (iob, pos, SEEK_SET);
+    if (fseeko(iob, pos, SEEK_SET) == -1)
+        adios("getfld's iob", "failed to set offset on entry: %d", pos);
 }
 
 static void
@@ -459,11 +465,15 @@ leave_getfld (m_getfld_state_t s) {
 
     if (s->track_filepos) {
 	/* Save the internal file position that we use for the input buffer. */
-	s->last_internal_pos = ftello (s->iob);
+        if ((s->last_internal_pos = ftello(s->iob)) == -1)
+            adios("getfld's iob", "failed to get offset before seek");
 
 	/* Set file stream position so that callers can use ftell(). */
-	fseeko (s->iob, s->total_bytes_read, SEEK_SET);
-	s->last_caller_pos = ftello (s->iob);
+        if (fseeko(s->iob, s->total_bytes_read, SEEK_SET) == -1)
+            adios("getfld's iob", "failed to set offset: %d",
+                s->total_bytes_read);
+        if ((s->last_caller_pos = ftello(s->iob)) == -1)
+            adios("getfld's iob", "failed to get offset after seek");
     }
 }
 
