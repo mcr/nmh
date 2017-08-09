@@ -103,11 +103,13 @@ static void
 usage(char *argv0)
 {
 	fprintf(stderr, "Usage: %s [--dump]\n", argv0);
+	fprintf(stderr, "       %s [--ctype]\n", argv0);
 	fprintf(stderr, "       %s U+XXXX [...]\n", argv0);
 	fprintf(stderr, "       %s utf-8-sequence [...]\n", argv0);
 	fprintf(stderr, "Returns the column width of a Unicode codepoint "
 		"or UTF-8 character sequence\n");
 	fprintf(stderr, "\t--dump\tDump complete width table\n");
+	fprintf(stderr, "\t--ctype\tPrint wctype(3) table.\n");
 
 	exit(1);
 }
@@ -161,13 +163,18 @@ typedef struct {
 
 static unicode_range range[] = {
 	/* https://en.wikipedia.org/wiki/Unicode#Code_point_planes_and_blocks */
-	{  L'\x0000',  L'\xffff' },
+	{  L'\x0000',    L'\xff' },
+#if __WCHAR_MAX__ >= 0xffff
+	{  L'\x0100',  L'\xffff' },
+#if __WCHAR_MAX__ >= 0xfffff
 	{ L'\x10000', L'\x14fff' },
 	{ L'\x16000', L'\x18fff' },
 	{ L'\x1b000', L'\x1bfff' },
 	{ L'\x1d000', L'\x1ffff' },
 	{ L'\x20000', L'\x2ffff' },
 	{ L'\xe0000', L'\xe0fff' },
+#endif
+#endif
 	{ L'\0', L'\0' }, /* Terminates list. */
 };
 
@@ -195,9 +202,12 @@ dumpwidth(void)
 				start = wc;
 				lastwidth = width;
 			}
-			if (wc == r->max)
+			if (wc == r->max) {
 				printf("%04lX - %04lX = %d\n", (unsigned long)start,
 					   (unsigned long int)wc, lastwidth);
+                /* wchar_t can be a 16-bit unsigned short. */
+                break;
+            }
 		}
 	}
 }
@@ -224,6 +234,10 @@ dumpctype(void)
 				iswpunct(wc) ? '@' : '-',
 				iswspace(wc) ? 's' : '-',
 				iswblank(wc) ? 'b' : '-');
+
+            if (wc == r->max)
+                /* wchar_t can be a 16-bit unsigned short. */
+                break;
 		}
 	}
 #endif /* MULTIBYTE_SUPPORT */
