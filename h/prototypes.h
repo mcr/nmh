@@ -225,6 +225,8 @@ int m_atoi (char *);
 char *m_backup (const char *);
 int m_convert (struct msgs *, char *);
 char *m_draft (char *, char *, int, int *);
+
+m_getfld_state_t m_getfld_state_init(FILE *iob);
 void m_getfld_state_reset (m_getfld_state_t *);
 void m_getfld_state_destroy (m_getfld_state_t *);
 void m_getfld_track_filepos (m_getfld_state_t *, FILE *);

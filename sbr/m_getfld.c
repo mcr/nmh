@@ -306,13 +306,11 @@ struct m_getfld_state {
     int state;
 };
 
-static
-void
-m_getfld_state_init (m_getfld_state_t *gstate, FILE *iob) {
+m_getfld_state_t m_getfld_state_init(FILE *iob)
+{
     m_getfld_state_t s;
 
     NEW(s);
-    *gstate = s;
     s->readpos = s->end = s->msg_buf;
     s->bytes_read = s->total_bytes_read = 0;
     s->last_caller_pos = s->last_internal_pos = 0;
@@ -324,6 +322,8 @@ m_getfld_state_init (m_getfld_state_t *gstate, FILE *iob) {
     s->fdelimlen = s->edelimlen = 0;
     s->state = FLD;
     s->track_filepos = 0;
+
+    return s;
 }
 
 /* scan() needs to force an initial state of FLD for each message. */
@@ -340,7 +340,7 @@ m_getfld_state_reset (m_getfld_state_t *gstate) {
 void
 m_getfld_track_filepos (m_getfld_state_t *gstate, FILE *iob) {
     if (! *gstate) {
-	m_getfld_state_init (gstate, iob);
+	*gstate = m_getfld_state_init(iob);
     }
 
     (*gstate)->track_filepos = 1;
@@ -395,7 +395,7 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
     off_t pos_movement;
 
     if (! *gstate) {
-	m_getfld_state_init (gstate, iob);
+	*gstate = m_getfld_state_init(iob);
     }
     s = *gstate;
     s->bytes_read = 0;
