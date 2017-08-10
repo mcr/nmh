@@ -346,6 +346,15 @@ m_getfld_track_filepos (m_getfld_state_t *gstate, FILE *iob) {
     (*gstate)->track_filepos = 1;
 }
 
+/* m_getfld_track_filepos() with the existing iob. */
+void m_getfld_track_filepos2(m_getfld_state_t *gstate)
+{
+    if (!*gstate)
+	adios(NULL, "m_getfld_track_filepos2 without gstate");
+
+    m_getfld_track_filepos(gstate, (*gstate)->iob);
+}
+
 void m_getfld_state_destroy (m_getfld_state_t *gstate) {
     m_getfld_state_t s = *gstate;
 
@@ -831,6 +840,16 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 }
 
 
+/* m_getfld() with the existing iob. */
+int m_getfld2(m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz)
+{
+    if (!*gstate)
+	adios(NULL, "m_getfld2 without gstate");
+
+    return m_getfld(gstate, name, buf, bufsz, (*gstate)->iob);
+}
+
+
 void
 m_unknown(m_getfld_state_t *gstate, FILE *iob)
 {
@@ -918,6 +937,16 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
     }
 
     leave_getfld (s);
+}
+
+
+/* m_unknown() with the existing iob. */
+void m_unknown2(m_getfld_state_t *gstate)
+{
+    if (!*gstate)
+	adios(NULL, "m_unknown2 without gstate");
+
+    m_unknown(gstate, (*gstate)->iob);
 }
 
 
