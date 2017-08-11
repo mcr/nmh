@@ -216,7 +216,7 @@ content_error (char *what, CT ct, char *fmt, ...)
     i = strlen (invo_name) + 2;
 
     /* Now add content type and subtype */
-    snprintf (bp, buflen, "\n%*.*s(content %s/%s", i, i, "",
+    snprintf (bp, buflen, "\n%*s(content %s/%s", i, "",
 	ci->ci_type, ci->ci_subtype);
     len = strlen (bp);
     bp += len;
