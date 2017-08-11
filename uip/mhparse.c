@@ -3306,7 +3306,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	if (dp == cp || *dp != '=') {
             inform("invalid parameter in message %s's %s: field\n"
                 "    parameter %s (error detected at offset %ld)",
-                filename, fieldname, cp, dp - cp);
+                filename, fieldname, cp, (long)(dp - cp));
 	    return NOTOK;
 	}
 
