@@ -93,7 +93,6 @@ DEFINE_SWITCH_ARRAY(INC, switches);
 #define INC_FILE  0
 #define INC_POP   1
 
-static int inc_type;
 static struct Maildir_entry {
 	char *filename;
 	time_t mtime;
@@ -174,6 +173,7 @@ maildir_srt(const void *va, const void *vb)
 int
 main (int argc, char **argv)
 {
+    static int inc_type;
     bool chgflag;
     int trnflag = 1;
     bool noisy;
@@ -391,21 +391,11 @@ main (int argc, char **argv)
     /* guarantee dropping group privileges; we might not have done so earlier */
     DROPGROUPPRIVS();
 
-    /*
-     * Where are we getting the new mail?
-     */
-    if (from)
-	inc_type = INC_FILE;
-    else if (host)
-	inc_type = INC_POP;
-    else
-	inc_type = INC_FILE;
+    /* Source of mail;  -from overrides any -host. */
+    inc_type = host && !from ? INC_POP : INC_FILE;
 
-    /*
-     * Are we getting the mail from
-     * a POP server?
-     */
     if (inc_type == INC_POP) {
+        /* Mail from a POP server. */
 	int tlsflag = 0;
 
 	if (auth_svc == NULL) {
@@ -439,14 +429,9 @@ main (int argc, char **argv)
 	    pop_quit();
 	    adios (NULL, "no mail to incorporate");
 	}
-    }
 
-    /*
-     * We will get the mail from a file
-     * (typically the standard maildrop)
-     */
-
-    if (inc_type == INC_FILE) {
+    } else if (inc_type == INC_FILE) {
+        /* Mail from a spool file, or Maildir. */
 	if (from)
 	    newmail = from;
 	else if ((newmail = getenv ("MAILDROP")) && *newmail)
@@ -537,6 +522,8 @@ main (int argc, char **argv)
 	adios (NULL, "unable to read folder %s", folder);
 
     if (inc_type == INC_FILE && Maildir == NULL) {
+        /* Mail from a spool file. */
+
 	if (access (newmail, W_OK) != NOTOK) {
 	    locked++;
 	    if (trnflag) {
@@ -595,6 +582,7 @@ main (int argc, char **argv)
      * Get the mail from a POP server
      */
     if (inc_type == INC_POP) {
+        /* Mail from a POP server. */
 	int i;
 
         hghnum = msgnum = mp->hghmsg;
@@ -659,12 +647,10 @@ main (int argc, char **argv)
 
 	if (pop_quit () == NOTOK)
 	    adios (NULL, "%s", response);
-    }
 
-    /*
-     * Get the mail from file (usually mail spool)
-     */
-    if (inc_type == INC_FILE && Maildir == NULL) {
+    } else if (inc_type == INC_FILE && Maildir == NULL) {
+        /* Mail from a spool file. */
+
 	scan_detect_mbox_style (in);		/* the MAGIC invocation... */
 	hghnum = msgnum = mp->hghmsg;
 	for (;;) {
@@ -716,7 +702,9 @@ main (int argc, char **argv)
 	     */
 	    break;
 	}
-    } else if (inc_type == INC_FILE) { /* Maildir inbox to process */
+
+    } else {
+        /* Mail from Maildir. */
 	char *sp;
 	FILE *sf;
 	int i;
@@ -827,10 +815,9 @@ main (int argc, char **argv)
     if (noisy)
 	fflush (stdout);
 
-    /*
-     * truncate file we are incorporating from
-     */
     if (inc_type == INC_FILE && Maildir == NULL) {
+        /* Mail from a spool file;  truncate it. */
+
 	if (trnflag) {
 	    if (stat (newmail, &st) != NOTOK && s1.st_mtime != st.st_mtime)
 		inform("new messages have arrived!\007");
@@ -894,12 +881,11 @@ main (int argc, char **argv)
 	seq_save(mp2);		/* Save the sequence file */
 	folder_free(mp2);
     }
-skip:
 
-    /*
-     * unlock the mail spool
-     */
+skip:
     if (inc_type == INC_FILE && Maildir == NULL) {
+        /* Mail from a spool file;  unlock it. */
+
 	if (locked) {
            GETGROUPPRIVS();        /* Be sure we can unlock mail file */
            (void) lkfclosespool (in, newmail); in = NULL;
