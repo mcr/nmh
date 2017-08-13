@@ -48,6 +48,8 @@ int
 scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
       int unseen, char *folder, long size, int noisy, charstring_t *scanl)
 {
+    static bool deja_vu;
+    static int tty_width;
     int i, compnum, encrypted, state;
     char *cp, *tmpbuf, *startbody, **nxtbuf;
     char *saved_c_text = NULL;
@@ -64,9 +66,12 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
        scanl used to be a global. */
     if (! *scanl) {
 	if (width == -1) {
-	    /* Default:  width of the terminal, but at least WIDTH/2. */
-	    if ((width = sc_width ()) < WIDTH/2)
-		width = WIDTH/2;
+            if (!deja_vu) {
+                deja_vu = true;
+                tty_width = sc_width();
+            }
+
+            width = max(tty_width, WIDTH / 2);
 	} else if (width == 0) {
 	    /* Unlimited width. */
 	    width = INT_MAX;
