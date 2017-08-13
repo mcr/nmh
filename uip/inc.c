@@ -157,7 +157,7 @@ static FILE *in;
  * prototypes
  */
 static void inc_done(int) NORETURN;
-static int pop_action(char *);
+static int pop_action(void *closure, char *);
 
 int
 maildir_srt(const void *va, const void *vb)
@@ -596,7 +596,7 @@ main (int argc, char **argv)
             chmod (cp, m_gmprot ());
             start = stop = 0L;
 
-            if (pop_retr (i, pop_action) == NOTOK)
+            if (pop_retr(i, pop_action, NULL) == NOTOK)
                 adios (NULL, "%s", response);
 
             if (fflush (pf))
@@ -915,8 +915,9 @@ inc_done (int status)
 }
 
 static int
-pop_action (char *s)
+pop_action(void *closure, char *s)
 {
+    NMH_UNUSED(closure);
     fprintf (pf, "%s\n", s);
     stop += strlen (s) + 1;
     return 0;  /* Is return value used?  This was missing before 1999-07-15. */

@@ -27,7 +27,7 @@ static netsec_context *nsc = NULL;
 static int command(const char *, ...);
 static int multiline(void);
 
-static int traverse (int (*)(char *), const char *, ...);
+static int traverse (int (*)(void *, char *), void *closure, const char *, ...);
 static int vcommand(const char *, va_list);
 static int pop_getline (char *, int, netsec_context *);
 static int pop_sasl_callback(enum sasl_message_type, unsigned const char *,
@@ -481,14 +481,14 @@ pop_stat (int *nmsgs, int *nbytes)
 
 
 int
-pop_retr (int msgno, int (*action)(char *))
+pop_retr (int msgno, int (*action)(void *, char *), void *closure)
 {
-    return traverse (action, "RETR %d", msgno);
+    return traverse (action, closure, "RETR %d", msgno);
 }
 
 
 static int
-traverse (int (*action)(char *), const char *fmt, ...)
+traverse (int (*action)(void *, char *), void *closure, const char *fmt, ...)
 {
     int result, snoopstate;
     va_list ap;
@@ -517,7 +517,7 @@ traverse (int (*action)(char *), const char *fmt, ...)
 		return OK;
 
 	    case OK: 
-		(*action) (response);
+		(*action)(closure, response);
 		break;
 	}
 }
