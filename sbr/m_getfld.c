@@ -60,10 +60,13 @@
 
    Usage
    =====
-   m_getfld_state_t gstate = 0;
-      ...
-   int state = m_getfld (&gstate, ...);
-      ...
+   m_getfld_state_t gstate;
+
+   gstate = m_getfld_state_init(mailfp);
+   Perhaps m_getfld_track_filepos2(&gstate);
+   ...
+      state = m_getfld2(&gstate, ...);
+      ...Repeat until finished with mailfp.
    m_getfld_state_destroy (&gstate);
 
    The state is retained internally by gstate.  To reset its state to FLD:

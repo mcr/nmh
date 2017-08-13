@@ -323,7 +323,7 @@ main (int argc, char **argv)
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
     char buf[NMH_BUFSIZ], name[NAMESZ], *auth_svc = NULL;
     FILE *in, *out;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     if (nmh_init(argv[0], 0 /* use context_foil() */)) { return 1; }
 
@@ -619,16 +619,17 @@ main (int argc, char **argv)
 
     hdrtab = msgstate == NORMAL ? NHeaders : RHeaders;
 
+    gstate = m_getfld_state_init(in);
     for (compnum = 1;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {
+	switch (state = m_getfld2(&gstate, name, buf, &bufsz)) {
 	    case FLD: 
 	    case FLDPLUS: 
                 compnum++;
 		cp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, in);
+		    state = m_getfld2(&gstate, name, buf, &bufsz);
 		    cp = add (buf, cp);
 		}
 		putfmt (name, cp, &eai, out);
@@ -642,7 +643,7 @@ main (int argc, char **argv)
 		fprintf (out, "\n%s", buf);
 		while (state == BODY) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, in);
+		    state = m_getfld2(&gstate, name, buf, &bufsz);
 		    fputs (buf, out);
 		}
 		break;

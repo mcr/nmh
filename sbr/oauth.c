@@ -616,7 +616,7 @@ load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
     boolean success = FALSE;
     char name[NAMESZ], value_buf[BUFSIZ];
     int state;
-    m_getfld_state_t getfld_ctx = 0;
+    m_getfld_state_t getfld_ctx;
 
     struct user_creds *user_creds;
     NEW(user_creds);
@@ -624,9 +624,10 @@ load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
     user_creds->len = 0;
     user_creds->creds = mh_xmalloc(user_creds->alloc * sizeof *user_creds->creds);
 
+    getfld_ctx = m_getfld_state_init(fp);
     for (;;) {
 	int size = sizeof value_buf;
-	switch (state = m_getfld(&getfld_ctx, name, value_buf, &size, fp)) {
+	switch (state = m_getfld2(&getfld_ctx, name, value_buf, &size)) {
         case FLD:
         case FLDPLUS: {
             char **save, *expire;
@@ -658,7 +659,7 @@ load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
                 char *tmp = getcpy(value_buf);
                 while (state == FLDPLUS) {
                     size = sizeof value_buf;
-                    state = m_getfld(&getfld_ctx, name, value_buf, &size, fp);
+                    state = m_getfld2(&getfld_ctx, name, value_buf, &size);
                     tmp = add(value_buf, tmp);
                 }
                 *save = trimcpy(tmp);
@@ -684,7 +685,7 @@ load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
             break;
 
         default:
-            /* Not adding details for LENERR/FMTERR because m_getfld already
+            /* Not adding details for LENERR/FMTERR because m_getfld2 already
              * wrote advise message to stderr. */
             set_err(ctx, MH_OAUTH_CRED_FILE);
             break;

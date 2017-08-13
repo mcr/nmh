@@ -54,7 +54,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
     struct comp *cptr;
     struct format *fmt;
     char *cp = NULL;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     /*
      * Open the message we'll be scanning for components
@@ -87,9 +87,10 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
      * these routines?
      */
 
+    gstate = m_getfld_state_init(tmp);
     for (;;) {
 	int msg_count = sizeof msgbuf;
-	state = m_getfld (&gstate, name, msgbuf, &msg_count, tmp);
+	state = m_getfld2(&gstate, name, msgbuf, &msg_count);
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
@@ -103,13 +104,13 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 		if (i != -1) {
 		    while (state == FLDPLUS) {
 			msg_count = sizeof msgbuf;
-			state = m_getfld (&gstate, name, msgbuf, &msg_count, tmp);
+			state = m_getfld2(&gstate, name, msgbuf, &msg_count);
 			fmt_appendcomp(i, name, msgbuf);
 		    }
 		}
 		while (state == FLDPLUS) {
 		    msg_count = sizeof msgbuf;
-		    state = m_getfld (&gstate, name, msgbuf, &msg_count, tmp);
+		    state = m_getfld2(&gstate, name, msgbuf, &msg_count);
 		}
 		break;
 
@@ -120,7 +121,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 	    	goto finished;
 
 	    default:
-	    	adios(NULL, "m_getfld() returned %d", state);
+	    	adios(NULL, "m_getfld2() returned %d", state);
 	}
     }
 

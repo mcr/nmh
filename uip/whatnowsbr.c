@@ -1312,7 +1312,7 @@ static int
 checkmimeheader (char *drft)
 {
     FILE *f;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
     char buf[NMH_BUFSIZ], name[NAMESZ];
     int state, retval = 0;
 
@@ -1321,9 +1321,10 @@ checkmimeheader (char *drft)
 	return (0);
     }
 
+    gstate = m_getfld_state_init(f);
     for (;;) {
 	int bufsz = sizeof(buf);
-	switch (state = m_getfld(&gstate, name, buf, &bufsz, f)) {
+	switch (state = m_getfld2(&gstate, name, buf, &bufsz)) {
 	case FLD:
 	case FLDPLUS:
 	    if (strcasecmp(name, VRSN_FIELD) == 0) {

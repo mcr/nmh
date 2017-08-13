@@ -134,7 +134,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
     CT ct;
     FILE *in;
     HF hp;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
     struct attach_list *attach_head = NULL, *attach_tail = NULL, *at_entry;
     convert_list *convert_head = NULL, *convert_tail = NULL, *convert;
 
@@ -163,10 +163,11 @@ build_mime (char *infile, int autobuild, int dist, int directives,
      * draft into the linked list of header fields for
      * the new MIME message.
      */
-    m_getfld_track_filepos (&gstate, in);
+    gstate = m_getfld_state_init(in);
+    m_getfld_track_filepos2(&gstate);
     for (compnum = 1;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {
+	switch (state = m_getfld2(&gstate, name, buf, &bufsz)) {
 	case FLD:
 	case FLDPLUS:
 	    compnum++;
@@ -186,7 +187,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 	    if (!strcasecmp (name, TYPE_FIELD)) {
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, in);
+		    state = m_getfld2(&gstate, name, buf, &bufsz);
 		}
 		goto finish_field;
 	    }
@@ -198,7 +199,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
 		bufsz = sizeof buf;
-		state = m_getfld (&gstate, name, buf, &bufsz, in);
+		state = m_getfld2(&gstate, name, buf, &bufsz);
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 
@@ -249,7 +250,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
                 char *type = np + strlen (MHBUILD_FILE_PSEUDOHEADER);
                 char *filename = vp;
 
-                /* vp should begin with a space because m_getfld()
+                /* vp should begin with a space because m_getfld2()
                    includes the space after the colon in buf. */
                 while (isspace((unsigned char) *filename)) { ++filename; }
                 /* Trim trailing newline and any other whitespace. */
@@ -289,7 +290,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
                 char *type = np + strlen (MHBUILD_ARGS_PSEUDOHEADER);
                 char *argstring = vp;
 
-                /* vp should begin with a space because m_getfld()
+                /* vp should begin with a space because m_getfld2()
                    includes the space after the colon in buf. */
                 while (isspace((unsigned char) *argstring)) { ++argstring; }
                 /* Trim trailing newline and any other whitespace. */

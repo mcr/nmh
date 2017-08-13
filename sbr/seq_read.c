@@ -63,7 +63,7 @@ seq_public (struct msgs *mp, int lockflag, int *failed_to_lock)
     char *cp, seqfile[PATH_MAX];
     char name[NAMESZ], field[NMH_BUFSIZ];
     FILE *fp;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     /*
      * If mh_seq == NULL or if *mh_seq == '\0' (the user has defined
@@ -80,17 +80,18 @@ seq_public (struct msgs *mp, int lockflag, int *failed_to_lock)
 	== NULL)
 	return NOTOK;
 
-    /* Use m_getfld to scan sequence file */
+    /* Use m_getfld2 to scan sequence file */
+    gstate = m_getfld_state_init(fp);
     for (;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (&gstate, name, field, &fieldsz, fp)) {
+	switch (state = m_getfld2(&gstate, name, field, &fieldsz)) {
 	    case FLD: 
 	    case FLDPLUS:
 		if (state == FLDPLUS) {
 		    cp = mh_xstrdup(field);
 		    while (state == FLDPLUS) {
 			fieldsz = sizeof field;
-			state = m_getfld (&gstate, name, field, &fieldsz, fp);
+			state = m_getfld2(&gstate, name, field, &fieldsz);
 			cp = add (field, cp);
 		    }
 		    seq_init (mp, mh_xstrdup(name), trimcpy (cp));

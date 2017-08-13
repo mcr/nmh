@@ -64,7 +64,7 @@ main (int argc, char **argv)
     char **arguments, **argp;
     FILE *in, *out;
     char *tmpfil;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     if (nmh_init(argv[0], 2)) { return 1; }
 
@@ -182,9 +182,10 @@ main (int argc, char **argv)
     /*
      * Loop through the lines of the draft skeleton.
      */
+    gstate = m_getfld_state_init(in);
     for (;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (&gstate, name, field, &fieldsz, in)) {
+	switch (state = m_getfld2(&gstate, name, field, &fieldsz)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		/*
@@ -201,7 +202,7 @@ main (int argc, char **argv)
 		    fprintf (out, "%s:%s", name, field);
 		    while (state == FLDPLUS) {
 			fieldsz = sizeof field;
-			state = m_getfld (&gstate, name, field, &fieldsz, in);
+			state = m_getfld2(&gstate, name, field, &fieldsz);
 			fputs(field, stdout);
 			fputs(field, out);
 		    }
@@ -260,7 +261,7 @@ abort:
 			    fputs(field, stdout);
 		    } while (state == BODY &&
 			    (fieldsz = sizeof field,
-			     state = m_getfld (&gstate, name, field, &fieldsz, in)));
+			     state = m_getfld2(&gstate, name, field, &fieldsz)));
 		    if (prepend || !body)
 			break;
 		    else

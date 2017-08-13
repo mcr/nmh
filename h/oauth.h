@@ -234,7 +234,7 @@ mh_oauth_cred_save(FILE *fp, mh_oauth_cred *cred, const char *user);
 /*
  * Load OAuth tokens from file.
  *
- * Calls m_getfld(), which writes to stderr with advise().
+ * Calls m_getfld2(), which writes to stderr with advise().
  *
  * On error, return NULL.
  */

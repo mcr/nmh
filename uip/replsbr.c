@@ -63,7 +63,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     char name[NAMESZ], *cp;
     charstring_t scanl;
     static int dat[5];			/* aux. data for format routine */
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
     struct fmt_callbacks cb;
 
     FILE *out;
@@ -110,9 +110,10 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     /*
      * pick any interesting stuff out of msg "inb"
      */
+    gstate = m_getfld_state_init(inb);
     for (;;) {
 	int msg_count = sizeof tmpbuf;
-	state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
+	state = m_getfld2(&gstate, name, tmpbuf, &msg_count);
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
@@ -128,7 +129,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 		    char_read += msg_count;
 		    while (state == FLDPLUS) {
 			msg_count= sizeof tmpbuf;
-			state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
+			state = m_getfld2(&gstate, name, tmpbuf, &msg_count);
 			fmt_appendcomp(i, name, tmpbuf);
 			char_read += msg_count;
 		    }
@@ -136,7 +137,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 
 		while (state == FLDPLUS) {
 		    msg_count= sizeof tmpbuf;
-		    state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
+		    state = m_getfld2(&gstate, name, tmpbuf, &msg_count);
 		}
 		break;
 
@@ -147,7 +148,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 		goto finished;
 
 	    default:
-		adios (NULL, "m_getfld() returned %d", state);
+		adios (NULL, "m_getfld2() returned %d", state);
 	}
     }
 

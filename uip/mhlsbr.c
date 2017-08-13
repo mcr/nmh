@@ -329,7 +329,7 @@ static void pipeser (int);
 static void quitser (int);
 static void mhladios (char *, char *, ...);
 static void mhldone (int);
-static void filterbody (struct mcomp *, char *, int, int, FILE *,
+static void filterbody (struct mcomp *, char *, int, int,
                         m_getfld_state_t);
 static void compile_formatfield(struct mcomp *);
 static void compile_filterargs (void);
@@ -937,7 +937,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
     int state, bucket;
     struct mcomp *c1, *c2, *c3;
     char **ip, name[NAMESZ], buf[NMH_BUFSIZ];
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     compile_filterargs();
 
@@ -1001,9 +1001,10 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 	}
     }
 
+    gstate = m_getfld_state_init(fp);
     for (;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld2(&gstate, name, buf, &bufsz)) {
 	    case FLD: 
 	    case FLDPLUS: 
 	        bucket = fmt_addcomptext(name, buf);
@@ -1011,7 +1012,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    if (!strcasecmp (name, *ip)) {
 			while (state == FLDPLUS) {
 			    bufsz = sizeof buf;
-			    state = m_getfld (&gstate, name, buf, &bufsz, fp);
+			    state = m_getfld2(&gstate, name, buf, &bufsz);
 			    fmt_appendcomp(bucket, name, buf);
 			}
 			break;
@@ -1035,7 +1036,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    c1 = add_queue (&msghd, &msgtl, name, buf, 0);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
+		    state = m_getfld2(&gstate, name, buf, &bufsz);
 		    c1->c_text = add (buf, c1->c_text);
 		    fmt_appendcomp(bucket, name, buf);
 		}
@@ -1070,15 +1071,15 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 				   !strcasecmp (c1->c_name, "body"))) {
 		    	if (c1->c_flags & FMTFILTER && state == BODY &&
 							formatproc != NULL) {
-			    filterbody(c1, buf, sizeof(buf), state, fp, gstate);
+			    filterbody(c1, buf, sizeof(buf), state, gstate);
 			} else {
 			    holder.c_text = mh_xmalloc (sizeof(buf));
 			    strncpy (holder.c_text, buf, sizeof(buf));
 			    while (state == BODY) {
 				putcomp (c1, &holder, BODYCOMP);
 				bufsz = sizeof buf;
-				state = m_getfld (&gstate, name, holder.c_text,
-					    &bufsz, fp);
+				state = m_getfld2(&gstate, name, holder.c_text,
+					    &bufsz);
 			    }
 			    free (holder.c_text);
 			    holder.c_text = NULL;
@@ -1726,8 +1727,8 @@ compile_filterargs (void)
  */
 
 static void
-filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp,
-            m_getfld_state_t gstate)
+filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
+    m_getfld_state_t gstate)
 {
     struct mcomp holder;
     char name[NAMESZ];
@@ -1777,7 +1778,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp,
 	close(fdoutput[1]);
 
 	/*
-	 * Call m_getfld() until we're no longer in the BODY state
+	 * Call m_getfld2() until we're no longer in the BODY state
 	 */
 
 	while (state == BODY) {
@@ -1785,7 +1786,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp,
 	    if (write(fdinput[1], buf, strlen(buf)) < 0) {
 		advise ("pipe output", "write");
 	    }
-	    state = m_getfld (&gstate, name, buf, &bufsz2, fp);
+	    state = m_getfld2(&gstate, name, buf, &bufsz2);
 	}
 
 	/*

@@ -584,7 +584,7 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
 {
     int i, state;
     char name[NAMESZ], rbuf[NMH_BUFSIZ];
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
     struct comp *c;
     int bufsz;
 
@@ -616,9 +616,10 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
      * Read in the message and process the components
      */
 
+    gstate = m_getfld_state_init(in);
     for (;;) {
 	bufsz = sizeof(rbuf);
-	state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+	state = m_getfld2(&gstate, name, rbuf, &bufsz);
 	switch (state) {
 	case FLD:
 	case FLDPLUS:
@@ -626,14 +627,14 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
 	    if (i != -1) {
 		while (state == FLDPLUS) {
 		    bufsz = sizeof(rbuf);
-		    state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+		    state = m_getfld2(&gstate, name, rbuf, &bufsz);
 		    fmt_appendcomp(i, name, rbuf);
 		}
 	    }
 
 	    while (state == FLDPLUS) {
 		bufsz = sizeof(rbuf);
-		state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+		state = m_getfld2(&gstate, name, rbuf, &bufsz);
 	    }
 	    break;
 
@@ -641,7 +642,7 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
 	    if (fmt_findcomp("body")) {
 		if ((i = strlen(rbuf)) < outwidth) {
 		    bufsz = min (outwidth, (int) sizeof rbuf - i);
-		    m_getfld(&gstate, name, rbuf + i, &bufsz, in);
+		    m_getfld2(&gstate, name, rbuf + i, &bufsz);
 		}
 
 		fmt_addcomptext("body", rbuf);

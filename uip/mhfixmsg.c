@@ -818,7 +818,7 @@ replace_boundary (CT ct, char *file, char *boundary) {
     int compnum, state;
     char buf[NMH_BUFSIZ], name[NAMESZ];
     char *np, *vp;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
     int status = OK;
 
     if (ct->c_file == NULL) {
@@ -837,10 +837,11 @@ replace_boundary (CT ct, char *file, char *boundary) {
         return NOTOK;
     }
 
+    gstate = m_getfld_state_init(fpin);
     for (compnum = 1;;) {
         int bufsz = (int) sizeof buf;
 
-        switch (state = m_getfld (&gstate, name, buf, &bufsz, fpin)) {
+        switch (state = m_getfld2(&gstate, name, buf, &bufsz)) {
         case FLD:
         case FLDPLUS:
             compnum++;
@@ -852,7 +853,7 @@ replace_boundary (CT ct, char *file, char *boundary) {
             /* if necessary, get rest of field */
             while (state == FLDPLUS) {
                 bufsz = sizeof buf;
-                state = m_getfld (&gstate, name, buf, &bufsz, fpin);
+                state = m_getfld2(&gstate, name, buf, &bufsz);
                 vp = add (buf, vp);     /* add to previous value */
             }
 

@@ -198,7 +198,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
     char subject[BUFSIZ];
     char name[NAMESZ], partnum[BUFSIZ];
     FILE *in;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     if ((in = fopen (drft, "r")) == NULL)
 	adios (drft, "unable to open for reading");
@@ -210,10 +210,11 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
      * Scan through the message and examine the various header fields,
      * as well as locate the beginning of the message body.
      */
-    m_getfld_track_filepos (&gstate, in);
+    gstate = m_getfld_state_init(in);
+    m_getfld_track_filepos2(&gstate);
     for (compnum = 1;;) {
 	int bufsz = sizeof buffer;
-	switch (state = m_getfld (&gstate, name, buffer, &bufsz, in)) {
+	switch (state = m_getfld2(&gstate, name, buffer, &bufsz)) {
 	    case FLD:
 	    case FLDPLUS:
 	        compnum++;
@@ -224,7 +225,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 		if (!strcasecmp (name, "Message-ID")) {
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buffer;
-			state = m_getfld (&gstate, name, buffer, &bufsz, in);
+			state = m_getfld2(&gstate, name, buffer, &bufsz);
 		    }
 		} else if (uprf (name, XXX_FIELD_PRF)
 			|| !strcasecmp (name, VRSN_FIELD)
@@ -250,7 +251,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 		    dp = add (concat (name, ":", buffer, NULL), dp);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buffer;
-			state = m_getfld (&gstate, name, buffer, &bufsz, in);
+			state = m_getfld2(&gstate, name, buffer, &bufsz);
 			dp = add (buffer, dp);
 		    }
 		} else {
@@ -261,7 +262,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 		    cp = add (concat (name, ":", buffer, NULL), cp);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buffer;
-			state = m_getfld (&gstate, name, buffer, &bufsz, in);
+			state = m_getfld2(&gstate, name, buffer, &bufsz);
 			cp = add (buffer, cp);
 		    }
 		}
@@ -912,7 +913,7 @@ get_message_header_info(FILE *in, char *format) {
     struct format *fmt;
     struct stat st;
     int parsing_header;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
     charstring_t buffer = charstring_create(0);
     char *retval;
 
@@ -928,10 +929,11 @@ get_message_header_info(FILE *in, char *format) {
      */
     rewind (in);
     parsing_header = 1;
+    gstate = m_getfld_state_init(in);
     do {
         char name[NAMESZ], rbuf[NMH_BUFSIZ];
         int bufsz = sizeof rbuf;
-        int state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+        int state = m_getfld2(&gstate, name, rbuf, &bufsz);
 
         switch (state) {
         case FLD:
@@ -941,14 +943,14 @@ get_message_header_info(FILE *in, char *format) {
             if (bucket != -1) {
                 while (state == FLDPLUS) {
                     bufsz = sizeof rbuf;
-                    state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+                    state = m_getfld2(&gstate, name, rbuf, &bufsz);
                     fmt_appendcomp(bucket, name, rbuf);
                 }
             }
 
             while (state == FLDPLUS) {
                 bufsz = sizeof rbuf;
-                state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+                state = m_getfld2(&gstate, name, rbuf, &bufsz);
             }
             break;
         }

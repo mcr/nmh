@@ -925,20 +925,21 @@ TWSaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
     char *bp;
     char buf[NMH_BUFSIZ], name[NAMESZ];
     struct tws *tw;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
     NMH_UNUSED (stop);
 
     fseek (fp, start, SEEK_SET);
+    gstate = m_getfld_state_init(fp);
     for (bp = NULL;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld2(&gstate, name, buf, &bufsz)) {
 	    case FLD: 
 	    case FLDPLUS: 
                 mh_xfree(bp);
 		bp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
+		    state = m_getfld2(&gstate, name, buf, &bufsz);
 		    bp = add (buf, bp);
 		}
 		if (!strcasecmp (name, n->n_datef))

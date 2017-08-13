@@ -102,7 +102,7 @@ get_msgnums(char *folder, char *sequences[])
     char *cp;
     char *msgnums = NULL, *this_msgnums, *old_msgnums;
     int failed_to_lock = 0;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     /* copied from seq_read.c:seq_public */
     /*
@@ -129,17 +129,18 @@ get_msgnums(char *folder, char *sequences[])
 	}
     }
 
-    /* Use m_getfld to scan sequence file */
+    /* Use m_getfld2 to scan sequence file */
+    gstate = m_getfld_state_init(fp);
     for (;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (&gstate, name, field, &fieldsz, fp)) {
+	switch (state = m_getfld2(&gstate, name, field, &fieldsz)) {
             case FLD:
             case FLDPLUS:
                 if (state == FLDPLUS) {
                     cp = getcpy (field);
                     while (state == FLDPLUS) {
 			fieldsz = sizeof field;
-			state = m_getfld (&gstate, name, field, &fieldsz, fp);
+			state = m_getfld2(&gstate, name, field, &fieldsz);
                         cp = add (field, cp);
                     }
 

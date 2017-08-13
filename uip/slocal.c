@@ -713,7 +713,7 @@ parse (int fd)
     char name[NAMESZ], field[NMH_BUFSIZ];
     struct pair *p, *q;
     FILE  *in;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     if (parsed++)
 	return 0;
@@ -737,15 +737,16 @@ parse (int fd)
      * Scan the headers of the message and build
      * a lookup table.
      */
+    gstate = m_getfld_state_init(in);
     for (i = 0;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (&gstate, name, field, &fieldsz, in)) {
+	switch (state = m_getfld2(&gstate, name, field, &fieldsz)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		lp = mh_xstrdup(field);
 		while (state == FLDPLUS) {
 		    fieldsz = sizeof field;
-		    state = m_getfld (&gstate, name, field, &fieldsz, in);
+		    state = m_getfld2(&gstate, name, field, &fieldsz);
 		    lp = add (field, lp);
 		}
 		for (p = hdrs; p->p_name; p++) {
@@ -786,7 +787,7 @@ parse (int fd)
 		break;
 
 	    default: 
-		inform("internal error in m_getfld");
+		inform("internal error in m_getfld2");
 		fclose (in);
 		return -1;
 	}
@@ -1405,7 +1406,7 @@ suppress_duplicates (int fd, char *file)
     datum key, value;
     DBM *db;
     FILE *in;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     if ((fd1 = dup (fd)) == -1)
 	return -1;
@@ -1415,10 +1416,11 @@ suppress_duplicates (int fd, char *file)
     }
     rewind (in);
 
+    gstate = m_getfld_state_init(in);
     for (;;) {
         int failed_to_lock = 0;
 	int bufsz = sizeof buf;
-	state = m_getfld (&gstate, name, buf, &bufsz, in);
+	state = m_getfld2(&gstate, name, buf, &bufsz);
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
@@ -1426,7 +1428,7 @@ suppress_duplicates (int fd, char *file)
 		if (strcasecmp (name, "Message-ID")) {
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;
-			state = m_getfld (&gstate, name, buf, &bufsz, in);
+			state = m_getfld2(&gstate, name, buf, &bufsz);
 		    }
 		    continue;
 		}
@@ -1434,7 +1436,7 @@ suppress_duplicates (int fd, char *file)
 		cp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, in);
+		    state = m_getfld2(&gstate, name, buf, &bufsz);
 		    cp = add (buf, cp);
 		}
 		key.dptr = trimcpy (cp);

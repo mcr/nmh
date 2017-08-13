@@ -295,7 +295,7 @@ get_content (FILE *in, char *file, int toplevel)
     char *np, *vp;
     CT ct;
     HF hp;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     /* allocate the content structure */
     NEW0(ct);
@@ -307,10 +307,11 @@ get_content (FILE *in, char *file, int toplevel)
      * Parse the header fields for this
      * content into a linked list.
      */
-    m_getfld_track_filepos (&gstate, in);
+    gstate = m_getfld_state_init(in);
+    m_getfld_track_filepos2(&gstate);
     for (compnum = 1;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {
+	switch (state = m_getfld2(&gstate, name, buf, &bufsz)) {
 	case FLD:
 	case FLDPLUS:
 	    compnum++;
@@ -322,7 +323,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
 		bufsz = sizeof buf;
-		state = m_getfld (&gstate, name, buf, &bufsz, in);
+		state = m_getfld2(&gstate, name, buf, &bufsz);
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 

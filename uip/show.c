@@ -370,14 +370,14 @@ is_nontext (char *msgnam)
     char *bp, *dp, *cp;
     char buf[NMH_BUFSIZ], name[NAMESZ];
     FILE *fp;
-    m_getfld_state_t gstate = 0;
+    m_getfld_state_t gstate;
 
     if ((fp = fopen (msgnam, "r")) == NULL)
 	return 0;
-
+    gstate = m_getfld_state_init(fp);
     for (;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld2(&gstate, name, buf, &bufsz)) {
 	case FLD:
 	case FLDPLUS:
 	    /*
@@ -390,7 +390,7 @@ is_nontext (char *msgnam)
 		cp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
+		    state = m_getfld2(&gstate, name, buf, &bufsz);
 		    cp = add (buf, cp);
 		}
 		bp = cp;
@@ -495,7 +495,7 @@ out:
 		cp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
+		    state = m_getfld2(&gstate, name, buf, &bufsz);
 		    cp = add (buf, cp);
 		}
 		for (bp = cp; isspace ((unsigned char) *bp); bp++)
@@ -522,7 +522,7 @@ out:
 	     */
 	    while (state == FLDPLUS) {
 		bufsz = sizeof buf;
-		state = m_getfld (&gstate, name, buf, &bufsz, fp);
+		state = m_getfld2(&gstate, name, buf, &bufsz);
 	    }
 	    break;
 
