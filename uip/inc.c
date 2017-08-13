@@ -918,7 +918,11 @@ static int
 pop_action(void *closure, char *s)
 {
     NMH_UNUSED(closure);
-    fprintf (pf, "%s\n", s);
-    stop += strlen (s) + 1;
+
+    if (fputs(s, pf) == EOF || putc('\n', pf) == EOF)
+        return NOTOK;
+
+    stop += strlen(s) + 1; /* Count linefeed too. */
+
     return OK;
 }
