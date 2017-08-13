@@ -197,13 +197,16 @@ program.
 .PP
 If nmh is using the SMTP MTA, the
 .B \-server
-and the
+and
 .B \-port
-switches can be used to override the default mail server (defined by the
-.RI servers
-entry in
-.I %nmhetcdir%/mts.conf
-).
+switches can be used to override the default mail server and port.
+The default server is set with
+.I servers
+in
+.IR %nmhetcdir%/mts.conf ,
+and the default port is
+.IR submission ,
+587.
 .PP
 If
 .B nmh
