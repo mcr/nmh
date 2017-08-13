@@ -100,12 +100,12 @@ static struct Maildir_entry {
 static int num_maildir_entries = 0;
 static int snoop = 0;
 
+typedef struct {
+    FILE *mailout;
+    long written;
+} pop_closure;
+
 extern char response[];
-
-static long start;
-static long stop;
-
-static FILE *pf = NULL;
 
 /* This is an attempt to simplify things by putting all the
  * privilege ops into macros.
@@ -179,6 +179,7 @@ main (int argc, char **argv)
     bool noisy;
     int width = -1;
     int hghnum = 0, msgnum = 0;
+    FILE *pf = NULL;
     bool sasl, tls, noverify;
     int incerr = 0; /* <0 if inc hits an error which means it should not truncate mailspool */
     char *cp, *maildir = NULL, *folder = NULL;
@@ -584,6 +585,7 @@ main (int argc, char **argv)
     if (inc_type == INC_POP) {
         /* Mail from a POP server. */
 	int i;
+        pop_closure pc;
 
         hghnum = msgnum = mp->hghmsg;
 	for (i = 1; i <= nmsgs; i++) {
@@ -594,9 +596,10 @@ main (int argc, char **argv)
             if ((pf = fopen (cp, "w+")) == NULL)
                 adios (cp, "unable to write");
             chmod (cp, m_gmprot ());
-            start = stop = 0L;
 
-            if (pop_retr(i, pop_action, NULL) == NOTOK)
+            pc.written = 0;
+            pc.mailout = pf;
+            if (pop_retr(i, pop_action, &pc) == NOTOK)
                 adios (NULL, "%s", response);
 
             if (fflush (pf))
@@ -604,7 +607,7 @@ main (int argc, char **argv)
             fseek (pf, 0L, SEEK_SET);
 	    switch (incerr = scan (pf, msgnum, 0, nfs, width,
 			      msgnum == mp->hghmsg + 1 && chgflag,
-			      1, NULL, stop - start, noisy, &scanl)) {
+			      1, NULL, pc.written, noisy, &scanl)) {
 	    case SCNEOF:
 		printf ("%*d  empty\n", DMAXFOLDER, msgnum);
 		break;
@@ -745,7 +748,7 @@ main (int argc, char **argv)
 	    fseek (pf, 0L, SEEK_SET);
 	    switch (incerr = scan (pf, msgnum, 0, nfs, width,
 			      msgnum == mp->hghmsg + 1 && chgflag,
-			      1, NULL, stop - start, noisy, &scanl)) {
+			      1, NULL, 0, noisy, &scanl)) {
 	    case SCNEOF:
 		printf ("%*d  empty\n", DMAXFOLDER, msgnum);
 		break;
@@ -917,12 +920,14 @@ inc_done (int status)
 static int
 pop_action(void *closure, char *s)
 {
-    NMH_UNUSED(closure);
+    pop_closure *pc;
+    int n;
 
-    if (fputs(s, pf) == EOF || putc('\n', pf) == EOF)
+    pc = closure;
+    n = fprintf(pc->mailout, "%s\n", s);
+    if (n < 0)
         return NOTOK;
-
-    stop += strlen(s) + 1; /* Count linefeed too. */
+    pc->written += n; /* Count linefeed too. */
 
     return OK;
 }
