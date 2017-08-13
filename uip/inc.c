@@ -920,5 +920,5 @@ pop_action(void *closure, char *s)
     NMH_UNUSED(closure);
     fprintf (pf, "%s\n", s);
     stop += strlen (s) + 1;
-    return 0;  /* Is return value used?  This was missing before 1999-07-15. */
+    return OK;
 }

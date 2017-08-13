@@ -505,21 +505,21 @@ traverse (int (*action)(void *, char *), void *closure, const char *fmt, ...)
     if ((snoopstate = netsec_get_snoop(nsc)))
 	netsec_set_snoop(nsc, 0);
 
-    for (;;)
-	switch (multiline ()) {
-	    case NOTOK: 
-		netsec_set_snoop(nsc, snoopstate);
-		return NOTOK;
+    for (;;) {
+        result = multiline();
+        if (result == OK) {
+            result = (*action)(closure, response);
+            if (result == OK)
+                continue;
+        } else if (result == DONE) {
+            strncpy(response, buffer, sizeof(response));
+            result = OK;
+        }
+        break;
+    }
 
-	    case DONE: 
-		strncpy (response, buffer, sizeof(response));
-		netsec_set_snoop(nsc, snoopstate);
-		return OK;
-
-	    case OK: 
-		(*action)(closure, response);
-		break;
-	}
+    netsec_set_snoop(nsc, snoopstate);
+    return result;
 }
 
 
