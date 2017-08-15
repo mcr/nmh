@@ -164,9 +164,9 @@ typedef struct {
 static unicode_range range[] = {
 	/* https://en.wikipedia.org/wiki/Unicode#Code_point_planes_and_blocks */
 	{  L'\x0000',    L'\xff' },
-#if __WCHAR_MAX__ >= 0xffff
+#if WCHAR_MAX >= 0xffff
 	{  L'\x0100',  L'\xffff' },
-#if __WCHAR_MAX__ >= 0xfffff
+#if WCHAR_MAX >= 0xfffff
 	{ L'\x10000', L'\x14fff' },
 	{ L'\x16000', L'\x18fff' },
 	{ L'\x1b000', L'\x1bfff' },
