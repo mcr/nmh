@@ -135,7 +135,7 @@ linking that the "configure" script does not know about, by giving
 "configure" initial values for these on its command line or in its
 environment.  For example,
 
-    ./configure CC=c89 CFLAGS=-O2 LIBS=-lposix
+    ./configure CC=c99 CFLAGS=-O2 LIBS=-lposix
 
 If you wish to add options that are only used at compile time instead of
 link time, you can use the CPPFLAGS variable:
