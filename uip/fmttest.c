@@ -865,9 +865,6 @@ dumpone(struct format *fmt)
 		break;
 
 	case FT_LIT:
-#ifdef FT_LIT_FORCE
-	case FT_LIT_FORCE:
-#endif
 		putchar(' ');
 		litputs(fmt->f_text);
 		break;
@@ -1011,9 +1008,6 @@ f_typestr(int t)
 	case FT_COMPF: return("COMPF");
 	case FT_LIT: return("LIT");
 	case FT_LITF: return("LITF");
-#ifdef	FT_LIT_FORCE
-	case FT_LIT_FORCE: return("LIT_FORCE");
-#endif
 	case FT_CHAR: return("CHAR");
 	case FT_NUM: return("NUM");
 	case FT_NUMF: return("NUMF");
