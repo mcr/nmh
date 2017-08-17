@@ -1014,12 +1014,13 @@ f_typestr(int t)
 	case FT_STR: return("STR");
 	case FT_STRF: return("STRF");
 	case FT_STRFW: return("STRFW");
-	case FT_PUTADDR: return("PUTADDR");
 	case FT_STRLIT: return("STRLIT");
 	case FT_STRLITZ: return("STRLITZ");
+	case FT_PUTADDR: return("PUTADDR");
 	case FT_LS_COMP: return("LS_COMP");
 	case FT_LS_LIT: return("LS_LIT");
 	case FT_LS_GETENV: return("LS_GETENV");
+	case FT_LS_CFIND: return("LS_CFIND");
 	case FT_LS_DECODECOMP: return("LS_DECODECOMP");
 	case FT_LS_DECODE: return("LS_DECODE");
 	case FT_LS_TRIM: return("LS_TRIM");
@@ -1034,8 +1035,6 @@ f_typestr(int t)
 	case FT_LV_DIVIDE_L: return("LV_DIVIDE_L");
 	case FT_LV_MODULO_L: return("LV_MODULO_L");
 	case FT_LV_CHAR_LEFT: return("LV_CHAR_LEFT");
-	case FT_LS_KILO: return("LS_KILO");
-	case FT_LS_KIBI: return("LS_KIBI");
 	case FT_LS_MONTH: return("LS_MONTH");
 	case FT_LS_LMONTH: return("LS_LMONTH");
 	case FT_LS_ZONE: return("LS_ZONE");
@@ -1043,6 +1042,8 @@ f_typestr(int t)
 	case FT_LS_WEEKDAY: return("LS_WEEKDAY");
 	case FT_LS_822DATE: return("LS_822DATE");
 	case FT_LS_PRETTY: return("LS_PRETTY");
+	case FT_LS_KILO: return("LS_KILO");
+	case FT_LS_KIBI: return("LS_KIBI");
 	case FT_LV_SEC: return("LV_SEC");
 	case FT_LV_MIN: return("LV_MIN");
 	case FT_LV_HOUR: return("LV_HOUR");
@@ -1057,13 +1058,13 @@ f_typestr(int t)
 	case FT_LV_DAYF: return("LV_DAYF");
 	case FT_LV_DST: return("LV_DST");
 	case FT_LV_ZONEF: return("LV_ZONEF");
-	case FT_LS_ADDR: return("LS_ADDR");
 	case FT_LS_PERS: return("LS_PERS");
 	case FT_LS_MBOX: return("LS_MBOX");
 	case FT_LS_HOST: return("LS_HOST");
 	case FT_LS_PATH: return("LS_PATH");
 	case FT_LS_GNAME: return("LS_GNAME");
 	case FT_LS_NOTE: return("LS_NOTE");
+	case FT_LS_ADDR: return("LS_ADDR");
 	case FT_LS_822ADDR: return("LS_822ADDR");
 	case FT_LS_FRIENDLY: return("LS_FRIENDLY");
 	case FT_LV_HOSTTYPE: return("LV_HOSTTYPE");
@@ -1080,8 +1081,8 @@ f_typestr(int t)
 	case FT_GETMYMBOX: return("GETMYMBOX");
 	case FT_GETMYADDR: return("GETMYADDR");
 	case FT_SAVESTR: return("SAVESTR");
-	case FT_PAUSE: return ("PAUSE");
 	case FT_DONE: return("DONE");
+	case FT_PAUSE: return("PAUSE");
 	case FT_NOP: return("NOP");
 	case FT_GOTO: return("GOTO");
 	case FT_IF_S_NULL: return("IF_S_NULL");

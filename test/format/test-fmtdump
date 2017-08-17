@@ -110,16 +110,16 @@ L7:	MYMBOX, c_name "from", c_type <ADDR>
 	LIT "To:"
 	PARSEADDR, c_name "to", c_type <ADDR>
 	LS_FRIENDLY, c_name "to", c_type <ADDR>
-	FT_LS_DECODE
+	LS_DECODE
 	STRF, width 14, fill ' '
 L8:	IF_V_EQ 0 continue else goto L9
 	PARSEADDR, c_name "from", c_type <ADDR>
 	LS_FRIENDLY, c_name "from", c_type <ADDR>
-	FT_LS_DECODE
+	LS_DECODE
 	STRF, width 17, fill ' '
 L9:	LIT "  "
 	LS_COMP, comp "subject"
-	FT_LS_DECODE
+	LS_DECODE
 	STR
 	LS_COMP, comp "body"
 	IF_S continue else goto L10
@@ -171,18 +171,18 @@ L7:	MYMBOX, c_name "from", c_type <ADDR>
 	LIT "To:"
 	PARSEADDR, c_name "to", c_type <ADDR>
 	LS_FRIENDLY, c_name "to", c_type <ADDR>
-	FT_LS_DECODE
+	LS_DECODE
 	LS_UNQUOTE
 	STRF, width 14, fill ' '
 L8:	IF_V_EQ 0 continue else goto L9
 	PARSEADDR, c_name "from", c_type <ADDR>
 	LS_FRIENDLY, c_name "from", c_type <ADDR>
-	FT_LS_DECODE
+	LS_DECODE
 	LS_UNQUOTE
 	STRF, width 17, fill ' '
 L9:	LIT "  "
 	LS_COMP, comp "subject"
-	FT_LS_DECODE
+	LS_DECODE
 	STR
 	LS_COMP, comp "body"
 	IF_S continue else goto L10
