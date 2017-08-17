@@ -72,8 +72,8 @@ cpnumber(charstring_t dest, int num, int wid, char fill, size_t max) {
     if (wid == 0)
 	return;
     if (wid < 0)
-	wid = -wid;
-    if (wid < (num >= 0 ? max : max-1)) {
+        wid = -wid; /* OK because wid originally a short. */
+    if ((size_t)wid < (num >= 0 ? max : max-1)) {
 	/* Build up the string representation of num in reverse. */
 	charstring_t rev = charstring_create (0);
 	int i = num >= 0 ? num : -num;
