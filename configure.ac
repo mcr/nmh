@@ -604,7 +604,7 @@ dnl exist.
 dnl
 
 AC_CONFIG_COMMANDS([build-directories],
-[test -d man || AS_MKDIR_P([man])])
+[AS_MKDIR_P([etc]); AS_MKDIR_P([man])])
 
 AC_CONFIG_COMMANDS_POST([
 

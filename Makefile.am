@@ -871,7 +871,6 @@ config/version.c: Makefile $(srcdir)/config/version.sh
 	env srcdir="$(srcdir)" sh $(srcdir)/config/version.sh $(VERSION) > ./config/version.c
 
 etc/bash_completion_nmh: $(srcdir)/etc/bash_completion_nmh-gen
-	$(MKDIR_P) $(@D) # FIXME: A better way?
 	$(srcdir)/etc/bash_completion_nmh-gen > $@
 
 etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
@@ -884,7 +883,6 @@ etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 				< $(srcdir)/etc/mts.conf.in > $@
 
 etc/mhn.defaults: $(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPROG)
-	$(MKDIR_P) $(@D) # FIXME: A better way?
 	@rm -f $@
 	$(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPATH) $(MHNSEARCHPROG) > $@
 
