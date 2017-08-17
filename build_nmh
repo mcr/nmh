@@ -364,7 +364,7 @@ if [ -z "$CFLAGS" ]; then
   if cc -dM -E - </dev/null 2>&1 | grep __GNUC__ >/dev/null; then
     #### configure will supply -g -O2 with gcc, but only if CFLAGS
     #### isn't defined.
-    CFLAGS='-g -ansi -pedantic'
+    CFLAGS='-g -std=c99 -pedantic'
     if [ "$config_debug" = n ]; then
       CFLAGS="$CFLAGS -O2"
     else
