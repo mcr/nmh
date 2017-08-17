@@ -67,7 +67,12 @@ match (char *str, char *sub)
  * copy a number to the destination subject to a maximum width
  */
 void
-cpnumber(charstring_t dest, int num, unsigned int wid, char fill, size_t max) {
+cpnumber(charstring_t dest, int num, int wid, char fill, size_t max) {
+    /* Maybe we should handle left padding at some point? */
+    if (wid == 0)
+	return;
+    if (wid < 0)
+	wid = -wid;
     if (wid < (num >= 0 ? max : max-1)) {
 	/* Build up the string representation of num in reverse. */
 	charstring_t rev = charstring_create (0);
