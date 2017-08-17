@@ -1144,7 +1144,7 @@ ChangeLog:
 ## Our RPM build target
 ##
 rpm: dist
-	@test -d $(rpmdir)/SOURCES || $(MKDIR_P) $(rpmdir)/SOURCES
+	@$(MKDIR_P) $(rpmdir)/SOURCES
 	@mv -f $(DIST_ARCHIVES) $(rpmdir)/SOURCES
 	@cp -p VERSION $(rpmdir)/SOURCES
 	@rpmbuild --define '_topdir $(rpmdir)' \
