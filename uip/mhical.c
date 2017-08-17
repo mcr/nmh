@@ -714,7 +714,7 @@ display (FILE *file, contentline *clines, char *nfs) {
     }
 
     /* Don't call on the END:VCALENDAR line. */
-    if (clines->next) {
+    if (clines  &&  clines->next) {
       (void) fmt_scan (fmt, buffer, INT_MAX, dat, NULL);
       fputs (charstring_buffer (buffer), file);
       fmt_free (fmt, 1);

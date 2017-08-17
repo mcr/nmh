@@ -874,5 +874,10 @@ check "$expected" "$actual"
 check "$expected_err" "$actual_err"
 
 
+# check null input
+start_test "null input"
+check_exit '-eq 0' mhical </dev/null
+
+
 finish_test
 exit $failed
