@@ -202,7 +202,7 @@ Options for configure
      nmh command `prompter'.  If you specify `prompter', then you don't
      need to give the full pathname.
 
---with-locking=LOCKTYPE    (DEFAULT is dot)
+--with-locking=LOCKTYPE    (DEFAULT is based on operating system)
      Specify the locking mechanism when attempting to "inc" or
      "msgchk" a local mail spool. Valid options are "dot",
      "fcntl", "flock", and "lockf". Of the four, dot-locking
@@ -223,12 +223,12 @@ Options for configure
      locked.
 
 --with-mts=MTS   (DEFAULT is smtp)
-     Specify the default mail transport system you want to use.  The two
-     acceptable options are "smtp" (which is the default), and
-     "sendmail".  This value will be put into the mts.conf file.  You
-     may find it convenient to specify a value at configure-time,
-     however, so that each time nmh is reinstalled, the right value will
-     be there.
+     Specify the default mail transport system you want to use.  The three
+     acceptable options are "smtp" (which is the default),
+     "sendmail/smtp", and "sendmail/pipe".  This value will be put into
+     the mts.conf file.  You may find it convenient to specify a value
+     at configure-time, however, so that each time nmh is reinstalled,
+     the right value will be there.
 
      If you use "smtp", this will enable a direct SMTP (simple mail
      transport protocol) interface in nmh.  When sending mail, instead
@@ -237,12 +237,14 @@ Options for configure
      in the `mts.conf' file (default is localhost), and speak SMTP
      directly.
 
-     If you use "sendmail", then `post' will send messages by forking a
+     If you use "sendmail/smtp", then `post' will send messages by forking a
      local copy of sendmail.  Currently it will still speak SMTP with
      this local copy of sendmail.
 
-     If you wish to use a transport agent other than sendmail, you will
-     need to use a `sendmail wrapper'.
+     If you use "sendmail/pipe", then `post' will open a pipe to the
+     sendmail program and invoke it with the '-t' and '-i' options
+     and write the message to sendmail's standard input.  Note that
+     some nmh functionality is not available in this mode.
 
 --with-ndbm=LIB    (DEFAULT is to autodetect)
 --with-ndbmheader=HEADER     (DEFAULT is to autodetect)
@@ -255,11 +257,6 @@ Options for configure
      If either of these options is given then the other must also be
      specified.
 
---with-pager=PAGER    (DEFAULT is more)
-     Specify the default pager (file lister) to use.  If this option
-     is not given, then the configuration process will search for the
-     command `more' and use it as the default.
-
 --with-smtpserver='SMTPSERVER'    (DEFAULT is localhost)
      If this option is not specified, the mts.conf file will contain
      the line "servers: localhost", which may be manually edited later.
@@ -269,15 +266,19 @@ Options for configure
 
      See the mh-tailor(5) man page for full documentation of "servers:".
 
---with-cyrus-sasl	(DEFAULT is without)
+--with-cyrus-sasl	(DEFAULT is to autodetect))
      Enable SASL support for SMTP and POP via the Cyrus SASL library.
      This is used for the POP AUTH and SMTP AUTH protocols.  This supports
      a wide variety of security mechanisms, including Kerberos/GSSAPI.
      Session encryption via SASL is supported for both POP and SMTP
      (depending on server-side support and the security mechanism in use).
 
---with-tls		(DEFAULT is without)
-     Enable TLS session encryption support for SMTP via the STARTTLS command.
+--with-tls		(DEFAULT is to autodetect)
+     Enable TLS session encryption support for SMTP via the STARTTLS command
+     and TLS at connection start for both SMTP and POP.
+
+--with-oauth		(DEFAULT is to enable if curl is installed)
+     Enable OAuth2 authentication for SMTP and POP.
 
 --with-readline		(DEFAULT is to autodetect)
      Enable support for readline functionality (command history/editing) at

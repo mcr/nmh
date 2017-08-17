@@ -35,9 +35,9 @@ AS_IF([test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != xyes -a \
 dnl Do you want client-side support for encryption with TLS?
 AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
 
-dnl Do you want client-side support for using OAuth2 for SMTP authentication?
+dnl Do you want client-side support for using OAuth2 for SMTP & POP auth?
 AC_ARG_WITH([oauth], AS_HELP_STRING([--with-oauth],
-  [Enable OAuth2 support in SMTP auth]))
+  [Enable OAuth2 support in SMTP and POP auth]))
 
 dnl Set the backup prefix
 AC_ARG_WITH([hash-backup],
