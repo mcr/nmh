@@ -628,7 +628,9 @@ lockname (const char *file, struct lockinfo *li, int isnewlock)
 
     snprintf (bp, sizeof(li->curlock) - bplen, "%s.lock", cp);
 
-#if !defined(HAVE_LIBLOCKFILE)
+#if defined(HAVE_LIBLOCKFILE)
+    NMH_UNUSED(isnewlock);
+#else
     /*
      * If this is for a new lock, create a name for
      * the temporary lock file for lockit()
