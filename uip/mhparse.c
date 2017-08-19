@@ -2340,7 +2340,7 @@ openExternal (CT ct, CT cb, CE ce, char **file, int *fd)
         admonish (cachefile, "unable to fopen for reading");
     }
 
-    *fd = fileno (ce->ce_fp);
+    *fd = ce->ce_fp ? fileno (ce->ce_fp) : -1;
     return OK;
 
 ready_already:
