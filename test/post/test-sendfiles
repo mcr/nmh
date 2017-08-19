@@ -65,7 +65,7 @@ test_sendfiles ()
   (cd $MH_TEST_DIR/tmp  &&
    contents=`mhstore -noauto last 2>&1 | \
              sed -e 's/storing message.*as file //'`  &&
-   $uncompress "$contents" | tar xpf -  &&  rm -f "$contents")
+   $uncompress <"$contents" | tar xpf -  &&  rm -f "$contents")
 
   rmm last
   check "$testfiledir/$testfile" "$MH_TEST_DIR/tmp/$testfile" \
