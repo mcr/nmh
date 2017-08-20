@@ -161,11 +161,11 @@ if test "$GCC" = yes; then
   dnl It shouldn't hurt with earlier versions because it's a cpp macro.
   dnl If the user configures with a CFLAGS that contains a -O flag
   dnl but then removes it a make time, they'll also have to remove
-  dnl -D_FORTIFY_SOURCE from AM_CPPFLAGS because it requires optimization.
+  dnl -D_FORTIFY_SOURCE from CPPFLAGS because it requires optimization.
   dnl Use "\ " instead of ' ' or " " for compatiblity with posh.
   AS_CASE([$CFLAGS],
           [-O|*\ -O|-O[[!0]]*|*\ -O[[!0]]*],
-          [AM_CPPFLAGS="${AM_CPPFLAGS:+$AM_CPPFLAGS }-D_FORTIFY_SOURCE=2"])
+          [CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_FORTIFY_SOURCE=2"])
 fi
 
 dnl FreeBSD needs a bit of magic to bring getline() into scope.
