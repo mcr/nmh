@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-mhical \- manipulate iCalendar event requests in nmh messages
+mhical \- manipulates an iCalendar event request
 .SH SYNOPSIS
 .HP 5
 .na
