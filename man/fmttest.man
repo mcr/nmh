@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-fmttest \- test tool for the nmh \fImh-format\fP\^(5) language
+fmttest \- test programs in nmh's \fImh-format\fP\^(5) language
 .SH SYNOPSIS
 .HP 5
 .na

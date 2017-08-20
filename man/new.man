@@ -4,12 +4,12 @@
 .
 .SH NAME
 new \- report on nmh folders with new messages
-.PP
-fnext \- set current folder to next folder with new messages
-.PP
-fprev \- set current folder to previous folder with new messages
-.PP
-unseen \- scan new messages in all folders with new messages
+.br
+fnext \- set current nmh folder to next folder with new messages
+.br
+fprev \- set current nmh folder to previous folder with new messages
+.br
+unseen \- scan any new messages in all nmh folders
 .SH SYNOPSIS
 .HP 5
 .na
@@ -21,17 +21,14 @@ unseen \- scan new messages in all folders with new messages
 .IR mode ]
 .RB [ \-folders
 .IR foldersfile ]
-.PP
 .HP 5
 .B fnext
 is equivalent to
 .B new \-mode fnext
-.PP
 .HP 5
 .B fprev
 is equivalent to
 .B new \-mode fprev
-.PP
 .HP 5
 .B unseen
 is equivalent to

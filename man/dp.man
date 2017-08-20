@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-dp \- parse dates RFC 822-style
+dp \- nmh parser of RFC 822-style dates
 .SH SYNOPSIS
 .HP 5
 .na

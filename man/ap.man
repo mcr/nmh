@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-ap \- parse addresses RFC 822-style
+ap \- nmh parser of RFC 822-style addresses
 .SH SYNOPSIS
 .HP 5
 .na

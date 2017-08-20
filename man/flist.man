@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-flist, flists \- list the number of nmh messages in given sequence(s)
+flist, flists \- list the number of nmh messages in given sequences
 .SH SYNOPSIS
 .HP 5
 .na

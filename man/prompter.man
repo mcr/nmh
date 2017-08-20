@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-prompter \- prompting editor front-end for nmh
+prompter \- nmh's prompting editor front-end
 .SH SYNOPSIS
 .HP 5
 .na

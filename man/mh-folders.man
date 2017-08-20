@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-mh-folders \- specification of storage format used by nmh message system
+mh-folders \- storage format used by nmh message system
 .SH DESCRIPTION
 .B nmh
 stores messages in the files and directories of the host filesystem

@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-mh-alias \- format of nmh alias files
+mh-alias \- format of nmh email-address alias files
 .SH DESCRIPTION
 .PP
 Each line of an

@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-mh-profile \- user profile customization for nmh message handler
+mh-profile \- user customization for nmh message handler
 .SH DESCRIPTION
 Each user of
 .B nmh

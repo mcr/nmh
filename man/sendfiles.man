@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-sendfiles \- send multiple files via a MIME message
+sendfiles \- send multiple files by MIME message with nmh
 .SH SYNOPSIS
 .HP 5
 .na

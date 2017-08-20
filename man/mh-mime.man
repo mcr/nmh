@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-mh\-mime \- Overview of nmh MIME message composition and display
+mh\-mime \- overview of nmh MIME message composition and display
 .\"
 .SH DESCRIPTION
 The acronym MIME stands for Multipurpose Internet Mail Extensions, the

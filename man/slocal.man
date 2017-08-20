@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-slocal \- asynchronously filter and deliver new mail
+slocal \- asynchronously filter and deliver new mail to nmh
 .SH SYNOPSIS
 .HP 5
 .na

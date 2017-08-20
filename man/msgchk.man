@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-msgchk \- check for messages
+msgchk \- nmh's check for incoming email
 .SH SYNOPSIS
 .HP 5
 .na

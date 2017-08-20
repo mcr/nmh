@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-mh-format \- format file for nmh message system
+mh-format \- formatting language for nmh message system
 .SH DESCRIPTION
 Several
 .B nmh

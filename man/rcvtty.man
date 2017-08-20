@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-rcvtty \- report new mail
+rcvtty \- report new mail with nmh
 .SH SYNOPSIS
 .HP 5
 .na

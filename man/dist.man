@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-dist \- redistribute an nmh message to additional addresses
+dist \- distribute an nmh message to additional addresses
 .SH SYNOPSIS
 .HP 5
 .na

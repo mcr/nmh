@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-refile \- file message in other nmh folders
+refile \- file message in nmh folders
 .SH SYNOPSIS
 .HP 5
 .na

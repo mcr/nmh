@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-mhfixmsg \- rewrite nmh MIME messages with various transformations
+mhfixmsg \- nmh's MIME-email rewriter with various transformations
 .SH SYNOPSIS
 .HP 5
 .na

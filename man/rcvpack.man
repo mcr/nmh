@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-rcvpack \- append a message to a file
+rcvpack \- append an email from standard input to a file
 .SH SYNOPSIS
 .HP 5
 .na

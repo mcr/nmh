@@ -2,11 +2,12 @@
 .
 .\" %nmhwarning%
 .
-.\" Register 'tt' contains the indent for .TP in the COMMANDS section:
-.nr tt \w'\fImh-sequence\fR(5)\0\0'u
-.\"
 .SH NAME
 nmh \- new MH message system
+.
+.\" Register 'tt' contains the indent for .TP in the COMMANDS section:
+.nr tt \w'\fImh-sequence\fR(5)\0\0'u
+.
 .SH DESCRIPTION
 .B nmh
 is the name of a powerful message handling system.  Rather than
