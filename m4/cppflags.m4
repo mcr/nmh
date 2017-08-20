@@ -43,9 +43,10 @@ AC_DEFUN([NMH_ADDL_CPPFLAGS],
                   [AC_LANG_PROGRAM([#include <string.h>],
                                    [return strdup("x") == 0])],
                   [AM_CPPFLAGS="${nmh_cv_addl_cppflags}"; break;])])
-    done])
+    done
     CFLAGS="$nmh_saved_cflags"
     CPPFLAGS="$nmh_saved_cppflags"
+    ])
 
     dnl autoconf doesn't currently provide a macro to disable AC_LANG_WERROR,
     dnl so do it this way:
