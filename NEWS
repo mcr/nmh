@@ -68,13 +68,13 @@ The following are new features for the 1.7 release of nmh:
   content.
 - Added mhical(1), to display, reply to, and cancel iCalendar (RFC 5545)
   event requests.
-- added multiply format function
+- Added multiply mh-format(5) function.
 - "mhparam bindir" prints the path to the directory containing the public
   executables (${bindir}).
-- new "-prefer" switch for mhshow (and mhlist and mhshow), to allow specifying
+- New "-prefer" switch for mhshow (and mhlist and mhshow), to allow specifying
   the preferred content types to show, if present in a multipart alternative.
 - mh-format now has %(kilo) and %(kibi) functions, to allow printing
-  numbers as, for example, "10K", or "2.3Mi"
+  numbers with SI or IEC quantities, e.g. "10K", "2.3Mi".
 - Support for the -sendmail flag to send/post to change the sendmail
   binary when using the sendmail/pipe MTS.
 - Added support to send(1) to specify switches to post(1) based on address or
@@ -100,7 +100,7 @@ The following are new features for the 1.7 release of nmh:
 - configure now defaults to enabling each of TLS and Cyrus SASL if the
   necessary headers and libraries are found.
 - Moved build_nmh to top-level directory.
-- Better error reporting for connections to network services
+- Better error reporting for connections to network services.
 
 ---------
 BUG FIXES
