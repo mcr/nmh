@@ -533,24 +533,30 @@ nmh_version_changed (int older) {
 }
 
 
-/*
- * Scan for any 8-bit characters.  Return 1 if they exist.
- *
- * Scan up until the given endpoint (but not the actual endpoint itself).
- * If the endpoint is NULL, scan until a '\0' is reached.
- */
-
-int
-contains8bit(const char *start, const char *end)
+/* contains8bit returns true if any byte from start onwards fails
+ * isascii(3), i.e. is outside [0, 0x7f].  If start is NULL it returns
+ * false.  Bytes are examined until a NUL byte, or, if end is not NULL,
+ * whilst start is before end. */
+bool contains8bit(const char *start, const char *end)
 {
-    if (! start)
-	return 0;
+    const char *p;
+    char c;
 
-    while (*start != '\0' && (!end || (start < end)))
-	if (! isascii((unsigned char) *start++))
-	    return 1;
+    if (!start)
+        return false;
 
-    return 0;
+    p = start;
+    if (end) {
+        while (p < end && (c = (*p++)))
+            if (!isascii((unsigned char)c))
+                return true;
+    } else {
+        while ((c = (*p++)))
+            if (!isascii((unsigned char)c))
+                return true;
+    }
+
+    return false;
 }
 
 

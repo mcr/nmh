@@ -80,18 +80,7 @@ void trim_suffix_c(char *s, int c);
 void to_lower(char *s);
 void to_upper(char *s);
 
-/*
- * See if a string contains 8 bit characters (use isascii() for the test).
- * Arguments include:
- *
- * start	- Pointer to start of string to test.
- * end		- End of string to test (test will stop before reaching
- *		  this point).  If NULL, continue until reaching '\0'.
- *
- * This function always stops at '\0' regardless of the value of 'end'.
- * Returns 1 if the string contains an 8-bit character, 0 if it does not.
- */
-int contains8bit(const char *start, const char *end);
+bool contains8bit(const char *start, const char *end);
 
 /*
  * See if file has any 8-bit bytes.
