@@ -148,6 +148,7 @@ static struct adrx  adrxs2;
 struct adrx *
 getadrx (const char *addrs, int eai)
 {
+    int parse;
     char *bp;
     struct adrx *adrxp = &adrxs2;
 
@@ -163,62 +164,35 @@ getadrx (const char *addrs, int eai)
     if (dp == NULL) {
 	dp = cp = strdup (FENDNULL(addrs));
 	glevel = 0;
+    } else if (cp == NULL) {
+        free (dp);
+        dp = NULL;
+        return NULL;
     }
-    else
-	if (cp == NULL) {
-	    free (dp);
-	    dp = NULL;
-	    return NULL;
-	}
 
-    switch (parse_address ()) {
-	case DONE:
-	    free (dp);
-	    dp = cp = NULL;
-	    return NULL;
-
-	case OK:
-	    switch (last_lex) {
-		case LX_COMA:
-		case LX_END:
-		    break;
-
-		default:	/* catch trailing comments */
-		    bp = cp;
-		    my_lex (adr);
-		    cp = bp;
-		    break;
-	    }
-	    break;
-
-	default:
-	    break;
-	}
-
-    if (! eai) {
-        /*
-         * Reject the address if key fields contain 8bit characters
-         */
-
-        if (contains8bit(mbox, NULL) || contains8bit(host, NULL) ||
-            contains8bit(routepath, NULL) || contains8bit(grp, NULL)) {
-            strcpy(err, "Address contains 8-bit characters");
-        }
+    parse = parse_address();
+    if (parse == DONE) {
+        free(dp);
+        dp = cp = NULL;
+        return NULL;
     }
+    if (parse == OK && last_lex != LX_COMA && last_lex != LX_END) {
+        /* catch trailing comments */
+        bp = cp;
+        my_lex(adr);
+        cp = bp;
+    }
+
+    /* Reject the address if key fields contain 8bit characters. */
+    if (!eai &&
+        (contains8bit(mbox, NULL) || contains8bit(host, NULL) ||
+        contains8bit(routepath, NULL) || contains8bit(grp, NULL)))
+        strcpy(err, "Address contains 8-bit characters");
 
     if (err[0])
-	for (;;) {
-	    switch (last_lex) {
-		case LX_COMA: 
-		case LX_END: 
-		    break;
+        while (last_lex != LX_COMA && last_lex != LX_END)
+            my_lex(adr);
 
-		default: 
-		    my_lex (adr);
-		    continue;
-	    }
-	    break;
-	}
     while (isspace ((unsigned char) *ap))
 	ap++;
     if (cp)
@@ -397,16 +371,12 @@ again: ;
 static int
 phrase (char *buffer)
 {
-    for (;;)
-	switch (my_lex (buffer)) {
-	    case LX_ATOM: 
-	    case LX_QSTR: 
-		pers = add (buffer, add (" ", pers));
-		continue;
+    int lex;
 
-	    default: 
-		return OK;
-	}
+    while ((lex = my_lex(buffer)) == LX_ATOM || lex == LX_QSTR)
+        pers = add(buffer, add(" ", pers));
+
+    return OK;
 }
 
 
