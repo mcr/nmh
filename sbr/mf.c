@@ -90,8 +90,6 @@ isat (const char *p)
  *
  */
 
-#define	QUOTE	'\\'
-
 #define	LX_END	 0
 #define	LX_ERR	 1
 #define	LX_ATOM	 2
@@ -120,7 +118,7 @@ static struct specials special[] = {
     { '@',   LX_AT },
     { '(',   LX_ERR },
     { ')',   LX_ERR },
-    { QUOTE, LX_ERR },
+    { '\\',  LX_ERR },
     { '"',   LX_ERR },
     { '[',   LX_ERR },
     { ']',   LX_ERR },
@@ -590,7 +588,7 @@ my_lex (char *buffer)
 		case 0: 
 		    cp = NULL;
 		    return (last_lex = LX_ERR);
-		case QUOTE: 
+		case '\\': 
 		    ADDCHR(c);
 		    if ((c = *cp++) == 0) {
 			cp = NULL;
@@ -622,7 +620,7 @@ my_lex (char *buffer)
 		case 0: 
 		    cp = NULL;
 		    return (last_lex = LX_ERR);
-		case QUOTE: 
+		case '\\': 
 		    ADDCHR(c);
 		    if ((c = *cp++) == 0) {
 			cp = NULL;
@@ -646,7 +644,7 @@ my_lex (char *buffer)
 		case 0: 
 		    cp = NULL;
 		    return (last_lex = LX_ERR);
-		case QUOTE: 
+		case '\\': 
 		    ADDCHR(c);
 		    if ((c = *cp++) == 0) {
 			cp = NULL;
