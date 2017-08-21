@@ -366,7 +366,7 @@ if [ -z "$CFLAGS" ]; then
     #### isn't defined.
     CFLAGS='-g -std=c99 -pedantic'
     if [ "$config_debug" = n ]; then
-      CFLAGS="$CFLAGS -O2"
+      CFLAGS="$CFLAGS -O2 -D_FORTIFY_SOURCE=2"
     else
       CFLAGS="$CFLAGS -O0"
     fi
