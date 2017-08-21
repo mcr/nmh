@@ -348,9 +348,8 @@ getalias (char *addrs)
 
     if (cp == NULL)
 	cp = addrs;
-    else
-	if (*cp == 0)
-	    return (cp = NULL);
+    else if (*cp == 0)
+        return (cp = NULL);
 
     /* Remove leading any space from the address. */
     for (pp = cp; isspace ((unsigned char) *pp); pp++)

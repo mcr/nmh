@@ -990,9 +990,8 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 		    mp->m_bcc++;
 		if (np->m_ingrp)
 		    mp->m_ingrp = np->m_ingrp;
-		else
-		    if (mp->m_gname)
-			putgrp (namep, mp->m_gname, out, hdr->flags);
+		else if (mp->m_gname)
+                    putgrp (namep, mp->m_gname, out, hdr->flags);
 		if (mp->m_ingrp) {
 		    if (sm_mts == MTS_SENDMAIL_PIPE) {
 			/* Catch this before sendmail chokes with:
@@ -1495,11 +1494,10 @@ make_bcc_file (int dashstuff)
 	while (find_prefix () == NOTOK) {
 	    if (*cp < 'z')
 		(*cp)++;
-	    else
-		if (*++cp == 0)
-		    adios (NULL, "can't find a unique delimiter string");
-		else
-		    (*cp)++;
+	    else if (*++cp == 0)
+                adios (NULL, "can't find a unique delimiter string");
+            else
+                (*cp)++;
 	}
 
 	fprintf (out, "%s: %s\n%s: multipart/digest; boundary=\"",

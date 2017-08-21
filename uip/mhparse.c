@@ -2110,9 +2110,8 @@ openQuoted (CT ct, char **file)
 		   sizeof digest))
 	    content_error (NULL, ct,
 			   "content integrity suspect (digest mismatch) -- continuing");
-	else
-	    if (debugsw)
-		fprintf (stderr, "content integrity confirmed\n");
+	else if (debugsw)
+            fprintf (stderr, "content integrity confirmed\n");
     }
 
     fseek (ce->ce_fp, 0L, SEEK_SET);
@@ -2416,12 +2415,10 @@ openFile (CT ct, char **file)
 	    if (ferror (gp)) {
 		admonish (ce->ce_file, "error reading");
 		(void) m_unlink (cachefile);
-	    }
-	    else
-		if (ferror (fp)) {
-		    admonish (cachefile, "error writing");
-		    (void) m_unlink (cachefile);
-		}
+	    } else if (ferror (fp)) {
+                admonish (cachefile, "error writing");
+                (void) m_unlink (cachefile);
+            }
 	    fclose (fp);
 	}
 	umask (mask);
@@ -2627,12 +2624,10 @@ openFTP (CT ct, char **file)
 		if (ferror (gp)) {
 		    admonish (ce->ce_file, "error reading");
 		    (void) m_unlink (cachefile);
-		}
-		else
-		    if (ferror (fp)) {
-			admonish (cachefile, "error writing");
-			(void) m_unlink (cachefile);
-		    }
+		} else if (ferror (fp)) {
+                    admonish (cachefile, "error writing");
+                    (void) m_unlink (cachefile);
+                }
 		fclose (fp);
 	    }
 	    umask (mask);

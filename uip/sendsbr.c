@@ -592,9 +592,8 @@ tmp_fd (void)
 
     if (debugsw)
 	inform("temporary file %s selected", tfile);
-    else
-	if (m_unlink (tfile) == NOTOK)
-	    advise (tfile, "unable to remove");
+    else if (m_unlink (tfile) == NOTOK)
+        advise (tfile, "unable to remove");
 
     return fd;
 }

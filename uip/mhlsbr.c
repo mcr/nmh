@@ -645,14 +645,12 @@ mhl_format (char *file, int length, int width)
 			    c1->c_nfs = mh_xstrdup(global.c_nfs);
 			    compile_formatfield(c1);
 			}
-		    }
-		    else
-			if (c1->c_flags & ADDRFMT) {
-			    if (global.c_flags & ADDRFMT) {
-				c1->c_nfs = mh_xstrdup(global.c_nfs);
-				compile_formatfield(c1);
-			    }
-			}
+		    } else if (c1->c_flags & ADDRFMT) {
+                        if (global.c_flags & ADDRFMT) {
+                            c1->c_nfs = mh_xstrdup(global.c_nfs);
+                            compile_formatfield(c1);
+                        }
+                    }
 		}
 		continue;
 

@@ -78,9 +78,8 @@ expath (char *name, int flag)
     ep = pwds + strlen (pwds);
     if ((cp = strrchr(pwds, '/')) == NULL)
 	cp = ep;
-    else
-	if (cp == pwds)
-	    cp++;
+    else if (cp == pwds)
+        cp++;
 
     if (has_prefix(name, CWD))
 	name += LEN(CWD);

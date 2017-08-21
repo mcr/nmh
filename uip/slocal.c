@@ -1118,11 +1118,10 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 		if (verbose) {
 		    if (status == 0)
 			verbose_printf (", success.\n");
-		    else
-			if ((status & 0xff00) == 0xff00)
-			    verbose_printf (", system error\n");
-			else
-			    pidstatus (status, stdout, ", failed");
+		    else if ((status & 0xff00) == 0xff00)
+                        verbose_printf (", system error\n");
+                    else
+                        pidstatus (status, stdout, ", failed");
 		}
 		return (status == 0 ? 0 : -1);
 	    }

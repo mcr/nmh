@@ -247,12 +247,10 @@ auxformat (struct mailname *mp, int extras)
 	    snprintf (buffer, sizeof(buffer), "%s <%s>",
 		    legal_person (mp->m_pers ? mp->m_pers : mp->m_mbox),
 		    addr);
-    }
+    } else if (mp->m_note)
+        snprintf (buffer, sizeof(buffer), "%s %s", addr, mp->m_note);
     else
-	if (mp->m_note)
-	    snprintf (buffer, sizeof(buffer), "%s %s", addr, mp->m_note);
-	else
-	    strncpy (buffer, addr, sizeof(buffer));
+        strncpy (buffer, addr, sizeof(buffer));
 
     return buffer;
 }
