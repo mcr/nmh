@@ -235,7 +235,7 @@ LocalName (int flag)
 	gethostname (buf, sizeof(buffer0) - 1);
 	/* now fully qualify our name */
 
-	memset(&hints, 0, sizeof(hints));
+        ZERO(&hints);
 	hints.ai_flags = AI_CANONNAME;
 	hints.ai_family = PF_UNSPEC;
 	if (getaddrinfo(buf, NULL, &hints, &res) == 0) {

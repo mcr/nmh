@@ -336,7 +336,7 @@ main (int argc, char **argv)
      */
 
     if (dupaddrs == 0 || trace) {
-    	memset(&cb, 0, sizeof(cb));
+    	ZERO(&cb);
 	cbp = &cb;
 
 	if (dupaddrs == 0) {

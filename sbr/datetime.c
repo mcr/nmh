@@ -64,7 +64,7 @@ parse_datetime (const char *datetime, const char *zone, int dst,
     int form_1 = 0;
     int items_matched;
 
-    memset(tws, 0, sizeof *tws);
+    ZERO(tws);
     items_matched =
         sscanf (datetime, "%4d%2d%2dT%2d%2d%2d%c",
                 &tws->tw_year, &tws->tw_mon, &tws->tw_mday,

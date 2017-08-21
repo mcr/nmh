@@ -31,6 +31,9 @@ void mh_xfree(void *ptr);
 /* Set p to point to newly allocated, zeroed, memory. */
 #define NEW0(p) ((p) = mh_xcalloc(1, sizeof *(p)))
 
+/* Zero the bytes to which p points. */
+#define ZERO(p) memset((p), 0, sizeof *(p))
+
 char *pwd(void);
 char *add(const char *, char *);
 char *addlist(char *, const char *);

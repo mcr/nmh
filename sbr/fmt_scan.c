@@ -989,7 +989,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		*comp->c_tws = *tws;
 		comp->c_flags &= ~CF_TRUE;
 	    } else if ((comp->c_flags & CF_DATEFAB) == 0) {
-		memset (comp->c_tws, 0, sizeof *comp->c_tws);
+		ZERO(comp->c_tws);
 		comp->c_flags = CF_TRUE;
 	    }
 	    comp->c_flags |= CF_PARSED;

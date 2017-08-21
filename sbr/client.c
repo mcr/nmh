@@ -28,7 +28,7 @@ client (char *server, char *service, char *response, int len_response,
 	return NOTOK;
     }
 
-    memset(&hints, 0, sizeof(hints));
+    ZERO(&hints);
 #ifdef AI_ADDRCONFIG
     hints.ai_flags = AI_ADDRCONFIG;
 #endif

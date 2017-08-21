@@ -205,7 +205,7 @@ finished:
     dat[2] = 0;
     dat[3] = outputlinelen;
     dat[4] = 0;
-    memset(&cb, 0, sizeof(cb));
+    ZERO(&cb);
     cb.formataddr = replformataddr;
     cb.concataddr = replconcataddr;
     fmt_scan (fmt, scanl, i, dat, &cb);

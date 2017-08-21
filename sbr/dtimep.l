@@ -11,6 +11,7 @@
 %a5000
 %{
 #include <h/nmh.h>
+#include <h/utils.h>
 #include <h/tws.h>
 
   /* Since we're looking at a string at a time, don't worry about
@@ -231,7 +232,7 @@ nl      [ \t\n()]
   char *cp;
   static struct tws tw; 
 
-  memset(&tw,0,sizeof(struct tws));
+  ZERO(&tw);
 
   lexhandle = yy_scan_string(lexstr);
 %}

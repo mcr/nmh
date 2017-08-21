@@ -559,7 +559,7 @@ do_name(char *sp, int preprocess)
 	    CERROR("component used as both date and address");
 	}
 	if (cm->c_tws) {
-	    memset (cm->c_tws, 0, sizeof *cm->c_tws);
+	    ZERO(cm->c_tws);
 	} else {
 	    NEW0(cm->c_tws);
 	}

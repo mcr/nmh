@@ -1217,7 +1217,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
      * messages.
      */
 
-    memset(&secprops, 0, sizeof(secprops));
+    ZERO(&secprops);
     secprops.maxbufsize = SASL_MAXRECVBUF;
 
     /*
