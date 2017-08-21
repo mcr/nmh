@@ -36,15 +36,15 @@ extern struct aka *akahead;
 /*
  * prototypes
  */
-static void print_aka (char *, int, int);
-static void print_usr (char *, int);
+static void print_aka (char *, bool, int);
+static void print_usr (char *, bool);
 
 
 int
 main (int argc, char **argv)
 {
-    int i, vecp = 0, inverted = 0, list = 0;
-    int noalias = 0;
+    int i, vecp = 0;
+    bool inverted, list, noalias;
     char *cp, **ap, **argp, buf[BUFSIZ];
     /* Really only need to allocate for argc-1, but must allocate at least 1,
        so go ahead and allocate for argc char pointers. */
@@ -57,6 +57,7 @@ main (int argc, char **argv)
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
+    inverted = list = noalias = false;
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
@@ -82,21 +83,21 @@ main (int argc, char **argv)
 			adios (NULL, "aliasing error in %s - %s", cp, akerror (i));
 		    continue;
 		case NALIASW: 
-		    noalias++;
+		    noalias = true;
 		    continue;
 
 		case LISTSW: 
-		    list++;
+		    list = true;
 		    continue;
 		case NLISTSW: 
-		    list = 0;
+		    list = false;
 		    continue;
 
 		case USERSW: 
-		    inverted++;
+		    inverted = true;
 		    continue;
 		case NUSERSW: 
-		    inverted = 0;
+		    inverted = false;
 		    continue;
 	    }
 	}
@@ -158,7 +159,7 @@ main (int argc, char **argv)
 }
 
 static void
-print_aka (char *p, int list, int margin)
+print_aka (char *p, bool list, int margin)
 {
     char c;
 
@@ -198,7 +199,7 @@ print_aka (char *p, int list, int margin)
 }
 
 static void
-print_usr (char *s, int list)
+print_usr (char *s, bool list)
 {
     char *cp, *pp, *vp;
     struct aka *ak;

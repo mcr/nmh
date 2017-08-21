@@ -149,7 +149,7 @@ static gid_t return_gid;
 #endif /* not MAILGROUP */
 
 /* these variables have to be globals so that done() can correctly clean up the lockfile */
-static int locked = 0;
+static bool locked;
 static char *newmail;
 static FILE *in;
 
@@ -526,7 +526,7 @@ main (int argc, char **argv)
         /* Mail from a spool file. */
 
 	if (access (newmail, W_OK) != NOTOK) {
-	    locked++;
+	    locked = true;
 	    if (trnflag) {
 		SIGNAL (SIGHUP, SIG_IGN);
 		SIGNAL (SIGINT, SIG_IGN);
