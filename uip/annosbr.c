@@ -17,7 +17,7 @@
 /*
  * static prototypes
  */
-static int annosbr (int, char *, char *, char *, int, int, int, int);
+static int annosbr (int, char *, char *, char *, bool, bool, int, bool);
 
 /*
  *	This "local" global and the annopreserve() function are a hack that allows additional
@@ -27,7 +27,7 @@ static int annosbr (int, char *, char *, char *, int, int, int, int);
 static	int	preserve_actime_and_modtime = 0;	/* set to preserve access and modification times on annotated message */
 
 int
-annotate (char *file, char *comp, char *text, int inplace, int datesw, int delete, int append)
+annotate (char *file, char *comp, char *text, bool inplace, bool datesw, int delete, bool append)
 {
     int			i, fd;
     struct utimbuf	b;
@@ -168,7 +168,7 @@ annopreserve(int preserve)
 }
 
 static int
-annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, int delete, int append)
+annosbr (int fd, char *file, char *comp, char *text, bool inplace, bool datesw, int delete, bool append)
 {
     int mode, tmpfd;
     char *cp, *sp;
@@ -199,7 +199,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
      *	as they're read in.  This buffer is grown as needed later.
      */
 
-    if (delete >= -1 || append != 0) {
+    if (delete >= -1 || append) {
 	if ((fp = fdopen(fd, "r")) == NULL)
 	    adios(NULL, "unable to fdopen file.");
 

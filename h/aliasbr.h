@@ -8,7 +8,7 @@ struct aka {
     char *ak_name;		/* name to match against             */
     struct adr *ak_addr;	/* list of addresses that it maps to */
     struct aka *ak_next;	/* next aka in list                  */
-    char ak_visible;		/* should be visible in headers      */
+    bool ak_visible;		/* should be visible in headers      */
 };
 
 struct adr {

@@ -370,7 +370,7 @@ char *SystemName(void);
 /*
  * prototypes for some routines in uip
  */
-int annotate (char *, char *, char *, int, int, int, int);
+int annotate (char *, char *, char *, bool, bool, int, bool);
 void annolist(char *, char *, char *, int);
 void annopreserve(int);
 void m_pclose(void);

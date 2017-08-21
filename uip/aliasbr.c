@@ -27,7 +27,7 @@ char *akvalue (char *);
 char *akerror (int);
 
 static  char *akval (struct aka *, char *);
-static int aleq (char *, char *);
+static bool aleq (char *, char *);
 static char *scanp (char *);
 static char *getp (char *);
 static char *seekp (char *, char *, char **);
@@ -147,16 +147,16 @@ akval (struct aka *ak, char *s)
 }
 
 
-static int
+static bool
 aleq (char *string, char *aliasent)
 {
     char c;
 
     while ((c = *string++)) {
 	if (*aliasent == '*')
-	    return 1;
+	    return true;
         if (tolower((unsigned char)c) != tolower((unsigned char)*aliasent))
-            return 0;
+            return false;
         aliasent++;
     }
 
@@ -213,11 +213,11 @@ alias (char *file)
 	}
 	switch (lc) {
 	    case ':': 
-		ak->ak_visible = 0;
+		ak->ak_visible = false;
 		break;
 
 	    case ';': 
-		ak->ak_visible = 1;
+		ak->ak_visible = true;
 		break;
 
 	    default: 
@@ -402,7 +402,7 @@ akalloc (char *id)
 
     NEW(p);
     p->ak_name = getcpy (id);
-    p->ak_visible = 0;
+    p->ak_visible = false;
     p->ak_addr = NULL;
     p->ak_next = NULL;
     if (akatail != NULL)

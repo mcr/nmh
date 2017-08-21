@@ -79,18 +79,18 @@ static void make_comp (char **);
 int
 main (int argc, char **argv)
 {
-    int inplace = 1, datesw = 1;
+    bool inplace, datesw;
     int msgnum;
     char *cp, *maildir;
     char *comp = NULL, *text = NULL, *folder = NULL, buf[BUFSIZ];
     char **argp, **arguments;
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
-    int		append = 0;		/* append annotations instead of default prepend */
+    bool	append;			/* append annotations instead of default prepend */
     int		delete = -2;		/* delete header element if set */
     char	*draft = NULL;	/* draft file name */
     int		isdf = 0;		/* return needed for m_draft() */
-    int		list = 0;		/* list header elements if set */
+    bool	list;			/* list header elements if set */
     int		number = 0;		/* delete specific number of like elements if set */
 
     if (nmh_init(argv[0], 1)) { return 1; }
@@ -98,6 +98,8 @@ main (int argc, char **argv)
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
+    append = list = false;
+    inplace = datesw = true;
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
@@ -124,17 +126,17 @@ main (int argc, char **argv)
 		    continue;
 
 		case DATESW:
-		    datesw++;
+		    datesw = true;
 		    continue;
 		case NDATESW:
-		    datesw = 0;
+		    datesw = false;
 		    continue;
 
 		case INPLSW:
-		    inplace++;
+		    inplace = true;
 		    continue;
 		case NINPLSW:
-		    inplace = 0;
+		    inplace = false;
 		    continue;
 
 		case TEXTSW:
@@ -153,7 +155,7 @@ main (int argc, char **argv)
 		    continue;
 
 		case LISTSW:		/* produce a listing */
-		    list = 1;
+		    list = true;
 		    continue;
 
 		case NUMBERSW:		/* number listing or delete by number */
@@ -177,7 +179,7 @@ main (int argc, char **argv)
 		    continue;
 
 		case APPENDSW:		/* append annotations instead of default prepend */
-		    append = 1;
+		    append = true;
 		    continue;
 
 		case PRESERVESW:	/* preserve access and modification times on annotated message */
