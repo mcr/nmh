@@ -235,21 +235,19 @@ if [ $resent -eq 0 ]; then
   header="$header
 "
   message_file="$tmpfile"
+elif [ $use_send -eq 0 ]; then
+  postsendargs="${postsendargs:+$postsendargs }-dist"
+  message_file="$tmpfile"
 else
-  if [ $use_send -eq 0 ]; then
-    postsendargs="${postsendargs:+$postsendargs }-dist"
-    message_file="$tmpfile"
-  else
-    #### When resending with send, tmpfile will just contain the
-    #### Resent- header fields.  "$tmpfileresent" will contain
-    #### the message that is being resent.
-    tmpfileresent=`"${nmhlibexecdir}/mkstemp" -d "$tmpdir" -p mhmail-resent`
-    [ $? -ne 0 ]  &&  die "mhmail: failed to create temporary file in $tmpdir"
-    mhdist=1; export mhdist
-    mhaltmsg=$tmpfileresent; export mhaltmsg
-    message_file="$tmpfileresent"
-    printf '' >"$message_file"  || exit 2
-  fi
+  #### When resending with send, tmpfile will just contain the
+  #### Resent- header fields.  "$tmpfileresent" will contain
+  #### the message that is being resent.
+  tmpfileresent=`"${nmhlibexecdir}/mkstemp" -d "$tmpdir" -p mhmail-resent`
+  [ $? -ne 0 ]  &&  die "mhmail: failed to create temporary file in $tmpdir"
+  mhdist=1; export mhdist
+  mhaltmsg=$tmpfileresent; export mhaltmsg
+  message_file="$tmpfileresent"
+  printf '' >"$message_file"  || exit 2
 fi
 
 trap "rm -f '$tmpfile' $tmpfilebackup ${tmpfileresent:+'$tmpfileresent'}" 0
