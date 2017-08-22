@@ -224,9 +224,7 @@ auxformat (struct mailname *mp, int extras)
 
 	if (mp->m_nohost)
 	    strncpy (addr, FENDNULL(mp->m_mbox), sizeof(addr));
-	else
-
-	if (mp->m_type != UUCPHOST) {
+	else if (mp->m_type != UUCPHOST) {
 	    if (mp->m_host)
 	    	snprintf (addr, sizeof(addr), "%s%s@%s", FENDNULL(mp->m_path),
 			  FENDNULL(mp->m_mbox), mp->m_host);
