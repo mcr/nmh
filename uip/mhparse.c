@@ -1841,7 +1841,10 @@ openBase64 (CT ct, char **file)
     *cp = '\0';
 
     if (decodeBase64 (buffer, &decoded, &decoded_len, ct->c_type == CT_TEXT,
-                      ct->c_digested ? digest : NULL) == OK) {
+                      ct->c_digested ? digest : NULL) != OK)
+        goto clean_up;
+
+    {
         size_t i;
         unsigned char *decoded_p = decoded;
         for (i = 0; i < decoded_len; ++i) {
@@ -1864,8 +1867,6 @@ openBase64 (CT ct, char **file)
                 }
             }
         }
-    } else {
-        goto clean_up;
     }
 
     fseek (ct->c_fp, 0L, SEEK_SET);

@@ -128,16 +128,13 @@ main (int argc, char **argv)
 
     cp = concat (mypath, "/", "Mail", NULL);
     if (stat (cp, &st) != NOTOK) {
-	if (S_ISDIR(st.st_mode)) {
-	    cp = concat ("You already have the standard nmh directory \"",
-		    cp, "\".\nDo you want to use it for nmh? ", NULL);
-	    if (read_switch (cp, anoyes))
-		pathname = "Mail";
-	    else
-		goto query;
-	} else {
+	if (!S_ISDIR(st.st_mode))
 	    goto query;
-	}
+        cp = concat ("You already have the standard nmh directory \"",
+                cp, "\".\nDo you want to use it for nmh? ", NULL);
+        if (!read_switch (cp, anoyes))
+            goto query;
+        pathname = "Mail";
     } else {
 	if (autof)
 	    puts("I'm going to create the standard nmh path for you.");
