@@ -669,9 +669,8 @@ main (int argc, char **argv)
     if (debug) {
 	pl ();
 	done (0);
-    } else {
-	fclose (out);
     }
+    fclose (out);
 
     /*
      * Here's how we decide which address to use as the envelope-from

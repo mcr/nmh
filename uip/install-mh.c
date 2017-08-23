@@ -108,8 +108,7 @@ main (int argc, char **argv)
     if (stat (defpath, &st) != NOTOK) {
 	if (check)
 	    done(0);
-
-	else if (autof)
+	if (autof)
 	    adios (NULL, "invocation error");
         adios (NULL, "You already have an nmh profile, use an editor to modify it");
     }
