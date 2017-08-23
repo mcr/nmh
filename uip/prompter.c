@@ -264,8 +264,7 @@ abort:
 			     state = m_getfld2(&gstate, name, field, &fieldsz)));
 		    if (prepend || !body)
 			break;
-		    else
-			printf ("\n--------Enter additional text\n\n");
+                    printf ("\n--------Enter additional text\n\n");
 		}
 
 		fflush (stdout);

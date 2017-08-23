@@ -293,8 +293,7 @@ find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
 	for (c = 0; fgets (buffer, sizeof(buffer), in); c = buffer[0]) {
 	    if ((wasdlm = CHECKDELIM(buffer)))
 		break;
-	    else
-		pos += (long) strlen (buffer);
+            pos += (long) strlen (buffer);
 	}
 
 	/*

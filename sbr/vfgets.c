@@ -44,8 +44,7 @@ wrong_guess:
 	    for (fp = dp - 1, toggle = 0; fp >= cp; fp--) {
 		if (*fp != QUOTE)
 		    break;
-		else
-		    toggle = !toggle;
+                toggle = !toggle;
 	    }
 	    if (toggle)
 		goto wrong_guess;
