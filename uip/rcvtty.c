@@ -303,17 +303,16 @@ alert (char *tty, int md)
     if (stat (ttyspec, &st) == NOTOK || (st.st_mode & mask) == 0)
 	return;
 
-    if (!setjmp (myctx)) {
-	SIGNAL (SIGALRM, alrmser);
-	alarm (2);
-	td = open (ttyspec, O_WRONLY);
-	alarm (0);
-	if (td == NOTOK)
-	    return;
-    } else {
+    if (setjmp (myctx)) {
 	alarm (0);
 	return;
     }
+    SIGNAL (SIGALRM, alrmser);
+    alarm (2);
+    td = open (ttyspec, O_WRONLY);
+    alarm (0);
+    if (td == NOTOK)
+        return;
 
     lseek(md, 0, SEEK_SET);
 
