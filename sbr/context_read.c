@@ -53,8 +53,7 @@ context_read (void)
     if ((mypath = getenv("HOME")) == NULL) {
 	if ((pw = getpwuid(getuid())) == NULL || *pw->pw_dir == '\0')
 	    adios(NULL, "cannot determine your home directory");
-	else
-	    mypath = pw->pw_dir;
+        mypath = pw->pw_dir;
     }
 
     /*

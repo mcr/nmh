@@ -584,8 +584,7 @@ main (int argc, char **argv)
 	}
 	if (msg)
 	    adios (NULL, "only one message at a time!");
-	else
-	    msg = cp;
+        msg = cp;
     }
 
     alias (AliasFile);

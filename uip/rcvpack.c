@@ -73,8 +73,7 @@ main (int argc, char **argv)
 	}
 	if (file)
 	    adios (NULL, "only one file at a time!");
-	else
-	    file = cp;
+        file = cp;
     }
 
     if (!file)

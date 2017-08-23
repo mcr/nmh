@@ -72,8 +72,7 @@ main (int argc, char **argv)
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
 		adios (NULL, "only one folder at a time!");
-	    else
-		folder = pluspath (cp);
+            folder = pluspath (cp);
 	} else {
 	    adios (NULL, "usage: %s [+folder] [switches]", invo_name);
 	}

@@ -133,8 +133,7 @@ main (int argc, char **argv)
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
 		adios (NULL, "only one folder at a time!");
-	    else
-		folder = pluspath (cp);
+            folder = pluspath (cp);
 	} else {
 	    app_msgarg(&msgs, cp);
 	}
@@ -249,9 +248,9 @@ find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
 	    msgp = 1;
 	    find_mime_parts(content, smsgs, &msgp);
 	    free_content(content);
-	    if (msgp == 1 && *mimesw == 2) {
+	    if (msgp == 1 && *mimesw == 2)
 	    	adios (msgnam, "does not have any message/rfc822 parts");
-	    } else if (msgp > 1) {
+	    if (msgp > 1) {
 	    	*mimesw = 1;
 		return (msgp - 1);
 	    }

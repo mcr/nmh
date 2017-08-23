@@ -84,8 +84,7 @@ main (int argc, char **argv)
     if ((mypath = getenv("HOME")) == NULL) {
 	if ((pw = getpwuid(getuid())) == NULL || *pw->pw_dir == '\0')
 	    adios(NULL, "cannot determine your home directory");
-	else
-	    mypath = pw->pw_dir;
+        mypath = pw->pw_dir;
     }
 
     /*
@@ -112,12 +111,10 @@ main (int argc, char **argv)
 
 	else if (autof)
 	    adios (NULL, "invocation error");
-	else
-	    adios (NULL, "You already have an nmh profile, use an editor to modify it");
+        adios (NULL, "You already have an nmh profile, use an editor to modify it");
     }
-    else if (check) {
+    if (check)
 	done(1);
-    }
 
     if (!autof && read_switch ("Do you want help? ", anoyes)) {
 	(void)printf(

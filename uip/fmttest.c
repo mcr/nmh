@@ -270,8 +270,7 @@ main (int argc, char **argv)
 	if (mode == MESSAGE && !files && (*cp == '+' || *cp == '@')) {
 	    if (folder)
 	    	adios (NULL, "only one folder at a time!");
-	    else
-	    	folder = pluspath (cp);
+            folder = pluspath (cp);
 	} else
 	    app_msgarg(&msgs, cp);
     }

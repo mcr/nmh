@@ -143,8 +143,7 @@ main (int argc, char **argv)
 	}
 	if (msg)
 	    adios (NULL, "only one draft at a time!");
-	else
-	    vec[vecp++] = msg = cp;
+        vec[vecp++] = msg = cp;
     }
 
     /* allow Aliasfile: profile entry */

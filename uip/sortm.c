@@ -167,10 +167,9 @@ main (int argc, char **argv)
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
 		adios (NULL, "only one folder at a time!");
-	    else
-		folder = pluspath (cp);
+            folder = pluspath (cp);
 	} else
-		app_msgarg(&msgs, cp);
+            app_msgarg(&msgs, cp);
     }
 
     if (!context_find ("path"))

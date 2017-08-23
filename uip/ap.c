@@ -95,8 +95,7 @@ main (int argc, char **argv)
 	}
 	if (addrp == NADDRS)
 	    adios (NULL, "more than %d addresses", NADDRS);
-	else
-	    addrs[addrp++] = cp;
+        addrs[addrp++] = cp;
     }
     addrs[addrp] = NULL;
 

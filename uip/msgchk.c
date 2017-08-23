@@ -154,8 +154,7 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    if (vecp >= MAXVEC-1)
 			adios (NULL, "you can only check %d users at a time", MAXVEC-1);
-		    else
-			user = vec[vecp++] = cp;
+                    user = vec[vecp++] = cp;
 		    continue;
 
 		case SNOOPSW:
@@ -208,8 +207,7 @@ main (int argc, char **argv)
 	}
 	if (vecp >= MAXVEC-1)
 	    adios (NULL, "you can only check %d users at a time", MAXVEC-1);
-	else
-	    vec[vecp++] = cp;
+        vec[vecp++] = cp;
     }
 
     /*

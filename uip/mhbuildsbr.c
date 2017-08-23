@@ -566,8 +566,7 @@ finish_field:
         } else {
 	    if (*++cp == 0)
 		adios (NULL, "giving up trying to find a unique delimiter string");
-	    else
-		(*cp)++;
+            (*cp)++;
 	}
     }
 
@@ -975,8 +974,7 @@ use_forw:
 	    if (*cp == '+' || *cp == '@') {
 		if (folder)
 		    adios (NULL, "only one folder per #forw directive");
-		else
-		    folder = pluspath (cp);
+                folder = pluspath (cp);
 	    }
 	}
 

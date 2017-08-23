@@ -87,8 +87,7 @@ main (int argc, char **argv)
 	}
 	if (form)
 	    adios (NULL, "only one form at a time!");
-	else
-	    form = cp;
+        form = cp;
     }
 
     /*

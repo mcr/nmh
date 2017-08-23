@@ -90,8 +90,7 @@ main (int argc, char **argv)
 	}
 	if (datep == NDATES)
 	    adios (NULL, "more than %d dates", NDATES);
-	else
-	    dates[datep++] = cp;
+        dates[datep++] = cp;
     }
     dates[datep] = NULL;
 

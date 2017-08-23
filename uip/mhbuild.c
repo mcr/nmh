@@ -117,8 +117,7 @@ main (int argc, char **argv)
 	if (cp[0] == '-' && cp[1] == '\0') {
 	    if (compfile)
 		adios (NULL, "cannot specify both standard input and a file");
-	    else
-		compfile = cp;
+            compfile = cp;
 	    listsw = 0;		/* turn off -list if using standard in/out */
 	    verbosw = 0;	/* turn off -verbose listings */
 	    break;
@@ -282,8 +281,7 @@ main (int argc, char **argv)
 	}
 	if (compfile)
 	    adios (NULL, "only one composition file allowed");
-	else
-	    compfile = cp;
+        compfile = cp;
     }
 
     /*

@@ -199,8 +199,7 @@ WhatNow (int argc, char **argv)
 	}
 	if (drft)
 	    adios (NULL, "only one draft at a time!");
-	else
-	    drft = cp;
+        drft = cp;
     }
 
     if ((drft == NULL && (drft = getenv ("mhdraft")) == NULL) || *drft == 0)

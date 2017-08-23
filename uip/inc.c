@@ -376,8 +376,7 @@ main (int argc, char **argv)
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
 		adios (NULL, "only one folder at a time!");
-	    else
-		folder = pluspath (cp);
+            folder = pluspath (cp);
 	} else {
 	    adios (NULL, "usage: %s [+folder] [switches]", invo_name);
 	}
@@ -556,7 +555,7 @@ main (int argc, char **argv)
 	    inform("Creating Receive-Audit: %s", audfile);
 	if ((aud = fopen (audfile, "a")) == NULL)
 	    adios (audfile, "unable to append to");
-	else if (i == NOTOK)
+	if (i == NOTOK)
 	    chmod (audfile, m_gmprot ());
 
 	if (from)

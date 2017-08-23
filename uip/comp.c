@@ -211,13 +211,11 @@ main (int argc, char **argv)
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
 		adios (NULL, "only one folder at a time!");
-	    else
-		folder = pluspath (cp);
+            folder = pluspath (cp);
 	} else {
 	    if (msg)
 		adios (NULL, "only one message at a time!");
-	    else
-		msg = cp;
+            msg = cp;
 	}
     }
 

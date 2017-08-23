@@ -232,11 +232,10 @@ main (int argc, char **argv) {
                     adios (NULL, "missing argument to %s", argp[-2]);
                 }
                 if (! strncasecmp (cp, "multipart/", 10)  ||
-                    ! strncasecmp (cp, "message/", 8)) {
+                    ! strncasecmp (cp, "message/", 8))
                     adios (NULL, "-fixtype %s not allowed", cp);
-                } else if (! strchr (cp, '/')) {
+                if (! strchr (cp, '/'))
                     adios (NULL, "-fixtype requires type/subtype");
-                }
                 if (fx.fixtypes == NULL) { fx.fixtypes = svector_create (10); }
                 svector_push_back (fx.fixtypes, cp);
                 continue;
@@ -287,11 +286,9 @@ main (int argc, char **argv) {
             }
         }
         if (*cp == '+' || *cp == '@') {
-            if (folder) {
+            if (folder)
                 adios (NULL, "only one folder at a time!");
-            } else {
-                folder = pluspath (cp);
-            }
+            folder = pluspath (cp);
         } else {
             if (*cp == '/') {
                 /* Interpret a full path as a filename, not a message. */
