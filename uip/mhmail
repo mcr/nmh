@@ -299,10 +299,9 @@ else
 
   if "$post_or_send" $postsendargs "$tmpfile"; then
     exit
-  else
-    status=$?
-    mv -f "$tmpfile" dead.letter
-    printf 'Letter saved in dead.letter\n' >&2
-    exit $status
   fi
+  status=$?
+  mv -f "$tmpfile" dead.letter
+  printf 'Letter saved in dead.letter\n' >&2
+  exit $status
 fi

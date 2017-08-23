@@ -183,12 +183,10 @@ if [ "`find ${MH_TEST_DIR}/Mail/test-read-perms -perm 600`"x = ''x ]; then
   if [ ${failed:-0} -eq 0 ]; then
     echo "$Test $0 SKIP (cannot remove read permission on plain files)"
     exit 77
-  else
-    exit $failed
   fi
-else
-  rm -f ${MH_TEST_DIR}/Mail/test-read-perms
+  exit $failed
 fi
+rm -f ${MH_TEST_DIR}/Mail/test-read-perms
 
 # check default Msg-Protect
 msgprot=`mhparam msgprot`
