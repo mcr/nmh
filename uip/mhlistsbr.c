@@ -27,7 +27,6 @@ static int list_debug (CT);
 static int list_multi (CT, int, int, int, int, int);
 static int list_partial (CT, int, int, int, int, int);
 static int list_external (CT, int, int, int, int, int);
-static int list_application (CT, int, int, int, int, int);
 static int list_encoding (CT);
 
 
@@ -121,12 +120,9 @@ list_switch (CT ct, int toplevel, int realsize, int verbose, int debug,
 	case CT_AUDIO:
 	case CT_IMAGE:
 	case CT_VIDEO:
-	    return list_content (ct, toplevel, realsize, verbose, debug, dispo);
-
 	case CT_APPLICATION:
 	default:
-	    return list_application (ct, toplevel, realsize, verbose, debug,
-	    			     dispo);
+            return list_content (ct, toplevel, realsize, verbose, debug, dispo);
     }
 
     return 0;	/* NOT REACHED */
@@ -414,23 +410,6 @@ list_external (CT ct, int toplevel, int realsize, int verbose, int debug,
      * to which this content points.
      */
     list_content (e->eb_content, 0, realsize, verbose, debug, dispo);
-
-    return OK;
-}
-
-
-/*
- * list content information for type "application"
- * This no longer needs to be a separate function.  It used to
- * produce some output with verbose enabled, but that has been
- * moved to list_content ().
- */
-
-static int
-list_application (CT ct, int toplevel, int realsize, int verbose, int debug,
-		  int dispo)
-{
-    list_content (ct, toplevel, realsize, verbose, debug, dispo);
 
     return OK;
 }
