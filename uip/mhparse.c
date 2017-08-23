@@ -2892,7 +2892,7 @@ openURL (CT ct, char **file)
 
     fseeko(ce->ce_fp, 0, SEEK_SET);
     *file = ce->ce_file;
-    return fd;
+    return fileno(ce->ce_fp);
 }
 
 
