@@ -2394,14 +2394,12 @@ extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
         /* Hack.  Use parse_mime() to detect the type/subtype of the
            reply, which we'll use below. */
         tmp_file = getcpy (m_mktemp2 (NULL, invo_name, NULL, NULL));
-        if ((tmp_f = fopen (tmp_file, "w"))  &&
-            fwrite (buffer, 1, n, tmp_f) == n) {
-            fclose (tmp_f);
-        } else {
+        tmp_f = fopen(tmp_file, "w");
+        if (!tmp_f || fwrite(buffer, 1, n, tmp_f) != n)
             goto failed_to_extract_ct;
-        }
-        tmp_ct = parse_mime (tmp_file);
+        fclose (tmp_f);
 
+        tmp_ct = parse_mime (tmp_file);
         if (tmp_ct) {
             /* The type and subtype were detected from the reply
                using parse_mime() above. */
