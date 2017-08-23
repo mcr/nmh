@@ -2380,7 +2380,7 @@ extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
         CT tmp_ct;
         char *tmp_file;
         FILE *tmp_f;
-        size_t n;
+        size_t n, written;
 
         /* Truncate buffer to just the C-T. */
         *end_of_header = '\0';
@@ -2395,9 +2395,12 @@ extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
            reply, which we'll use below. */
         tmp_file = getcpy (m_mktemp2 (NULL, invo_name, NULL, NULL));
         tmp_f = fopen(tmp_file, "w");
-        if (!tmp_f || fwrite(buffer, 1, n, tmp_f) != n)
+        if (!tmp_f)
             goto failed_to_extract_ct;
-        fclose (tmp_f);
+        written = fwrite(buffer, 1, n, tmp_f);
+        fclose(tmp_f);
+        if (written != n)
+            goto failed_to_extract_ct;
 
         tmp_ct = parse_mime (tmp_file);
         if (tmp_ct) {
