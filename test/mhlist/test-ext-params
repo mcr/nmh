@@ -164,16 +164,12 @@ run_test 'mhlist last -noheader -verbose -disposition' \
      2     message/external-body      118
 	     access-type="url"
 	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url/that/should-be-wrapped/image.jpeg"
-	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url/that/should-be-wrapped/image.jpeg"
-	     access-type="url"
            image/jpeg                     Test of a long URL
 	     disposition "attachment"
 	       filename="image.jpeg"
      3     message/external-body      118
 	     access-type="url"
 	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url 	       /that/should-be-wrapped/image.jpeg"
-	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url/that/should-be-wrapped/image.jpeg"
-	     access-type="url"
            image/jpeg                     Test of a long URL
 	     disposition "attachment"
 	       filename="image.jpeg"'

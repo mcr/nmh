@@ -378,30 +378,10 @@ list_external (CT ct, int toplevel, int realsize, int verbose, int debug,
     list_content (ct, toplevel, realsize, verbose, debug, dispo);
 
     if (verbose) {
-	if (e->eb_name)
-	    printf ("\t     name=\"%s\"\n", e->eb_name);
-	if (e->eb_dir)
-	    printf ("\t     directory=\"%s\"\n", e->eb_dir);
-	if (e->eb_site)
-	    printf ("\t     site=\"%s\"\n", e->eb_site);
-	if (e->eb_server)
-	    printf ("\t     server=\"%s\"\n", e->eb_server);
-	if (e->eb_subject)
-	    printf ("\t     subject=\"%s\"\n", e->eb_subject);
-	if (e->eb_url)
-	    printf ("\t     url=\"%s\"\n", e->eb_url);
-
-	/* This must be defined */
-	printf     ("\t     access-type=\"%s\"\n", e->eb_access);
-
-	if (e->eb_mode)
-	    printf ("\t     mode=\"%s\"\n", e->eb_mode);
-	if (e->eb_permission)
-	    printf ("\t     permission=\"%s\"\n", e->eb_permission);
-
+        if (!e->eb_access)
+            puts("\t     [missing access-type]"); /* Must be defined. */
 	if (e->eb_flags == NOTOK)
 	    puts("\t     [service unavailable]");
-
     }
 
     /*
