@@ -303,9 +303,8 @@ list_debug (CT ct)
 	fprintf (stderr, "      %s=\"%s\"\n", pm->pm_name,
 		 get_param_value(pm, '?'));
 
-    fprintf (stderr, "    read fp 0x%x file \"%s\" begin %ld end %ld\n",
-	     (unsigned int)(unsigned long) ct->c_fp, FENDNULL(ct->c_file),
-	     ct->c_begin, ct->c_end);
+    fprintf(stderr, "    read fp %p file \"%s\" begin %ld end %ld\n",
+        (void *)ct->c_fp, FENDNULL(ct->c_file), ct->c_begin, ct->c_end);
 
     /* print more information about transfer encoding */
     list_encoding (ct);
@@ -425,9 +424,8 @@ list_encoding (CT ct)
 {
     CE ce = &ct->c_cefile;
 
-    fprintf (stderr, "    decoded fp 0x%x file \"%s\"\n",
-	     (unsigned int)(unsigned long) ce->ce_fp,
-	     FENDNULL(ce->ce_file));
+    fprintf(stderr, "    decoded fp %p file \"%s\"\n",
+        (void *)ce->ce_fp, FENDNULL(ce->ce_file));
 
     return OK;
 }
