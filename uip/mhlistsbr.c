@@ -269,7 +269,7 @@ list_debug (CT ct)
 		 get_param_value(pm, '?'));
 
     /* print internal flags for type/subtype */
-    fprintf (stderr, "    type 0x%x subtype 0x%x params 0x%x\n",
+    fprintf (stderr, "    type %#x subtype %#x params 0x%x\n",
 	     ct->c_type, ct->c_subtype,
 	     (unsigned int)(unsigned long) ct->c_ctparams);
 
@@ -282,7 +282,7 @@ list_debug (CT ct)
 	fprintf (stderr, "  %s:%s", ENCODING_FIELD, ct->c_celine);
 
     /* print internal flags for transfer encoding */
-    fprintf (stderr, "    transfer encoding 0x%x params 0x%x\n",
+    fprintf (stderr, "    transfer encoding %#x params 0x%x\n",
 	     ct->c_encoding, (unsigned int)(unsigned long) &ct->c_cefile);
 
     /* print Content-ID */

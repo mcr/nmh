@@ -75,7 +75,7 @@ parse_datetime (const char *datetime, const char *zone, int dst,
     if (items_matched == 7) {
         /* The 'Z' must be capital according to RFC 5545 Sec. 3.3.5. */
         if (utc_indicator != 'Z') {
-            inform("%s has invalid timezone indicator of 0x%x",
+            inform("%s has invalid timezone-indicator byte: %#x",
                     datetime, utc_indicator);
             return NOTOK;
         }
