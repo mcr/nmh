@@ -173,7 +173,7 @@ struct str2init str2ces[] = {
 /*
  * NOTE WELL: si_key MUST NOT have value of NOTOK
  *
- * si_key is 1 if access method is anonymous.
+ * si_val is 1 if access method is anonymous.
  */
 struct str2init str2methods[] = {
     { "afs",         1,	InitFile },
