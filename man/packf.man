@@ -73,7 +73,7 @@ can be unpacked using
 ^Msg\-Protect:~^To set mode when creating a new `file'
 .fi
 .SH "SEE ALSO"
-.IR inc (1),
+.IR inc (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

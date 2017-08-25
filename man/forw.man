@@ -427,7 +427,7 @@ Program to ask the \*(lqWhat now?\*(rq questions.
 .IR prompter (1),
 .IR repl (1),
 .IR send (1),
-.IR whatnow (1),
+.IR whatnow (1)
 .PP
 .I
 Proposed Standard for Message Encapsulation

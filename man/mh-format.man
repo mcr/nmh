@@ -775,6 +775,6 @@ at 4 digits.
 .SH "SEE ALSO"
 .IR scan (1),
 .IR repl (1),
-.IR fmttest (1),
+.IR fmttest (1)
 .SH CONTEXT
 None

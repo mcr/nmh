@@ -191,7 +191,7 @@ None
 .fi
 .SH "SEE ALSO"
 .IR inc (1),
-.IR mh\-mail (5)
+.IR mh\-mail (5),
 .IR post (8)
 .SH DEFAULTS
 .nf
