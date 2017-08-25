@@ -33,7 +33,7 @@
 #     -l <logfile name>, default 'build_nmh.log', - for stdout/stderr
 #   Advanced/developer use:
 #     -c to run 'make distcheck' instead of 'make check'
-#     -d to build nmh with asserts enabled and optimization disabled
+#     -d to build nmh with optimization disabled
 #     -s to use 'make superclean': requires recent autoconf and automake,
 #        see docs/README.developers
 #     -r to build rpm
@@ -48,7 +48,7 @@ logfile=build_nmh.log
 usage="usage:
   [-b <branch>, only if downloading]
   [-c to run 'make distcheck' instead of 'make check']
-  [-d to build nmh with asserts enabled and optimization disabled]
+  [-d to build nmh with optimization disabled]
   [-i to install nmh]
   [-l <logfile name>, default '$logfile']
   [-r to build rpm]
@@ -317,7 +317,6 @@ config_opts="--prefix=$config_prefix"
   config_opts="$config_opts --with-smtpserver=$config_smtpserver"
 [ "$config_sasl" = y ]  &&  config_opts="$config_opts --with-cyrus-sasl"
 [ "$config_tls" = y ]  &&  config_opts="$config_opts --with-tls"
-[ $config_debug = y ]  &&  config_opts="$config_opts --enable-assert"
 
 #### dotlocking, the usual default, requires chgrp and chmod of inc.
 installpriv=
