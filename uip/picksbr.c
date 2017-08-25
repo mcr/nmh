@@ -519,8 +519,7 @@ PRaction (struct nexus *n, int level)
 		dasctime (&n->n_tws, TW_NULL));
 	return;
     }
-    fprintf (stderr, "UNKNOWN(0x%x)\n",
-	     (unsigned int)(unsigned long) (*n->n_action));
+    fprintf(stderr, "UNKNOWN(%#llx)\n", (unsigned long long)n->n_action);
 }
 
 
