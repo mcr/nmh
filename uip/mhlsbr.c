@@ -666,9 +666,8 @@ mhl_format (char *file, int length, int width)
 
 	    fprintf (stderr, "c1: name=\"%s\" text=\"%s\" ovtxt=\"%s\"\n",
 		    c1->c_name, c1->c_text, c1->c_ovtxt);
-	    fprintf (stderr, "\tnfs=0x%x fmt=0x%x\n",
-		     (unsigned int)(unsigned long) c1->c_nfs,
-		     (unsigned int)(unsigned long) c1->c_fmt);
+	    fprintf(stderr, "\tnfs=%p fmt=%p\n",
+                (void *)c1->c_nfs, (void *)c1->c_fmt);
 	    fprintf (stderr, "\toffset=%d ovoff=%d width=%d cwidth=%d length=%d\n",
 		    c1->c_offset, c1->c_ovoff, c1->c_width,
 		    c1->c_cwidth, c1->c_length);
