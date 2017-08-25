@@ -116,7 +116,7 @@ static unsigned char cc[] = {
 #define	pinform		if (!talked++) inform
 
 struct nexus {
-    int (*n_action)();
+    int (*n_action)(struct nexus *n, FILE *fp, int msgnum, long start, long stop);
 
     union {
 	/* for {OR,AND,NOT}action */
@@ -180,7 +180,7 @@ static struct nexus *parse(void);
 static struct nexus *nexp1(void);
 static struct nexus *nexp2(void);
 static struct nexus *nexp3(void);
-static struct nexus *newnexus(int (*)(struct nexus *n,
+static struct nexus *newnexus(int (*action)(struct nexus *n,
     FILE *fp, int msgnum, long start, long stop));
 
 static int ORaction(struct nexus *n, FILE *fp, int msgnum,
