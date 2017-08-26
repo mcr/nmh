@@ -19,8 +19,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <h/utils.h>
-
 #if ! defined HAVE_MKSTEMPS
 #   define HAVE_MKSTEMPS 0
 #endif /* ! HAVE_MKSTEMPS */
@@ -120,6 +118,7 @@ build_template(const char *directory, const char *prefix, const char *suffix) {
 
 #if NMH
 #include <h/mh.h>
+#include <h/utils.h>
 
 #if HAVE_MKSTEMPS
 #   define MHFIXMSG_SWITCHES \

@@ -11,6 +11,7 @@
 %a5000
 %{
 #include <h/nmh.h>
+#include <h/mh.h>
 #include <h/utils.h>
 #include <h/tws.h>
 

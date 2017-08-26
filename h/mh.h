@@ -35,10 +35,14 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #if __GNUC__ > 2
 #define NORETURN __attribute__((__noreturn__))
 #define CHECK_PRINTF(fmt, arg) __attribute__((format(printf, fmt, arg)))
+#define ALLOC_SIZE(n) __attribute__((alloc_size(n)))
+#define ALLOC_SIZE2(m, n) __attribute__((alloc_size(m, n)))
 #define NMH_UNUSED(i) (void) i
 #else
 #define NORETURN
 #define CHECK_PRINTF(fmt, arg)
+#define ALLOC_SIZE(n)
+#define ALLOC_SIZE2(m, n)
 #define NMH_UNUSED(i) i
 #endif
 
