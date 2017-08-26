@@ -125,7 +125,8 @@ static int fix_filename_encoding (CT);
 static int write_content (CT, const char *, char *, FILE *, int, int);
 static void set_text_ctparams(CT, char *, int);
 static int remove_file (const char *);
-static void report (char *, char *, char *, char *, ...);
+static void report (char *, char *, char *, char *, ...)
+    CHECK_PRINTF(4, 5);
 static void pipeser (int);
 
 

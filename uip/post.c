@@ -306,7 +306,7 @@ static void sigon (void);
 static void sigoff (void);
 static void p_refile (char *);
 static void fcc (char *, char *);
-static void die (char *, char *, ...);
+static void die (char *, char *, ...) CHECK_PRINTF(2, 3);
 static void post (char *, int, int, int, char *, int, char *);
 static void do_text (char *file, int fd);
 static void do_an_address (struct mailname *, int);

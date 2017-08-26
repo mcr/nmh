@@ -24,11 +24,12 @@ static netsec_context *nsc = NULL;
  * static prototypes
  */
 
-static int command(const char *, ...);
+static int command(const char *, ...) CHECK_PRINTF(1, 2);
 static int multiline(void);
 
-static int traverse (int (*)(void *, char *), void *closure, const char *, ...);
-static int vcommand(const char *, va_list);
+static int traverse(int (*)(void *, char *), void *closure,
+    const char *, ...) CHECK_PRINTF(3, 4);
+static int vcommand(const char *, va_list) CHECK_PRINTF(1, 0);
 static int pop_getline (char *, int, netsec_context *);
 static int pop_sasl_callback(enum sasl_message_type, unsigned const char *,
 			     unsigned int, unsigned char **, unsigned int *,

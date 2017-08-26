@@ -59,9 +59,9 @@ static int sendmail_init (char *, int, int, int, int, const char *,
 			  const char *);
 
 static int rclient (char *, char *, char **);
-static int sm_ierror (const char *fmt, ...);
+static int sm_ierror (const char *fmt, ...) CHECK_PRINTF(1, 2);
 static int sm_nerror (char *);
-static int smtalk (int time, char *fmt, ...);
+static int smtalk (int time, char *fmt, ...) CHECK_PRINTF(2, 3);
 static int sm_wstream (char *, int);
 static int smhear (void);
 static char *EHLOset (char *);

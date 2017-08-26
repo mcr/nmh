@@ -172,9 +172,9 @@ static int usr_folder (int, char *);
 static void alrmser (int);
 static void get_sender (char *, char **);
 static int copy_message (int, char *, int);
-static void verbose_printf (char *fmt, ...);
-static void adorn (char *, char *, ...);
-static void debug_printf (char *fmt, ...);
+static void verbose_printf (char *fmt, ...) CHECK_PRINTF(1, 2);
+static void adorn (char *, char *, ...) CHECK_PRINTF(2, 3);
+static void debug_printf (char *fmt, ...) CHECK_PRINTF(1, 2);
 static int suppress_duplicates (int, char *);
 static char *trim (char *);
 
@@ -802,12 +802,12 @@ parse (int fd)
 	p->p_value = getcpy (q ? q->p_value : "");
 	p->p_flags &= ~P_CHK;
 	if (debug)
-	    debug_printf ("vars[%d]: name=\"%s\" value=\"%s\"\n",
+	    debug_printf ("vars[%ld]: name=\"%s\" value=\"%s\"\n",
 		    p - vars, p->p_name, trim(p->p_value));
     }
     if (debug) {
 	for (p = hdrs; p->p_name; p++)
-	    debug_printf ("hdrs[%d]: name=\"%s\" value=\"%s\"\n",
+	    debug_printf ("hdrs[%ld]: name=\"%s\" value=\"%s\"\n",
 		p - hdrs, p->p_name, p->p_value ? trim(p->p_value) : "");
     }
 
@@ -887,7 +887,7 @@ glob (int fd)
 
     if (debug) {
 	for (p = vars; p->p_name; p++)
-	    debug_printf ("vars[%d]: name=\"%s\" value=\"%s\"\n",
+	    debug_printf ("vars[%ld]: name=\"%s\" value=\"%s\"\n",
 		    p - vars, p->p_name, trim(p->p_value));
     }
 }

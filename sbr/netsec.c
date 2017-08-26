@@ -473,7 +473,7 @@ retry:
      */
 
     if (count >= nsc->ns_inbufsize / 2) {
-	netsec_err(errstr, "Unable to find a line terminator after %d bytes",
+	netsec_err(errstr, "Unable to find a line terminator after %zu bytes",
 		   count);
 	return NULL;
     }

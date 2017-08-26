@@ -327,7 +327,7 @@ static void putch (char, unsigned long);
 static void intrser (int);
 static void pipeser (int);
 static void quitser (int);
-static void mhladios (char *, char *, ...);
+static void mhladios (char *, char *, ...) CHECK_PRINTF(2, 3);
 static void mhldone (int);
 static void filterbody (struct mcomp *, char *, int, int,
                         m_getfld_state_t);
@@ -1305,7 +1305,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     if ((ovtxt = c1->c_ovtxt ? c1->c_ovtxt : global.c_ovtxt) == NULL)
 	ovtxt = "";
     if (wid < ovoff + strlen (ovtxt) + 5)
-	mhladios (NULL, "component: %s width(%d) too small for overflow(%d)",
+	mhladios(NULL, "component: %s width(%d) too small for overflow(%zu)",
 		c1->c_name, wid, ovoff + strlen (ovtxt) + 5);
     onelp = NULL;
 

@@ -201,7 +201,7 @@ int netsec_write(netsec_context *ns_context, const void *buffer, size_t size,
  */
 
 int netsec_printf(netsec_context *ns_context, char **errstr,
-		  const char *format, ...);
+		  const char *format, ...) CHECK_PRINTF(3, 4);
 
 /*
  * Write bytes using a va_list argument.
@@ -217,7 +217,7 @@ int netsec_printf(netsec_context *ns_context, char **errstr,
  */
 
 int netsec_vprintf(netsec_context *ns_context, char **errstr,
-		   const char *format, va_list ap);
+		   const char *format, va_list ap) CHECK_PRINTF(3, 0);
 
 /*
  * Flush any buffered bytes to the network.
@@ -418,4 +418,5 @@ int netsec_negotiate_tls(netsec_context *ns_context, char **errstr);
  *
  */
 
-void netsec_err(char **errstr, const char *format, ...);
+void netsec_err(char **errstr, const char *format, ...)
+    CHECK_PRINTF(2, 3);
