@@ -70,7 +70,7 @@ void discard (FILE *);
  *
  * Returns the decoded value, -1 if the conversion failed.
  */
-int decode_qp(unsigned char byte1, unsigned char byte2);
+int decode_qp(unsigned char byte1, unsigned char byte2) CONST;
 
 int default_done (int);
 
