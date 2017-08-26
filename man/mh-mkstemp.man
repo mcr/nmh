@@ -59,7 +59,7 @@ If
 .B mkstemp
 successfully creates the temporary file, it prints the file name on
 standard output and exits with status 0.  On failure, it prints a
-diagnostic message on standard error and exits with status 255.
+diagnostic message on standard error and exits with status 1.
 .SH "PROFILE COMPONENTS"
 None
 .SH "SEE ALSO"

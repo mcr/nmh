@@ -44,7 +44,7 @@ main(int argc, char *argv[]) {
 
     process_args(argc, argv, &directory, &prefix, &suffix);
     if ((template = build_template(directory, prefix, suffix)) == NULL) {
-        return -1;
+        return 1;
     }
 
     if ((suffix_len = strlen(suffix)) > 0) {
@@ -64,7 +64,7 @@ main(int argc, char *argv[]) {
 
     free(template);
 
-    return fd >= 0  ?  0  :  -1;
+    return fd >= 0  ?  0  :  1;
 }
 
 
@@ -152,7 +152,7 @@ process_args(int argc, char **argv, const char **directory,
     NMH_UNUSED(suffix);
 #   endif /* ! HAVE_MKSTEMPS */
 
-    if (nmh_init(argv[0], 2)) { done(NOTOK); }
+    if (nmh_init(argv[0], 2)) { done(1); }
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
@@ -164,12 +164,12 @@ process_args(int argc, char **argv, const char **directory,
             switch (smatch(++cp, switches)) {
             case AMBIGSW:
                 ambigsw(cp, switches);
-                done(NOTOK);
+                done(1);
             case UNKWNSW:
                 inform("-%s unknown", cp);
                 (void) snprintf(buf, sizeof buf, "%s [switches]", invo_name);
                 print_help(buf, switches, 1);
-                done(NOTOK);
+                done(1);
             case HELPSW:
                 (void) snprintf(buf, sizeof buf, "%s [switches]", invo_name);
                 print_help(buf, switches, 1);
@@ -237,7 +237,7 @@ process_args(int argc, char **argv, const char **directory,
             exit(0);
         default:
             (void) fprintf(stderr, usage, argv[0]);
-            exit(-1);
+            exit(1);
         }
     }
 }
