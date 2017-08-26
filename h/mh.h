@@ -38,6 +38,7 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define ALLOC_SIZE(...) __attribute__((alloc_size(__VA_ARGS__)))
 #define CONST __attribute__((const))
 #define MALLOC __attribute__((malloc))
+#define NONNULL(...) __attribute__((nonnull(__VA_ARGS__)))
 #define NMH_UNUSED(i) (void) i
 #else
 #define NORETURN
@@ -45,6 +46,7 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define ALLOC_SIZE(...)
 #define CONST
 #define MALLOC
+#define NONNULL(...)
 #define NMH_UNUSED(i) i
 #endif
 
@@ -68,24 +70,24 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 typedef struct charstring *charstring_t;
 
 charstring_t charstring_create (size_t);
-charstring_t charstring_copy (const charstring_t);
+charstring_t charstring_copy (const charstring_t) NONNULL(1);
 void charstring_free (charstring_t);
 /* Append a single-byte character: */
-void charstring_push_back (charstring_t, const char);
+void charstring_push_back (charstring_t, const char) NONNULL(1);
 /* Append possibly multi-byte character(s): */
-void charstring_push_back_chars (charstring_t, const char [], size_t, size_t);
-void charstring_append (charstring_t, const charstring_t);
-void charstring_append_cstring (charstring_t, const char []);
-void charstring_clear (charstring_t);
+void charstring_push_back_chars (charstring_t, const char [], size_t, size_t) NONNULL(1);
+void charstring_append (charstring_t, const charstring_t) NONNULL(2);
+void charstring_append_cstring (charstring_t, const char []) NONNULL(2);
+void charstring_clear (charstring_t) NONNULL(1);
 /* Don't store return value of charstring_buffer() and use later after
    intervening push_back's; use charstring_buffer_copy() instead. */
-const char *charstring_buffer (const charstring_t);
+const char *charstring_buffer (const charstring_t) NONNULL(1);
 /* User is responsible for free'ing result of buffer copy. */
-char *charstring_buffer_copy (const charstring_t);
-size_t charstring_bytes (const charstring_t);
-size_t charstring_chars (const charstring_t);
+char *charstring_buffer_copy (const charstring_t) NONNULL(1);
+size_t charstring_bytes (const charstring_t) NONNULL(1);
+size_t charstring_chars (const charstring_t) NONNULL(1);
 /* Length of the last character in the charstring. */
-int charstring_last_char_len (const charstring_t);
+int charstring_last_char_len (const charstring_t) NONNULL(1);
 
 /*
  * user context/profile structure
@@ -209,33 +211,33 @@ struct bvector {
 typedef struct bvector *bvector_t;
 
 bvector_t bvector_create (void);
-void bvector_init(struct bvector *bv);
-void bvector_copy (bvector_t, bvector_t);
-void bvector_free (bvector_t);
-void bvector_fini(struct bvector *bv);
-void bvector_clear (bvector_t, size_t);
-void bvector_clear_all (bvector_t);
-void bvector_set (bvector_t, size_t);
-unsigned int bvector_at (bvector_t, size_t);
-unsigned long bvector_first_bits (bvector_t);
+void bvector_init(struct bvector *bv) NONNULL(1);
+void bvector_copy (bvector_t, bvector_t) NONNULL(1, 2);
+void bvector_free (bvector_t) NONNULL(1);
+void bvector_fini(struct bvector *bv) NONNULL(1);
+void bvector_clear (bvector_t, size_t) NONNULL(1);
+void bvector_clear_all (bvector_t) NONNULL(1);
+void bvector_set (bvector_t, size_t) NONNULL(1);
+unsigned int bvector_at (bvector_t, size_t) NONNULL(1);
+unsigned long bvector_first_bits (bvector_t) NONNULL(1);
 
 typedef struct svector *svector_t;
 
 svector_t svector_create (size_t);
-void svector_free (svector_t);
-char *svector_push_back (svector_t, char *);
-char *svector_at (svector_t, size_t);
-char **svector_find(svector_t, const char *);
-char **svector_strs (svector_t);
-size_t svector_size (svector_t);
+void svector_free (svector_t) NONNULL(1);
+char *svector_push_back (svector_t, char *) NONNULL(1);
+char *svector_at (svector_t, size_t) NONNULL(1);
+char **svector_find(svector_t, const char *) NONNULL(1);
+char **svector_strs (svector_t) NONNULL(1);
+size_t svector_size (svector_t) NONNULL(1);
 
 typedef struct ivector *ivector_t;
 
 ivector_t ivector_create (size_t);
-void ivector_free (ivector_t);
-int ivector_push_back (ivector_t, int);
-int ivector_at (ivector_t, size_t);
-int *ivector_atp (ivector_t, size_t);
+void ivector_free (ivector_t) NONNULL(1);
+int ivector_push_back (ivector_t, int) NONNULL(1);
+int ivector_at (ivector_t, size_t) NONNULL(1);
+int *ivector_atp (ivector_t, size_t) NONNULL(1);
 
 /*
  * Primary structure of folder/message information

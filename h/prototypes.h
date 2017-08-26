@@ -7,7 +7,7 @@
 /*
  * prototype from config.h
  */
-char *etcpath(char *);
+char *etcpath(char *) NONNULL(1);
 
 /*
  * prototypes from the nmh subroutine library
@@ -21,13 +21,13 @@ void adios (const char *, const char *, ...) CHECK_PRINTF(2, 3) NORETURN;
 void admonish (char *, char *, ...) CHECK_PRINTF(2, 3);
 void advertise (const char *, char *, const char *, va_list) CHECK_PRINTF(3, 0);
 void advise (const char *, const char *, ...) CHECK_PRINTF(2, 3);
-char **argsplit (char *, char **, int *);
-void argsplit_msgarg (struct msgs_array *, char *, char **);
-void argsplit_insert (struct msgs_array *, char *, char **);
+char **argsplit (char *, char **, int *) NONNULL(1, 2);
+void argsplit_msgarg (struct msgs_array *, char *, char **) NONNULL(1, 2, 3);
+void argsplit_insert (struct msgs_array *, char *, char **) NONNULL(1, 2, 3);
 void arglist_free (char *, char **);
-void ambigsw (const char *, const struct swit *);
-int atooi(char *);
-char **brkstring (char *, char *, char *);
+void ambigsw (const char *, const struct swit *) NONNULL(1, 2);
+int atooi(char *) NONNULL(1);
+char **brkstring (char *, char *, char *) NONNULL(1);
 
 /*
  * Check to see if we can display a given character set natively.
