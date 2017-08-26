@@ -17,7 +17,7 @@ void *mh_xmalloc(size_t size) MALLOC ALLOC_SIZE(1);
 void *mh_xrealloc(void *ptr, size_t size) ALLOC_SIZE(2);
 
 /* Call calloc(3), exiting on NULL return. */
-void *mh_xcalloc(size_t nelem, size_t elsize) MALLOC ALLOC_SIZE2(1, 2);
+void *mh_xcalloc(size_t nelem, size_t elsize) MALLOC ALLOC_SIZE(1, 2);
 
 /* Duplicate a NUL-terminated string, exit on failure. */
 char *mh_xstrdup(const char *src) MALLOC;
