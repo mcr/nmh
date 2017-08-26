@@ -13,18 +13,23 @@ fi
 
 setup_test
 
+start_test 'local hostname test'
 set +e
 host=`${MH_OBJ_DIR}/test/getcanon`
 set -e
-run_test "${MH_LIBEXEC_DIR}/ap -format %(myhost) ignore" "$host" \
-         "local hostname test"
+myhost=`${MH_LIBEXEC_DIR}/ap -format '%(myhost)' ignore 2>&1`
+if [ "$myhost" != "$host" ]; then
+   echo "$0: myhost reports $myhost but canonical hostname is $host"
+fi
 
+start_test 'mts.conf localname test'
 cp ${MHMTSCONF} ${MH_TEST_DIR}/Mail/mts.conf || exit 1
 MHMTSCONF="${MH_TEST_DIR}/Mail/mts.conf"
 
 echo "localname: some.random.name" >> ${MHMTSCONF}
 
-run_test "${MH_LIBEXEC_DIR}/ap -format %(myhost) ignore" "some.random.name" \
-         "mts.conf localname test"
+run_test "${MH_LIBEXEC_DIR}/ap -format %(myhost) ignore" "some.random.name"
 
+
+finish_test
 exit $failed
