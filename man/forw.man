@@ -421,7 +421,7 @@ Program to ask the \*(lqWhat now?\*(rq questions.
 .SH "SEE ALSO"
 .IR burst (1),
 .IR comp (1),
-.IR mh\-format (5)
+.IR mh\-format (5),
 .IR mhbuild (1),
 .IR mhl (1),
 .IR prompter (1),

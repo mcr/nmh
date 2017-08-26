@@ -167,7 +167,7 @@ boundary indicators and invalid Content-Transfer-Encoding values.
 .SH "SEE ALSO"
 .IR comp (1),
 .IR iconv (3),
-.IR mh\-format (5)
+.IR mh\-format (5),
 .IR mhbuild (1),
 .IR mhfixmsg (1),
 .IR mhparam (1),
