@@ -38,6 +38,7 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define ALLOC_SIZE(n) __attribute__((alloc_size(n)))
 #define ALLOC_SIZE2(m, n) __attribute__((alloc_size(m, n)))
 #define CONST __attribute__((const))
+#define MALLOC __attribute__((malloc))
 #define NMH_UNUSED(i) (void) i
 #else
 #define NORETURN
@@ -45,6 +46,7 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define ALLOC_SIZE(n)
 #define ALLOC_SIZE2(m, n)
 #define CONST
+#define MALLOC
 #define NMH_UNUSED(i) i
 #endif
 
