@@ -947,7 +947,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		printf (" Forwarded Message%s", PLURALS(ofilec));
 	    else
 		printf (" Message %d", ofilen);
-	    printf ("\n\n");
+	    puts("\n");
 	}
     } else {
 	switch (ontty) {
@@ -957,7 +957,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			if ((global.c_flags & CLEARSCR))
 			    nmh_clear_screen ();
 			else
-			    printf ("\n\n\n");
+                            puts("\n\n");
 		    }
 		    printf (">>> %s\n\n", mname);
 		}
@@ -968,7 +968,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		if (ofilec > 1) {
 		    if (SOprintf ("Press <return> to list \"%s\"...", mname)) {
 			if (ofilen > 1)
-			    printf ("\n\n\n");
+			    puts("\n\n");
 			printf ("Press <return> to list \"%s\"...", mname);
 		    }
 		    fflush (stdout);
@@ -988,7 +988,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 	    default: 
 		if (ofilec > 1) {
 		    if (ofilen > 1) {
-			printf ("\n\n\n");
+			puts("\n\n");
 			if (clearflg > 0)
 			    nmh_clear_screen ();
 		    }

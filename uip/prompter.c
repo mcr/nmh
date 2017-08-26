@@ -243,7 +243,7 @@ abort:
 		    puts("--------");
 		if (field[0]) {
 		    if (prepend && body) {
-			printf ("\n--------Enter initial text\n\n");
+			puts("\n--------Enter initial text\n");
 			fflush (stdout);
 			for (;;) {
 			    getln (buffer, sizeof(buffer));
@@ -264,7 +264,7 @@ abort:
 			     state = m_getfld2(&gstate, name, field, &fieldsz)));
 		    if (prepend || !body)
 			break;
-                    printf ("\n--------Enter additional text\n\n");
+                    puts("\n--------Enter additional text\n");
 		}
 
 		fflush (stdout);
