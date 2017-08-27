@@ -127,7 +127,7 @@ main (int argc, char **argv)
 	status += process (addrs[addrp], width);
 
     fmt_free (fmt, 1);
-    done (status);
+    done(min(status, MAX_EXIT));
     return 1;
 }
 

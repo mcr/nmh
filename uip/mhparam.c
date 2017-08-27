@@ -253,7 +253,7 @@ main(int argc, char **argv)
 		    printf("%s: ", comps[i]);
 
 		puts(value);
-	    } else if (missed < 120)
+	    } else if (missed < MAX_EXIT)
 	        missed++;
 	}
     }

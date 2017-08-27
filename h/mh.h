@@ -16,6 +16,13 @@
 #define DMAXFOLDER     4	/* typical number of digits             */
 #define MAXFOLDER   1000	/* message increment                    */
 
+/* non-zero exit(3) values indicating the number of errors need to be
+ * capped else they interfere with the shell's use of high seven-bit
+ * values, and the shell's mapping of signals onto top-bit-set values.
+ * Plus, every so often the eight-bit value will wrap to zero, wrongly
+ * indicating success. */
+#define MAX_EXIT 120
+
 /*
  * This macro is for use by scan, for example, so that platforms with
  * a small BUFSIZ can easily allocate larger buffers.
