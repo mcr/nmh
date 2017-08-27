@@ -145,7 +145,7 @@ mh_oauth_free(mh_oauth_ctx *ctx);
  * Never returns NULL.
  */
 const char *
-mh_oauth_svc_display_name(const mh_oauth_ctx *ctx);
+mh_oauth_svc_display_name(const mh_oauth_ctx *ctx) PURE;
 
 /*
  * Enable logging for subsequent operations on ctx.
@@ -164,7 +164,7 @@ mh_oauth_log_to(FILE *log, mh_oauth_ctx *ctx);
  * Must not be called if an error was not indicated.
  */
 mh_oauth_err_code
-mh_oauth_get_err_code(const mh_oauth_ctx *ctx);
+mh_oauth_get_err_code(const mh_oauth_ctx *ctx) PURE;
 
 /*
  * Return null-terminated error message after some function indicated an error.
@@ -205,7 +205,7 @@ mh_oauth_refresh(mh_oauth_cred *cred);
  * Return whether access token is present and not expired at time T.
  */
 boolean
-mh_oauth_access_token_valid(time_t t, const mh_oauth_cred *cred);
+mh_oauth_access_token_valid(time_t t, const mh_oauth_cred *cred) PURE;
 
 /*
  * Free all resources associated with cred.

@@ -205,7 +205,7 @@ void fmt_freecomptext(void);
  * or NULL if the component is not found in the hash table.
  */
 
-struct comp *fmt_findcomp(char *component);
+struct comp *fmt_findcomp(char *component) PURE;
 
 /*
  * Search for a component structure in the component hash table.
@@ -213,7 +213,7 @@ struct comp *fmt_findcomp(char *component);
  * Identical to fmd_findcomp(), but is case-INSENSITIVE.
  */
 
-struct comp *fmt_findcasecomp(char *component);
+struct comp *fmt_findcasecomp(char *component) PURE;
 
 /*
  * Add a component entry to the component hash table

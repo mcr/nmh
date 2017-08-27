@@ -31,7 +31,7 @@ struct mailname fmt_mnull = { NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0,
 /*
  * static prototypes
  */
-static int match (char *, char *);
+static int match (char *, char *) PURE;
 static char *get_x400_friendly (char *, char *, int);
 static int get_x400_comp (char *, char *, char *, int);
 

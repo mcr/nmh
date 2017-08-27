@@ -290,7 +290,7 @@ static char *partno = NULL;
 static void putfmt (char *, char *, int *, FILE *);
 static void start_headers (void);
 static void finish_headers (FILE *);
-static int get_header (char *, struct headers *);
+static int get_header (char *, struct headers *) PURE;
 static int putadr (char *, char *, struct mailname *, FILE *, unsigned int,
 		   char *, unsigned int);
 static void putgrp (char *, char *, FILE *, unsigned int);
@@ -301,7 +301,7 @@ static int annoaux (struct mailname *);
 static void insert_fcc (struct headers *, char *);
 static void make_bcc_file (int);
 static void verify_all_addresses (int, int, char *, int, char *);
-static void chkadr (void);
+static void chkadr (void) PURE;
 static void sigon (void);
 static void sigoff (void);
 static void p_refile (char *);

@@ -359,11 +359,11 @@ int open7Bit (CT, char **);
 void close_encoding (CT);
 char *ct_type_str (int) CONST;
 char *ct_subtype_str (int, int) CONST;
-int ct_str_type (const char *);
-int ct_str_subtype (int, const char *);
-const struct str2init *get_ct_init (int);
+int ct_str_type (const char *) PURE;
+int ct_str_subtype (int, const char *) PURE;
+const struct str2init *get_ct_init (int) PURE;
 const char *ce_str (int) CONST;
-const struct str2init *get_ce_method (const char *);
+const struct str2init *get_ce_method (const char *) PURE;
 char *content_charset (CT);
 void reverse_alternative_parts (CT);
 
@@ -375,7 +375,7 @@ void reverse_alternative_parts (CT);
  *
  * ct		- Content structure to examine
  */
-int is_inline(CT ct);
+int is_inline(CT ct) PURE;
 
 /*
  * Given a list of messages, display information about them on standard
@@ -529,6 +529,6 @@ extern int checksw;	/* Add Content-MD5 field */
  */
 typedef struct mhstoreinfo *mhstoreinfo_t;
 mhstoreinfo_t mhstoreinfo_create(CT *, char *, const char *, int, int);
-int mhstoreinfo_files_not_clobbered(const mhstoreinfo_t);
+int mhstoreinfo_files_not_clobbered(const mhstoreinfo_t) PURE;
 void mhstoreinfo_free(mhstoreinfo_t);
 void store_all_messages (mhstoreinfo_t);

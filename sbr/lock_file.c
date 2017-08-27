@@ -90,7 +90,7 @@ static int lkopen_lockf (const char *, int, mode_t, int *);
 static int lkopen_flock (const char *, int, mode_t, int *);
 #endif /* HAVE_FLOCK */
 
-static enum locktype init_locktype(const char *);
+static enum locktype init_locktype(const char *) PURE;
 
 static int lkopen_dot (const char *, int, mode_t, int *);
 static void lkclose_dot (int, const char *);

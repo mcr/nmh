@@ -29,8 +29,8 @@ static char *errs = NULL;
 /*
  * prototypes
  */
-int part_ok (CT);
-int part_exact(CT ct);
+int part_ok (CT) PURE;
+int part_exact(CT ct) PURE;
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...) CHECK_PRINTF(3, 4);
 void flush_errors (void);

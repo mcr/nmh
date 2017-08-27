@@ -72,7 +72,7 @@ void netsec_set_hostname(netsec_context *ns_context, const char *hostname);
  * Returns "1" if snoop is enabled, 0 if it is not.
  */
 
-int netsec_get_snoop(netsec_context *ns_context);
+int netsec_get_snoop(netsec_context *ns_context) PURE;
 
 /*
  * Sets "snoop" status; if snoop is set to a nonzero value, network traffic
@@ -352,7 +352,7 @@ int netsec_negotiate_sasl(netsec_context *ns_context, const char *mechlist,
  * supported or in use.
  */
 
-char *netsec_get_sasl_mechanism(netsec_context *ns_context);
+char *netsec_get_sasl_mechanism(netsec_context *ns_context) PURE;
 
 /*
  * Set the OAuth service name used to retrieve the OAuth parameters from

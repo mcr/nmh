@@ -29,7 +29,7 @@ static void convert_common (contentline *, act);
 static void dump_unfolded (FILE *, contentline *);
 static void output (FILE *, contentline *, int);
 static void display (FILE *, contentline *, char *);
-static const char *identity (const contentline *);
+static const char *identity (const contentline *) PURE;
 static char *format_params (char *, param_list *);
 static char *fold (char *, int);
 

@@ -71,7 +71,7 @@ void add_param_name (contentline *, char *);
 void add_param_value (contentline *, char *);
 void remove_value (value_list *);
 struct contentline *find_contentline (contentline *, const char *,
-                                      const char *);
+                                      const char *) PURE;
 void free_contentlines (contentline *);
 
 typedef struct tzdesc *tzdesc_t;

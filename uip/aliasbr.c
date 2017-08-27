@@ -27,8 +27,8 @@ char *akvalue (char *);
 char *akerror (int);
 
 static  char *akval (struct aka *, char *);
-static bool aleq (char *, char *);
-static char *scanp (char *);
+static bool aleq (char *, char *) PURE;
+static char *scanp (char *) PURE;
 static char *getp (char *);
 static char *seekp (char *, char *, char **);
 static int addfile (struct aka *, char *);

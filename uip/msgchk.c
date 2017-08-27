@@ -79,7 +79,7 @@ DEFINE_SWITCH_ARRAY(MSGCHK, switches);
 /*
  * static prototypes
  */
-static int donote (char *, int);
+static int donote (char *, int) PURE;
 static int checkmail (char *, char *, int, int, int);
 static int remotemail (char *, char *, char *, char *, int, int, int, int,
 		       char *, int, const char *);

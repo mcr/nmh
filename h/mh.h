@@ -46,6 +46,7 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define CONST __attribute__((const))
 #define MALLOC __attribute__((malloc))
 #define NONNULL(...) __attribute__((nonnull(__VA_ARGS__)))
+#define PURE __attribute__((pure))
 #define NMH_UNUSED(i) (void) i
 #else
 #define NORETURN
@@ -54,6 +55,7 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define CONST
 #define MALLOC
 #define NONNULL(...)
+#define PURE
 #define NMH_UNUSED(i) i
 #endif
 
@@ -91,8 +93,8 @@ void charstring_clear (charstring_t) NONNULL(1);
 const char *charstring_buffer (const charstring_t) NONNULL(1);
 /* User is responsible for free'ing result of buffer copy. */
 char *charstring_buffer_copy (const charstring_t) NONNULL(1);
-size_t charstring_bytes (const charstring_t) NONNULL(1);
-size_t charstring_chars (const charstring_t) NONNULL(1);
+size_t charstring_bytes (const charstring_t) NONNULL(1) PURE;
+size_t charstring_chars (const charstring_t) NONNULL(1) PURE;
 /* Length of the last character in the charstring. */
 int charstring_last_char_len (const charstring_t) NONNULL(1);
 
@@ -225,8 +227,8 @@ void bvector_fini(struct bvector *bv) NONNULL(1);
 void bvector_clear (bvector_t, size_t) NONNULL(1);
 void bvector_clear_all (bvector_t) NONNULL(1);
 void bvector_set (bvector_t, size_t) NONNULL(1);
-unsigned int bvector_at (bvector_t, size_t) NONNULL(1);
-unsigned long bvector_first_bits (bvector_t) NONNULL(1);
+unsigned int bvector_at (bvector_t, size_t) NONNULL(1) PURE;
+unsigned long bvector_first_bits (bvector_t) NONNULL(1) PURE;
 
 typedef struct svector *svector_t;
 
@@ -234,9 +236,9 @@ svector_t svector_create (size_t);
 void svector_free (svector_t) NONNULL(1);
 char *svector_push_back (svector_t, char *) NONNULL(1);
 char *svector_at (svector_t, size_t) NONNULL(1);
-char **svector_find(svector_t, const char *) NONNULL(1);
-char **svector_strs (svector_t) NONNULL(1);
-size_t svector_size (svector_t) NONNULL(1);
+char **svector_find(svector_t, const char *) NONNULL(1) PURE;
+char **svector_strs (svector_t) NONNULL(1) PURE;
+size_t svector_size (svector_t) NONNULL(1) PURE;
 
 typedef struct ivector *ivector_t;
 

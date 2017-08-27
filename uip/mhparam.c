@@ -131,7 +131,7 @@ static struct proc procs [] = {
 /*
  * static prototypes
  */
-static char *p_find(char *);
+static char *p_find(char *) PURE;
 
 
 int

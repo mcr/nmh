@@ -39,7 +39,7 @@ char *add(const char *, char *) MALLOC;
 char *addlist(char *, const char *) MALLOC;
 int folder_exists(const char *);
 void create_folder(char *, int, void (*)(int));
-int num_digits(int);
+int num_digits(int) PURE;
 
 /*
  * A vector of char array, used to hold a list of string message numbers
@@ -68,17 +68,17 @@ struct msgnum_array {
 void app_msgarg(struct msgs_array *, char *);
 void app_msgnum(struct msgnum_array *, int);
 
-char *find_str (const char [], size_t, const char *);
-char *rfind_str (const char [], size_t, const char *);
-char *nmh_strcasestr (const char *, const char *);
+char *find_str (const char [], size_t, const char *) PURE;
+char *rfind_str (const char [], size_t, const char *) PURE;
+char *nmh_strcasestr (const char *, const char *) PURE;
 
 void trunccpy(char *dst, const char *src, size_t size);
 /* A convenience for the common case of dst being an array. */
 #define TRUNCCPY(dst, src) trunccpy(dst, src, sizeof (dst))
 
-bool has_prefix(const char *s, const char *prefix);
-bool has_suffix(const char *s, const char *suffix);
-bool has_suffix_c(const char *s, int c);
+bool has_prefix(const char *s, const char *prefix) PURE;
+bool has_suffix(const char *s, const char *suffix) PURE;
+bool has_suffix_c(const char *s, int c) PURE;
 void trim_suffix_c(char *s, int c);
 void to_lower(char *s);
 void to_upper(char *s);

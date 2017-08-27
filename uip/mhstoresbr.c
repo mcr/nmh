@@ -26,7 +26,7 @@ enum clobber_policy_t {
   NMH_CLOBBER_NEVER
 };
 
-static enum clobber_policy_t clobber_policy (const char *);
+static enum clobber_policy_t clobber_policy (const char *) PURE;
 
 struct mhstoreinfo {
     CT *cts;                 /* Top-level list of contents to store. */

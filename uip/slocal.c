@@ -163,7 +163,7 @@ static int split (char *, char **);
 static int parse (int);
 static void expand (char *, char *, int);
 static void glob (int);
-static struct pair *lookup (struct pair *, char *);
+static struct pair *lookup (struct pair *, char *) PURE;
 static int logged_in (void);
 static int timely (char *, char *);
 static int usr_file (int, char *, int);

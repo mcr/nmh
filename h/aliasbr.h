@@ -21,7 +21,7 @@ struct adr {
  * prototypes
  */
 int alias (char *);
-int akvisible (void);
+int akvisible (void) PURE;
 char *akresult (struct aka *);
 char *akvalue (char *);
 char *akerror (int);

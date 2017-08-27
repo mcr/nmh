@@ -64,7 +64,7 @@ static int sm_nerror (char *);
 static int smtalk (int time, char *fmt, ...) CHECK_PRINTF(2, 3);
 static int sm_wstream (char *, int);
 static int smhear (void);
-static char *EHLOset (char *);
+static char *EHLOset (char *) PURE;
 static int sm_sasl_callback(enum sasl_message_type, unsigned const char *,
 			    unsigned int, unsigned char **, unsigned int *,
 			    char **);

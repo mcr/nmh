@@ -27,7 +27,7 @@ void argsplit_msgarg (struct msgs_array *, char *, char **) NONNULL(1, 2, 3);
 void argsplit_insert (struct msgs_array *, char *, char **) NONNULL(1, 2, 3);
 void arglist_free (char *, char **);
 void ambigsw (const char *, const struct swit *) NONNULL(1, 2);
-int atooi(char *) NONNULL(1);
+int atooi(char *) NONNULL(1) PURE;
 char **brkstring (char *, char *, char *) NONNULL(1);
 
 /*
@@ -46,9 +46,9 @@ int client(char *, char *, char *, int, int);
 void closefds(int);
 char *concat (const char *, ...);
 int context_del (char *);
-char *context_find (const char *);
+char *context_find (const char *) PURE;
 char *context_find_by_type (const char *, const char *, const char *);
-int context_find_prefix(const char *);
+int context_find_prefix(const char *) PURE;
 int context_foil (char *);
 void context_read (void);
 void context_replace (char *, char *);
@@ -169,7 +169,7 @@ char *get_charset(void);
 char *getcpy(const char *str);
 
 char *get_default_editor(void);
-char *getfolder(int);
+char *getfolder(int) PURE;
 
 /*
  * Get a string from the terminfo database for the current terminal.
@@ -222,7 +222,7 @@ char *get_term_stringparm(char *capability, long arg1, long arg2);
  */
 int get_term_numcap(char *capability);
 
-int m_atoi (char *);
+int m_atoi (char *) PURE;
 char *m_backup (const char *);
 int m_convert (struct msgs *, char *);
 char *m_draft (char *, char *, int, int *);
@@ -234,7 +234,7 @@ void m_getfld_track_filepos (m_getfld_state_t *, FILE *);
 void m_getfld_track_filepos2(m_getfld_state_t *);
 int m_getfld (m_getfld_state_t *, char[NAMESZ], char *, int *, FILE *);
 int m_getfld2(m_getfld_state_t *, char[NAMESZ], char *, int *);
-int m_gmprot (void);
+int m_gmprot (void) PURE;
 char *m_name (int);
 
 void m_unknown(m_getfld_state_t *, FILE *);
@@ -255,7 +255,7 @@ void print_intro (FILE *, int);
 void print_sw (const char *, const struct swit *, char *, FILE *);
 void print_version (char *);
 void push (void);
-char *r1bindex(char *, int);
+char *r1bindex(char *, int) PURE;
 void readconfig (struct node **, FILE *, const char *, int);
 int refile (char **, char *);
 
@@ -312,7 +312,7 @@ void seq_setcur (struct msgs *, int);
 void seq_setprev (struct msgs *);
 void seq_setunseen (struct msgs *, int);
 int showfile (char **, char *);
-int smatch(const char *, const struct swit *);
+int smatch(const char *, const struct swit *) PURE;
 
 /*
  * Convert a set of bit flags to printable format.
@@ -347,11 +347,11 @@ int smatch(const char *, const struct swit *);
  * from least significant bit to most significant.
  */
 char *snprintb (char *buffer, size_t size, unsigned flags, char *bitfield);
-int ssequal (const char *, const char *);
-int stringdex (char *, char *);
+int ssequal (const char *, const char *) PURE;
+int stringdex (char *, char *) PURE;
 char *trimcpy (char *);
 
-int uprf (const char *, const char *);
+int uprf (const char *, const char *) PURE;
 int vfgets (FILE *, char **);
 
 /*

@@ -315,7 +315,7 @@ static int ptos (char *, char **);
 static char *parse (void);
 static void process (char *, char *, int, int);
 static void mhlfile (FILE *, char *, int, int);
-static int mcomp_flags (char *);
+static int mcomp_flags (char *) PURE;
 static char *mcomp_add (unsigned long, char *, char *);
 static void mcomp_format (struct mcomp *, struct mcomp *);
 static struct mcomp *add_queue (struct mcomp **, struct mcomp **, char *, char *, int);

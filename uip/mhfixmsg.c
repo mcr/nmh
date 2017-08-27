@@ -116,7 +116,7 @@ static int should_decode(const char *, const char *, const char *);
 static int content_encoding (CT, const char **);
 static int strip_crs (CT, int *);
 static void update_cte (CT);
-static int least_restrictive_encoding (CT);
+static int least_restrictive_encoding (CT) PURE;
 static int less_restrictive (int, int);
 static int convert_charsets (CT, char *, int *);
 static int fix_always (CT, int *);
