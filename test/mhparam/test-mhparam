@@ -172,27 +172,15 @@ aliases"
 start_test "nonexistent component"
 run_test 'mhparam nonexistent' ''
 
-# check that return status counts nonexistent components
-start_test "return status counts nonexistent components"
-set +e
-mhparam path context nonexistent1 nonexistent2 nonexistent3 >/dev/null
-run_test "echo $?" 3
-set -e
-
-# And clips their numbers to avoid a misleading exit value.
-start_test "clips their numbers to avoid a misleading exit value"
-while read use want; do
-    r=0
-    #### Heirloom shell can't handle the backquote expression as the
-    #### argument:   with set -e, it exits immediately.
-    textlines=`yes nonexistent | sed ${use}q`
-    mhparam $textlines || r=$?
-    run_test "echo $r" $want
-done <<\E
-119 119
-120 120
-121 120
-E
+# check that exit status notes nonexistent components
+start_test "exit status notes nonexistent components"
+for c in 'missing' 'path missing' 'missing path' 'missing missing'; do
+    set +e
+    mhparam $c >/dev/null
+    e=$?
+    set -e
+    run_test "echo $e" 1
+done
 
 # mhparam -debug
 start_test "-debug"

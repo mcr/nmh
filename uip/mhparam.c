@@ -137,7 +137,8 @@ static char *p_find(char *) PURE;
 int
 main(int argc, char **argv)
 {
-    int i, compp = 0, missed = 0;
+    int i, compp = 0;
+    bool missed;
     int all = 0, debug = 0;
     int components = -1;
     char *cp, buf[BUFSIZ], **argp;
@@ -232,6 +233,7 @@ main(int argc, char **argv)
 
     }
 
+    missed = false;
     if (! all) {
         if (components < 0)
 	    components = compp > 1;
@@ -252,13 +254,12 @@ main(int argc, char **argv)
 		    printf("%s: ", comps[i]);
 
 		puts(value);
-	    } else if (missed < MAX_EXIT)
-	        missed++;
+	    } else
+                missed = true;
 	}
     }
 
-    done (missed);
-    return 1;
+    done(missed);
 }
 
 

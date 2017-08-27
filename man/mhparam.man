@@ -143,11 +143,8 @@ is also useful in backquoted operations:
 % fgrep cornell.edu `mhpath +`/`mhparam aliasfile`
 .fi
 .SH "EXIT STATUS"
-.B mhparam
-returns the number of components that were not found,
-but limits the return value to 120 to avoid ambiguity,
-e.g.\& 127 is used by shells to indicate `command not found',
-and 256 would wrap to 0, falsely indicating success.
+The exit status is zero if all components are found,
+or one if any are missing.
 .
 .SH FILES
 .fc ^ ~
