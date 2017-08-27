@@ -59,9 +59,11 @@ context_find_by_type (const char *string, const char *type,
 int
 context_find_prefix (const char *prefix) {
     struct node *np;
+    size_t len;
 
+    len = strlen(prefix);
     for (np = m_defs; np; np = np->n_next) {
-	if (np->n_name  &&  ! strncasecmp (np->n_name, prefix, strlen(prefix))) {
+	if (np->n_name  &&  ! strncasecmp (np->n_name, prefix, len)) {
 	    return 1;
         }
     }
