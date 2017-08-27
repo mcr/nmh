@@ -1220,7 +1220,7 @@ iconv_start:
 		replace_param(&ct->c_ctinfo.ci_first_pm,
 			      &ct->c_ctinfo.ci_last_pm, "charset",
 			      dest_charset, 0);
-		outline = output_params(strlen(TYPE_FIELD) + 1 + strlen(ctline),
+		outline = output_params(LEN(TYPE_FIELD) + 1 + strlen(ctline),
 					ct->c_ctinfo.ci_first_pm, NULL, 0);
 		if (outline) {
 		    ctline = add(outline, ctline);

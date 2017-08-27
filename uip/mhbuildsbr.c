@@ -243,11 +243,11 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 		    attach_head = attach_tail = entry;
 		}
 	    } else if (strncasecmp(MHBUILD_FILE_PSEUDOHEADER, np,
-                                   strlen (MHBUILD_FILE_PSEUDOHEADER)) == 0) {
+                                   LEN(MHBUILD_FILE_PSEUDOHEADER)) == 0) {
                 /* E.g.,
                  * Nmh-mhbuild-file-text/calendar: /home/user/Mail/inbox/9
                  */
-                char *type = np + strlen (MHBUILD_FILE_PSEUDOHEADER);
+                char *type = np + LEN(MHBUILD_FILE_PSEUDOHEADER);
                 char *filename = vp;
 
                 /* vp should begin with a space because m_getfld2()
@@ -283,11 +283,11 @@ build_mime (char *infile, int autobuild, int dist, int directives,
                 free (vp);
                 free (np);
             } else if (strncasecmp(MHBUILD_ARGS_PSEUDOHEADER, np,
-                                   strlen (MHBUILD_ARGS_PSEUDOHEADER)) == 0) {
+                                   LEN(MHBUILD_ARGS_PSEUDOHEADER)) == 0) {
                 /* E.g.,
                  * Nmh-mhbuild-args-text/calendar: -reply accept
                  */
-                char *type = np + strlen (MHBUILD_ARGS_PSEUDOHEADER);
+                char *type = np + LEN(MHBUILD_ARGS_PSEUDOHEADER);
                 char *argstring = vp;
 
                 /* vp should begin with a space because m_getfld2()
@@ -710,7 +710,7 @@ user_content (FILE *in, char *buf, CT *ctp, const char *infilename)
 	    int	i;
 
 	    if (headers >= 0 && do_direct() && uprf (buffer, DESCR_FIELD)
-		&& buffer[i = strlen (DESCR_FIELD)] == ':') {
+		&& buffer[i = LEN(DESCR_FIELD)] == ':') {
 		headers = 1;
 
 again_descr:
@@ -733,7 +733,7 @@ again_descr:
 	    }
 
 	    if (headers >= 0 && do_direct() && uprf (buffer, DISPO_FIELD)
-		&& buffer[i = strlen (DISPO_FIELD)] == ':') {
+		&& buffer[i = LEN(DISPO_FIELD)] == ':') {
 		headers = 1;
 
 again_dispo:
@@ -1670,7 +1670,7 @@ build_headers (CT ct, int header_encoding)
     vp = concat (" ", ci->ci_type, "/", ci->ci_subtype, NULL);
 
     /* keep track of length of line */
-    len = strlen (TYPE_FIELD) + strlen (ci->ci_type)
+    len = LEN(TYPE_FIELD) + strlen (ci->ci_type)
 		+ strlen (ci->ci_subtype) + 3;
 
     extbody = ct->c_type == CT_MESSAGE && ct->c_subtype == MESSAGE_EXTERNAL;
@@ -1745,7 +1745,7 @@ build_headers (CT ct, int header_encoding)
 	add_header (ct, np, vp);
     } else if (ct->c_dispo_type) {
 	vp = concat (" ", ct->c_dispo_type, NULL);
-	len = strlen(DISPO_FIELD) + strlen(vp) + 1;
+	len = LEN(DISPO_FIELD) + strlen(vp) + 1;
 	np = output_params(len, ct->c_dispo_first, NULL, 0);
 	vp = add(np, vp);
 	vp = add("\n", vp);
@@ -2365,8 +2365,8 @@ extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
     buffer[statbuf.st_size] = '\0';
 
     /* Look for a header in the convert reply. */
-    if (strncasecmp (buffer, TYPE_FIELD, strlen (TYPE_FIELD)) == 0  &&
-        buffer[strlen (TYPE_FIELD)] == ':') {
+    if (strncasecmp (buffer, TYPE_FIELD, LEN(TYPE_FIELD)) == 0  &&
+        buffer[LEN(TYPE_FIELD)] == ':') {
         if ((end_of_header = strstr (buffer, "\r\n\r\n"))) {
             end_of_header += 2;
             found_header = 1;

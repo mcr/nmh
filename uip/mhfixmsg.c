@@ -866,7 +866,7 @@ replace_boundary (CT ct, char *file, char *boundary) {
 
 		new_ctline = concat(" ", ct->c_ctinfo.ci_type, "/",
 				    ct->c_ctinfo.ci_subtype, NULL);
-		new_params = output_params(strlen(TYPE_FIELD) +
+		new_params = output_params(LEN(TYPE_FIELD) +
 					   strlen(new_ctline) + 1,
 					   ct->c_ctinfo.ci_first_pm, NULL, 0);
                 fprintf (fpout, "%s:%s%s\n", np, new_ctline,
@@ -1125,7 +1125,7 @@ fix_composite_cte (CT ct, int *message_mods) {
                 }
 
                 if (! strncasecmp (name, ENCODING_FIELD,
-                                   strlen (ENCODING_FIELD))) {
+                                   LEN(ENCODING_FIELD))) {
                     char *prefix = "Nmh-REPLACED-INVALID-";
                     HF h;
 
@@ -1868,7 +1868,7 @@ transfer_noncontent_headers (CT old, CT new) {
     while (hp) {
         HF next = hp->next;
 
-        if (strncasecmp (XXX_FIELD_PRF, hp->name, strlen (XXX_FIELD_PRF))) {
+        if (strncasecmp (XXX_FIELD_PRF, hp->name, LEN(XXX_FIELD_PRF))) {
             if (hp == old->c_last_hf) {
                 if (hp == old->c_first_hf) {
                     old->c_last_hf =  old->c_first_hf = NULL;

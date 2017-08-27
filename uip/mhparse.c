@@ -2214,7 +2214,7 @@ open7Bit (CT ct, char **file)
 
 	len = 0;
 	fprintf (ce->ce_fp, "%s: %s/%s", TYPE_FIELD, ci->ci_type, ci->ci_subtype);
-	len += strlen (TYPE_FIELD) + 2 + strlen (ci->ci_type)
+	len += LEN(TYPE_FIELD) + 2 + strlen (ci->ci_type)
 	    + 1 + strlen (ci->ci_subtype);
 	buffer = output_params(len, ci->ci_first_pm, &len, 0);
 
