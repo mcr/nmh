@@ -590,7 +590,7 @@ init_decoded_content (CT ct, const char *filename)
     ct->c_ceclosefnx = close_encoding;
     ct->c_cesizefnx  = NULL;		/* since unencoded */
     ct->c_encoding = CE_7BIT;		/* Seems like a reasonable default */
-    ct->c_file = add(filename, NULL);
+    ct->c_file = mh_xstrdup(FENDNULL(filename));
 
     return OK;
 }

@@ -300,7 +300,7 @@ get_content (FILE *in, char *file, int toplevel)
     /* allocate the content structure */
     NEW0(ct);
     ct->c_fp = in;
-    ct->c_file = add (file, NULL);
+    ct->c_file = mh_xstrdup(FENDNULL(file));
     ct->c_begin = ftell (ct->c_fp) + 1;
 
     /*
@@ -391,7 +391,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    char c, *cp, *dp;
 	    char *vrsn;
 
-	    vrsn = add (hp->value, NULL);
+	    vrsn = mh_xstrdup(FENDNULL(hp->value));
 
 	    /* Now, cleanup this field */
 	    cp = vrsn;
@@ -474,7 +474,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    }
 
 	    /* get copy of this field */
-	    ct->c_celine = cp = add (hp->value, NULL);
+	    ct->c_celine = cp = mh_xstrdup(FENDNULL(hp->value));
 
 	    while (isspace ((unsigned char) *cp))
 		cp++;
@@ -512,7 +512,7 @@ get_content (FILE *in, char *file, int toplevel)
 		goto next_header;
 	    }
 
-	    ep = cp = add (hp->value, NULL);	/* get a copy */
+	    ep = cp = mh_xstrdup(FENDNULL(hp->value)); /* get a copy */
 
 	    while (isspace ((unsigned char) *cp))
 		cp++;
@@ -642,7 +642,7 @@ get_ctinfo (char *cp, CT ct, int magic)
     ci = &ct->c_ctinfo;
 
     /* store copy of Content-Type line */
-    cp = ct->c_ctline = add (cp, NULL);
+    cp = ct->c_ctline = mh_xstrdup(FENDNULL(cp));
 
     while (isspace ((unsigned char) *cp))	/* trim leading spaces */
 	cp++;
@@ -891,7 +891,7 @@ get_dispo (char *cp, CT ct, int buildflag)
      * time.
      */
 
-    dispoheader = cp = add(cp, NULL);
+    dispoheader = cp = mh_xstrdup(FENDNULL(cp));
 
     while (isspace ((unsigned char) *cp))	/* trim leading spaces */
 	cp++;
@@ -1436,7 +1436,7 @@ InitMessage (CT ct)
 		/* scan for parameters "id", "number", and "total" */
 		for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
 		    if (!strcasecmp (pm->pm_name, "id")) {
-			p->pm_partid = add (pm->pm_value, NULL);
+			p->pm_partid = mh_xstrdup(FENDNULL(pm->pm_value));
 			continue;
 		    }
 		    if (!strcasecmp (pm->pm_name, "number")) {

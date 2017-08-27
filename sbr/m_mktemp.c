@@ -258,7 +258,7 @@ static svector_t exit_filelist = NULL;
 static void
 register_for_removal(const char *pathname) {
     if (exit_filelist == NULL) exit_filelist = svector_create(20);
-    (void) svector_push_back(exit_filelist, add(pathname, NULL));
+    (void) svector_push_back(exit_filelist, mh_xstrdup(pathname));
 }
 
 /*

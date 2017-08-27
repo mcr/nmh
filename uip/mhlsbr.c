@@ -1294,7 +1294,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     text = c1->c_text ? c1->c_text : c1->c_name;
     /* Create a copy with trailing whitespace trimmed, for use with
      * blank lines. */
-    trimmed_prefix = rtrim(add(text, NULL));
+    trimmed_prefix = rtrim(mh_xstrdup(FENDNULL(text)));
 
     cchdr = 0;
     lm = 0;

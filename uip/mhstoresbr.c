@@ -531,7 +531,7 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 	if (p) {
 	    appending = 1;
             if (! ct->c_storage) {
-		ct->c_storage = add (p->c_storage, NULL);
+		ct->c_storage = mh_xstrdup(FENDNULL(p->c_storage));
 
 		/* record the folder name */
 		if (p->c_folder) {

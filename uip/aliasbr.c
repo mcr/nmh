@@ -120,7 +120,7 @@ akval (struct aka *ak, char *s)
 		struct mailname *mp = getm (name, NULL, 0, NULL, 0);
 
 		if (mp	&&  mp->m_ingrp) {
-		    char *gname = add (mp->m_gname, NULL);
+		    char *gname = mh_xstrdup(FENDNULL(mp->m_gname));
 
                     /* FIXME: gname must be true;  add() never returns NULL.
 		     * Is some other test required? */

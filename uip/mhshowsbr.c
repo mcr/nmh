@@ -714,7 +714,7 @@ show_multi_aux (CT ct, int alternate, char *cp, struct format *fmt)
 	    if ((*p->c_ceopenfnx) (p, &file) == NOTOK)
 		return NOTOK;
 
-	    p->c_storage = add (file, NULL);
+	    p->c_storage = mh_xstrdup(FENDNULL(file));
 
 	    if (p->c_showproc && !strcmp (p->c_showproc, "true"))
 		return OK;
