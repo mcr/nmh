@@ -74,10 +74,6 @@ main (int argc, char **argv)
 
     done=putzero_done;
 
-    /* Deprecated.  Use -debug instead. */
-    if ((cp = getenv ("MHPDEBUG")) && *cp)
-	++debug;
-
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
