@@ -306,7 +306,7 @@ static void sigon (void);
 static void sigoff (void);
 static void p_refile (char *);
 static void fcc (char *, char *);
-static void die (char *, char *, ...) CHECK_PRINTF(2, 3);
+static void fatal (char *, char *, ...) CHECK_PRINTF(2, 3);
 static void post (char *, int, int, int, char *, int, char *);
 static void do_text (char *file, int fd);
 static void do_an_address (struct mailname *, int);
@@ -1606,12 +1606,12 @@ static void
 chkadr (void)
 {
     if (badadr && unkadr)
-	die (NULL, "%d address%s unparsable, %d addressee%s undeliverable",
+	fatal (NULL, "%d address%s unparsable, %d addressee%s undeliverable",
 		badadr, PLURALS(badadr), unkadr, PLURALS(badadr));
     if (badadr)
-	die (NULL, "%d address%s unparsable", badadr, PLURALS(badadr));
+	fatal (NULL, "%d address%s unparsable", badadr, PLURALS(badadr));
     if (unkadr)
-	die (NULL, "%d addressee%s undeliverable", unkadr, PLURALS(unkadr));
+	fatal (NULL, "%d addressee%s undeliverable", unkadr, PLURALS(unkadr));
 }
 
 
@@ -1652,7 +1652,7 @@ do_addresses (int bccque, int talk)
     chkadr ();
 
     if (rp_isbad (retval = sm_waend ()))
-	die (NULL, "problem ending addresses; %s", rp_string (retval));
+	fatal (NULL, "problem ending addresses; %s", rp_string (retval));
 }
 
 
@@ -1718,7 +1718,7 @@ post (char *file, int bccque, int talk, int eai, char *envelope,
         int eightbit = 0;
 
         if (fd == NOTOK) {
-          die (file, "unable to re-open");
+          fatal (file, "unable to re-open");
         }
 
         if (msgflags & MMIM  &&  cte != UNKNOWN) {
@@ -1728,7 +1728,7 @@ post (char *file, int bccque, int talk, int eai, char *envelope,
         } else {
             if (scan_input (fd, &eightbit) == NOTOK) {
                 close (fd);
-                die (file, "problem reading from");
+                fatal (file, "problem reading from");
             }
         }
 
@@ -1737,7 +1737,7 @@ post (char *file, int bccque, int talk, int eai, char *envelope,
 					oauth_flag ? auth_svc : NULL, tlsflag))
 		|| rp_isbad (retval = sm_winit (envelope, eai, eightbit))) {
 	    close (fd);
-	    die (NULL, "problem initializing server; %s", rp_string (retval));
+	    fatal (NULL, "problem initializing server; %s", rp_string (retval));
 	}
 
         do_addresses (bccque, talk && verbose);
@@ -1780,7 +1780,7 @@ verify_all_addresses (int talk, int eai, char *envelope, int oauth_flag,
 					verbose, snoop, sasl, saslmech, user,
 					oauth_flag ? auth_svc : NULL, tlsflag))
 		|| rp_isbad (retval = sm_winit (envelope, eai, eightbit))) {
-	    die (NULL, "problem initializing server; %s", rp_string (retval));
+	    fatal (NULL, "problem initializing server; %s", rp_string (retval));
 	}
     }
 
@@ -1870,7 +1870,7 @@ do_an_address (struct mailname *lp, int talk)
 	default: 
 	    if (!talk)
 		fprintf (stderr, "  %s: ", addr);
-	    die (NULL, "unexpected response; %s", rp_string (retval));
+	    fatal (NULL, "unexpected response; %s", rp_string (retval));
     }
 
     fflush (stdout);
@@ -1887,11 +1887,11 @@ do_text (char *file, int fd)
 
     while ((state = read (fd, buf, sizeof(buf))) > 0) {
 	if (rp_isbad (retval = sm_wtxt (buf, state)))
-	    die (NULL, "problem writing text; %s\n", rp_string (retval));
+	    fatal (NULL, "problem writing text; %s\n", rp_string (retval));
     }
 
     if (state == NOTOK)
-	die (file, "problem reading from");
+	fatal (file, "problem reading from");
 
     switch (retval = sm_wtend ()) {
 	case RP_OK: 
@@ -1899,11 +1899,11 @@ do_text (char *file, int fd)
 
 	case RP_NO: 
 	case RP_NDEL: 
-	    die (NULL, "posting failed; %s", rp_string (retval));
+	    fatal (NULL, "posting failed; %s", rp_string (retval));
 	    break;
 
 	default: 
-	    die (NULL, "unexpected response; %s", rp_string (retval));
+	    fatal (NULL, "unexpected response; %s", rp_string (retval));
     }
 }
 
@@ -2037,7 +2037,7 @@ fcc (char *file, char *folder)
  */
 
 static void
-die (char *what, char *fmt, ...)
+fatal (char *what, char *fmt, ...)
 {
     int err;
     va_list ap;

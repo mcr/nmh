@@ -58,6 +58,21 @@ adios (const char *what, const char *fmt, ...)
 }
 
 
+/* die is the same as adios(), but without the what as that's commonly
+ * NULL. */
+void NORETURN
+die(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    advertise(NULL, NULL, fmt, ap);
+    va_end(ap);
+    done(1);
+    abort();
+}
+
+
 /* admonish calls advertise() with a tail indicating the program
  * continues.
  * Thus "[invo_name: ]fmt[[ what]: errno], continuing...\n" results. */
