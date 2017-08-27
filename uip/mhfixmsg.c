@@ -485,7 +485,10 @@ main (int argc, char **argv) {
 
     if (*cts) {
         for (ctp = cts; *ctp; ++ctp) {
-            status += mhfixmsgsbr (ctp, maildir, &fx, &infp, outfile, &outfp);
+            status =
+                mhfixmsgsbr (ctp, maildir, &fx, &infp, outfile, &outfp) == OK
+                ? 0
+                : 1;
             free_content (*ctp);
 
             if (using_stdin) {
@@ -512,7 +515,7 @@ main (int argc, char **argv) {
     free (folder);
     free (arguments);
 
-    done (status);
+    done (status == OK ? 0 : 1);
     return NOTOK;
 }
 
@@ -2716,7 +2719,7 @@ write_content (CT ct, const char *input_filename, char *outfile, FILE *outfp,
                     }
                 } else {
                     inform("unable to remove input file %s, "
-			"not modifying it, continuing...", infile);
+                        "not modifying it, continuing...", infile);
                     (void) m_unlink (outfile);
                     status = NOTOK;
                 }
