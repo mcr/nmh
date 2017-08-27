@@ -114,7 +114,6 @@ static struct proc procs [] = {
      { "whomproc",         &whomproc },
      { "bindir",           &mhbindir },
      { "libexecdir",       &mhlibexecdir },
-     { "libdir",           &mhlibexecdir },
      { "etcdir",           &mhetcdir },
      { "docdir",           &mhdocdir },
      { "localmbox",	   &localmbox },

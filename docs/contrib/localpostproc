@@ -43,7 +43,7 @@ find_draftmessage() {
 	exit 1
 }
 
-realpost="$(mhparam libdir)/post"
+realpost="$(mhparam libexecdir)/post"
 
 if [ $# -eq 0 ]; then
 	echo "Usage: [post switches] filename"

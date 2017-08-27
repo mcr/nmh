@@ -80,12 +80,6 @@ The
 switch displays all such other information available from
 .BR mhparam .
 .PP
-Note that the internal
-.B libdir
-component has been replaced by
-.BR libexecdir .
-The old form is deprecated and will be removed in a future release.
-.PP
 Examples:
 .PP
 .RS 5
