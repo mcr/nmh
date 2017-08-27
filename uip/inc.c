@@ -156,10 +156,11 @@ static FILE *in;
 /*
  * prototypes
  */
+static int maildir_srt(const void *va, const void *vb);
 static void inc_done(int) NORETURN;
 static int pop_action(void *closure, char *);
 
-int
+static int
 maildir_srt(const void *va, const void *vb)
 {
     const struct Maildir_entry *a = va, *b = vb;
