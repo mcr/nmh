@@ -519,12 +519,12 @@ int mhstoreinfo_files_not_clobbered(const mhstoreinfo_t) PURE;
 void mhstoreinfo_free(mhstoreinfo_t);
 void store_all_messages (mhstoreinfo_t);
 
-extern int skip_mp_cte_check;
-extern int suppress_bogus_mp_content_warning;
-extern int bogus_mp_content;
-extern int suppress_extraneous_trailing_semicolon_warning;
+extern bool skip_mp_cte_check;
+extern bool suppress_bogus_mp_content_warning;
+extern bool bogus_mp_content;
+extern bool suppress_extraneous_trailing_semicolon_warning;
 
-extern int suppress_multiple_mime_version_warning;
+extern bool suppress_multiple_mime_version_warning;
 
 #define	NPREFS	20
 extern char *preferred_types[NPREFS];

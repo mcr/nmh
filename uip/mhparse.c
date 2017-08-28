@@ -34,15 +34,15 @@ int checksw = 0;	/* check Content-MD5 field */
  * 3) Suppress the warning about extraneous trailing ';' in header parameter
  *    lists.
  */
-int skip_mp_cte_check;
-int suppress_bogus_mp_content_warning;
-int bogus_mp_content;
-int suppress_extraneous_trailing_semicolon_warning;
+bool skip_mp_cte_check;
+bool suppress_bogus_mp_content_warning;
+bool bogus_mp_content;
+bool suppress_extraneous_trailing_semicolon_warning;
 
 /*
  * By default, suppress warning about multiple MIME-Version header fields.
  */
-int suppress_multiple_mime_version_warning = 1;
+bool suppress_multiple_mime_version_warning = true;
 
 /* list of preferred type/subtype pairs, for -prefer */
 char *preferred_types[NPREFS];
@@ -198,7 +198,7 @@ parse_mime (char *file)
     size_t n;
     struct stat statbuf;
 
-    bogus_mp_content = 0;
+    bogus_mp_content = false;
 
     /*
      * Check if file is actually standard input
@@ -1223,7 +1223,7 @@ end_part:
     if (! suppress_bogus_mp_content_warning) {
         inform("bogus multipart content in message %s", ct->c_file);
     }
-    bogus_mp_content = 1;
+    bogus_mp_content = true;
 
     if (!inout && part) {
 	p = part->mp_part;

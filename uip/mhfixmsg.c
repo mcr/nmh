@@ -302,8 +302,8 @@ main (int argc, char **argv) {
         fclose (fp);
     }
 
-    suppress_bogus_mp_content_warning = skip_mp_cte_check = 1;
-    suppress_extraneous_trailing_semicolon_warning = 1;
+    suppress_bogus_mp_content_warning = skip_mp_cte_check = true;
+    suppress_extraneous_trailing_semicolon_warning = true;
 
     if (! context_find ("path")) {
         free (path ("./", TFOLDER));
