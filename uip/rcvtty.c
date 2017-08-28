@@ -59,11 +59,6 @@ static char *form = NULL;
 static char *format = NULL;
 
 /*
- * external prototypes
- */
-char *getusername(void);
-
-/*
  * static prototypes
  */
 static void alrmser (int);
