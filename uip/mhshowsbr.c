@@ -32,7 +32,7 @@ char *progsw = NULL;
 int nomore   = 0;
 char *formsw = NULL;
 
-/* for output markerss and headers */
+/* for output markers and headers */
 char *folder = NULL;
 char *markerform;
 char *headerform;
