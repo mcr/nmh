@@ -97,8 +97,5 @@ intrser (int i)
 {
     NMH_UNUSED (i);
 
-    /*
-     * should this be siglongjmp?
-     */
     siglongjmp (sigenv, 1);
 }
