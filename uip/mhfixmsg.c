@@ -62,13 +62,6 @@ int debugsw; /* Needed by mhparse.c. */
 
 #define quitser pipeser
 
-/* mhparse.c */
-extern int skip_mp_cte_check;                 /* flag to InitMultiPart */
-extern int suppress_bogus_mp_content_warning; /* flag to InitMultiPart */
-extern int bogus_mp_content;                  /* flag from InitMultiPart */
-/* flags to/from parse_header_attrs */
-extern int suppress_extraneous_trailing_semicolon_warning;
-
 /*
  * static prototypes
  */
