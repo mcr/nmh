@@ -51,7 +51,6 @@ DEFINE_SWITCH_ARRAY(MHSTORE, switches);
 
 /* mhparse.c */
 int debugsw = 0;
-CT parse_mime (char *);
 
 /*
  * static prototypes
