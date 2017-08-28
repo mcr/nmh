@@ -1646,8 +1646,7 @@ mhldone (int status)
     exitstat = status;
     if (mhl_action)
 	longjmp (mhlenv, DONE);
-    else
-	done (exitstat);
+    done (exitstat);
 }
 
 
