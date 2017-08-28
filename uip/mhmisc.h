@@ -12,3 +12,10 @@ int is_inline(CT) PURE;
 int make_intermediates(char *);
 void content_error(char *, CT, char *, ...) CHECK_PRINTF(3, 4);
 void flush_errors(void);
+
+extern int npart;
+extern int ntype;
+extern char *parts[NPARTS + 1];
+extern char *types[NTYPES + 1];
+
+extern int userrs;

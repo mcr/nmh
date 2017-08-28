@@ -76,13 +76,6 @@ DEFINE_SWITCH_ARRAY(MHN, switches);
 #undef X
 
 
-/* mhmisc.c */
-extern int npart;
-extern int ntype;
-extern char *parts[NPARTS + 1];
-extern char *types[NTYPES + 1];
-extern int userrs;
-
 int debugsw = 0;
 int verbosw = 0;
 

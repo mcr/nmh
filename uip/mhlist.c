@@ -50,14 +50,6 @@ DEFINE_SWITCH_ENUM(MHLIST);
 DEFINE_SWITCH_ARRAY(MHLIST, switches);
 #undef X
 
-
-/* mhmisc.c */
-extern int npart;
-extern int ntype;
-extern char *parts[NPARTS + 1];
-extern char *types[NTYPES + 1];
-extern int userrs;
-
 /* mhparse.c */
 extern char *preferred_types[];
 extern  char *preferred_subtypes[];
