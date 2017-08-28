@@ -367,6 +367,7 @@ noinst_HEADERS = \
     sbr/makedir.h \
     sbr/message_id.h \
     sbr/mime_type.h \
+    sbr/read_line.h \
     sbr/terminal.h \
     sbr/unquote.h \
     thirdparty/jsmn/jsmn.h \

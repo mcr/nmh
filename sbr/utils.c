@@ -12,6 +12,7 @@
 #include "makedir.h"
 #include <fcntl.h>
 #include <limits.h>
+#include "read_line.h"
 
 extern char *mhdocdir;
 

@@ -119,13 +119,6 @@ struct msgs *folder_read (char *name, int lockflag);
 struct msgs *folder_realloc (struct msgs *, int, int);
 
 /*
- * Flush standard output, read a line from standard input into a static buffer,
- * zero out the newline, and return a pointer to the buffer.
- * On error, return NULL.
- */
-const char *read_line(void);
-
-/*
  * Print null-terminated PROMPT to and flush standard output.  Read answers from
  * standard input until one matches an entry in SWITCHES.  When one matches,
  * return its swret field.  Return 0 on EOF.

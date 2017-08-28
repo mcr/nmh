@@ -10,6 +10,7 @@
 #include "../sbr/m_maildir.h"
 #include "../sbr/makedir.h"
 #include <pwd.h>				/* structure for getpwuid() results */
+#include "../sbr/read_line.h"
 
 #define INSTALLMH_SWITCHES \
     X("auto", 0, AUTOSW) \
