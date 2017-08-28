@@ -50,7 +50,7 @@ read_switch_multiword (const char *prompt, const struct swit *ansp)
 		 * then just return.
 		 */
 
-		else if (ferror(stdin)) {
+		if (ferror(stdin)) {
 		    if (errno == EINTR) {
 		    	clearerr(stdin);
 			continue;
@@ -58,14 +58,11 @@ read_switch_multiword (const char *prompt, const struct swit *ansp)
 		    fprintf(stderr, "\nError %s during read\n",
 		    	    strerror(errno));
 		    siglongjmp (sigenv, 1);
-		} else {
-		    /*
-		     * Just for completeness's sake ...
-		     */
-
-		    fprintf(stderr, "\nUnknown problem in getchar()\n");
-		    siglongjmp (sigenv, 1);
 		}
+
+                /* Just for completeness's sake... */
+                fprintf(stderr, "\nUnknown problem in getchar()\n");
+                siglongjmp(sigenv, 1);
 	    }
 	    if (cp < &ansbuf[sizeof ansbuf - 1])
 		*cp++ = i;
