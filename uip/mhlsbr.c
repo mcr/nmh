@@ -327,8 +327,8 @@ static void putch (char, unsigned long);
 static void intrser (int);
 static void pipeser (int);
 static void quitser (int);
-static void mhladios (char *, char *, ...) CHECK_PRINTF(2, 3);
-static void mhldone (int);
+static void mhladios (char *, char *, ...) CHECK_PRINTF(2, 3) NORETURN;
+static void mhldone (int) NORETURN;
 static void filterbody (struct mcomp *, char *, int, int,
                         m_getfld_state_t);
 static void compile_formatfield(struct mcomp *);
@@ -360,20 +360,16 @@ mhl (int argc, char **argv)
 		case AMBIGSW: 
 		    ambigsw (cp, mhlswitches);
 		    mhldone (1);
-		    /* FALLTHRU */
 		case UNKWNSW: 
 		    mhladios (NULL, "-%s unknown\n", cp);
-		    /* FALLTHRU */
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] [files ...]", invo_name);
 		    print_help (buf, mhlswitches, 1);
 		    mhldone (0);
-		    /* FALLTHRU */
 		case VERSIONSW:
 		    print_version(invo_name);
 		    mhldone (0);
-		    /* FALLTHRU */
 
 		case BELLSW: 
 		    bellflg = 1;
