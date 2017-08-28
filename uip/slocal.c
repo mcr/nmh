@@ -1085,7 +1085,7 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 	    }
 #endif /* TIOCNOTTY */
 
-	    setpgid ((pid_t) 0, getpid ());	/* put in own process group */
+            setpgid(0, getpid());	/* put in own process group */
 
 	    *environ = NULL;
 	    setenv("USER", pw->pw_name, 1);

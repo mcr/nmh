@@ -232,7 +232,7 @@ message_fd (char **vec)
     if (dup2 (fd, 1) == NOTOK || dup2 (fd, 2) == NOTOK)
 	_exit (-1);
     closefds (3);
-    setpgid ((pid_t) 0, getpid ());	/* put in own process group */
+    setpgid(0, getpid());	/* put in own process group */
     if (execvp (vec[0], vec) == NOTOK) {
         _exit (-1);
     }
