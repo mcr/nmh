@@ -841,7 +841,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	case FT_LV_RCLOCK:
 	    if ((value = fmt->f_comp->c_tws->tw_clock) == 0)
 		value = dmktime(fmt->f_comp->c_tws);
-	    value = time((time_t *) 0) - value;
+	    value = time(NULL) - value;
 	    break;
 	case FT_LV_DAYF:
 	    if (!(((tws = fmt->f_comp->c_tws)->tw_flags) & (TW_SEXP|TW_SIMP)))

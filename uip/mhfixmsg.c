@@ -298,7 +298,7 @@ main (int argc, char **argv) {
      * Read the standard profile setup
      */
     if ((fp = fopen (cp = etcpath ("mhn.defaults"), "r"))) {
-        readconfig ((struct node **) 0, fp, cp, 0);
+        readconfig(NULL, fp, cp, 0);
         fclose (fp);
     }
 

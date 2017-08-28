@@ -311,7 +311,7 @@ do_cache:
      */
     if ((cp = getenv ("MHN"))) {
 	if ((fp = fopen (cp, "r"))) {
-	    readconfig ((struct node **) 0, fp, cp, 0);
+	    readconfig(NULL, fp, cp, 0);
 	    fclose (fp);
 	} else {
 	    admonish ("", "unable to read $MHN profile (%s)", cp);
@@ -322,7 +322,7 @@ do_cache:
      * Read the standard profile setup
      */
     if ((fp = fopen (cp = etcpath ("mhn.defaults"), "r"))) {
-	readconfig ((struct node **) 0, fp, cp, 0);
+	readconfig(NULL, fp, cp, 0);
 	fclose (fp);
     }
 

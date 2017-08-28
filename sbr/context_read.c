@@ -140,7 +140,7 @@ context_read (void)
     ctxpath = getcpy (m_maildir (cp));
 
     if ((ib = lkfopendata (ctxpath, "r", &failed_to_lock))) {
-	readconfig ((struct node **) 0, ib, cp, 1);
+	readconfig(NULL, ib, cp, 1);
 	lkfclosedata (ib, ctxpath);
     }
 }

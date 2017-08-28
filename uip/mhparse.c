@@ -2326,7 +2326,7 @@ openExternal (CT ct, CT cb, CE ce, char **file, int *fd)
 	goto ready_already;
     }
 
-    if (find_cache (ct, rcachesw, (int *) 0, cb->c_id,
+    if (find_cache(ct, rcachesw, NULL, cb->c_id,
 		cachefile, sizeof(cachefile)) != NOTOK) {
 	if ((ce->ce_fp = fopen (cachefile, "r"))) {
 	    ce->ce_file = mh_xstrdup(cachefile);

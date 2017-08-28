@@ -354,7 +354,7 @@ lookup(char *name)
 
 	t++;
     }
-    return (struct ftable *) 0;
+    return NULL;
 }
 
 
@@ -572,7 +572,7 @@ do_name(char *sp, int preprocess)
     case FT_GETMYMBOX:
     case FT_GETMYADDR:
 	if (!primed) {
-	    ismymbox ((struct mailname *) 0);
+	    ismymbox(NULL);
 	    primed++;
 	}
 	/* FALLTHRU */
@@ -732,7 +732,7 @@ do_func(char *sp)
     }
 
     case TF_NOW:
-	LV(t->f_type, time((time_t *) 0));
+	LV(t->f_type, time(NULL));
 	break;
 
     case TF_EXPR_SV:

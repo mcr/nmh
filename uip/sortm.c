@@ -43,7 +43,7 @@ struct smsg {
 static struct smsg *smsgs;
 int nmsgs;
 
-char *subjsort = (char *) 0;    /* sort on subject if != 0 */
+char *subjsort;                 /* sort on subject if != 0 */
 time_t datelimit = 0;
 int submajor = 0;		/* if true, sort on subject-major */
 int verbose;

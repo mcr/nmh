@@ -289,7 +289,7 @@ main (int argc, char **argv)
      */
     if ((cp = getenv ("MHBUILD"))) {
 	if ((fp = fopen (cp, "r"))) {
-	    readconfig ((struct node **) 0, fp, cp, 0);
+	    readconfig(NULL, fp, cp, 0);
 	    fclose (fp);
 	} else {
 	    admonish ("", "unable to read $MHBUILD profile (%s)", cp);
@@ -300,7 +300,7 @@ main (int argc, char **argv)
      * Read the standard profile setup
      */
     if ((fp = fopen (cp = etcpath ("mhn.defaults"), "r"))) {
-	readconfig ((struct node **) 0, fp, cp, 0);
+	readconfig(NULL, fp, cp, 0);
 	fclose (fp);
     }
 

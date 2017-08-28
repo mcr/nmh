@@ -140,7 +140,7 @@ annolist(char *file, char *comp, char *text, int number)
 	    if (number)
 		(void)printf("%d\t", ++count);
 
-	    if (text == NULL && (sp = strrchr(cp, '/')) != (char *)0)
+	    if (text == NULL && (sp = strrchr(cp, '/')))
 		cp = sp + 1;
 
             puts(cp);
