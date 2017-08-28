@@ -15,6 +15,7 @@
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
+#include "mhmisc.h"
 #include "../sbr/m_maildir.h"
 #include "mhfree.h"
 
@@ -72,11 +73,6 @@ int debugsw = 0;
 
 /* mhparse.c */
 CT parse_mime (char *);
-
-/* mhmisc.c */
-int part_ok (CT);
-int type_ok (CT, int);
-void flush_errors (void);
 
 /*
  * static prototypes

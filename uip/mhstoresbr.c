@@ -14,6 +14,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include "mhmisc.h"
 #include "mhshowsbr.h"
 #include "../sbr/m_maildir.h"
 #include "../sbr/m_mktemp.h"
@@ -79,11 +80,6 @@ mhstoreinfo_files_not_clobbered (const mhstoreinfo_t info) {
  */
 typedef int (*qsort_comp) (const void *, const void *);
 
-
-/* mhmisc.c */
-int part_ok (CT);
-int type_ok (CT, int);
-void flush_errors (void);
 
 /*
  * static prototypes

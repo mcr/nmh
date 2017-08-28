@@ -13,6 +13,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include "mhmisc.h"
 #include <h/mhcachesbr.h>
 #include "../sbr/m_mktemp.h"
 #include "mhfree.h"
@@ -105,11 +106,6 @@ static struct k2v EncodingType[] = {
     { NULL,			0 },
 };
 
-
-/* mhmisc.c */
-int part_ok (CT);
-int type_ok (CT, int);
-void content_error (char *, CT, char *, ...);
 
 /*
  * static prototypes

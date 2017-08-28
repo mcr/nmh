@@ -14,6 +14,7 @@
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
+#include "mhmisc.h"
 #include "../sbr/lock_file.h"
 #include "../sbr/m_mktemp.h"
 
@@ -39,13 +40,6 @@ int wcachesw = CACHE_ASK;
  */
 char *cache_public;
 char *cache_private;
-
-
-/* mhmisc.c */
-int part_ok (CT);
-int type_ok (CT, int);
-void content_error (char *, CT, char *, ...);
-void flush_errors (void);
 
 /*
  * static prototypes

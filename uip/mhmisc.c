@@ -10,6 +10,7 @@
 #include <h/mhparse.h>
 #include <h/utils.h>
 #include "../sbr/makedir.h"
+#include "mhmisc.h"
 
 extern int debugsw;
 
@@ -24,16 +25,6 @@ char *types[NTYPES + 1];
 int userrs = 0;
 
 static char *errs = NULL;
-
-
-/*
- * prototypes
- */
-int part_ok (CT) PURE;
-int part_exact(CT ct) PURE;
-int type_ok (CT, int);
-void content_error (char *, CT, char *, ...) CHECK_PRINTF(3, 4);
-void flush_errors (void);
 
 
 int
@@ -103,7 +94,7 @@ type_ok (CT ct, int sP)
 
 
 /*
- * Returns true if this content is marked as "inline".
+ * Returns true if the content has a disposition of "inline".
  *
  * Technically we should check parent content to see if they have
  * disposition to use as a default, but we don't right now.  Maybe

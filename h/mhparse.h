@@ -368,16 +368,6 @@ char *content_charset (CT);
 void reverse_alternative_parts (CT);
 
 /*
- * Given a content structure, return true if the content has a disposition
- * of "inline".
- *
- * Arguments are:
- *
- * ct		- Content structure to examine
- */
-int is_inline(CT ct) PURE;
-
-/*
  * Given a list of messages, display information about them on standard
  * output.
  *

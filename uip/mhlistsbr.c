@@ -13,11 +13,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
-
-/* mhmisc.c */
-int part_ok (CT);
-int type_ok (CT, int);
-void flush_errors (void);
+#include "mhmisc.h"
 
 /*
  * static prototypes

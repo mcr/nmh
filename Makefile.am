@@ -370,6 +370,7 @@ noinst_HEADERS = \
     sbr/unquote.h \
     thirdparty/jsmn/jsmn.h \
     uip/mhfree.h \
+    uip/mhmisc.h \
     uip/mhoutsbr.h \
     uip/mhshowsbr.h \
     #

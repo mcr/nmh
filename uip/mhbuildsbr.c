@@ -22,6 +22,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include "mhmisc.h"
 #include "../sbr/m_mktemp.h"
 #include "../sbr/message_id.h"
 #include "../sbr/mime_type.h"
@@ -54,9 +55,6 @@ typedef struct convert_list {
     struct convert_list *next;
 } convert_list;
 
-
-/* mhmisc.c */
-void content_error (char *, CT, char *, ...);
 
 /* mhcachesbr.c */
 int find_cache (CT, int, int *, char *, char *, int);

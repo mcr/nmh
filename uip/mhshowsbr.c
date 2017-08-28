@@ -15,6 +15,7 @@
 #include <h/mhparse.h>
 #include <h/fmt_scan.h>
 #include <h/utils.h>
+#include "mhmisc.h"
 #include "mhshowsbr.h"
 #include "../sbr/m_mktemp.h"
 #ifdef HAVE_ICONV
@@ -39,13 +40,6 @@ char *markerform;
 char *headerform;
 int headersw = -1;
 
-
-/* mhmisc.c */
-int part_ok (CT);
-int part_exact (CT);
-int type_ok (CT, int);
-void content_error (char *, CT, char *, ...);
-void flush_errors (void);
 
 /*
  * static prototypes

@@ -14,6 +14,7 @@
 #include "../sbr/m_maildir.h"
 #include "../sbr/m_mktemp.h"
 #include "../sbr/mime_type.h"
+#include "mhmisc.h"
 #include "mhfree.h"
 #include "mhoutsbr.h"
 #include "mhshowsbr.h"
@@ -67,9 +68,6 @@ extern int suppress_bogus_mp_content_warning; /* flag to InitMultiPart */
 extern int bogus_mp_content;                  /* flag from InitMultiPart */
 /* flags to/from parse_header_attrs */
 extern int suppress_extraneous_trailing_semicolon_warning;
-
-/* mhmisc.c */
-void flush_errors (void);
 
 /*
  * static prototypes
