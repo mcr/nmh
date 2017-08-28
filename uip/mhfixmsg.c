@@ -85,8 +85,8 @@ typedef struct fix_transformations {
     char *textcharset;
 } fix_transformations;
 
-int mhfixmsgsbr (CT *, char *, const fix_transformations *, FILE **, char *,
-                 FILE **);
+static int mhfixmsgsbr (CT *, char *, const fix_transformations *,
+    FILE **, char *, FILE **);
 static int fix_boundary (CT *, int *);
 static int copy_input_to_output (const char *, FILE *, const char *, FILE *);
 static int get_multipart_boundary (CT, char **);
@@ -521,7 +521,7 @@ main (int argc, char **argv) {
 /*
  * Apply transformations to one message.
  */
-int
+static int
 mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
              FILE **infp, char *outfile, FILE **outfp) {
     /* Store input filename in case one of the transformations, i.e.,
