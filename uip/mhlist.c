@@ -63,9 +63,6 @@ int debugsw = 0;
 
 #define	quitser	pipeser
 
-/* mhparse.c */
-CT parse_mime (char *);
-
 /*
  * static prototypes
  */

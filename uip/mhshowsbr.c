@@ -23,8 +23,6 @@
 #endif /* ! HAVE_ICONV */
 
 extern int debugsw;
-extern int npart;
-extern int ntype;
 
 int nolist   = 0;
 
