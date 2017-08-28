@@ -20,12 +20,6 @@ struct aka *akatail = NULL;
 /*
  * prototypes
  */
-int alias (char *);
-int akvisible (void);
-char *akresult (struct aka *);
-char *akvalue (char *);
-char *akerror (int);
-
 static  char *akval (struct aka *, char *);
 static bool aleq (char *, char *) PURE;
 static char *scanp (char *) PURE;
