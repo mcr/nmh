@@ -23,8 +23,8 @@
 #   define HAVE_MKSTEMPS 0
 #endif /* ! HAVE_MKSTEMPS */
 
-char *build_template(const char *, const char *, const char *);
-void process_args(int, char **, const char **, const char **, const char **);
+static char *build_template(const char *, const char *, const char *);
+static void process_args(int, char **, const char **, const char **, const char **);
 
 /*
  * Use a template of the form:
@@ -66,7 +66,7 @@ main(int argc, char *argv[]) {
 }
 
 
-char *
+static char *
 build_template(const char *directory, const char *prefix, const char *suffix) {
     const char pattern[] = "XXXXXX";
     size_t len, directory_len, pathsep_len, prefix_len, suffix_len;
@@ -143,7 +143,7 @@ DEFINE_SWITCH_ENUM(MHFIXMSG);
 DEFINE_SWITCH_ARRAY(MHFIXMSG, switches);
 #undef X
 
-void
+static void
 process_args(int argc, char **argv, const char **directory,
              const char **prefix, const char **suffix) {
     char **argp, **arguments, *cp, buf[100];
@@ -207,7 +207,7 @@ process_args(int argc, char **argv, const char **directory,
     }
 }
 #else  /* ! NMH */
-void
+static void
 process_args(int argc, char **argv, const char **directory,
              const char **prefix, const char **suffix) {
 #   if HAVE_MKSTEMPS

@@ -8,8 +8,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-static void
-escape_component (char *name, size_t namesize, char *chars);
+static void escape_component (char *name, size_t namesize, char *chars);
 
 
 void
@@ -33,7 +32,7 @@ escape_local_part (char *name, size_t namesize) {
    argument is modified in place.  Its size is specified by the
    namesize argument.  The need_escape argument is a string of
    characters that require that name be escaped. */
-void
+static void
 escape_component (char *name, size_t namesize, char *chars_to_escape) {
     /* If name contains any chars_to_escape:
        1) enclose it in ""
