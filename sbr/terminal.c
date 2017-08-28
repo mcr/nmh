@@ -19,6 +19,8 @@
 # include <sys/ptem.h>
 #endif
 
+#include "terminal.h"
+
 static int initLI = 0;
 static int initCO = 0;
 
@@ -148,8 +150,19 @@ SOprintf (char *fmt, ...)
 }
 
 /*
- * Return the specified capability as a string that has already been
- * processed with tputs().
+ * Get a string from the terminfo database for the current terminal.
+ *
+ * Retrieve the specified terminfo capability and return a string that
+ * can be output to the terminal.  The string returned has already been
+ * processed by tputs(), so it is safe to output directly.  The return
+ * value of this function is valid until the next call.
+ *
+ * Arguments:
+ *
+ * capability	- The name of the terminfo capability (see terminfo(5)).
+ *
+ * Returns a tputs-processed string, or NULL if terminal initialization failed
+ * or the capability wasn't found.
  */
 
 char *
@@ -178,9 +191,22 @@ get_term_stringcap(char *capability)
 }
 
 /*
- * Return a parameterized terminfo capability
+ * Get a parameterized string from the terminfo database for the current
+ * terminal.
+ *
+ * We don't yet have a standardized tparm() that will take a stdarg
+ * argument.  Right now we don't want many parameters, so we only
+ * take two.  Everything gets passed to tparm() as-is.  If we need
+ * a capability with more arguments, we'll just add more later.
+ *
+ * Arguments:
+ *
+ * capability	- The name of the terminfo capability (see terminfo(5)).
+ * arg1..argN	- Arguments 1-N.
+ *
+ * Returns a tparm and tputs-processed string, or NULL if there was a problem
+ * initialising the terminal or retrieving the capability.
  */
-
 char *
 get_term_stringparm(char *capability, long arg1, long arg2)
 {
@@ -209,9 +235,18 @@ get_term_stringparm(char *capability, long arg1, long arg2)
 }
 
 /*
- * Return the value of the specified numeric capability
+ * Get a number from the terminfo database for the current terminal.
+ *
+ * Retrieve the specified terminfo capability and return the numeric
+ * value of that capability from the terminfo database.
+ *
+ * Arguments:
+ *
+ * capability	- The name of the terminfo capability (see terminfo(5)).
+ *
+ * Returns the output of tigetnum() for that capability, or -1 if it was
+ * unable to initialize the terminfo database.
  */
-
 int
 get_term_numcap(char *capability)
 {

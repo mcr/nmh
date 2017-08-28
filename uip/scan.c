@@ -12,6 +12,7 @@
 #include <h/mts.h>
 #include <h/utils.h>
 #include "../sbr/m_maildir.h"
+#include "../sbr/terminal.h"
 
 #define SCAN_SWITCHES \
     X("clear", 0, CLRSW) \

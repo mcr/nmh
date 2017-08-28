@@ -10,6 +10,7 @@
 #include <h/fmt_scan.h>
 #include <h/mts.h>
 #include <h/utils.h>
+#include "../sbr/terminal.h"
 
 #define	NADDRS	100
 

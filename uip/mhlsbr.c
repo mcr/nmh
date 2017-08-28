@@ -14,6 +14,7 @@
 #include "../sbr/m_popen.h"
 #include <setjmp.h>
 #include <sys/types.h>
+#include "../sbr/terminal.h"
 
 /*
  * MAJOR BUG:

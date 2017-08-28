@@ -171,57 +171,6 @@ char *getcpy(const char *str);
 char *get_default_editor(void);
 char *getfolder(int) PURE;
 
-/*
- * Get a string from the terminfo database for the current terminal.
- *
- * Retrieve the specified terminfo capability and return a string that
- * can be output to the terminal.  The string returned has already been
- * processed by tputs(), so it is safe to output directly.  The return
- * value of this function is valid until the next call.
- *
- * Arguments:
- *
- * capability	- The name of the terminfo capability (see terminfo(5)).
- *
- * Returns a tputs-processed string, or NULL if terminal initialization failed
- * or the capability wasn't found.
- */
-char *get_term_stringcap(char *capability);
-
-/*
- * Get a parameterized string from the terminfo database for the current
- * terminal.
- *
- * We don't yet have a standardized tparm() that will take a stdarg
- * argument.  Right now we don't want many parameters, so we only
- * take two.  Everything gets passed to tparm() as-is.  If we need
- * a capability with more arguments, we'll just add more later.
- *
- * Arguments:
- *
- * capability	- The name of the terminfo capability (see terminfo(5)).
- * arg1..argN	- Arguments 1-N.
- *
- * Returns a tparm and tputs-processed string, or NULL if there was a problem
- * initialising the terminal or retrieving the capability.
- */
-char *get_term_stringparm(char *capability, long arg1, long arg2);
-
-/*
- * Get a number from the terminfo database for the current terminal.
- *
- * Retrieve the specified terminfo capability and return the numeric
- * value of that capability from the terminfo database.
- *
- * Arguments:
- *
- * capability	- The name of the terminfo capability (see terminfo(5)).
- *
- * Returns the output of tigetnum() for that capability, or -1 if it was
- * unable to initialize the terminfo database.
- */
-int get_term_numcap(char *capability);
-
 int m_atoi (char *) PURE;
 char *m_backup (const char *);
 int m_convert (struct msgs *, char *);
@@ -240,10 +189,6 @@ char *m_name (int);
 void m_unknown(m_getfld_state_t *, FILE *);
 void m_unknown2(m_getfld_state_t *);
 
-/*
- * Clear the screen, using the appropriate entry from the terminfo database
- */
-void nmh_clear_screen(void);
 char *nmh_getpass(const char *);
 char *new_fs (char *, char *, char *);
 char *path(char *, int);
@@ -380,12 +325,9 @@ int mhlsbr(int, char **, FILE *(*)(char *));
 int distout (char *, char *, char *);
 void replout (FILE *, char *, char *, struct msgs *, int,
 	int, char *, char *, char *, int);
-int sc_length(void);
-int sc_width(void);
 int build_form (char *, char *, int *, char *, char *, char *, char *,
 		char *, char *);
 int sendsbr (char **, int, char *, char *, struct stat *, int, const char *);
-int SOprintf (char *, ...) CHECK_PRINTF(1, 2);
 int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);
 int WhatNow(int, char **) NORETURN;
