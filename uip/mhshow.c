@@ -67,11 +67,6 @@ DEFINE_SWITCH_ARRAY(MHSHOW, switches);
 #undef X
 
 
-/* mhparse.c */
-extern char *preferred_types[];
-extern  char *preferred_subtypes[];
-extern int npreferred;
-
 int debugsw = 0;
 int verbosw = 0;
 

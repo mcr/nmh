@@ -2,8 +2,6 @@
  *           -- (mhparse.c/mhbuildsbr.c)
  */
 
-#define	NPREFS	20
-
 /*
  * Abstract type for header fields
  */
@@ -520,3 +518,8 @@ mhstoreinfo_t mhstoreinfo_create(CT *, char *, const char *, int, int);
 int mhstoreinfo_files_not_clobbered(const mhstoreinfo_t) PURE;
 void mhstoreinfo_free(mhstoreinfo_t);
 void store_all_messages (mhstoreinfo_t);
+
+#define	NPREFS	20
+extern char *preferred_types[NPREFS];
+extern char *preferred_subtypes[NPREFS];
+extern int npreferred;

@@ -45,8 +45,8 @@ int suppress_extraneous_trailing_semicolon_warning;
 int suppress_multiple_mime_version_warning = 1;
 
 /* list of preferred type/subtype pairs, for -prefer */
-char *preferred_types[NPREFS],
-     *preferred_subtypes[NPREFS];
+char *preferred_types[NPREFS];
+char *preferred_subtypes[NPREFS];
 int npreferred;
 
 

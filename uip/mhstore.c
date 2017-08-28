@@ -47,11 +47,6 @@ DEFINE_SWITCH_ARRAY(MHSTORE, switches);
 #undef X
 
 
-/* mhparse.c */
-extern char *preferred_types[];
-extern  char *preferred_subtypes[];
-extern int npreferred;
-
 #define	quitser	pipeser
 
 /* mhparse.c */

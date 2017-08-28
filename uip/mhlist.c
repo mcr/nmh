@@ -50,11 +50,6 @@ DEFINE_SWITCH_ENUM(MHLIST);
 DEFINE_SWITCH_ARRAY(MHLIST, switches);
 #undef X
 
-/* mhparse.c */
-extern char *preferred_types[];
-extern  char *preferred_subtypes[];
-extern int npreferred;
-
 /*
  * This is currently needed to keep mhparse happy.
  * This needs to be changed.
