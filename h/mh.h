@@ -47,6 +47,7 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define MALLOC __attribute__((malloc))
 #define NONNULL(...) __attribute__((nonnull(__VA_ARGS__)))
 #define PURE __attribute__((pure))
+#define ENDNULL __attribute__((sentinel))
 #define NMH_UNUSED(i) (void) i
 #else
 #define NORETURN
@@ -56,6 +57,7 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define MALLOC
 #define NONNULL(...)
 #define PURE
+#define ENDNULL
 #define NMH_UNUSED(i) i
 #endif
 

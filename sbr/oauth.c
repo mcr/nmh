@@ -125,8 +125,8 @@ struct curl_ctx {
     char res_body[RESPONSE_BODY_MAX];
 };
 
-static boolean get_json_strings(const char *, size_t, FILE *, ...);
-static boolean make_query_url(char *, size_t, CURL *, const char *, ...);
+static boolean get_json_strings(const char *, size_t, FILE *, ...) ENDNULL;
+static boolean make_query_url(char *, size_t, CURL *, const char *, ...) ENDNULL;
 static boolean post(struct curl_ctx *, const char *, const char *);
 
 int

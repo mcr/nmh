@@ -44,7 +44,7 @@ char **brkstring (char *, char *, char *) NONNULL(1);
 int check_charset (char *, int);
 int client(char *, char *, char *, int, int);
 void closefds(int);
-char *concat (const char *, ...);
+char *concat (const char *, ...) ENDNULL;
 int context_del (char *);
 char *context_find (const char *) PURE;
 char *context_find_by_type (const char *, const char *, const char *);
