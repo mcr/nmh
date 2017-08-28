@@ -397,8 +397,7 @@ mhl (int argc, char **argv)
 		case SLEEPSW:
 		    if (!(cp = *argp++) || *cp == '-')
 			mhladios (NULL, "missing argument to %s", argp[-2]);
-		    else
-			sleepsw = atoi (cp);/* ZERO ok! */
+                    sleepsw = atoi (cp);/* ZERO ok! */
 		    continue;
 
 		case PROGSW:
@@ -420,13 +419,13 @@ mhl (int argc, char **argv)
 		case LENSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			mhladios (NULL, "missing argument to %s", argp[-2]);
-		    else if ((length = atoi (cp)) < 1)
+		    if ((length = atoi (cp)) < 1)
 			mhladios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 		case WIDTHSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			mhladios (NULL, "missing argument to %s", argp[-2]);
-		    else if ((width = atoi (cp)) < 1)
+		    if ((width = atoi (cp)) < 1)
 			mhladios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 
@@ -437,13 +436,13 @@ mhl (int argc, char **argv)
 		case ISSUESW:
 		    if (!(cp = *argp++) || *cp == '-')
 			mhladios (NULL, "missing argument to %s", argp[-2]);
-		    else if ((issue = atoi (cp)) < 1)
+		    if ((issue = atoi (cp)) < 1)
 			mhladios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 		case VOLUMSW:
 		    if (!(cp = *argp++) || *cp == '-')
 			mhladios (NULL, "missing argument to %s", argp[-2]);
-		    else if ((volume = atoi (cp)) < 1)
+		    if ((volume = atoi (cp)) < 1)
 			mhladios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 
