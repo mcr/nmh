@@ -2,8 +2,6 @@
  *           -- (mhparse.c/mhbuildsbr.c)
  */
 
-#define	NPARTS	50
-#define	NTYPES	20
 #define	NPREFS	20
 
 /*

@@ -13,6 +13,9 @@ int make_intermediates(char *);
 void content_error(char *, CT, char *, ...) CHECK_PRINTF(3, 4);
 void flush_errors(void);
 
+#define	NPARTS 50
+#define	NTYPES 20
+
 extern int npart;
 extern int ntype;
 extern char *parts[NPARTS + 1];
