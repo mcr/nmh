@@ -44,7 +44,7 @@ makedir (const char *dir)
     c = strncpy(path, dir, sizeof(path));
 
     while (!had_an_error && (c = strchr((c + 1), '/')) != NULL) {
-        *c = (char)0;
+        *c = '\0';
         if (access(path, X_OK)) {
             if (errno != ENOENT){
                 advise (dir, "unable to create directory");
