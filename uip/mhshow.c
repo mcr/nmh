@@ -42,6 +42,7 @@
     X("part number", 0, PARTSW) \
     X("type content", 0, TYPESW) \
     X("prefer content", 0, PREFERSW) \
+    X("noprefer", 0, NPREFERSW) \
     X("rcache policy", 0, RCACHESW) \
     X("wcache policy", 0, WCACHESW) \
     X("version", 0, VERSIONSW) \
@@ -191,6 +192,10 @@ do_cache:
 		cp = strchr(cp, '/');
 		if (cp) *cp++ = '\0';
 		preferred_subtypes[npreferred++] = cp;
+		continue;
+
+	    case NPREFERSW:
+		npreferred = 0;
 		continue;
 
 	    case FILESW:

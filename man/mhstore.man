@@ -25,6 +25,7 @@ mhstore \- store contents of nmh MIME messages into files
 .RB [ \-prefer
 .IR content ]
 \&...
+.RB [ \-noprefer ]
 .RB [ \-auto " | " \-noauto ]
 .RB [ \-clobber
 .IR always " | " auto " | " suffix " | " ask " | " never ]
@@ -168,6 +169,12 @@ and
 .IR mhshow (1)
 for more information on
 .BR \-prefer.
+.PP
+The
+.B \-noprefer
+switch will cancel any previous
+.B \-prefer
+switches.
 .SS "Checking the Contents"
 The
 .B \-check

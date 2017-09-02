@@ -23,6 +23,7 @@ mhshow \- display nmh MIME messages
 .RB [ \-prefer
 .IR content ]
 \&...
+.RB [ \-noprefer ]
 .RB [ \-concat " | " \-noconcat ]
 .RB [ \-textonly " | " \-notextonly ]
 .RB [ \-inlineonly " | " \-noinlineonly ]
@@ -235,6 +236,12 @@ switches.  Since the last of multiple
 options "wins", a
 .B \-prefer
 on the command line will override any in a profile entry.
+.PP
+The
+.B \-noprefer
+switch will cancel any previous
+.B \-prefer
+switches.
 .SS "Unseen Sequence"
 If the profile entry \*(lqUnseen\-Sequence\*(rq is present and
 non-empty, then

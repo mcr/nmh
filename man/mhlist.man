@@ -23,6 +23,7 @@ mhlist \- list information about nmh MIME messages
 .RB [ \-prefer
 .IR content ]
 \&...
+.RB [ \-noprefer ]
 .RB [ \-headers " | " \-noheaders ]
 .RB [ \-realsize " | " \-norealsize ]
 .RB [ \-rcache
@@ -184,10 +185,17 @@ invoked with or without various
 .B \-prefer
 switches.
 The
+.B \-noprefer
+switch will cancel any previous
 .B \-prefer
-switch is functionally most important for
-.IR mhshow ,
-but is also implemented in
+switches.
+The
+.B \-prefer
+and
+.B \-noprefer
+switches are functionally most important for
+.BR mhshow ,
+but are also implemented in
 .B mhlist
 and
 .B mhstore
