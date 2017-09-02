@@ -174,7 +174,7 @@ the reverse order of their placement in the message.  The listing,
 therefore, is in decreasing order of preference, as defined in RFC
 2046.  The
 .B \-prefer
-switch can be used (one or more times, in order of descending
+switch can be used (one or more times, in order of ascending
 preference) to let MH know which content types from a
 multipart/alternative MIME part are preferred by the user, in order to
 override the default preference order.  Thus, when viewed by

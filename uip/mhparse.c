@@ -1367,7 +1367,7 @@ static void
 prefer_parts(CT ct)
 {
     int i;
-    for (i = npreferred-1; i >= 0; i--)
+    for (i = 0; i < npreferred; i++)
 	move_preferred_part(ct, preferred_types[i], preferred_subtypes[i]);
 }
 

@@ -158,6 +158,10 @@ but is also implemented in
 and
 .B mhstore
 to make common part-numbering possible across all three programs.
+The last of multiple
+.B \-prefer
+switches will have the highest priority.  This allows the command line
+switches to override profile entries.
 See
 .IR mhlist (1)
 and

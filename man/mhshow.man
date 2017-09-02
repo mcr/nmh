@@ -206,7 +206,7 @@ In the absence of
 will select the "best" displayable subpart from multipart/alternative
 content.  The
 .B \-prefer
-switch can be used (one or more times, in order of descending
+switch can be used (one or more times, in order of ascending
 preference) to let MH know which content types from a
 multipart/alternative MIME part are preferred by the user, in order to
 override the default selection for display.  For example, mail is
@@ -230,7 +230,11 @@ faithful" position.  Thus, when viewed by
 the ordering of multipart/alternative parts will appear to change when
 invoked with or without various
 .B \-prefer
-switches.
+switches.  Since the last of multiple 
+.B \-prefer
+options "wins", a
+.B \-prefer
+on the command line will override any in a profile entry.
 .SS "Unseen Sequence"
 If the profile entry \*(lqUnseen\-Sequence\*(rq is present and
 non-empty, then
