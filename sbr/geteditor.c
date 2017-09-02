@@ -20,7 +20,7 @@ get_default_editor(void)
 
     if (!(str = context_find("editor")) && !(str = getenv("VISUAL")) &&
     	!(str = getenv("EDITOR"))) {
-	str = DEFAULT_EDITOR;
+	str = "vi";
     }
 
     return (default_editor = str);

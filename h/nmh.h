@@ -83,4 +83,3 @@ ssize_t getline(char **lineptr, size_t *n, FILE *stream);
  */
 
 #define DEFAULT_PAGER "more"
-#define DEFAULT_EDITOR "vi"
