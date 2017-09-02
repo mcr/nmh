@@ -11,6 +11,7 @@
 #include "h/mh.h"
 #include "h/icalendar.h"
 #include "sbr/icalparse.h"
+#include "base64.h"
 
 static char *unfold (char *, size_t *);
 static void destroy_icallex(void);

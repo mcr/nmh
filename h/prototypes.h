@@ -325,39 +325,6 @@ int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);
 int WhatNow(int, char **) NORETURN;
 
-/* Includes trailing NUL */
-
-#define BASE64SIZE(x) ((((x + 2) / 3) * 4) + 1)
-
-/*
- * Copy data from one file to another, converting to base64-encoding.
- *
- * Arguments include:
- *
- * in		- Input filehandle (unencoded data)
- * out		- Output filename (base64-encoded data)
- * crlf		- If set, output encoded CRLF for every LF on input.
- *
- * Returns OK on success, NOTOK otherwise.
- */
-int writeBase64aux(FILE *in, FILE *out, int crlf);
-
-int writeBase64 (const unsigned char *, size_t, unsigned char *);
-int writeBase64raw (const unsigned char *, size_t, unsigned char *);
-
-/*
- * encoded      - the string to be decoded
- * decoded      - the decoded bytes
- * len          - number of decoded bytes
- * skip-crs     - non-zero for text content, and for which CR's should be
- *                skipped
- * digest       - for an MD5 digest, it can be null
- */
-int decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
-                  int skip_crs, unsigned char *digest);
-
-void hexify (const unsigned char *, size_t, char **);
-
 /*
  * credentials management
  */

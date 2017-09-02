@@ -9,6 +9,7 @@
 #include <h/mhparse.h>
 #include <h/addrsbr.h>
 #include <h/utils.h>
+#include "base64.h"
 #include "unquote.h"
 
 /*

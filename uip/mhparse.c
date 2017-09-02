@@ -20,6 +20,7 @@
 #ifdef HAVE_ICONV
 # include <iconv.h>
 #endif /* HAVE_ICONV */
+#include "../sbr/base64.h"
 
 
 extern int debugsw;

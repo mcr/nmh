@@ -12,6 +12,7 @@
 #include <h/oauth.h>
 #include <stdarg.h>
 #include <sys/select.h>
+#include "base64.h"
 
 #ifdef CYRUS_SASL
 #include <sasl/sasl.h>

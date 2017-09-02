@@ -15,6 +15,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include "mhoutsbr.h"
+#include "../sbr/base64.h"
 
 
 /*

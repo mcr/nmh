@@ -14,6 +14,7 @@
 #include <h/mhparse.h>
 #include <h/utils.h>
 #include "../sbr/m_mktemp.h"
+#include "../sbr/base64.h"
 
 #define VIAMAIL_SWITCHES \
     X("to mailpath", 0, TOSW) \

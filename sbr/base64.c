@@ -13,6 +13,17 @@
 static const char nib2b64[0x40+1] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
+/*
+ * Copy data from one file to another, converting to base64-encoding.
+ *
+ * Arguments include:
+ *
+ * in		- Input filehandle (unencoded data)
+ * out		- Output filename (base64-encoded data)
+ * crlf		- If set, output encoded CRLF for every LF on input.
+ *
+ * Returns OK on success, NOTOK otherwise.
+ */
 int
 writeBase64aux (FILE *in, FILE *out, int crlf)
 {
@@ -227,7 +238,13 @@ static const unsigned char b642nib[0x80] = {
 
 /*
  * Decode a base64 string.  The result, decoded, must be freed by the caller.
- * See description of arguments with declaration in h/prototypes.h.
+ *
+ * encoded      - the string to be decoded
+ * decoded      - the decoded bytes
+ * len          - number of decoded bytes
+ * skip-crs     - non-zero for text content, and for which CR's should be
+ *                skipped
+ * digest       - for an MD5 digest, it can be null
  */
 int
 decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
