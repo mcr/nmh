@@ -257,7 +257,8 @@ decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
                 }
                 if (skip  ||  (((unsigned char) *cp) & 0x80)  ||
                     (value = b642nib[((unsigned char) *cp) & 0x7f]) > 0x3f) {
-                    inform("invalid BASE64 encoding in %s", cp);
+                    inform("invalid base64 byte %#x: %.42s",
+                        *(unsigned char *)cp, cp);
                     charstring_free (decoded_c);
                     *decoded = NULL;
 
