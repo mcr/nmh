@@ -867,7 +867,7 @@ directive    ::=     "#" type "/" subtype
                          [ "<" id ">" ]
                          [ "[" description "]" ]
                          [ "{" disposition "}" ]
-			 [ "*8bit" | "*qp" | "*b64" ]
+                         [ "*8bit" | "*qp" | "*b64" ]
                          [ filename ]
                          EOL
 
@@ -877,7 +877,7 @@ directive    ::=     "#" type "/" subtype
                          [ "<" id ">" ]
                          [ "[" description "]" ]
                          [ "{" disposition "}" ]
-			 [ "*8bit" | "*qp" | "*b64" ]
+                         [ "*8bit" | "*qp" | "*b64" ]
                          external-parameters
                          EOL
 
@@ -909,7 +909,7 @@ plaintext    ::=     [ "Content-Description:"
                          [ "(" comment ")" ]
                          [ "[" description "]" ]
                          [ "{" disposition "}" ]
-			 [ "*8bit" | "*qp" | "*b64" ]
+                         [ "*8bit" | "*qp" | "*b64" ]
                          EOL
                          1*line
                      [ "#" EOL ]
