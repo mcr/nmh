@@ -77,9 +77,3 @@
 #ifndef HAVE_GETLINE
 ssize_t getline(char **lineptr, size_t *n, FILE *stream);
 #endif
-
-/*
- * Defaults for programs if they aren't configured in a user's profile
- */
-
-#define DEFAULT_PAGER "more"

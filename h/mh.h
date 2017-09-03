@@ -76,6 +76,9 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 /* FENDNULL fends off NULL by giving an empty string instead. */
 #define FENDNULL(s) ((s) ? (s) : "")
 
+/* If not specified in a file and PAGER is NULL or empty. */
+#define DEFAULT_PAGER "more"
+
 /*
  * char array that keeps track of size in both bytes and characters
  * Usage note:
