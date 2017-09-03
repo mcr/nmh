@@ -15,7 +15,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#define LINESIZE 1024
 #define PIDFN "/tmp/fakehttp.pid"
 
 int serve(const char *, const char *);
