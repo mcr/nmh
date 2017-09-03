@@ -12,7 +12,6 @@
 #define nmhbindir(file) NMHBINDIR#file
 #define nmhlibexecdir(file) NMHLIBEXECDIR#file
 #define nmhetcdir(file) NMHETCDIR#file
-#define nmhdocdir(file) NMHDOCDIR#file
 
 
 /*
