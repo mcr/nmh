@@ -110,7 +110,7 @@ struct curl_ctx {
 
     /* Whether the response was too big; if so, the rest of the output fields
      * are undefined. */
-    boolean too_big;
+    bool too_big;
 
     /* HTTP response code */
     long res_code;
@@ -125,9 +125,9 @@ struct curl_ctx {
     char res_body[RESPONSE_BODY_MAX];
 };
 
-static boolean get_json_strings(const char *, size_t, FILE *, ...) ENDNULL;
-static boolean make_query_url(char *, size_t, CURL *, const char *, ...) ENDNULL;
-static boolean post(struct curl_ctx *, const char *, const char *);
+static bool get_json_strings(const char *, size_t, FILE *, ...) ENDNULL;
+static bool make_query_url(char *, size_t, CURL *, const char *, ...) ENDNULL;
+static bool post(struct curl_ctx *, const char *, const char *);
 
 int
 mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
@@ -195,7 +195,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
     return OK;
 }
 
-static boolean
+static bool
 is_json(const char *content_type)
 {
     return content_type != NULL
@@ -248,7 +248,7 @@ make_user_agent(void)
     return concat(user_agent, " libcurl/", curl, NULL);
 }
 
-boolean
+bool
 mh_oauth_new(mh_oauth_ctx **result, const char *svc_name)
 {
     mh_oauth_ctx *ctx;
@@ -393,11 +393,11 @@ mh_oauth_get_authorize_url(mh_oauth_ctx *ctx)
     return ctx->buf;
 }
 
-static boolean
+static bool
 cred_from_response(mh_oauth_cred *cred, const char *content_type,
                    const char *input, size_t input_len)
 {
-    boolean result = FALSE;
+    bool result = FALSE;
     char *access_token, *expires_in, *refresh_token;
     const mh_oauth_ctx *ctx = cred->ctx;
 
@@ -456,7 +456,7 @@ cred_from_response(mh_oauth_cred *cred, const char *content_type,
     return result;
 }
 
-static boolean
+static bool
 do_access_request(mh_oauth_cred *cred, const char *req_body)
 {
     mh_oauth_ctx *ctx = cred->ctx;
@@ -515,10 +515,10 @@ mh_oauth_authorize(const char *code, mh_oauth_ctx *ctx)
     return result;
 }
 
-boolean
+bool
 mh_oauth_refresh(mh_oauth_cred *cred)
 {
-    boolean result;
+    bool result;
     mh_oauth_ctx *ctx = cred->ctx;
 
     if (cred->refresh_token == NULL) {
@@ -546,7 +546,7 @@ mh_oauth_refresh(mh_oauth_cred *cred)
     return result;
 }
 
-boolean
+bool
 mh_oauth_access_token_valid(time_t t, const mh_oauth_cred *cred)
 {
     return cred->access_token != NULL && t + EXPIRY_FUDGE < cred->expires_at;
@@ -610,10 +610,10 @@ free_user_creds(struct user_creds *user_creds)
     free(user_creds);
 }
 
-static boolean
+static bool
 load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
 {
-    boolean success = FALSE;
+    bool success = FALSE;
     char name[NAMESZ], value_buf[BUFSIZ];
     int state;
     m_getfld_state_t getfld_ctx;
@@ -703,7 +703,7 @@ load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
     return success;
 }
 
-static boolean
+static bool
 save_user(FILE *fp, const char *user, const char *access, const char *refresh,
           long expires_at)
 {
@@ -721,7 +721,7 @@ save_user(FILE *fp, const char *user, const char *access, const char *refresh,
     return TRUE;
 }
 
-boolean
+bool
 mh_oauth_cred_save(FILE *fp, mh_oauth_cred *cred, const char *user)
 {
     struct user_creds *user_creds;
@@ -831,10 +831,10 @@ mh_oauth_sasl_client_response(size_t *res_len,
  * building the entire URL.  Some of URL may already have been written into the
  * result array in that case.
  */
-static boolean
+static bool
 make_query_url(char *s, size_t size, CURL *curl, const char *base_url, ...)
 {
-    boolean result = FALSE;
+    bool result = FALSE;
     size_t len;
     char *prefix;
     va_list ap;
@@ -930,7 +930,7 @@ write_callback(const char *ptr, size_t size, size_t nmemb, void *userdata)
     return size;
 }
 
-static boolean
+static bool
 post(struct curl_ctx *ctx, const char *url, const char *req_body)
 {
     CURL *curl = ctx->curl;
@@ -997,7 +997,7 @@ post(struct curl_ctx *ctx, const char *url, const char *req_body)
  *
  * Even in that case, tokens has been allocated and must be freed.
  */
-static boolean
+static bool
 parse_json(jsmntok_t **tokens, size_t *tokens_len,
            const char *input, size_t input_len, FILE *log)
 {
@@ -1043,7 +1043,7 @@ get_json_string(char **val, const char *input, const jsmntok_t *tokens,
     int skip_tokens = 0;
     /* whether the current token represents a field name */
     /* The next token will be the value. */
-    boolean is_key = TRUE;
+    bool is_key = TRUE;
 
     int i;
     for (i = 1; i <= token_count; i++) {
@@ -1106,10 +1106,10 @@ get_json_string(char **val, const char *input, const jsmntok_t *tokens,
  *
  * log may be used for debug-logging if not NULL.
  */
-static boolean
+static bool
 get_json_strings(const char *input, size_t input_len, FILE *log, ...)
 {
-    boolean result = FALSE;
+    bool result = FALSE;
     jsmntok_t *tokens;
     size_t tokens_len;
     va_list ap;

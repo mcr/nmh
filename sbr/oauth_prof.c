@@ -76,7 +76,7 @@ update_svc_field(char **field, const char *base_name, const char *svc)
 }
 
 /* Update all service_info fields that are overridden in profile. */
-static boolean
+static bool
 update_svc(mh_oauth_service_info *svc, const char *svc_name, char *errbuf,
 	   size_t errbuflen)
 {
@@ -106,7 +106,7 @@ update_svc(mh_oauth_service_info *svc, const char *svc_name, char *errbuf,
     return TRUE;
 }
 
-boolean
+bool
 mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
 			  char *errbuf, size_t errbuflen)
 {

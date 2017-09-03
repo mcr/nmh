@@ -130,7 +130,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
  *
  * On error, return FALSE and set an error in ctx; ctx is always allocated.
  */
-boolean
+bool
 mh_oauth_new(mh_oauth_ctx **ctx, const char *svc_name);
 
 /*
@@ -198,13 +198,13 @@ mh_oauth_authorize(const char *code, mh_oauth_ctx *ctx);
  *
  * On error, return FALSE and leave cred untouched.
  */
-boolean
+bool
 mh_oauth_refresh(mh_oauth_cred *cred);
 
 /*
  * Return whether access token is present and not expired at time T.
  */
-boolean
+bool
 mh_oauth_access_token_valid(time_t t, const mh_oauth_cred *cred) PURE;
 
 /*
@@ -228,7 +228,7 @@ mh_oauth_cred_fn(const char *svc_name);
  *
  * On error, return FALSE.
  */
-boolean
+bool
 mh_oauth_cred_save(FILE *fp, mh_oauth_cred *cred, const char *user);
 
 /*
@@ -257,6 +257,6 @@ mh_oauth_sasl_client_response(size_t *res_len,
  * Retrieve the various entries for the OAuth mechanism
  */
 
-boolean
+bool
 mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
 			  char *errbuf, size_t errbuflen);

@@ -76,7 +76,7 @@ count_messages(char *field)
 }
 
 /* Return TRUE if the sequence 'name' is in 'sequences'. */
-static boolean
+static bool
 seq_in_list(char *name, char *sequences[])
 {
     int i;
@@ -225,7 +225,7 @@ check_folder(char *folder, size_t len, struct list_state *b)
     }
 }
 
-static boolean
+static bool
 crawl_callback(char *folder, void *baton)
 {
     check_folder(folder, strlen(folder), baton);

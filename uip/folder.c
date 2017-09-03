@@ -376,7 +376,7 @@ main (int argc, char **argv)
 }
 
 static int
-get_folder_info_body (char *fold, char *msg, boolean *crawl_children)
+get_folder_info_body (char *fold, char *msg, bool *crawl_children)
 {
     int	i, retval = 1;
     struct msgs *mp = NULL;
@@ -440,10 +440,10 @@ get_folder_info_body (char *fold, char *msg, boolean *crawl_children)
     return retval;
 }
 
-static boolean
+static bool
 get_folder_info_callback (char *fold, void *baton)
 {
-    boolean crawl_children;
+    bool crawl_children;
     NMH_UNUSED (baton);
 
     get_folder_info_body (fold, NULL, &crawl_children);
@@ -454,7 +454,7 @@ get_folder_info_callback (char *fold, void *baton)
 static int
 get_folder_info (char *fold, char *msg)
 {
-    boolean crawl_children;
+    bool crawl_children;
     int retval;
 
     retval = get_folder_info_body (fold, msg, &crawl_children);

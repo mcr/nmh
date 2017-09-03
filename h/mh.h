@@ -28,7 +28,6 @@
 #ifndef TRUE
 #define TRUE true
 #endif
-typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 
 /* If we're using gcc then tell it extra information so it can do more
  * compile-time checks. */
