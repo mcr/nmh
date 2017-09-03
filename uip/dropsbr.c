@@ -13,14 +13,6 @@
 #include <h/tws.h>
 #include "../sbr/lock_file.h"
 #include "../sbr/m_mktemp.h"
-
-#ifdef NTOHLSWAP
-# include <netinet/in.h>
-#else
-# undef ntohl
-# define ntohl(n) (n)
-#endif
-
 #include <fcntl.h>
 
 /*
