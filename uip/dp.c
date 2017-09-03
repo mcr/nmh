@@ -124,7 +124,7 @@ main (int argc, char **argv)
 
     context_save ();	/* save the context file */
     fmt_free (fmt, 1);
-    done(min(status, MAX_EXIT));
+    done(!!status);
     return 1;
 }
 
