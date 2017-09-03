@@ -33,13 +33,6 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 /* If we're using gcc then tell it extra information so it can do more
  * compile-time checks. */
 #if __GNUC__ > 2
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)
-#define ALLOC_SIZE(...) __attribute__((alloc_size(__VA_ARGS__)))
-#define CHECK_PRINTF(fmt, arg) __attribute__((format(printf, fmt, arg)))
-#else  /* gcc < 4.3.0 */
-#define ALLOC_SIZE(...)
-#define CHECK_PRINTF(fmt, arg)
-#endif /* gcc < 4.3.0 */
 #define NORETURN __attribute__((__noreturn__))
 #define CONST __attribute__((const))
 #define MALLOC __attribute__((malloc))
@@ -57,6 +50,14 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define PURE
 #define ENDNULL
 #define NMH_UNUSED(i) i
+#endif
+
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)
+#define ALLOC_SIZE(...) __attribute__((alloc_size(__VA_ARGS__)))
+#define CHECK_PRINTF(fmt, arg) __attribute__((format(printf, fmt, arg)))
+#else
+#define ALLOC_SIZE(...)
+#define CHECK_PRINTF(fmt, arg)
 #endif
 
 /* DIM gives the number of elements in the one-dimensional array a. */
