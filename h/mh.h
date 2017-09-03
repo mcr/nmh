@@ -39,7 +39,6 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define NONNULL(...) __attribute__((nonnull(__VA_ARGS__)))
 #define PURE __attribute__((pure))
 #define ENDNULL __attribute__((sentinel))
-#define NMH_UNUSED(i) (void) i
 #else
 #define NORETURN
 #define CHECK_PRINTF(fmt, arg)
@@ -49,7 +48,6 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define NONNULL(...)
 #define PURE
 #define ENDNULL
-#define NMH_UNUSED(i) i
 #endif
 
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)
@@ -59,6 +57,9 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define ALLOC_SIZE(...)
 #define CHECK_PRINTF(fmt, arg)
 #endif
+
+/* Silence the compiler's "unused variable" warning. */
+#define NMH_UNUSED(i) (void)i
 
 /* DIM gives the number of elements in the one-dimensional array a. */
 #define DIM(a) (sizeof (a) / sizeof (*(a)))
