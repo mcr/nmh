@@ -73,11 +73,11 @@ static int maxfolders;
 /* info on sequences to search for */
 static svector_t sequencesToDo;
 
-static int all        = FALSE;  /* scan all folders in top level?           */
-static int alphaOrder = FALSE;	/* want alphabetical order only             */
-static int recurse    = FALSE;	/* show nested folders?                     */
-static int showzero   = TRUE;	/* show folders even if no messages in seq? */
-static int Total      = TRUE;	/* display info on number of messages in    *
+static bool all;                /* scan all folders in top level? */
+static bool alphaOrder;         /* want alphabetical order only */
+static bool recurse;            /* show nested folders? */
+static bool showzero = true;    /* show folders even if no messages in seq? */
+static bool Total = true;       /* display info on number of messages in
 				 * sequence found, and total num messages   */
 
 static char curfolder[BUFSIZ];	/* name of the current folder */
