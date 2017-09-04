@@ -263,13 +263,13 @@ mh_oauth_new(mh_oauth_ctx **result, const char *svc_name)
     if (!mh_oauth_get_service_info(svc_name, &ctx->svc, ctx->err_buf,
 				   sizeof(ctx->err_buf))) {
 	set_err_details(ctx, MH_OAUTH_BAD_PROFILE, ctx->err_buf);
-        return FALSE;
+        return false;
     }
 
     ctx->curl = curl_easy_init();
     if (ctx->curl == NULL) {
         set_err(ctx, MH_OAUTH_CURL_INIT);
-        return FALSE;
+        return false;
     }
     curl_easy_setopt(ctx->curl, CURLOPT_ERRORBUFFER, ctx->err_buf);
 
@@ -278,10 +278,10 @@ mh_oauth_new(mh_oauth_ctx **result, const char *svc_name)
     if (curl_easy_setopt(ctx->curl, CURLOPT_USERAGENT,
                          ctx->user_agent) != CURLE_OK) {
         set_err_details(ctx, MH_OAUTH_CURL_INIT, ctx->err_buf);
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -397,12 +397,12 @@ static bool
 cred_from_response(mh_oauth_cred *cred, const char *content_type,
                    const char *input, size_t input_len)
 {
-    bool result = FALSE;
+    bool result = false;
     char *access_token, *expires_in, *refresh_token;
     const mh_oauth_ctx *ctx = cred->ctx;
 
     if (!is_json(content_type)) {
-        return FALSE;
+        return false;
     }
 
     access_token = expires_in = refresh_token = NULL;
@@ -421,7 +421,7 @@ cred_from_response(mh_oauth_cred *cred, const char *content_type,
         }
     }
 
-    result = TRUE;
+    result = true;
 
     free(cred->access_token);
     cred->access_token = access_token;
@@ -470,21 +470,21 @@ do_access_request(mh_oauth_cred *cred, const char *req_body)
         } else {
             set_err_details(ctx, MH_OAUTH_POST, ctx->err_buf);
         }
-        return FALSE;
+        return false;
     }
 
     if (curl_ctx.res_code != 200) {
         set_err_http(ctx, &curl_ctx);
-        return FALSE;
+        return false;
     }
 
     if (!cred_from_response(cred, curl_ctx.content_type, curl_ctx.res_body,
                             curl_ctx.res_len)) {
         set_err(ctx, MH_OAUTH_RESPONSE_BAD);
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 mh_oauth_cred *
@@ -523,7 +523,7 @@ mh_oauth_refresh(mh_oauth_cred *cred)
 
     if (cred->refresh_token == NULL) {
         set_err(ctx, MH_OAUTH_NO_REFRESH);
-        return FALSE;
+        return false;
     }
 
     if (!make_query_url(ctx->buf, sizeof ctx->buf, ctx->curl, NULL,
@@ -533,14 +533,14 @@ mh_oauth_refresh(mh_oauth_cred *cred)
                         "client_secret", ctx->svc.client_secret,
                         (void *)NULL)) {
         set_err(ctx, MH_OAUTH_REQUEST_INIT);
-        return FALSE;
+        return false;
     }
 
     result = do_access_request(cred, ctx->buf);
 
     if (result && cred->access_token == NULL) {
         set_err_details(ctx, MH_OAUTH_RESPONSE_BAD, "no access token");
-        return FALSE;
+        return false;
     }
 
     return result;
@@ -613,7 +613,7 @@ free_user_creds(struct user_creds *user_creds)
 static bool
 load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
 {
-    bool success = FALSE;
+    bool success = false;
     char name[NAMESZ], value_buf[BUFSIZ];
     int state;
     m_getfld_state_t getfld_ctx;
@@ -681,7 +681,7 @@ load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
 
         case BODY:
         case FILEEOF:
-            success = TRUE;
+            success = true;
             break;
 
         default:
@@ -708,17 +708,17 @@ save_user(FILE *fp, const char *user, const char *access, const char *refresh,
           long expires_at)
 {
     if (access != NULL) {
-        if (fprintf(fp, "access-%s: %s\n", user, access) < 0) return FALSE;
+        if (fprintf(fp, "access-%s: %s\n", user, access) < 0) return false;
     }
     if (refresh != NULL) {
-        if (fprintf(fp, "refresh-%s: %s\n", user, refresh) < 0) return FALSE;
+        if (fprintf(fp, "refresh-%s: %s\n", user, refresh) < 0) return false;
     }
     if (expires_at > 0) {
         if (fprintf(fp, "expire-%s: %ld\n", user, (long)expires_at) < 0) {
-            return FALSE;
+            return false;
         }
     }
-    return TRUE;
+    return true;
 }
 
 bool
@@ -730,7 +730,7 @@ mh_oauth_cred_save(FILE *fp, mh_oauth_cred *cred, const char *user)
 
     /* Load existing creds if any. */
     if (!load_creds(&user_creds, fp, cred->ctx)) {
-        return FALSE;
+        return false;
     }
 
     if (fchmod(fd, S_IRUSR | S_IWUSR) < 0) goto err;
@@ -755,12 +755,12 @@ mh_oauth_cred_save(FILE *fp, mh_oauth_cred *cred, const char *user)
 
     free_user_creds(user_creds);
 
-    return TRUE;
+    return true;
 
   err:
     free_user_creds(user_creds);
     set_err(cred->ctx, MH_OAUTH_CRED_FILE);
-    return FALSE;
+    return false;
 }
 
 mh_oauth_cred *
@@ -827,14 +827,14 @@ mh_oauth_sasl_client_response(size_t *res_len,
 
 /*
  * Build null-terminated URL in the array pointed to by s.  If the URL doesn't
- * fit within size (including the terminating null byte), return FALSE without *
+ * fit within size (including the terminating null byte), return false without *
  * building the entire URL.  Some of URL may already have been written into the
  * result array in that case.
  */
 static bool
 make_query_url(char *s, size_t size, CURL *curl, const char *base_url, ...)
 {
-    bool result = FALSE;
+    bool result = false;
     size_t len;
     char *prefix;
     va_list ap;
@@ -846,7 +846,7 @@ make_query_url(char *s, size_t size, CURL *curl, const char *base_url, ...)
     } else {
         len = strlen(base_url);
         if (len > size - 1) /* Less one for NUL. */
-            return FALSE;
+            return false;
         strcpy(s, base_url);
         prefix = "?";
     }
@@ -873,7 +873,7 @@ make_query_url(char *s, size_t size, CURL *curl, const char *base_url, ...)
         prefix = "&";
     }
 
-    result = TRUE;
+    result = true;
 
   out:
     va_end(ap);
@@ -920,7 +920,7 @@ write_callback(const char *ptr, size_t size, size_t nmemb, void *userdata)
     size *= nmemb;
     new_len = ctx->res_len + size;
     if (new_len > sizeof ctx->res_body) {
-      ctx->too_big = TRUE;
+      ctx->too_big = true;
       return 0;
     }
 
@@ -936,7 +936,7 @@ post(struct curl_ctx *ctx, const char *url, const char *req_body)
     CURL *curl = ctx->curl;
     CURLcode status;
 
-    ctx->too_big = FALSE;
+    ctx->too_big = false;
     ctx->res_len = 0;
 
     if (ctx->log != NULL) {
@@ -946,7 +946,7 @@ post(struct curl_ctx *ctx, const char *url, const char *req_body)
     }
 
     if ((status = curl_easy_setopt(curl, CURLOPT_URL, url)) != CURLE_OK) {
-        return FALSE;
+        return false;
     }
 
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req_body);
@@ -964,21 +964,21 @@ post(struct curl_ctx *ctx, const char *url, const char *req_body)
     status = curl_easy_perform(curl);
     /* first check for error from callback */
     if (ctx->too_big) {
-        return FALSE;
+        return false;
     }
     /* now from curl */
     if (status != CURLE_OK) {
-        return FALSE;
+        return false;
     }
 
     if ((status = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE,
                                     &ctx->res_code)) != CURLE_OK
         || (status = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE,
                                        &ctx->content_type)) != CURLE_OK) {
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 /*******************************************************************************
@@ -1020,10 +1020,10 @@ parse_json(jsmntok_t **tokens, size_t *tokens_len,
         *tokens = mh_xrealloc(*tokens, *tokens_len * sizeof **tokens);
     }
     if (r <= 0) {
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 /*
@@ -1043,7 +1043,7 @@ get_json_string(char **val, const char *input, const jsmntok_t *tokens,
     int skip_tokens = 0;
     /* whether the current token represents a field name */
     /* The next token will be the value. */
-    bool is_key = TRUE;
+    bool is_key = true;
 
     int i;
     for (i = 1; i <= token_count; i++) {
@@ -1069,11 +1069,11 @@ get_json_string(char **val, const char *input, const jsmntok_t *tokens,
         if (skip_tokens > 0) {
             skip_tokens--;
             /* When we finish with the object or list, we'll have a key. */
-            is_key = TRUE;
+            is_key = true;
             continue;
         }
         if (is_key) {
-            is_key = FALSE;
+            is_key = false;
             continue;
         }
         key = input + tokens[i - 1].start;
@@ -1085,7 +1085,7 @@ get_json_string(char **val, const char *input, const jsmntok_t *tokens,
             (*val)[val_len] = '\0';
             return;
         }
-        is_key = TRUE;
+        is_key = true;
     }
 }
 
@@ -1109,7 +1109,7 @@ get_json_string(char **val, const char *input, const jsmntok_t *tokens,
 static bool
 get_json_strings(const char *input, size_t input_len, FILE *log, ...)
 {
-    bool result = FALSE;
+    bool result = false;
     jsmntok_t *tokens;
     size_t tokens_len;
     va_list ap;
@@ -1123,7 +1123,7 @@ get_json_strings(const char *input, size_t input_len, FILE *log, ...)
         goto out;
     }
 
-    result = TRUE;
+    result = true;
 
     va_start(ap, log);
     for (name = va_arg(ap, char *); name != NULL; name = va_arg(ap, char *)) {

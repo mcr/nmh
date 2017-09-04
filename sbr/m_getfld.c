@@ -94,7 +94,7 @@
 
    To speed things up considerably, the routine Eom() was made an auxiliary
    function called by the macro eom().  Unless we are bursting a maildrop,
-   the eom() macro returns FALSE saying we aren't at the end of the
+   the eom() macro returns false saying we aren't at the end of the
    message.
 
    The next thing to do is to read the mts.conf file and initialize

@@ -158,41 +158,41 @@ main(int argc, char **argv)
 		break;
 
 	    case ALLSW:
-		all = TRUE;
+		all = true;
 		break;
 	    case NOALLSW:
-		all = FALSE;
+		all = false;
 		break;
 
 	    case SHOWZERO:
-		showzero = TRUE;
+		showzero = true;
 		break;
 	    case NOSHOWZERO:
-		showzero = FALSE;
+		showzero = false;
 		break;
 
 	    case ALPHASW:
-		alphaOrder = TRUE;
+		alphaOrder = true;
 		break;
 	    case NOALPHASW:
-		alphaOrder = FALSE;
+		alphaOrder = false;
 		break;
 
 	    case NOFASTSW:
 	    case TOTALSW:
-		Total = TRUE;
+		Total = true;
 		break;
 
 	    case FASTSW:
 	    case NOTOTALSW:
-		Total = FALSE;
+		Total = false;
 		break;
 
 	    case RECURSE:
-		recurse = TRUE;
+		recurse = true;
 		break;
 	    case NORECURSE:
-		recurse = FALSE;
+		recurse = false;
 		break;
 	    }
 	} else {

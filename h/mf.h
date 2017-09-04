@@ -3,14 +3,6 @@
 
 #include <h/nmh.h>
 
-#ifndef	TRUE
-# define TRUE 1
-#endif
-
-#ifndef	FALSE
-# define FALSE 0
-#endif
-
 #ifndef	NOTOK
 # define NOTOK (-1)
 #endif

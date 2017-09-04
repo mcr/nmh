@@ -75,7 +75,7 @@ count_messages(char *field)
     return total;
 }
 
-/* Return TRUE if the sequence 'name' is in 'sequences'. */
+/* Return true if the sequence 'name' is in 'sequences'. */
 static bool
 seq_in_list(char *name, char *sequences[])
 {
@@ -83,11 +83,11 @@ seq_in_list(char *name, char *sequences[])
 
     for (i = 0; sequences[i] != NULL; i++) {
 	if (strcmp(name, sequences[i]) == 0) {
-	    return TRUE;
+	    return true;
 	}
     }
 
-    return FALSE;
+    return false;
 }
 
 /* Return the string list of message numbers from the sequences file, or NULL
@@ -229,7 +229,7 @@ static bool
 crawl_callback(char *folder, void *baton)
 {
     check_folder(folder, strlen(folder), baton);
-    return TRUE;
+    return true;
 }
 
 /* Scan folders, returning:

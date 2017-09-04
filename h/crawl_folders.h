@@ -3,7 +3,7 @@
 
 #define CRAWL_NUMFOLDERS 100
 
-/* Callbacks return TRUE crawl_folders should crawl the children of `folder'.
+/* Callbacks return true crawl_folders should crawl the children of `folder'.
  * Callbacks need not duplicate folder, as crawl_folders does not free it. */
 typedef bool (crawl_callback_t)(char *folder, void *baton);
 

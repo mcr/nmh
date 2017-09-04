@@ -406,7 +406,7 @@ get_folder_info_body (char *fold, char *msg, bool *crawl_children)
 	 */
 	if (!(mp = folder_read (fold, fpack))) {
 	    inform("unable to read folder %s, continuing...", fold);
-	    *crawl_children = FALSE;
+	    *crawl_children = false;
 	    return 0;
 	}
 
@@ -416,7 +416,7 @@ get_folder_info_body (char *fold, char *msg, bool *crawl_children)
 
 	if (fpack) {
 	    if (folder_pack (&mp, fverb) == -1) {
-		*crawl_children = FALSE; /* to please clang static analyzer */
+		*crawl_children = false; /* to please clang static analyzer */
 		done (1);
 	    }
 	    seq_save (mp);		/* synchronize the sequences */

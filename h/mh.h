@@ -22,13 +22,6 @@
  */
 #define NMH_BUFSIZ  max(BUFSIZ, 8192)
 
-#ifndef FALSE
-#define FALSE false
-#endif
-#ifndef TRUE
-#define TRUE true
-#endif
-
 /* If we're using gcc then tell it extra information so it can do more
  * compile-time checks. */
 #if __GNUC__ > 2

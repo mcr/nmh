@@ -85,7 +85,7 @@ update_svc(mh_oauth_service_info *svc, const char *svc_name, char *errbuf,
     if (svc->name == NULL) {                                             \
     	snprintf(errbuf, errbuflen, "%s", #name " is missing");		 \
 	errbuf[errbuflen - 1] = '\0';					 \
-        return FALSE;                                                    \
+        return false;                                                    \
     }
     update(scope);
     update(client_id);
@@ -103,7 +103,7 @@ update_svc(mh_oauth_service_info *svc, const char *svc_name, char *errbuf,
         svc->display_name = svc->name;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -125,10 +125,10 @@ mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
     }
 
     if (!update_svc(svcinfo, svc_name, errbuf, errbuflen)) {
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 const char *

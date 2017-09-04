@@ -38,7 +38,7 @@
 static int sm_addrs = 0;
 static int sm_child = NOTOK;
 static int sm_debug = 0;
-static int sm_nl = TRUE;
+static bool sm_nl = true;
 static int sm_verbose = 0;
 static netsec_context *nsc = NULL;
 
@@ -92,7 +92,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     char *errstr, *chosen_server;
 
     if (watch)
-	verbose = TRUE;
+	verbose = true;
 
     sm_verbose = verbose;
     sm_debug = debug;
@@ -263,7 +263,7 @@ sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
     char *vec[15], *errstr;
 
     if (watch)
-	verbose = TRUE;
+	verbose = true;
 
     sm_verbose = verbose;
     sm_debug = debug;
@@ -509,7 +509,7 @@ sm_waend (void)
 {
     switch (smtalk (SM_DATA, "DATA")) {
 	case 354: 
-	    sm_nl = TRUE;
+	    sm_nl = true;
 	    return RP_OK;
 
 	case 451: 
@@ -720,7 +720,7 @@ sm_wstream (char *buffer, int len)
     for (bp = buffer; bp && len > 0; bp++, len--) {
 	switch (*bp) {
 	    case '\n': 
-		sm_nl = TRUE;
+		sm_nl = true;
 		if (netsec_write(nsc, "\r", 1, &errstr) != OK) {
 		    sm_nerror(errstr);
 		    return NOTOK;
@@ -736,7 +736,7 @@ sm_wstream (char *buffer, int len)
 		/* FALLTHRU */
 
 	    default: 
-		sm_nl = FALSE;
+		sm_nl = false;
 	}
 	if (netsec_write(nsc, bp, 1, &errstr) != OK) {
 	    sm_nerror(errstr);
@@ -753,7 +753,8 @@ sm_wstream (char *buffer, int len)
 static int
 smhear (void)
 {
-    int i, code, cont, more;
+    int i, code;
+    bool cont, more;
     size_t buflen, rc;
     unsigned char *bp;
     char *rp;
@@ -785,7 +786,7 @@ again: ;
     rp = sm_reply.text;
     rc = sizeof(sm_reply.text) - 1;
 
-    for (more = FALSE; (buffer = netsec_readline(nsc, &buflen,
+    for (more = false; (buffer = netsec_readline(nsc, &buflen,
     						 &errstr)) != NULL ; ) {
 
 	if (doingEHLO
@@ -811,13 +812,13 @@ again: ;
 	for (; buflen > 0 && (!isascii (*bp) || !isdigit (*bp)); bp++, buflen--)
 	    continue;
 
-	cont = FALSE;
+	cont = false;
 	code = atoi ((char *) bp);
 	bp += 3, buflen -= 3;
 	for (; buflen > 0 && isspace (*bp); bp++, buflen--)
 	    continue;
 	if (buflen > 0 && *bp == '-') {
-	    cont = TRUE;
+	    cont = true;
 	    bp++, buflen--;
 	    for (; buflen > 0 && isspace (*bp); bp++, buflen--)
 		continue;
@@ -826,7 +827,7 @@ again: ;
 	if (more) {
 	    if (code != sm_reply.code || cont)
 		continue;
-	    more = FALSE;
+	    more = false;
 	} else {
 	    sm_reply.code = code;
 	    more = cont;

@@ -128,7 +128,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
  *
  * Accesses global m_defs via context_find.
  *
- * On error, return FALSE and set an error in ctx; ctx is always allocated.
+ * On error, return false and set an error in ctx; ctx is always allocated.
  */
 bool
 mh_oauth_new(mh_oauth_ctx **ctx, const char *svc_name);
@@ -196,7 +196,7 @@ mh_oauth_authorize(const char *code, mh_oauth_ctx *ctx);
 /*
  * Refresh access (and maybe refresh) token if refresh token present.
  *
- * On error, return FALSE and leave cred untouched.
+ * On error, return false and leave cred untouched.
  */
 bool
 mh_oauth_refresh(mh_oauth_cred *cred);
@@ -226,7 +226,7 @@ mh_oauth_cred_fn(const char *svc_name);
 /*
  * Serialize OAuth tokens to file.
  *
- * On error, return FALSE.
+ * On error, return false.
  */
 bool
 mh_oauth_cred_save(FILE *fp, mh_oauth_cred *cred, const char *user);

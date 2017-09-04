@@ -216,7 +216,7 @@ query:
     fclose (out);
 
     puts ("\nPlease see the nmh(7) man page for an introduction to nmh.\n");
-    print_intro (stdout, FALSE);
+    print_intro (stdout, false);
 
     /* Initialize the saved nmh version.  The Path profile entry was added
        above, that's all this needs. */
