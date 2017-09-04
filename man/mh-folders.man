@@ -133,7 +133,7 @@ the
 profile entry.
 .PP
 A second, possibly different, locking method is used by
-.BR inc (1)
+.IR inc (1)
 when accessing the user's mail spool file or by
 .B nmh
 programs that open any mbox file.  This locking method can be overridden

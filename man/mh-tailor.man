@@ -208,7 +208,7 @@ It is not possible to change the mail submission port number in the
 entry; see the
 .B \-port
 switch to
-.BR send (1)
+.IR send (1)
 for this functionality.
 .SS "SendMail"
 This option is only available if you set

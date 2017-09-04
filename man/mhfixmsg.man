@@ -117,7 +117,7 @@ Charset conversions require that
 be built with
 .IR iconv (3);
 see
-.BR mhparam (1)
+.IR mhparam (1)
 for how determine whether your
 .B nmh
 installation includes that.
