@@ -124,11 +124,7 @@ mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
         }
     }
 
-    if (!update_svc(svcinfo, svc_name, errbuf, errbuflen)) {
-        return false;
-    }
-
-    return true;
+    return update_svc(svcinfo, svc_name, errbuf, errbuflen);
 }
 
 const char *

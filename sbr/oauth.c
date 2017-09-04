@@ -971,14 +971,10 @@ post(struct curl_ctx *ctx, const char *url, const char *req_body)
         return false;
     }
 
-    if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE,
-                                    &ctx->res_code) != CURLE_OK
-        || curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE,
-                                       &ctx->content_type) != CURLE_OK) {
-        return false;
-    }
-
-    return true;
+    return curl_easy_getinfo(curl,
+            CURLINFO_RESPONSE_CODE, &ctx->res_code) == CURLE_OK &&
+        curl_easy_getinfo(curl,
+            CURLINFO_CONTENT_TYPE, &ctx->content_type) == CURLE_OK;
 }
 
 /*******************************************************************************
@@ -1019,11 +1015,8 @@ parse_json(jsmntok_t **tokens, size_t *tokens_len,
            of the response body. */
         *tokens = mh_xrealloc(*tokens, *tokens_len * sizeof **tokens);
     }
-    if (r <= 0) {
-        return false;
-    }
 
-    return true;
+    return r > 0;
 }
 
 /*
