@@ -64,7 +64,7 @@ static const char nmh_intro3[] = \
 "at http://www.nongnu.org/nmh/ .\n";
 
 void
-print_intro (FILE *file, int brief) {
+print_intro (FILE *file, bool brief) {
     fputs (nmh_intro1, file);
     if (! brief) {
         fputs (nmh_intro2, file);

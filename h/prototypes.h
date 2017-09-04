@@ -189,7 +189,7 @@ int pidwait (pid_t, int);
 int pidstatus (int, FILE *, char *);
 char *pluspath(char *);
 void print_help (char *, struct swit *, int);
-void print_intro (FILE *, int);
+void print_intro (FILE *, bool);
 void print_sw (const char *, const struct swit *, char *, FILE *);
 void print_version (char *);
 void push (void);
