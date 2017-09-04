@@ -26,9 +26,9 @@ local character set.  Character set conversion will only take place if
 .B nmh
 was built with
 .IR iconv (3)
-support.  See the
+support.  See
 .IR mhparam (1)
-man page for how to determine whether your
+for how to determine whether your
 .B nmh
 installation includes
 .IR iconv (3)

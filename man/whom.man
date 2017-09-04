@@ -54,9 +54,9 @@ switches invoke
 the
 .B nmh
 draft folder facility.  This is an advanced (and highly
-useful) feature.  Consult the
+useful) feature.  Consult
 .IR mh-draft (5)
-man page for more information.
+for more information.
 .PP
 The mail transport system default is provided in
 .I %nmhetcdir%/mts.conf
@@ -86,15 +86,17 @@ the use of SASL authentication with the SMTP MTA.  Depending on the
 SASL mechanism used, this may require an additional password prompt from the
 user (but the
 .I netrc
-file can be used to store this password, as described in the
-mh-profile(5) man page).  The
+file can be used to store this password, as described in
+.IR mh-profile (5)).
+The
 .B \-saslmech
 switch can be used to select a particular SASL mechanism,
 and the
 .B \-user
 switch can be used to select a authorization userid to provide to SASL
-other than the default.  The credentials profile entry in the
-mh\-profile(5) man page describes the ways to supply a username and
+other than the default.  The credentials profile entry in
+.IR mh\-profile (5)
+describes the ways to supply a username and
 password.
 .PP
 If SASL authentication is successful,
@@ -103,9 +105,9 @@ will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(encrypted)' and `(decrypted)' when
 viewing the SMTP transaction with the
 .B \-snoop
-switch; see the
-.B post
-man page description of
+switch; see
+.IR post (8)'s
+description of
 .B \-snoop
 for its other features.
 .PP
@@ -120,9 +122,9 @@ switches will require and disable the negotiation of TLS support when connecting
 SMTP MTA.  Encrypted data is labelled with `(tls-encrypted)' and
 `(tls-decrypted)' when viewing the SMTP transaction with the
 .B \-snoop
-switch; see the
-.B post
-man page description of
+switch; see
+.IR post (8)'s
+description of
 .B \-snoop
 and the TLS flags for more details.
 .PP

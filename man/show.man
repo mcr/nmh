@@ -103,9 +103,9 @@ environment variables
 should be set to the terminal's native character set to avoid
 gratuitous invocations of the
 .IR showmimeproc .
-See the
+See
 .IR locale (1)
-man page for details about these environment variables.
+for details about these environment variables.
 .PP
 The option
 .B \-checkmime

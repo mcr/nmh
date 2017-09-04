@@ -116,9 +116,9 @@ Charset conversions require that
 .B nmh
 be built with
 .IR iconv (3);
-see the
+see
 .BR mhparam (1)
-man page for how determine whether your
+for how determine whether your
 .B nmh
 installation includes that.
 To convert text parts other than text/plain, an external program can

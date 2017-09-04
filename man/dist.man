@@ -90,9 +90,9 @@ nmh\-cc	string	Addresses specified with `\-cc\ address'
 .fi
 .RE
 .PP
-See the
+See
 .IR forw (1)
-man page for descriptions of the
+for descriptions of the
 .BR \-from ,
 .BR \-to ,
 .BR \-cc ,
@@ -189,9 +189,9 @@ and
 switches invoke the
 .B nmh
 draft folder facility.  This is an advanced (and highly
-useful) feature.  Consult the
+useful) feature.  Consult
 .IR mh-draft (5)
-man page for more information.
+for more information.
 .PP
 Upon exiting from the editor,
 .B dist

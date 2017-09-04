@@ -257,9 +257,9 @@ will attempt to negotiate a security layer for session encryption.
 Encrypted traffic is labelled with `(encrypted)' and `(decrypted)'
 when viewing the POP transaction with the
 .B \-snoop
-switch; see the
-.B post
-man page description of
+switch; see
+.IR post (8)'s
+description of
 .B \-snoop
 for its other features.
 .PP

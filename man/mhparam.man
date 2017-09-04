@@ -54,9 +54,9 @@ install directories, all
 .I proc
 settings, and the
 .I datalocking
-method described in the
-.IR mh\-profile (5)
-man page.  Information about the configuration of the
+method described in
+.IR mh\-profile (5).
+Information about the configuration of the
 .B nmh
 installation is also available, including the default mail spool
 locking method.  To test whether the configuration includes

@@ -63,9 +63,8 @@ This switch may be given multiple times to specify multiple sequences.
 If it is not given, then the default is to search
 for all the sequences specified by the
 .RI \*(lq Unseen-Sequence \*(rq
-profile component.  For more details about sequences, read the
-.IR mh\-sequence (5)
-man page.
+profile component.  For more details about sequences, read
+.IR mh\-sequence (5).
 .PP
 Typically,
 .B flist
@@ -129,9 +128,9 @@ The \*(lq+\*(rq after
 indicates that it is the current folder.
 .PP
 The \*(lqprivate\*(rq flag indicates that the given sequence for
-that folder is private.  See the
+that folder is private.  See
 .IR mh\-sequence (5)
-man page for details about private sequences.
+for details about private sequences.
 .PP
 If the option
 .B \-all

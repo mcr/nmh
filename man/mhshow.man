@@ -426,9 +426,9 @@ If
 was built with
 .IR iconv (3),
 then all text/plain parts of the message(s) will be displayed using
-the character set of the current locale.  See the
+the character set of the current locale.  See
 .IR mhparam (1)
-man page for how to determine whether your
+for how to determine whether your
 .B nmh
 installation includes
 .IR iconv (3)

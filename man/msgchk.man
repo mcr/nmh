@@ -95,7 +95,8 @@ mail waiting.
 To specify a username for authentication with the POP server, use the
 .B \-user
 .I username
-switch.  The credentials profile entry in the mh\-profile(5) man page
+switch.  The credentials profile entry in
+.IR mh\-profile(5)
 describes the ways to supply a username and password.
 .PP
 For debugging purposes, there is also a switch
@@ -114,8 +115,9 @@ switch will enable
 the use of SASL authentication.  Depending on the SASL mechanism used, this
 may require an additional password prompt from the user (but the
 .I netrc
-file can be used to store this password, as described in the
-mh-profile(5) man page).  The
+file can be used to store this password, as described in
+.IR mh-profile (5).
+The
 .B \-saslmech
 switch can be used to select a particular SASL mechanism.
 .PP
@@ -126,9 +128,9 @@ a security layer for session encryption.  Encrypted traffic is labelled
 with `(encrypted)' and `(decrypted)' when viewing the POP transaction
 with the
 .B \-snoop
-switch; see the
-.B post
-man page description of
+switch; see
+.IR post (8)'s
+description of
 .B \-snoop
 for its other features.
 .PP
@@ -146,9 +148,9 @@ be specified with the
 .I service
 switch.  Before using this, the user must authorize nmh by running
 .B mhlogin
-and grant authorization to that account.  See the
-.B mhlogin
-man page for more details.
+and grant authorization to that account.  See
+.IR mhlogin (1)
+for more details.
 .PP
 If
 .B nmh

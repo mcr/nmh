@@ -112,9 +112,9 @@ Names the sequence or sequences which should be defined as the `msgs' or
 command.  If not present or empty,
 no such sequences are defined.  Otherwise, for each name given, the
 sequence is first zeroed and then each message is added to the sequence.
-Read the
+Read
 .IR mh\-sequence (5)
-man page for the details about this sequence.  (profile, no default)
+for the details about this sequence.  (profile, no default)
 .RE
 .PP
 .BR Sequence\-Negation :
@@ -122,9 +122,9 @@ not
 .RS 5
 Defines the string which, when prefixed to a sequence name, negates
 that sequence.  Hence, \*(lqnotseen\*(rq means all those messages that
-are not a member of the sequence \*(lqseen\*(rq.  Read the
+are not a member of the sequence \*(lqseen\*(rq.  Read
 .IR mh\-sequence (5)
-man page for the details.  (profile, no default)
+for the details.  (profile, no default)
 .RE
 .PP
 .BR Unseen\-Sequence :
@@ -140,9 +140,9 @@ and
 will add or remove messages from these
 sequences when they are incorporated or read.  If not present or
 empty, no such sequences are defined.  Otherwise, each message is
-added to, or removed from, each sequence name given.  Read the
+added to, or removed from, each sequence name given.  Read
 .IR mh\-sequence (5)
-man page for the details about this sequence.
+for the details about this sequence.
 (profile, no default)
 .RE
 .PP
@@ -159,9 +159,9 @@ entry blank.  (profile, default: \&.mh\-sequences)
 .RS 5
 Keeps track of the private sequence called \*(lqseq\*(rq in the specified
 folder.  Private sequences are generally used for read-only folders.
-See the
+See
 .IR mh\-sequence (5)
-man page for details about private sequences.
+for details about private sequences.
 (context, no default)
 .RE
 .PP
@@ -324,9 +324,9 @@ Indicates a default draft folder for
 .BR refile ,
 and
 .BR repl .
-Read the
+Read
 .IR mh\-draft (5)
-man page for details.  (profile, no default)
+for details.  (profile, no default)
 .RE
 .PP
 .BI digest\-issue\- list :
@@ -809,9 +809,9 @@ profile entry.
 MAILHOST
 This variable tells
 .B inc
-the POP host to query for mail to incorporate.  See the
+the POP host to query for mail to incorporate.  See
 .IR inc (1)
-man page for more information.
+for more information.
 .TP
 MH
 With this environment variable, you can specify a profile
@@ -917,9 +917,8 @@ your user name and
 your default mail drop:  see the \*(lqMailDrop\*(rq profile entry.
 .TP
 USERNAME_EXTENSION
-This variable is for use with username_extension masquerading.  See the
-.IR mh-tailor (5)
-man page.
+This variable is for use with username_extension masquerading.  See
+.IR mh-tailor (5).
 .TP
 editalt
 This is the alternate message.  This is set by

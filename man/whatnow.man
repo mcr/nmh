@@ -196,9 +196,9 @@ switches invoke
 the
 .B nmh
 draft folder facility.  This is an advanced (and highly
-useful) feature.  Consult the
+useful) feature.  Consult
 .IR mh-draft (5)
-man page for more
+for more
 information.
 .PP
 If your
