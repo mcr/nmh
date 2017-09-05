@@ -317,16 +317,16 @@ addrfield or datefield, along with the appropriate formatfield variable string.
 .PP
 The \*(lqformat\*(rq flag specifies that this component will be run through
 the filter program specified by the
-.IR formatproc
+.I formatproc
 profile entry.  This filter program is expected to read data on standard
 input and output data on standard output.  Currently the \*(lqformat\*(rq
 flag is only supported for the \*(lqbody\*(rq component.  The component
 name will be prefixed to the output
-.IR after
+.I after
 the filter has been run.  The expected use of this is to filter a message
 body to create more pleasing text to use in a reply message.
 A suggested filter to use for
-.IR repl(1)
+.IR repl (1)
 is as follows:
 .PP
 .RS 5

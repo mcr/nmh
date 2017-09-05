@@ -30,7 +30,7 @@ sendfiles \- send multiple files by MIME message with nmh
 .ad
 .SH DESCRIPTION
 The shell script
-.BR sendfiles
+.B sendfiles
 is used to send a collection
 of files and directories via electronic mail.
 .PP

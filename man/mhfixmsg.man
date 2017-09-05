@@ -13,7 +13,7 @@ mhfixmsg \- nmh's MIME-email rewriter with various transformations
 .RI [ +folder ]
 .RI [ msgs " | "
 .IR "absolute pathname" " | "
-.RB \-file
+.B \-file
 .IR file ]
 .RB [ \-decodetext
 8bit|7bit|binary |

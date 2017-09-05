@@ -22,7 +22,7 @@ mhbuild \- translate MIME composition drafts for nmh messages
 .RB [ \-disposition " | " \-nodisposition ]
 .RB [ \-check " | " \-nocheck ]
 .RB [ \-headerencoding
-.IR encoding-algorithm
+.I encoding-algorithm
 .RB " | " \-autoheaderencoding ]
 .RB [ \-maxunencoded
 .IR line-length ]
@@ -179,7 +179,7 @@ The
 file contains default
 .B mhbuild-convert-text/html
 and
-.BR mhbuild-convert-text/plain
+.B mhbuild-convert-text/plain
 entries.  Profile entries can be used to override corresponding
 .I mhn.defaults
 entries, as usual.  Text converters should limit text line lengths

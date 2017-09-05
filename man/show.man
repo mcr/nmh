@@ -13,7 +13,7 @@ show \- display nmh messages
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-draft ]
-.RB [\-showproc
+.RB [ \-showproc
 .IR program ]
 .RB [ \-showmimeproc
 .IR program ]

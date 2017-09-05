@@ -96,7 +96,7 @@ To specify a username for authentication with the POP server, use the
 .B \-user
 .I username
 switch.  The credentials profile entry in
-.IR mh\-profile(5)
+.IR mh\-profile (5)
 describes the ways to supply a username and password.
 .PP
 For debugging purposes, there is also a switch

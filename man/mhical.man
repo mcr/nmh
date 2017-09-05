@@ -67,14 +67,14 @@ The following format components are supported:
 .fc ^ ~
 .nf
 .ta \w'description 'u
-.BR ^method~^
-.BR ^organizer~^
-.BR ^summary~^
-.BR ^description~^
-.BR ^location~^
-.BR ^dtstart~^
-.BR ^dtend~^
-.BR ^attendees~^
+.B ^method~^
+.B ^organizer~^
+.B ^summary~^
+.B ^description~^
+.B ^location~^
+.B ^dtstart~^
+.B ^dtend~^
+.B ^attendees~^
 .fi
 .RE
 .PP

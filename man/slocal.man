@@ -119,9 +119,9 @@ file.
 .SS "Message Transfer Agents"
 Most modern MTAs including
 .BR sendmail ,
-.BR postfix
+.BR postfix ,
 and
-.BR exim
+.B exim
 support a \&.forward file for directing incoming mail.
 You should include the line
 .PP

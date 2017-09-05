@@ -11,7 +11,7 @@ prev \- show the previous nmh message
 .RB [ \-help ]
 .RB [ \-version ]
 .RI [ +folder ]
-.RB [\-showproc
+.RB [ \-showproc
 .IR program ]
 .RB [ \-showmimeproc
 .IR program ]

@@ -70,7 +70,7 @@ and the
 .B \-port
 switches can be used to override the default mail server (defined by the
 .I %nmhetcdir%/mts.conf
-.RI servers
+.I servers
 entry).  The
 .B \-snoop
 switch can be used to view the SMTP transaction.  (Beware that the
@@ -100,7 +100,7 @@ describes the ways to supply a username and
 password.
 .PP
 If SASL authentication is successful,
-.BR nmh
+nmh
 will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(encrypted)' and `(decrypted)' when
 viewing the SMTP transaction with the

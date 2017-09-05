@@ -171,7 +171,7 @@ will also honor a specification of the form \*(lq\-dd\*(rq, which means
 \*(lqdd days ago\*(rq.
 .PP
 Use the
-.BR \-reverse
+.B \-reverse
 switch to make
 .B pick
 find matching messages in reverse order, working from the highest message

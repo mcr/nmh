@@ -73,7 +73,7 @@ or
 switches will override the default settings of
 .B \-textonly
 and
-.BR \-inlineonly.
+.BR \-inlineonly .
 .PP
 The
 .B \-header

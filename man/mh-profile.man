@@ -28,7 +28,7 @@ This is a comment.
 .RE
 .PP
 Blank lines are not permitted in
-.IR \&.mh\-profile.
+.IR \&.mh\-profile .
 Shell quoting conventions are not available; each token is separated
 by whitespace.
 .SS "Standard Profile Entries"
@@ -363,8 +363,8 @@ superseded by the environment variable MAILDROP.
 RAND MH System (agent: Marshall Rose)
 .RS 5
 Tells front-end programs such as
-.BR comp,
-.BR forw,
+.BR comp ,
+.BR forw ,
 and
 .B repl
 your mail signature.  (This is not to be confused with a .signature

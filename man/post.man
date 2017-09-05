@@ -232,7 +232,7 @@ other than the default.  The credentials profile entry in
 describes the ways to supply a username and password.
 .PP
 If SASL authentication is successful,
-.BR nmh
+nmh
 will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(sasl-encrypted)' and `(sasl-decrypted)' when
 viewing the SMTP transaction with the

@@ -11,7 +11,7 @@ mhmail \- send or read mail non-interactively with nmh
 .RB [ \-help ]
 .RB [ \-version ]
 .RB [ \-to ]
-.RI addrs
+.I addrs
 \&...
 .RB [ \-attach
 .IR file ]
@@ -30,7 +30,7 @@ mhmail \- send or read mail non-interactively with nmh
 [switches\ for
 .I post
 \&... |
-.RB \-profile
+.B \-profile
 [switches\ for
 .I send
 \&...]]

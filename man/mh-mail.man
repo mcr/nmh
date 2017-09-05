@@ -99,7 +99,7 @@ the reply address is constructed by checking the following headers (in this
 order): \*(lqMail-Reply\-To:\*(rq, \*(lqReply\-To:\*(rq, \*(lqFrom:\*(rq,
 \*(lqSender:\*(rq.  A \*(lqFrom:\*(rq header MUST exist when the message is
 sent to
-.BR post,
+.BR post ,
 otherwise the message will be rejected.
 .RE
 .PP
@@ -234,7 +234,7 @@ Used instead of the \*(lqFrom:\*(rq header when
 redistributes a message.  See \*(lqFrom:\*(rq.
 .RE
 .PP
-.BR Resent\-To:
+.BR Resent\-To :
 .RS 5
 New recipients for a message resent by
 .BR dist .

@@ -170,7 +170,7 @@ Commands which take a range of message numbers
 Indicates all messages in the range <num1> to <num2>, inclusive.
 The range must be nonempty.
 .TP
-.RI all
+all
 Indicates all messages, i.e.,
 .IR first - last .
 .TP
@@ -212,7 +212,7 @@ message, or with an optional +.
 Commands that take a folder name
 .RB ( inc ,
 .BR refile ,
-.BR scan,
+.BR scan ,
 \&...) accept the folder name in two formats:  \*(lq+folder\*(rq or
 \*(lq@folder\*(rq.  In both cases, \*(lqfolder\*(rq can be a
 \*(lq/\*(rq-separated path, e.g.\& \*(lqfoo/bar\*(rq.  \*(lq+folder\*(rq
