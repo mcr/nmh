@@ -22,10 +22,10 @@ expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
 
-# check with no options and no current message
+start_test 'with no options and no current message'
 run_test 'mhlist' 'mhlist: no cur message'
 
-# check with no options and current message
+start_test 'with no options and current message'
 folder +inbox 5 > /dev/null
 cat > $expected <<EOF
  msg part  type/subtype              size description
@@ -34,26 +34,26 @@ EOF
 run_prog mhlist > $actual 2>&1
 check $expected $actual 'keep first'
 
-# check -noheaders
+start_test '-noheaders'
 run_test 'mhlist 5 -noheaders' '   5       text/plain                  25'
 
-# check -headers
+start_test '-headers'
 run_prog mhlist -noheaders -headers > $actual 2>&1
 check $expected $actual 'keep first'
 
-# check with folder and current message
+start_test 'with folder and current message'
 run_prog mhlist +inbox > $actual 2>&1
 check $expected $actual 'keep first'
 
-# check with specified message
+start_test 'with specified message'
 run_prog mhlist 5 > $actual 2>&1
 check $expected $actual 'keep first'
 
-# check -file
+start_test '-file'
 run_prog mhlist -file "$MH_TEST_DIR/Mail/inbox/5" > $actual 2>&1
 check $expected $actual
 
-# check -file -
+start_test '-file -'
 cat > $expected <<EOF
  msg part  type/subtype              size description
    0       text/plain                  25
@@ -61,7 +61,7 @@ EOF
 run_prog mhlist -file - < "$MH_TEST_DIR/Mail/inbox/5" > $actual 2>&1
 check $expected $actual
 
-# Check message with no blank line separating the headers from the body.
+start_test 'message with no blank line separating the headers from the body.'
 # Shouldn't make a difference to the size of the body part.
 # Bug meant no-blank-line case was one bigger by including the `\n'
 # ending the last header.
@@ -78,10 +78,10 @@ run_prog mhlist -file $f-no >$actual-no
 check $actual-yes $actual-no
 rm $f-yes $f-no
 
-# check message number greater than highest
+start_test 'message number greater than highest'
 run_test 'mhlist 11' "mhlist: message 11 doesn't exist"
 
-# check multiple messages
+start_test 'multiple messages'
 cat > $expected <<EOF
  msg part  type/subtype              size description
    2       text/plain                  25
@@ -136,19 +136,19 @@ VGhpcyBpcyB0aGUgZm91cnRoIHRleHQvcGxhaW4gcGFydC4K
 ------- =_aaaaaaaaaa0--
 EOF
 
-# check -part
+start_test '-part'
 run_test 'mhlist last -part 3 -noheader' \
 '  11       multipart/mixed            936
      1     multipart/related          180
      3     text/plain                  35'
 
-# check -part of a subpart
+start_test '-part of a subpart'
 run_test 'mhlist last -part 1.1 -noheader' \
 '  11       multipart/mixed            936
      1     multipart/related          180
      1.1   text/plain                  49'
 
-# check -type
+start_test '-type'
 run_test 'mhlist last -type text/plain -noheader' \
 '  11       multipart/mixed            936
      1     multipart/related          180
@@ -157,25 +157,25 @@ run_test 'mhlist last -type text/plain -noheader' \
      3     text/plain                  35
      4     text/plain                  36'
 
-# check -norealsize
+start_test '-norealsize'
 run_test 'mhlist last -part 4 -noheader -norealsize' \
 '  11       multipart/mixed            936
      1     multipart/related          180
      4     text/plain                  49'
 
-# check -realsize, the default
+start_test '-realsize, the default'
 run_test 'mhlist last -part 4 -noheader -norealsize -realsize' \
 '  11       multipart/mixed            936
      1     multipart/related          180
      4     text/plain                  36'
 
-# check -check
+start_test '-check'
 run_test 'mhlist last -part 2 -noheader -check' \
 '  11       multipart/mixed            936
      1     multipart/related          180
      2     text/plain                  36'
 
-# check -check with bad MD5 checksum
+start_test '-check with bad MD5 checksum'
 sed 's/\(Content-MD5: \)kq+Hnc/\1BADBAD/' $msgfile > $MH_TEST_DIR/$$.tmp
 mv -f $MH_TEST_DIR/$$.tmp $msgfile
 run_test 'mhlist last -part 2 -noheader -check' \
@@ -185,7 +185,7 @@ run_test 'mhlist last -part 2 -noheader -check' \
 mhlist: content integrity suspect (digest mismatch) -- continuing
         (content text/plain in message 11, part 2)'
 
-# check -nocheck, the default
+start_test '-nocheck, the default'
 run_test 'mhlist last -part 2 -noheader -check -nocheck' \
 '  11       multipart/mixed            936
      1     multipart/related          180
@@ -198,7 +198,7 @@ run_test 'mhlist last -part 2 -noheader -check -nocheck' \
 
 mark 1 -sequence cur -add -zero
 
-# check -verbose
+start_test '-verbose'
 run_test 'mhlist 11 -verbose -noheader' \
 '  11       multipart/mixed            936
 	     boundary="----- =_aaaaaaaaaa0"
@@ -216,7 +216,7 @@ run_test 'mhlist 11 -verbose -noheader' \
 	     charset="iso-8859-1"'
 
 #
-# Check default changecur behavior
+start_test 'default changecur behavior'
 #
 
 run_test 'mark -sequence cur -list' 'cur: 11'
@@ -229,7 +229,7 @@ mhlist -nochangecur 1 >/dev/null
 
 run_test 'mark -sequence cur -list' 'cur: 11'
 
-# check MIME parser and m_getfld
+start_test 'MIME parser and m_getfld'
 cat > $expected <<EOF
  msg part  type/subtype              size description
   12       multipart/related          204
@@ -461,7 +461,7 @@ cat > $expected <<EOF
      2.3   audio/wav                   18
 EOF
 
-# check it -- vanilla output
+start_test 'vanilla output'
 run_prog mhlist $msgnum > $actual 2>&1
 check "$expected" "$actual"
 
@@ -476,7 +476,7 @@ cat > $expected <<EOF
      2     multipart/alternative      326
 EOF
 
-# check it -- just part 1
+start_test 'just part 1'
 run_prog mhlist -part 1 $msgnum > $actual 2>&1
 check "$expected" "$actual"
 
@@ -488,7 +488,7 @@ cat > $expected <<EOF
      2     multipart/alternative      326
 EOF
 
-# check it -- ask for audio/basic in part 1, should get nothing
+start_test 'ask for audio/basic in part 1, should get nothing'
 run_prog mhlist -part 1 -type audio/basic $msgnum > $actual 2>&1
 check "$expected" "$actual"
 
@@ -506,7 +506,7 @@ cat > $expected <<EOF
      2.3   audio/mp3                   18
 EOF
 
-# check it -- bump plain and wav to the top of their parts
+start_test 'bump plain and wav to the top of their parts'
 run_prog mhlist -prefer text/plain -prefer audio/wav $msgnum > $actual 2>&1
 check "$expected" "$actual"
 
@@ -515,8 +515,8 @@ cat > $expected <<EOF
  msg part  type/subtype              size description
   13       multipart/mixed           1038
      1     multipart/alternative      518
-     1.1   text/plain                  34
-     1.2   text/enriched               29
+     1.1   text/enriched               29
+     1.2   text/plain                  34
      1.3   text/html                  111
      2     multipart/alternative      326
      2.1   audio/basic                 20
@@ -524,9 +524,10 @@ cat > $expected <<EOF
      2.3   audio/wav                   18
 EOF
 
-# check it -- bump plain and enriched to the top.  add a bogus type as well.
+start_test 'bump plain and enriched to the top.  add a bogus type as well.'
 run_prog mhlist -prefer foo/bar -prefer text/plain -prefer text/enriched $msgnum > $actual 2>&1
 check "$expected" "$actual"
 
 
+finish_test
 exit $failed
