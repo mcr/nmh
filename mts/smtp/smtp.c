@@ -349,7 +349,7 @@ sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
 	    close (pdi[1]);
 	    close (pdo[0]);
 
-	    netsec_set_fd(nsc, pdi[i], pdo[1]);
+	    netsec_set_fd(nsc, pdi[0], pdo[1]);
 	    netsec_set_timeout(nsc, SM_OPEN);
 	    result = smhear ();
 	    switch (result) {
