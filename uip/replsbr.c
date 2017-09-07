@@ -476,6 +476,7 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 	    if (pidXwait (pid, mhl))
 		done (1);
 	    fseek (out, 0L, SEEK_END);
+            arglist_free(mhl, arglist);
 	    break;
     }
 }
