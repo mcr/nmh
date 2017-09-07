@@ -78,7 +78,7 @@ nmh_getpass(const char *prompt)
     *p++ = ch;
   *p = '\0';
 
-  if (istty) {
+  if (istty && fin != stdin) {
     (void)tcsetattr(fileno(fin), TCSANOW, &oterm);
     rewind(fout);
     (void)fputc('\n', fout);
