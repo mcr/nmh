@@ -2237,9 +2237,9 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     init_decoded_content (reply_ct, infile);
 
     if (extract_headers (reply_ct, reply_file, &reply_fp) == NOTOK) {
-        free (reply_file);
         inform("failed to extract headers from convert output in %s, "
 	    "continuing...", reply_file);
+        free(reply_file);
         return;
     }
 
