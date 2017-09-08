@@ -1806,7 +1806,7 @@ verify_all_addresses (int talk, int eai, char *envelope, int oauth_flag,
 	puts(" -- Address Verification Successful --");
 
     if (!whomsw || checksw)
-	sm_end (DONE);
+	sm_end (whomsw ? OK : DONE);
 
     fflush (stdout);
     sigoff ();
