@@ -56,23 +56,16 @@ check_mech(char *server_mechs, size_t server_mechs_size)
 	return NOTOK;
     }
 
-    while ((status = multiline()) != DONE)
-	switch (status) {
-	case NOTOK:
+    while ((status = multiline()) != DONE) {
+        if (status == NOTOK)
 	    return NOTOK;
-	    break;
-	case DONE:	/* Shouldn't be possible, but just in case */
-	    break;
-	case OK:
-	    if (strncasecmp(response, "SASL ", 5) == 0) {
-		/*
-		 * We've seen the SASL capability.  Grab the mech list
-		 */
-		sasl_capability++;
-		strncpy(server_mechs, response + 5, server_mechs_size);
-	    }
-	    break;
-	}
+
+        if (strncasecmp(response, "SASL ", 5) == 0) {
+            /* We've seen the SASL capability.  Grab the mech list. */
+            sasl_capability++;
+            strncpy(server_mechs, response + 5, server_mechs_size);
+        }
+    }
 
     if (!sasl_capability) {
 	snprintf(response, sizeof(response), "POP server does not support "
