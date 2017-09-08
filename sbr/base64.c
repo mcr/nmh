@@ -324,12 +324,9 @@ test_end:
     }
 
     if (! self_delimiting  &&  bitno != 18) {
-        int i;
-
         /* Show some context for the error. */
-        for (i = 0; i < 20  &&  cp > encoded; ++i, --cp) {}
-        inform("premature ending (bitno %d) near %s", bitno,
-                cp ? cp : encoded);
+        cp -= min(cp - encoded, 20);
+        inform("premature ending (bitno %d) near %s", bitno, cp);
         charstring_free (decoded_c);
         *decoded = NULL;
 
