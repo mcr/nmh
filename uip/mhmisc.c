@@ -161,7 +161,7 @@ void
 content_error (char *what, CT ct, char *fmt, ...)
 {
     va_list arglist;
-    int	i, len, buflen;
+    int	len, buflen;
     char *bp, buffer[BUFSIZ];
     CI ci;
 
@@ -204,10 +204,8 @@ content_error (char *what, CT ct, char *fmt, ...)
 	buflen -= len;
     }
 
-    i = strlen (invo_name) + 2;
-
     /* Now add content type and subtype */
-    snprintf (bp, buflen, "\n%*s(content %s/%s", i, "",
+    snprintf (bp, buflen, "\n    (content %s/%s",
 	ci->ci_type, ci->ci_subtype);
     len = strlen (bp);
     bp += len;

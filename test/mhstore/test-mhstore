@@ -240,7 +240,7 @@ mv -f "$MH_TEST_DIR/$$.tmp" "$msgfile"
 run_test 'mhstore last -part 2 -check' \
 'storing message 11 part 2 as file 11.2.txt
 mhstore: content integrity suspect (digest mismatch) -- continuing
-         (content text/plain in message 11, part 2)'
+    (content text/plain in message 11, part 2)'
 check "$expected" 11.2.txt 'keep first'
 
 # check -nocheck, the default
