@@ -74,6 +74,12 @@ main (int argc, char **argv)
     vec[vecp++] = "-library";
     vec[vecp++] = getcpy (m_maildir (""));
 
+    if ((cp = context_find ("credentials"))) {
+	/* post doesn't read context so need to pass credentials. */
+	vec[vecp++] = "-credentials";
+	vec[vecp++] = cp;
+    }
+
     /* Don't need to feed fileproc or mhlproc to post because
        it doesn't use them when used for whom. */
 
