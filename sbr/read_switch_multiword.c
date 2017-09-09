@@ -25,12 +25,11 @@ read_switch_multiword (const char *prompt, const struct swit *ansp)
     SIGNAL_HANDLER istat = NULL;
     char *cp, **cpp;
 
-    if (!(sigsetjmp(sigenv, 1))) {
-	istat = SIGNAL (SIGINT, intrser);
-    } else {
+    if (sigsetjmp(sigenv, 1)) {
 	SIGNAL (SIGINT, istat);
 	return NULL;
     }
+    istat = SIGNAL (SIGINT, intrser);
 
     for (;;) {
 	fputs(prompt, stdout);
