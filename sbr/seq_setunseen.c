@@ -27,14 +27,12 @@ seq_setunseen (struct msgs *mp, int seen)
      * Get the list of sequences for Unseen-Sequence
      * and split them.
      */
-    if ((cp = context_find (usequence))) {
-	dp = mh_xstrdup(cp);
-	if (!(ap = brkstring (dp, " ", "\n")) || !*ap) {
-	    free (dp);
-	    return;
-	}
-    } else {
-	return;
+    if (!(cp = context_find (usequence)))
+        return;
+    dp = mh_xstrdup(cp);
+    if (!(ap = brkstring (dp, " ", "\n")) || !*ap) {
+        free (dp);
+        return;
     }
 
     /*
