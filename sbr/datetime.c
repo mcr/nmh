@@ -88,8 +88,6 @@ parse_datetime (const char *datetime, const char *zone, bool dst,
        the entire day.  The time fields of the tws struct were
        initialized to 0 by the memset() above. */
     if (items_matched >= 6  ||  items_matched == 3) {
-        int offset = atoi (zone ? zone : "0");
-
         /* struct tws defines tw_mon over [0, 11]. */
         --tws->tw_mon;
 
@@ -106,7 +104,11 @@ parse_datetime (const char *datetime, const char *zone, bool dst,
            - the only flag in tw_flags used is TW_DST
          */
         tws->tw_yday = tws->tw_clock = 0;
-        tws->tw_zone = 60 * (offset / 100)  +  offset % 100;
+        if (zone) {
+            int offset = atoi(zone);
+            tws->tw_zone = 60 * (offset / 100)  +  offset % 100;
+        } else
+            tws->tw_zone = 0;
         if (dst) {
             tws->tw_zone -= 60;  /* per dlocaltime() */
             tws->tw_flags |= TW_DST;
