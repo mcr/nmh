@@ -20,37 +20,36 @@ int
 main(int argc, char *argv[])
 {
   char buf[_POSIX_HOST_NAME_MAX + 1];
-  const char *hostname = buf;
+  const char *hostname;
   struct addrinfo hints, *res;
-  int status = 0;
 
   /* Borrowed the important code below from LocalName() in sbr/mts.c. */
 
-  if (argc < 2) {
-    /* First get our local name. */
-    status = gethostname(buf, sizeof buf);
-  } else if (argc == 2) {
-    hostname = argv[1];
-  } else if (argc > 2) {
+  if (argc > 2) {
     fprintf(stderr, "usage: %s [hostname]\n", argv[0]);
     return 1;
   }
-
-  if (status == 0) {
-    /* Now fully qualify the hostname. */
-    memset(&hints, 0, sizeof hints);
-    hints.ai_flags = AI_CANONNAME;
-    hints.ai_family = AF_UNSPEC;
-
-    if ((status = getaddrinfo(hostname, NULL, &hints, &res)) == 0) {
-      printf("%s\n", res->ai_canonname);
-      freeaddrinfo(res);
-    } else {
-      printf("%s\n", hostname);
+  if (argc == 2)
+    hostname = argv[1];
+  else {
+    /* First get our local name. */
+    if (gethostname(buf, sizeof buf)) {
+        fprintf(stderr, "gethostname() failed: %s\n", strerror(errno));
+        return 1;
     }
-  } else {
-    fprintf(stderr, "gethostname() failed: %s\n", strerror(errno));
+    hostname = buf;
   }
 
-  return status;
+  /* Now fully qualify the hostname. */
+  memset(&hints, 0, sizeof hints);
+  hints.ai_flags = AI_CANONNAME;
+  hints.ai_family = AF_UNSPEC;
+
+  if (getaddrinfo(hostname, NULL, &hints, &res)) {
+    printf("%s\n", hostname);
+    return 1;
+  }
+  printf("%s\n", res->ai_canonname);
+
+  return 0;
 }
