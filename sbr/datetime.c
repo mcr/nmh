@@ -181,7 +181,7 @@ load_timezones (const contentline *clines) {
                 } else {
                     inform("failed to parse start time %s for %s",
                             params->dtstart,
-                            in_standard ? "standard" : "daylight");
+                            in_daylight ? "daylight" : "standard");
                     return NULL;
                 }
                 params = NULL;
