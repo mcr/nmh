@@ -10,7 +10,7 @@
 #include <h/utils.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
-#include "../sbr/m_mktemp.h"
+#include "sbr/m_mktemp.h"
 #include "mhfree.h"
 
 /* The list of top-level contents to display */

@@ -13,7 +13,7 @@
 #include <h/netsec.h>
 
 #include <sys/socket.h>
-#include "../../sbr/base64.h"
+#include "sbr/base64.h"
 
 /*
  * This module implements an interface to SendMail very similar

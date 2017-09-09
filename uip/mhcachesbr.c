@@ -15,8 +15,8 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 #include "mhmisc.h"
-#include "../sbr/lock_file.h"
-#include "../sbr/m_mktemp.h"
+#include "sbr/lock_file.h"
+#include "sbr/m_mktemp.h"
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>

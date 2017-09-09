@@ -24,9 +24,9 @@
 #ifdef OAUTH_SUPPORT
 #include <h/oauth.h>
 #endif
-#include "../sbr/m_maildir.h"
-#include "../sbr/m_mktemp.h"
-#include "../sbr/message_id.h"
+#include "sbr/m_maildir.h"
+#include "sbr/m_mktemp.h"
+#include "sbr/message_id.h"
 
 #ifdef OAUTH_SUPPORT
 static int setup_oauth_params(char *[], int *, const char *, const char **);

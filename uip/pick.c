@@ -9,7 +9,7 @@
 #include <h/tws.h>
 #include <h/picksbr.h>
 #include <h/utils.h>
-#include "../sbr/m_maildir.h"
+#include "sbr/m_maildir.h"
 
 #define PICK_SWITCHES \
     X("reverse", 0, REVSW) \

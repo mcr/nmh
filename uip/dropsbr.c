@@ -11,8 +11,8 @@
 #include <h/dropsbr.h>
 #include <h/mts.h>
 #include <h/tws.h>
-#include "../sbr/lock_file.h"
-#include "../sbr/m_mktemp.h"
+#include "sbr/lock_file.h"
+#include "sbr/m_mktemp.h"
 #include <fcntl.h>
 
 /*

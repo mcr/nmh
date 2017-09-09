@@ -11,8 +11,8 @@
 #ifdef OAUTH_SUPPORT
 # include <h/oauth.h>
 #endif
-#include "../sbr/m_maildir.h"
-#include "../sbr/m_mktemp.h"
+#include "sbr/m_maildir.h"
+#include "sbr/m_mktemp.h"
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)

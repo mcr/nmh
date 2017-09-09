@@ -15,12 +15,12 @@
 #include <h/utils.h>
 #include "mhmisc.h"
 #include <h/mhcachesbr.h>
-#include "../sbr/m_mktemp.h"
+#include "sbr/m_mktemp.h"
 #include "mhfree.h"
 #ifdef HAVE_ICONV
 # include <iconv.h>
 #endif /* HAVE_ICONV */
-#include "../sbr/base64.h"
+#include "sbr/base64.h"
 
 
 extern int debugsw;

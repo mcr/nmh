@@ -16,8 +16,8 @@
 #include <h/utils.h>
 #include "mhmisc.h"
 #include "mhshowsbr.h"
-#include "../sbr/m_maildir.h"
-#include "../sbr/m_mktemp.h"
+#include "sbr/m_maildir.h"
+#include "sbr/m_mktemp.h"
 
 enum clobber_policy_t {
   NMH_CLOBBER_ALWAYS = 0,

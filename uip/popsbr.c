@@ -12,7 +12,7 @@
 
 #include <h/popsbr.h>
 #include <h/signals.h>
-#include "../sbr/base64.h"
+#include "sbr/base64.h"
 
 #define	TRM	"."
 

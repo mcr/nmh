@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <h/signals.h>
 #include <h/utils.h>
-#include "../sbr/m_mktemp.h"
+#include "sbr/m_mktemp.h"
 #include <setjmp.h>
 
 #include <termios.h>

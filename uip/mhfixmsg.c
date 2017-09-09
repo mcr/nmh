@@ -11,9 +11,9 @@
 #include <h/mhparse.h>
 #include <h/utils.h>
 #include <h/signals.h>
-#include "../sbr/m_maildir.h"
-#include "../sbr/m_mktemp.h"
-#include "../sbr/mime_type.h"
+#include "sbr/m_maildir.h"
+#include "sbr/m_mktemp.h"
+#include "sbr/mime_type.h"
 #include "mhmisc.h"
 #include "mhfree.h"
 #include "mhoutsbr.h"

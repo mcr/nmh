@@ -10,9 +10,9 @@
 #include <h/signals.h>
 #include <h/mts.h>
 #include <h/utils.h>
-#include "../sbr/m_maildir.h"
-#include "../sbr/m_mktemp.h"
-#include "../sbr/makedir.h"
+#include "sbr/m_maildir.h"
+#include "sbr/m_mktemp.h"
+#include "sbr/makedir.h"
 
 #define RCVSTORE_SWITCHES \
     X("create", 0, CRETSW) \

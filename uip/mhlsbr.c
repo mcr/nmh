@@ -11,10 +11,10 @@
 #include <h/fmt_scan.h>
 #include <h/tws.h>
 #include <h/utils.h>
-#include "../sbr/m_popen.h"
+#include "sbr/m_popen.h"
 #include <setjmp.h>
 #include <sys/types.h>
-#include "../sbr/terminal.h"
+#include "sbr/terminal.h"
 
 /*
  * MAJOR BUG:

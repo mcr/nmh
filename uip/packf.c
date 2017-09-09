@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <h/dropsbr.h>
 #include <h/utils.h>
-#include "../sbr/m_maildir.h"
+#include "sbr/m_maildir.h"
 
 #define PACKF_SWITCHES \
     X("file name", 0, FILESW) \

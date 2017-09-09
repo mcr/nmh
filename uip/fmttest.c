@@ -11,8 +11,8 @@
 #include <h/utils.h>
 #include <h/scansbr.h>
 #include <h/addrsbr.h>
-#include "../sbr/m_maildir.h"
-#include "../sbr/terminal.h"
+#include "sbr/m_maildir.h"
+#include "sbr/terminal.h"
 
 #define FMTTEST_SWITCHES \
     X("form formatfile", 0, FORMSW) \

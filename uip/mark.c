@@ -9,7 +9,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
-#include "../sbr/m_maildir.h"
+#include "sbr/m_maildir.h"
 
 #define MARK_SWITCHES \
     X("add", 0, ADDSW) \

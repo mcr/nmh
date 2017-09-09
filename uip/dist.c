@@ -7,7 +7,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
-#include "../sbr/m_maildir.h"
+#include "sbr/m_maildir.h"
 #include <fcntl.h>
 
 #define DIST_SWITCHES \

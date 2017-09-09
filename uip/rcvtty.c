@@ -18,7 +18,7 @@
 #include <h/tws.h>
 #include <h/mts.h>
 #include <h/utils.h>
-#include "../sbr/m_mktemp.h"
+#include "sbr/m_mktemp.h"
 #include <fcntl.h>
 
 #ifdef HAVE_GETUTXENT

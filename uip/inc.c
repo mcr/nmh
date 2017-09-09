@@ -40,9 +40,9 @@
 #include <h/signals.h>
 #include <h/tws.h>
 #include <h/mts.h>
-#include "../sbr/lock_file.h"
-#include "../sbr/m_maildir.h"
-#include "../sbr/m_mktemp.h"
+#include "sbr/lock_file.h"
+#include "sbr/m_maildir.h"
+#include "sbr/m_mktemp.h"
 
 #ifndef TLS_SUPPORT
 # define TLSminc(a) (a)

@@ -17,7 +17,7 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 #include "mhmisc.h"
-#include "../sbr/m_maildir.h"
+#include "sbr/m_maildir.h"
 #include "mhfree.h"
 #include "mhshowsbr.h"
 

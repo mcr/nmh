@@ -10,7 +10,7 @@
 #include <h/mh.h>
 #include <h/crawl_folders.h>
 #include <h/utils.h>
-#include "../sbr/m_maildir.h"
+#include "sbr/m_maildir.h"
 
 #define FOLDER_SWITCHES \
     X("all", 0, ALLSW) \
