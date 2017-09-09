@@ -22,9 +22,12 @@ main(int argc, char *argv[])
 	struct passwd *pwd;
 	char buf[BUFSIZ], *p;
 
+        if (argc > 2) {
+		fprintf (stderr, "usage: %s [name]\n", argv[0]);
+		return 1;
+	}
 	if (argc < 2) {
 		pwd = getpwuid(getuid());
-
 		if (! pwd) {
 			fprintf(stderr, "Unable to retrieve user info for "
 				"userid %ld\n", (long) getuid());
@@ -33,12 +36,8 @@ main(int argc, char *argv[])
 
 		strncpy(buf, pwd->pw_gecos, sizeof(buf));
 		buf[sizeof(buf) - 1] = '\0';
-	} else if (argc == 2) {
+	} else
 		strncpy(buf, argv[1], sizeof(buf));
-	} else if (argc > 2) {
-		fprintf (stderr, "usage: %s [name]\n", argv[0]);
-		return 1;
-	}
 
 	/*
 	 * Perform the same processing that getuserinfo() does.
