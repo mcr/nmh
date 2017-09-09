@@ -33,12 +33,11 @@ folder_pack (struct msgs **mpp, int verbose)
      * for all numbers from 1 to current high message.
      */
     if (mp->lowoff > 1) {
-	if ((mp = folder_realloc (mp, 1, mp->hghmsg)))
-	    *mpp = mp;
-	else {
+	if (!(mp = folder_realloc(mp, 1, mp->hghmsg))) {
 	    inform("unable to allocate folder storage");
 	    return -1;
 	}
+        *mpp = mp;
     }
 
     for (msgnum = mp->lowmsg, hole = 1; msgnum <= mp->hghmsg; msgnum++) {
