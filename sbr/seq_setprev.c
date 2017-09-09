@@ -25,14 +25,12 @@ seq_setprev (struct msgs *mp)
      * Get the list of sequences for Previous-Sequence
      * and split them.
      */
-    if ((cp = context_find (psequence))) {
-	dp = mh_xstrdup(cp);
-	if (!(ap = brkstring (dp, " ", "\n")) || !*ap) {
-	    free (dp);
-	    return;
-	}
-    } else {
-	return;
+    if (!(cp = context_find(psequence)))
+        return;
+    dp = mh_xstrdup(cp);
+    if (!(ap = brkstring(dp, " ", "\n")) || !*ap) {
+        free(dp);
+        return;
     }
 
     /* Now add all SELECTED messages to each sequence */
