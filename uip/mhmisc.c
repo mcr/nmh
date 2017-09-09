@@ -240,6 +240,8 @@ content_error (char *what, CT ct, char *fmt, ...)
     } else {
 	inform("%s", buffer);
     }
+
+    va_end(arglist);
 }
 
 
