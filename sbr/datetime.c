@@ -173,18 +173,18 @@ load_timezones (const contentline *clines) {
 
                 if (in_standard) { in_standard = false; }
                 else if (in_daylight) { in_daylight = false; }
-                if (parse_datetime (params->dtstart, params->offsetfrom,
-                                    in_daylight,
-                                    &tws) == OK) {
-                    if (tws.tw_year >= 1970) {
-                        /* dmktime() falls apart for, e.g., the year 1601. */
-                        params->start_dt = tws.tw_clock;
-                    }
-                } else {
+
+                if (parse_datetime(params->dtstart, params->offsetfrom,
+                    in_daylight, &tws) != OK) {
                     inform("failed to parse start time %s for %s",
-                            params->dtstart,
-                            in_daylight ? "daylight" : "standard");
+                        params->dtstart,
+                        in_daylight ? "daylight" : "standard");
                     return NULL;
+                }
+
+                if (tws.tw_year >= 1970) {
+                    /* dmktime() falls apart for, e.g., the year 1601. */
+                    params->start_dt = tws.tw_clock;
                 }
                 params = NULL;
             } else if (! strcasecmp ("DTSTART", node->name)) {
@@ -360,11 +360,11 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
     if (! dt_timezone) {
         /* Form #1: DATE WITH LOCAL TIME, i.e., no time zone, or
            Form #2: DATE WITH UTC TIME */
-        if (parse_datetime (node->value, NULL, false, &tws[0]) == OK) {
-            return strdup (dasctime (&tws[0], 0));
+        if (parse_datetime(node->value, NULL, false, &tws[0]) != OK) {
+            inform("unable to parse datetime %s", node->value);
+            return NULL;
         }
-        inform("unable to parse datetime %s", node->value);
-        return NULL;
+        return strdup (dasctime (&tws[0], 0));
     }
 
     /*
@@ -382,13 +382,12 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
         if (tz->tzid  &&  ! strcasecmp (dt_timezone, tz->tzid)) { break; }
     }
 
-    if (tz) {
-        free(dt_timezone);
-    } else {
+    if (!tz) {
         inform("did not find VTIMEZONE section for %s", dt_timezone);
         free(dt_timezone);
         return NULL;
     }
+    free(dt_timezone);
 
     /* Determine if it's Daylight Saving. */
     tp_std = strchr (tz->standard_params.dtstart, 'T');
@@ -433,28 +432,23 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
             return NULL;
         }
 
-        if (parse_datetime (node->value, tz->standard_params.offsetto,
-                            false, &tws[0]) == OK) {
-            dt[0] = tws[0].tw_clock;
-        } else {
+        if (parse_datetime(node->value, tz->standard_params.offsetto,
+            false, &tws[0]) != OK) {
             inform("unable to parse datetime %s", node->value);
             return NULL;
         }
+        dt[0] = tws[0].tw_clock;
 
         if (tp_dst) {
             if (dt[0] < transition[1]) {
                 dst = 0;
             } else {
-                if (parse_datetime (node->value,
-                                    tz->daylight_params.offsetto, true,
-                                    &tws[1]) == OK) {
-                    dt[1] = tws[1].tw_clock;
-                } else {
-                    inform("unable to parse datetime %s",
-                            node->value);
+                if (parse_datetime(node->value,
+                    tz->daylight_params.offsetto, true, &tws[1]) != OK) {
+                    inform("unable to parse datetime %s", node->value);
                     return NULL;
                 }
-
+                dt[1] = tws[1].tw_clock;
                 dst = dt[1] <= transition[0];
             }
         }
