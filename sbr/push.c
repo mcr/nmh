@@ -14,11 +14,8 @@ void
 push(void)
 {
     pid_t pid;
-    int i;
 
-    for (i = 0; (pid = fork()) == -1 && i < 5; i++)
-	sleep (5);
-
+    pid = fork();
     switch (pid) {
 	case -1:
 	    /* fork error */

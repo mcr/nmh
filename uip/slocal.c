@@ -1046,7 +1046,7 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 {
     volatile int fd = fd_arg;
     pid_t child_id;
-    int i, bytes, seconds, status;
+    int bytes, seconds, status;
     struct stat st;
 
     if (verbose && !suppress)
@@ -1054,9 +1054,7 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 
     lseek(fd, 0, SEEK_SET);
 
-    for (i = 0; (child_id = fork()) == -1 && i < 5; i++)
-	sleep (5);
-
+    child_id = fork();
     switch (child_id) {
 	case -1: 
 	    /* fork error */

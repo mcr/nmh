@@ -1512,8 +1512,7 @@ make_bcc_file (int dashstuff)
      * of MIME encapsulation.
      */
     if (filter != NULL) {
-	for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	    sleep (5);
+	child_id = fork();
 	switch (child_id) {
 	    case NOTOK: 
 		adios ("fork", "unable to");
@@ -1669,7 +1668,7 @@ static void
 post (char *file, int bccque, int talk, int eai, char *envelope,
       int oauth_flag, char *auth_svc)
 {
-    int	retval, i;
+    int retval;
     pid_t child_id;
 
     if (verbose) {
@@ -1686,8 +1685,7 @@ post (char *file, int bccque, int talk, int eai, char *envelope,
 	char **argp, *program;
 	int argc;
 
-	for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	    sleep (5);
+	child_id = fork();
 	switch (child_id) {
 	    case NOTOK: 
 		adios ("fork", "unable to");
@@ -1982,7 +1980,7 @@ static void
 fcc (char *file, char *folder)
 {
     pid_t child_id;
-    int i, status, argp;
+    int status, argp;
     char fold[BUFSIZ];
     char **arglist, *program;
 
@@ -1990,9 +1988,7 @@ fcc (char *file, char *folder)
 	printf ("  %sFcc %s: ", msgstate == RESENT ? "Resent-" : "", folder);
     fflush (stdout);
 
-    for (i = 0; (child_id = fork ()) == NOTOK && i < 5; i++)
-	sleep (5);
-
+    child_id = fork();
     switch (child_id) {
 	case NOTOK: 
 	    if (!verbose)

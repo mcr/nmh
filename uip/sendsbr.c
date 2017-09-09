@@ -424,7 +424,7 @@ static int
 sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 {
     pid_t child_id;
-    int i, status, fd, fd2;
+    int status, fd, fd2;
     char backup[BUFSIZ], buf[BUFSIZ];
 
     fd = pushsw ? tmp_fd () : NOTOK;
@@ -445,9 +445,7 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 	done (1);
     vec[vecp] = NULL;
 
-    for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	sleep (5);
-
+    child_id = fork();
     switch (child_id) {
     case -1:
 	/* oops -- fork error */
@@ -514,14 +512,12 @@ static void
 alert (char *file, int out)
 {
     pid_t child_id;
-    int i, in, argp;
+    int in, argp;
     char buf[BUFSIZ];
     char *program;
     char **arglist;
 
-    for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	sleep (5);
-
+    child_id = fork();
     switch (child_id) {
 	case NOTOK:
 	    /* oops -- fork error */

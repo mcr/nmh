@@ -41,7 +41,7 @@ int
 main (int argc, char **argv)
 {
     pid_t child_id;
-    int i, vecp;
+    int vecp;
     char *addrs = NULL, *cp, *form = NULL, buf[BUFSIZ], *program;
     char **argp, **arguments, **vec;
     FILE *fp;
@@ -124,8 +124,7 @@ main (int argc, char **argv)
     vec[vecp++] = drft;
     vec[vecp] = NULL;
 
-    for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	sleep (5);
+    child_id = fork();
     switch (child_id) {
 	case NOTOK: 
 	    inform("unable to fork, continuing...");

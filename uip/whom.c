@@ -58,7 +58,7 @@ int
 main (int argc, char **argv)
 {
     pid_t child_id = OK;
-    int i, status, isdf = 0;
+    int status, isdf = 0;
     int distsw = 0, vecp = 0;
     char *cp, *dfolder = NULL, *dmsg = NULL;
     char *msg = NULL, **ap, **argp, backup[BUFSIZ];
@@ -180,10 +180,8 @@ main (int argc, char **argv)
 
     closefds (3);
 
-    if (distsw) {
-	for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	    sleep (5);
-    }
+    if (distsw)
+	child_id = fork();
 
     switch (distsw ? child_id : OK) {
 	case NOTOK:

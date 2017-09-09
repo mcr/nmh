@@ -2556,7 +2556,7 @@ openFTP (CT ct, char **file)
     }
 
     {
-	int child_id, i, vecp;
+	int child_id, vecp;
 	char *vec[9];
 
 	vecp = 0;
@@ -2573,8 +2573,7 @@ openFTP (CT ct, char **file)
 
 	fflush (stdout);
 
-	for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	    sleep (5);
+	child_id = fork();
 	switch (child_id) {
 	    case NOTOK:
 	        adios ("fork", "unable to");
@@ -2652,7 +2651,7 @@ InitMail (CT ct)
 static int
 openMail (CT ct, char **file)
 {
-    int	child_id, fd, i, vecp;
+    int child_id, fd, vecp;
     int len, buflen;
     char *bp, buffer[BUFSIZ], *vec[7];
     struct exbody *e = ct->c_ctexbody;
@@ -2708,8 +2707,7 @@ openMail (CT ct, char **file)
     vec[vecp++] = e->eb_body;
     vec[vecp] = NULL;
 
-    for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	sleep (5);
+    child_id = fork();
     switch (child_id) {
 	case NOTOK:
 	    advise ("fork", "unable to");

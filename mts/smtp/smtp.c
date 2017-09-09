@@ -307,9 +307,7 @@ sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
 	return sm_ierror ("no pipes");
     }
 
-    for (i = 0; (sm_child = fork ()) == NOTOK && i < 5; i++)
-	sleep (5);
-
+    sm_child = fork();
     switch (sm_child) {
 	case NOTOK: 
 	    close (pdo[0]);

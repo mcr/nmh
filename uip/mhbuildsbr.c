@@ -1221,7 +1221,7 @@ compose_content (CT ct, int verbose)
     default:
 	if (!ce->ce_file) {
 	    pid_t child_id;
-	    int i, xstdout, len, buflen;
+	    int xstdout, len, buflen;
 	    char *bp, *cp;
 	    char *vec[4], buffer[BUFSIZ];
 	    FILE *out;
@@ -1321,8 +1321,7 @@ raw:
 	    if ((out = fopen (ce->ce_file, "w")) == NULL)
 		adios (ce->ce_file, "unable to open for writing");
 
-	    for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-		sleep (5);
+	    child_id = fork();
 	    switch (child_id) {
 	    case NOTOK:
 		adios ("fork", "unable to fork");

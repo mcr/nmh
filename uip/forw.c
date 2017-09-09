@@ -484,7 +484,7 @@ mhl_draft (int out, char *digest, int volume, int issue,
             char *file, char *filter, int dashstuff)
 {
     pid_t child_id;
-    int i, msgnum, pd[2];
+    int msgnum, pd[2];
     char buf1[BUFSIZ];
     char buf2[BUFSIZ];
     char *program;
@@ -495,9 +495,7 @@ mhl_draft (int out, char *digest, int volume, int issue,
 
     argsplit_msgarg(&vec, mhlproc, &program);
 
-    for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	sleep (5);
-
+    child_id = fork();
     switch (child_id) {
 	case NOTOK: 
 	    adios ("fork", "unable to");

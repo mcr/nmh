@@ -801,7 +801,7 @@ static int
 sendfile (char **arg, char *file, int pushsw)
 {
     pid_t child_id;
-    int i, vecp;
+    int vecp;
     char *cp, *sp, **vec, *program;
 
     /*
@@ -818,8 +818,7 @@ sendfile (char **arg, char *file, int pushsw)
     context_save ();	/* save the context file */
     fflush (stdout);
 
-    for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	sleep (5);
+    child_id = fork();
     switch (child_id) {
 	case NOTOK:
 	    inform("unable to fork, so sending directly...");

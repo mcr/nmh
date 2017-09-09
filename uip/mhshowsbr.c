@@ -193,7 +193,7 @@ static void
 DisplayMsgHeader (CT ct, char *form, int concatsw)
 {
     pid_t child_id;
-    int i, vecp;
+    int vecp;
     char **vec;
     char *file;
 
@@ -217,9 +217,7 @@ DisplayMsgHeader (CT ct, char *form, int concatsw)
 
     fflush (stdout);
 
-    for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	sleep (5);
-
+    child_id = fork();
     switch (child_id) {
     case NOTOK:
 	adios ("fork", "unable to");
@@ -396,7 +394,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
                    int fd, int xlist, int xstdin, struct format *fmt)
 {
     pid_t child_id;
-    int i, vecp;
+    int vecp;
     char **vec, *file;
 
     if (debugsw || cracked) {
@@ -466,8 +464,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 
     fflush (stdout);
 
-    for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
-	sleep (5);
+    child_id = fork();
     switch (child_id) {
 	case NOTOK:
 	    advise ("fork", "unable to");
