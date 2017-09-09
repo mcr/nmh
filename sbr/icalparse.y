@@ -176,13 +176,8 @@ find_contentline (contentline *contentlines, const char *name,
     for (node = contentlines; node; node = node->next) {
         /* node->name will be NULL if the line was "deleted". */
         if (node->name  &&  ! strcasecmp (name, node->name)) {
-            if (val  &&  node->value) {
-                if (! strcasecmp (val, node->value)) {
-                    return node;
-                }
-            } else {
+            if (!val || !node->value || !strcasecmp(val, node->value))
                 return node;
-            }
         }
     }
 
