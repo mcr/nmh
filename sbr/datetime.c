@@ -58,10 +58,10 @@ struct tzdesc {
  * struct tws.
  */
 static int
-parse_datetime (const char *datetime, const char *zone, int dst,
+parse_datetime (const char *datetime, const char *zone, bool dst,
                 struct tws *tws) {
     char utc_indicator;
-    int form_1 = 0;
+    bool form_1;
     int items_matched;
 
     ZERO(tws);
@@ -72,6 +72,7 @@ parse_datetime (const char *datetime, const char *zone, int dst,
                 &utc_indicator);
     tws->tw_flags = TW_NULL;
 
+    form_1 = false;
     if (items_matched == 7) {
         /* The 'Z' must be capital according to RFC 5545 Sec. 3.3.5. */
         if (utc_indicator != 'Z') {
@@ -80,7 +81,7 @@ parse_datetime (const char *datetime, const char *zone, int dst,
             return NOTOK;
         }
     } else if (zone == NULL) {
-        form_1 = 1;
+        form_1 = true;
     }
 
     /* items_matched of 3 is for, e.g., 20151230.  Assume that means
@@ -152,12 +153,12 @@ parse_datetime (const char *datetime, const char *zone, int dst,
 tzdesc_t
 load_timezones (const contentline *clines) {
     tzdesc_t timezones = NULL, timezone = NULL;
-    int in_vtimezone, in_standard, in_daylight;
+    bool in_vtimezone, in_standard, in_daylight;
     tzparams *params = NULL;
     const contentline *node;
 
     /* Interpret each VTIMEZONE section. */
-    in_vtimezone = in_standard = in_daylight = 0;
+    in_vtimezone = in_standard = in_daylight = false;
     for (node = clines; node; node = node->next) {
         /* node->name will be NULL if the line was "deleted". */
         if (! node->name) { continue; }
@@ -168,8 +169,8 @@ load_timezones (const contentline *clines) {
                  (in_daylight  &&  ! strcasecmp ("DAYLIGHT", node->value)))) {
                 struct tws tws;
 
-                if (in_standard) { in_standard = 0; }
-                else if (in_daylight) { in_daylight = 0; }
+                if (in_standard) { in_standard = false; }
+                else if (in_daylight) { in_daylight = false; }
                 if (parse_datetime (params->dtstart, params->offsetfrom,
                                     in_daylight,
                                     &tws) == OK) {
@@ -197,14 +198,14 @@ load_timezones (const contentline *clines) {
         } else if (in_vtimezone) {
             if (! strcasecmp ("END", node->name)  &&
                 ! strcasecmp ("VTIMEZONE", node->value)) {
-                in_vtimezone = 0;
+                in_vtimezone = false;
             } else if (! strcasecmp ("BEGIN", node->name)  &&
                 ! strcasecmp ("STANDARD", node->value)) {
-                in_standard = 1;
+                in_standard = true;
                 params = &timezone->standard_params;
             } else if (! strcasecmp ("BEGIN", node->name)  &&
                 ! strcasecmp ("DAYLIGHT", node->value)) {
-                in_daylight = 1;
+                in_daylight = true;
                 params = &timezone->daylight_params;
             } else if (! strcasecmp ("TZID", node->name)) {
                 /* See comment below in format_datetime() about removing any enclosing quotes from a
@@ -217,7 +218,7 @@ load_timezones (const contentline *clines) {
             if (! strcasecmp ("BEGIN", node->name)  &&
                 ! strcasecmp ("VTIMEZONE", node->value)) {
 
-                in_vtimezone = 1;
+                in_vtimezone = true;
                 NEW0(timezone);
                 if (timezones) {
                     tzdesc_t t;
@@ -357,7 +358,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
     if (! dt_timezone) {
         /* Form #1: DATE WITH LOCAL TIME, i.e., no time zone, or
            Form #2: DATE WITH UTC TIME */
-        if (parse_datetime (node->value, NULL, 0, &tws[0]) == OK) {
+        if (parse_datetime (node->value, NULL, false, &tws[0]) == OK) {
             return strdup (dasctime (&tws[0], 0));
         }
         inform("unable to parse datetime %s", node->value);
@@ -431,7 +432,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
         }
 
         if (parse_datetime (node->value, tz->standard_params.offsetto,
-                            0, &tws[0]) == OK) {
+                            false, &tws[0]) == OK) {
             dt[0] = tws[0].tw_clock;
         } else {
             inform("unable to parse datetime %s", node->value);
@@ -443,7 +444,7 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
                 dst = 0;
             } else {
                 if (parse_datetime (node->value,
-                                    tz->daylight_params.offsetto, 1,
+                                    tz->daylight_params.offsetto, true,
                                     &tws[1]) == OK) {
                     dt[1] = tws[1].tw_clock;
                 } else {
