@@ -46,8 +46,7 @@ bool suppress_extraneous_trailing_semicolon_warning;
 bool suppress_multiple_mime_version_warning = true;
 
 /* list of preferred type/subtype pairs, for -prefer */
-char *preferred_types[NPREFS];
-char *preferred_subtypes[NPREFS];
+mime_type_subtype mime_preference[NPREFS];
 int npreferred;
 
 
@@ -1317,7 +1316,7 @@ reverse_parts (CT ct)
 }
 
 static void
-move_preferred_part (CT ct, char *type, char *subtype)
+move_preferred_part(CT ct, mime_type_subtype *pref)
 {
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part, *prev, *head, *nhead, *ntail;
@@ -1341,8 +1340,9 @@ move_preferred_part (CT ct, char *type, char *subtype)
     part = head->mp_next;
     while (part != NULL) {
 	ci = &part->mp_part->c_ctinfo;
-	if (!strcasecmp(ci->ci_type, type) &&
-		(!subtype || !strcasecmp(ci->ci_subtype, subtype))) {
+	if (!strcasecmp(ci->ci_type, pref->type) &&
+            (!pref->subtype ||
+                !strcasecmp(ci->ci_subtype, pref->subtype))) {
 	    prev->mp_next = part->mp_next;
 	    part->mp_next = NULL;
 	    ntail->mp_next = part;
@@ -1355,7 +1355,6 @@ move_preferred_part (CT ct, char *type, char *subtype)
     }
     ntail->mp_next = head->mp_next;
     m->mp_parts = nhead->mp_next;
-
 }
 
 /*
@@ -1368,7 +1367,7 @@ prefer_parts(CT ct)
 {
     int i;
     for (i = 0; i < npreferred; i++)
-	move_preferred_part(ct, preferred_types[i], preferred_subtypes[i]);
+	move_preferred_part(ct, mime_preference + i);
 }
 
 

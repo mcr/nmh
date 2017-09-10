@@ -161,10 +161,10 @@ do_cache:
 		if (npreferred >= NPREFS)
 		    adios (NULL, "too many preferred types (starting with %s), %d max",
 			   cp, NPREFS);
-		preferred_types[npreferred] = cp;
+		mime_preference[npreferred].type = cp;
 		cp = strchr(cp, '/');
 		if (cp) *cp++ = '\0';
-		preferred_subtypes[npreferred++] = cp;
+		mime_preference[npreferred++].subtype = cp;
 		continue;
 
 	    case NPREFERSW:

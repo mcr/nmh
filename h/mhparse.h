@@ -527,6 +527,9 @@ extern bool suppress_extraneous_trailing_semicolon_warning;
 extern bool suppress_multiple_mime_version_warning;
 
 #define	NPREFS	20
-extern char *preferred_types[NPREFS];
-extern char *preferred_subtypes[NPREFS];
+typedef struct {
+    char *type;
+    char *subtype;
+} mime_type_subtype;
+extern mime_type_subtype mime_preference[NPREFS];
 extern int npreferred;
