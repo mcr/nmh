@@ -270,8 +270,10 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 
 	case NOTOK: 
 	case DONE: 
-	    if (poprint)	    
-		fprintf (stderr, "%s\n", response);
+	    if (poprint) {
+		fputs(response, stderr);
+                putc('\n', stderr);
+            }
 	    netsec_shutdown(nsc);
 	    nsc = NULL;
 	    return NOTOK;
@@ -596,8 +598,10 @@ vcommand (const char *fmt, va_list ap)
 
 	case NOTOK: 
 	case DONE: 
-	    if (poprint)	    
-		fprintf (stderr, "%s\n", response);
+	    if (poprint) {
+		fputs(response, stderr);
+                putc('\n', stderr);
+            }
 	    return NOTOK;
     }
 

@@ -535,11 +535,10 @@ output (FILE *file, contentline *clines, int contenttype) {
             line = fold (add (node->value, line),
                          clines->cr_before_lf == CR_BEFORE_LF);
 
-            if (clines->cr_before_lf == LF_ONLY) {
-                fprintf (file, "%s\n", line);
-            } else {
-                fprintf (file, "%s\r\n", line);
-            }
+            fputs(line, file);
+            if (clines->cr_before_lf != LF_ONLY)
+                putc('\r', file);
+            putc('\n', file);
             free (line);
         }
     }

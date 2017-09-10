@@ -71,7 +71,8 @@ main(int argc, char *argv[])
 		if (rc == -1)
 			break;	/* EOF */
 
-		fprintf(f, "%s\n", line);
+                fputs(line, f);
+                putc('\n', f);
 
 		switch (smtp_state) {
 		case SMTP_DATA:

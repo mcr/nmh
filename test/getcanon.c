@@ -46,10 +46,10 @@ main(int argc, char *argv[])
   hints.ai_family = AF_UNSPEC;
 
   if (getaddrinfo(hostname, NULL, &hints, &res)) {
-    printf("%s\n", hostname);
+    puts(hostname);
     return 1;
   }
-  printf("%s\n", res->ai_canonname);
+  puts(res->ai_canonname);
 
   return 0;
 }

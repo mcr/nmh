@@ -461,8 +461,10 @@ retry:
 		if (nsc->ns_snoop_cb)
 		    nsc->ns_snoop_cb(nsc, sptr, strlen(sptr),
 				     nsc->ns_snoop_context);
-		else
-		    fprintf(stderr, "%s\n", sptr);
+		else {
+                    fputs(sptr, stderr);
+                    putc('\n', stderr);
+                }
 	    }
 	    return sptr;
 	}

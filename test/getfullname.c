@@ -53,8 +53,7 @@ main(int argc, char *argv[])
 	 * Quote the entire string if it has a special character in it.
 	 */
 	escape_display_name (buf, sizeof(buf));
-
-	printf("%s\n", buf);
+	puts(buf);
 
 	exit(0);
 }

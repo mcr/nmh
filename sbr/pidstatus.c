@@ -61,8 +61,11 @@ pidstatus (int status, FILE *fp, char *cp)
 	    if (signame)
 		fprintf (fp, " (%s%s)\n", signame,
 			 WCOREDUMP(status) ? ", core dumped" : "");
-	    else
-		fprintf (fp, "%s\n", WCOREDUMP(status) ? " (core dumped)" : "");
+	    else {
+                if (WCOREDUMP(status))
+                    fputs(" (core dumped)", fp);
+                putc('\n', fp);
+            }
 	}
     }
 
