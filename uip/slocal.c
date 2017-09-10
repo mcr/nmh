@@ -1293,7 +1293,7 @@ fputs_error:
 static char *
 trim (char *cp)
 {
-    char buffer[BUFSIZ*4];
+    static char buffer[BUFSIZ * 4];
     char *bp, *sp;
 
     if (cp == NULL)
@@ -1320,8 +1320,7 @@ trim (char *cp)
 	if (isspace((unsigned char) *sp))
 	    *sp = ' ';
 
-    /* now return a copy */
-    return mh_xstrdup(bp);
+    return bp;
 }
 
 /*
