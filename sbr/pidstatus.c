@@ -29,14 +29,6 @@ pidstatus (int status, FILE *fp, char *cp)
     int signum;
     char *signame;
 
-/*
- * I have no idea what this is for (rc)
- * so I'm commenting it out for right now.
- *
- *  if ((status & 0xff00) == 0xff00)
- *      return status;
- */
-
     /* If child process returned normally */
     if (WIFEXITED(status)) {
 	if ((signum = WEXITSTATUS(status))) {
