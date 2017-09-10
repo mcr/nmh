@@ -7,14 +7,6 @@
 
 #include <h/mh.h>
 
-#ifndef WTERMSIG
-# define WTERMSIG(s) ((int)((s) & 0x7F))
-#endif
-
-#ifndef WCOREDUMP
-# define WCOREDUMP(s) ((s) & 0x80)
-#endif
-
 /*
  * Return 0 if the command exited with an exit code of zero, a nonzero code
  * otherwise.
@@ -26,40 +18,59 @@
 int
 pidstatus (int status, FILE *fp, char *cp)
 {
-    int signum;
+    char *mesg;
+    int num;
+    bool lookup;
     char *signame;
 
-    /* If child process returned normally */
     if (WIFEXITED(status)) {
-	if ((signum = WEXITSTATUS(status))) {
+	status = WEXITSTATUS(status);
+	if (status) {
 	    if (cp)
 		fprintf (fp, "%s: ", cp);
-	    fprintf (fp, "exit %d\n", signum);
+	    fprintf(fp, "exited %d\n", status);
 	}
-	return signum;
+	return status;
     }
 
     if (WIFSIGNALED(status)) {
-	/* If child process terminated due to receipt of a signal */
-	signum = WTERMSIG(status);
-	if (signum != SIGINT) {
-	    if (cp)
-		fprintf (fp, "%s: ", cp);
-	    fprintf (fp, "signal %d", signum);
-	    errno = 0;
-	    signame = strsignal(signum);
-	    if (errno)
-		signame = NULL;
-	    if (signame)
-		fprintf (fp, " (%s%s)\n", signame,
-			 WCOREDUMP(status) ? ", core dumped" : "");
-	    else {
-                if (WCOREDUMP(status))
-                    fputs(" (core dumped)", fp);
-                putc('\n', fp);
-            }
-	}
+        mesg = "signalled";
+        num = WTERMSIG(status);
+	if (num == SIGINT)
+            return status;
+        lookup = true;
+    } else if (WIFSTOPPED(status)) {
+        mesg = "stopped";
+        num = WSTOPSIG(status);
+        lookup = true;
+    } else if (WIFCONTINUED(status)) {
+        mesg = "continued";
+        num = -1;
+        lookup = false;
+    } else {
+        mesg = "bizarre wait(2) status";
+        num = status;
+        lookup = false;
     }
+
+    if (cp)
+        fprintf(fp, "%s: ", cp);
+    fputs(mesg, fp);
+
+    if (num != -1) {
+        fprintf(fp, " %#x", num);
+        if (lookup) {
+            errno = 0;
+            signame = strsignal(num);
+            if (errno)
+                signame = "invalid";
+            putc(' ', fp);
+            fputs(signame, fp);
+        }
+    }
+    if (WCOREDUMP(status))
+        fputs(", core dumped", fp);
+    putc('\n', fp);
 
     return status;
 }

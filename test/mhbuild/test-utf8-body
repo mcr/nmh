@@ -182,7 +182,7 @@ set -e
 
 cat > "$expected" <<EOF
 mhbuild: Text content contains 8 bit characters, but character set is US-ASCII
-${MH_INST_DIR}${bindir}/mhbuild: exit 1
+${MH_INST_DIR}${bindir}/mhbuild: exited 1
 EOF
 
 check "$expected" "$actual"
