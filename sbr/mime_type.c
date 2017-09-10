@@ -117,6 +117,7 @@ static char *
 get_file_info(const char *proc, const char *file_name) {
     char *cmd, *cp;
     char *quotec = "'";
+    char buf[max(BUFSIZ, 2048)];
 
     if ((cp = strchr(file_name, '\''))) {
         /* file_name contains a single quote. */
@@ -132,7 +133,6 @@ get_file_info(const char *proc, const char *file_name) {
         FILE *fp;
 
         if ((fp = popen(cmd, "r")) != NULL) {
-            char buf[max(BUFSIZ, 2048)];
 
             buf[0] = '\0';
             if (fgets(buf, sizeof buf, fp)) {
