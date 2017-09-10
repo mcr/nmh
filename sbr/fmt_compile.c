@@ -280,11 +280,12 @@ static struct colormap colortable[] = {
 /*
  * Find a component in the hash table.
  */
-#define FINDCOMP(comp,name) \
-		for (comp = wantcomp[CHASH(name)]; \
-		     comp && strcmp(comp->c_name,name); \
-		     comp = comp->c_next) \
-		;
+#define FINDCOMP(comp,name) do { \
+        for (comp = wantcomp[CHASH(name)]; \
+            comp && strcmp(comp->c_name,name); \
+            comp = comp->c_next) \
+        ; \
+    } while (0)
 
 /* Add new component to the hash table */
 #define NEWCOMP(cm,name) do { \
