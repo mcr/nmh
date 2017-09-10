@@ -49,6 +49,8 @@ read_switch_multiword_via_readline(char *prompt, struct swit *ansp)
 	add_history(ans);
 	strncpy(ansbuf, ans, sizeof(ansbuf));
 	ansbuf[sizeof(ansbuf) - 1] = '\0';
+        free(ans);
+
 	cpp = brkstring(ansbuf, " ", NULL);
 	switch (smatch(*cpp, ansp)) {
 	    case AMBIGSW:
@@ -58,10 +60,8 @@ read_switch_multiword_via_readline(char *prompt, struct swit *ansp)
 	    	printf(" -%s unknown. Hit <CR> for help.\n", *cpp);
 		continue;
 	    default:
-	    	free(ans);
 		return cpp;
 	}
-	free(ans);
     }
 }
 
