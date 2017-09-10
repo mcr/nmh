@@ -129,6 +129,7 @@ get_file_info(const char *proc, const char *file_name) {
         quotec = "\"";
     }
 
+    cp = NULL;
     if ((cmd = concat(proc, " ", quotec, file_name, quotec, NULL))) {
         FILE *fp;
 
