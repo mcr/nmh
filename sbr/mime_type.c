@@ -114,63 +114,56 @@ mime_type(const char *file_name) {
  * Get information using proc about a file.
  */
 static char *
-get_file_info(const char *proc, const char *file_name) {
-    char *cmd, *cp;
-    char *quotec = "'";
+get_file_info(const char *proc, const char *file_name)
+{
+    char *quotec;
+    char *cmd;
+    FILE *fp;
+    bool ok;
     char buf[max(BUFSIZ, 2048)];
+    char *info;
+    char *needle;
 
-    if ((cp = strchr(file_name, '\''))) {
-        /* file_name contains a single quote. */
+    if (strchr(file_name, '\'')) {
         if (strchr(file_name, '"')) {
             inform("filenames containing both single and double quotes "
-                   "are unsupported for attachment");
+                "are unsupported for attachment");
             return NULL;
         }
         quotec = "\"";
-    }
+    } else
+        quotec = "'";
 
-    cp = NULL;
-    if ((cmd = concat(proc, " ", quotec, file_name, quotec, NULL))) {
-        FILE *fp;
-
-        if ((fp = popen(cmd, "r")) != NULL) {
-
-            buf[0] = '\0';
-            if (fgets(buf, sizeof buf, fp)) {
-                char *eol;
-
-                /* Skip leading <filename>:<whitespace>, if present. */
-                if ((cp = strchr(buf, ':')) != NULL) {
-                    ++cp;
-                    while (*cp  &&  isblank((unsigned char) *cp)) {
-                        ++cp;
-                    }
-                } else {
-                    cp = buf;
-                }
-
-                /* Truncate at newline (LF or CR), if present. */
-                if ((eol = strpbrk(cp, "\n\r")) != NULL) {
-                    *eol = '\0';
-                }
-            } else if (buf[0] == '\0') {
-                /* This can happen on Cygwin if the popen()
-                   mysteriously fails.  Return NULL so that the caller
-                   will use another method to determine the info. */
-                free (cp);
-                cp = NULL;
-            }
-
-            (void) pclose(fp);
-        } else {
-            inform("no output from %s", cmd);
-        }
-
-        free(cmd);
-    } else {
+    cmd = concat(proc, " ", quotec, file_name, quotec, NULL);
+    if (!cmd) {
         inform("concat with \"%s\" failed, out of memory?", proc);
+        return NULL;
     }
 
-    return cp  ?  strdup(cp)  :  NULL;
+    if ((fp = popen(cmd, "r")) == NULL) {
+        inform("no output from %s", cmd);
+        free(cmd);
+        return NULL;
+    }
+
+    ok = fgets(buf, sizeof buf, fp);
+    free(cmd);
+    (void)pclose(fp);
+    if (!ok)
+        return NULL;
+
+    /* s#^.*:[ \t]*##. */
+    info = buf;
+    if ((needle = strchr(info, ':'))) {
+        info = needle + 1;
+        while (isblank((unsigned char)*info))
+            info++;
+    }
+
+    /* s#[\n\r].*##. */
+    if ((needle = strpbrk(info, "\n\r")))
+        *needle = '\0';
+
+    return strdup(info);
 }
 #endif /* MIMETYPEPROC */
