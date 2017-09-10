@@ -181,7 +181,7 @@ find_cache (CT ct, int policy, int *writing, char *id,
 	case CACHE_PUBLIC:
 	    if (cache_private
 		    && !writing
-		    && find_cache_aux (writing ? 2 : 0, cache_private, id,
+		    && find_cache_aux (0, cache_private, id,
 				       buffer, buflen) == OK) {
 		if (access (buffer, R_OK) != NOTOK) {
 got_private:
