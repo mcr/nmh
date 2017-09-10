@@ -30,7 +30,8 @@ init_credentials_file(void) {
             struct stat st;
             char *filename = strchr(cred_style, ':') + 1;
 
-            while (*filename && isspace ((unsigned char) *filename)) ++filename;
+            while (isspace((unsigned char)*filename))
+                filename++;
 
             if (*filename == '/') {
                 credentials_file = filename;

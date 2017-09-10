@@ -410,7 +410,7 @@ BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
 	/* Check to see if the name of the file is a number
 	 * if it is, we assume it's a mail file and skip it
 	 */
-	for (n = dp->d_name; *n && isdigit((unsigned char) *n); n++);
+	for (n = dp->d_name; isdigit((unsigned char)*n); n++);
 	if (!*n)
 	    continue;
 	strncpy (name, base, sizeof(name) - 2);

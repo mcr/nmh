@@ -1108,7 +1108,7 @@ InitMultiPart (CT ct)
 
 	bp = cte + strlen (cte) - 1;
 	while (bp >= cte && isspace ((unsigned char) *bp)) *bp-- = '\0';
-	for (bp = cte; *bp && isblank ((unsigned char) *bp); ++bp) continue;
+	for (bp = cte; isblank((unsigned char)*bp); ++bp) continue;
 
 	inform("\"%s/%s\" type in message %s must be encoded in\n"
 	    "7bit, 8bit, or binary, per RFC 2045 (6.4).  "

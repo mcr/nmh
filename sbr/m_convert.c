@@ -371,7 +371,7 @@ attr (struct msgs *mp, char *cp)
 
     convdir = 1;	/* convert direction */
 
-    for (dp = cp; *dp && isalnum((unsigned char) *dp); dp++)
+    for (dp = cp; isalnum((unsigned char)*dp); dp++)
 	continue;
 
     if (*dp == ':') {

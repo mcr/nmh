@@ -1114,7 +1114,7 @@ fix_composite_cte (CT ct, int *message_mods) {
 
             for (hf = ct->c_first_hf; hf; hf = hf->next) {
                 char *name = hf->name;
-                for (; *name && isspace ((unsigned char) *name); ++name) {
+                for (; isspace((unsigned char)*name); ++name) {
                     continue;
                 }
 
