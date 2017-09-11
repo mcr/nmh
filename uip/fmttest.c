@@ -432,13 +432,13 @@ process_addresses(struct format *fmt, struct msgs_array *addrs,
 	for (p = pq.pq_next; p; p = q) {
 	    c = fmt_findcomp("text");
 	    if (c) {
-                mh_xfree(c->c_text);
+                free(c->c_text);
 		c->c_text = p->pq_text;
 		p->pq_text = NULL;
 	    }
 	    c = fmt_findcomp("error");
 	    if (c) {
-                mh_xfree(c->c_text);
+                free(c->c_text);
 		c->c_text = p->pq_error;
 		p->pq_error = NULL;
 	    }
@@ -447,8 +447,8 @@ process_addresses(struct format *fmt, struct msgs_array *addrs,
 	    fputs(charstring_buffer(buffer), stdout);
 	    mlistfree();
 
-            mh_xfree(p->pq_text);
-            mh_xfree(p->pq_error);
+            free(p->pq_text);
+            free(p->pq_error);
 	    q = p->pq_next;
 	    free(p);
 	}
@@ -529,7 +529,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 		ivector_push_back (seqnum, seq_getnum(mp, *ap));
 		
 	    num_unseen_seq = i;
-            mh_xfree(dp);
+            free(dp);
 	}
     }
 
@@ -664,7 +664,7 @@ finished:
 	for (i = 0; i < comps->size; i += 2) {
 	    c = fmt_findcomp(comps->msgs[i]);
 	    if (c) {
-                mh_xfree(c->c_text);
+                free(c->c_text);
 		c->c_text = getcpy(comps->msgs[i + 1]);
 	    }
 	}
@@ -698,7 +698,7 @@ process_raw(struct format *fmt, struct msgs_array *text, charstring_t buffer,
 
     for (i = 0; i < text->size; i++) {
     	if (c != NULL) {
-            mh_xfree(c->c_text);
+            free(c->c_text);
 	    c->c_text = getcpy(text->msgs[i]);
 	}
 

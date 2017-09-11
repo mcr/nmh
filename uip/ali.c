@@ -119,7 +119,7 @@ main (int argc, char **argv)
 	    for (ap = brkstring(dp = mh_xstrdup(cp), " ", "\n"); ap && *ap; ap++)
 		if ((i = alias (*ap)) != AK_OK)
 		    adios (NULL, "aliasing error in %s - %s", *ap, akerror (i));
-            mh_xfree(dp);
+            free(dp);
 	}
 	alias (AliasFile);
     }
@@ -236,5 +236,5 @@ print_usr (char *s, bool list)
 
     print_aka (vp ? vp : s, list, 0);
 
-    mh_xfree(vp);
+    free(vp);
 }

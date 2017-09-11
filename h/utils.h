@@ -22,9 +22,6 @@ void *mh_xcalloc(size_t nelem, size_t elsize) MALLOC ALLOC_SIZE(1, 2);
 /* Duplicate a NUL-terminated string, exit on failure. */
 char *mh_xstrdup(const char *src) MALLOC;
 
-/* Call free(3), if ptr isn't NULL. */
-void mh_xfree(void *ptr);
-
 /* Set p to point to newly allocated, uninitialised, memory. */
 #define NEW(p) ((p) = mh_xmalloc(sizeof *(p)))
 

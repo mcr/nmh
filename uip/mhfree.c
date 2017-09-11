@@ -42,9 +42,9 @@ free_content (CT ct)
      */
     free_header (ct);
 
-    mh_xfree(ct->c_partno);
-    mh_xfree(ct->c_vrsn);
-    mh_xfree(ct->c_ctline);
+    free(ct->c_partno);
+    free(ct->c_vrsn);
+    free(ct->c_ctline);
     ct->c_partno = ct->c_vrsn = ct->c_ctline = NULL;
 
     free_ctinfo (ct);
@@ -77,21 +77,21 @@ free_content (CT ct)
 	    break;
     }
 
-    mh_xfree(ct->c_showproc);
-    mh_xfree(ct->c_termproc);
-    mh_xfree(ct->c_storeproc);
+    free(ct->c_showproc);
+    free(ct->c_termproc);
+    free(ct->c_storeproc);
     ct->c_showproc = ct->c_termproc = ct->c_storeproc = NULL;
 
-    mh_xfree(ct->c_celine);
+    free(ct->c_celine);
     ct->c_celine = NULL;
 
     /* free structures for content encodings */
     free_encoding (ct, 1);
 
-    mh_xfree(ct->c_id);
-    mh_xfree(ct->c_descr);
-    mh_xfree(ct->c_dispo);
-    mh_xfree(ct->c_dispo_type);
+    free(ct->c_id);
+    free(ct->c_descr);
+    free(ct->c_dispo);
+    free(ct->c_dispo_type);
     ct->c_id = ct->c_descr = ct->c_dispo = ct->c_dispo_type = NULL;
     free_pmlist (&ct->c_dispo_first);
 
@@ -106,8 +106,8 @@ free_content (CT ct)
 	ct->c_fp = NULL;
     }
 
-    mh_xfree(ct->c_storage);
-    mh_xfree(ct->c_folder);
+    free(ct->c_storage);
+    free(ct->c_folder);
     ct->c_storage = ct->c_folder = NULL;
 
     free (ct);
@@ -146,12 +146,12 @@ free_ctinfo (CT ct)
     CI ci;
 
     ci = &ct->c_ctinfo;
-    mh_xfree(ci->ci_type);
-    mh_xfree(ci->ci_subtype);
+    free(ci->ci_type);
+    free(ci->ci_subtype);
     ci->ci_type = ci->ci_subtype = NULL;
     free_pmlist(&ci->ci_first_pm);
-    mh_xfree(ci->ci_comment);
-    mh_xfree(ci->ci_magic);
+    free(ci->ci_comment);
+    free(ci->ci_magic);
     ci->ci_comment = ci->ci_magic = NULL;
 }
 
@@ -178,8 +178,8 @@ free_multi (CT ct)
     if (!(m = (struct multipart *) ct->c_ctparams))
 	return;
 
-    mh_xfree(m->mp_start);
-    mh_xfree(m->mp_stop);
+    free(m->mp_start);
+    free(m->mp_stop);
     free (m->mp_content_before);
     free (m->mp_content_after);
 	
@@ -203,7 +203,7 @@ free_partial (CT ct)
     if (!(p = (struct partial *) ct->c_ctparams))
 	return;
 
-    mh_xfree(p->pm_partid);
+    free(p->pm_partid);
 
     free(p);
     ct->c_ctparams = NULL;
@@ -219,8 +219,8 @@ free_external (CT ct)
 	return;
 
     free_content (e->eb_content);
-    mh_xfree(e->eb_body);
-    mh_xfree(e->eb_url);
+    free(e->eb_body);
+    free(e->eb_url);
     free(e);
     ct->c_ctparams = NULL;
 }
@@ -232,10 +232,10 @@ free_pmlist (PM *p)
     PM pm = *p, pm2;
 
     while (pm != NULL) {
-        mh_xfree(pm->pm_name);
-        mh_xfree(pm->pm_value);
-        mh_xfree(pm->pm_charset);
-        mh_xfree(pm->pm_lang);
+        free(pm->pm_name);
+        free(pm->pm_value);
+        free(pm->pm_charset);
+        free(pm->pm_lang);
 	pm2 = pm->pm_next;
 	free(pm);
 	pm = pm2;

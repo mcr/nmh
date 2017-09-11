@@ -799,8 +799,8 @@ do_reformat:
     output = NULL;
 
 out:
-    mh_xfree(tmpbuf);
-    mh_xfree(output);
+    free(tmpbuf);
+    free(output);
 
     return errflag > 0;
 }

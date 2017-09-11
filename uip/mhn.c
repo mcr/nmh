@@ -246,7 +246,7 @@ do_cache:
 	    case FORMSW:
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
-                mh_xfree(formsw);
+                free(formsw);
 		formsw = getcpy (etcpath (cp));
 		continue;
 

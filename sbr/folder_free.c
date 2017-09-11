@@ -19,7 +19,7 @@ folder_free (struct msgs *mp)
     if (!mp)
 	return;
 
-    mh_xfree(mp->foldpath);
+    free(mp->foldpath);
 
     /* free the sequence names */
     for (i = 0; i < svector_size (mp->msgattrs); i++)
@@ -36,7 +36,7 @@ folder_free (struct msgs *mp)
     if (mp->seqhandle)
     	lkfclosedata (mp->seqhandle, mp->seqname);
 
-    mh_xfree(mp->seqname);
+    free(mp->seqname);
 
     bvector_free (mp->attrstats);
     free (mp);			/* free main folder structure */

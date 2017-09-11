@@ -152,12 +152,12 @@ getadrx (const char *addrs, int eai)
     char *bp;
     struct adrx *adrxp = &adrxs2;
 
-    mh_xfree(pers);
-    mh_xfree(mbox);
-    mh_xfree(host);
-    mh_xfree(routepath);
-    mh_xfree(grp);
-    mh_xfree(note);
+    free(pers);
+    free(mbox);
+    free(host);
+    free(routepath);
+    free(grp);
+    free(note);
     pers = mbox = host = routepath = grp = note = NULL;
     err[0] = 0;
 
@@ -237,7 +237,7 @@ again: ;
 	    }
 	    /* FALLTHRU */
 	case LX_COMA: 
-            mh_xfree(note);
+            free(note);
             note = NULL;
 	    goto again;
 

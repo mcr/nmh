@@ -729,7 +729,7 @@ magic_skip:
      * Get any <Content-Id> given in buffer
      */
     if (magic && *cp == '<') {
-        mh_xfree(ct->c_id);
+        free(ct->c_id);
         ct->c_id = NULL;
 	if (!(dp = strchr(ct->c_id = ++cp, '>'))) {
 	    inform("invalid ID in message %s", ct->c_file);
@@ -2745,7 +2745,7 @@ openMail (CT ct, char **file)
 
     /* showproc is for mhshow and mhstore, though mhlist -debug
      * prints it, too. */
-    mh_xfree(ct->c_showproc);
+    free(ct->c_showproc);
     ct->c_showproc = mh_xstrdup("true");
 
     fseek (ce->ce_fp, 0L, SEEK_SET);
@@ -3396,7 +3396,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
                     inform("missing language tag in message %s's %s: field\n"
                         "    (parameter %s)", filename, fieldname, nameptr);
 		    free(nameptr);
-                    mh_xfree(charset);
+                    free(charset);
 		    return NOTOK;
 		}
 
@@ -3419,8 +3419,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
                         inform("invalid encoded sequence in message %s's %s: field\n"
                             "    (parameter %s)", filename, fieldname, nameptr);
 			free(nameptr);
-                        mh_xfree(charset);
-                        mh_xfree(lang);
+                        free(charset);
+                        free(lang);
 			return NOTOK;
 		    }
 		    vp += 2;
@@ -3460,8 +3460,8 @@ bad_quote:
                         inform("invalid quoted-string in message %s's %s: field\n"
                             "    (parameter %s)", filename, fieldname, nameptr);
 			free(nameptr);
-                        mh_xfree(charset);
-                        mh_xfree(lang);
+                        free(charset);
+                        free(lang);
 			return NOTOK;
 		    case '"':
 			break;
@@ -3568,9 +3568,9 @@ bad_quote:
 	     */
 
 	    if (index == 0 && encoded) {
-                mh_xfree(pp->charset);
+                free(pp->charset);
 	    	pp->charset = charset;
-                mh_xfree(pp->lang);
+                free(pp->lang);
 		pp->lang = lang;
 	    }
 	} else {
@@ -3669,7 +3669,7 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 
 	if (strlen(params->pm_name) > CPERLIN) {
 	    inform("Parameter name \"%s\" is too long", params->pm_name);
-            mh_xfree(paramout);
+            free(paramout);
 	    return NULL;
 	}
 
@@ -3706,7 +3706,7 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 				 numchars, valoff);
 
 	    if (i == 0) {
-                mh_xfree(paramout);
+                free(paramout);
 		return NULL;
 	    }
 
@@ -3769,7 +3769,7 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 	    		     strlen(params->pm_value + valoff), valoff);
 
 	if (i == 0) {
-            mh_xfree(paramout);
+            free(paramout);
 	    return NULL;
 	}
 

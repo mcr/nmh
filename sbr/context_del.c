@@ -27,7 +27,7 @@ context_del (char *key)
 	    else
 		m_defs = np->n_next;
 	    free (np->n_name);
-            mh_xfree(np->n_field);
+            free(np->n_field);
 	    free(np);
 	    ctxflags |= CTXMOD;
 	    return 0;

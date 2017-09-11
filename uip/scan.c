@@ -221,7 +221,7 @@ main (int argc, char **argv)
 	    ivector_push_back (seqnum, seq_getnum (mp, *ap));
 
 	num_unseen_seq = i;
-        mh_xfree(dp);
+        free(dp);
     }
 
     ontty = isatty (fileno (stdout));

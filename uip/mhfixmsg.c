@@ -495,7 +495,7 @@ main (int argc, char **argv) {
         status = 1;
     }
 
-    mh_xfree(maildir);
+    free(maildir);
     free (cts);
 
     if (fx.fixtypes != NULL) { svector_free (fx.fixtypes); }
@@ -866,7 +866,7 @@ replace_boundary (CT ct, char *file, char *boundary) {
                 fprintf (fpout, "%s:%s%s\n", np, new_ctline,
 			 FENDNULL(new_params));
 		free(new_ctline);
-                mh_xfree(new_params);
+                free(new_params);
             }
 
             free (vp);
@@ -2296,7 +2296,7 @@ strip_crs (CT ct, int *message_mods) {
                     if (ct->c_cefile.ce_file && ct->c_cefile.ce_unlink)
                         (void) m_unlink (ct->c_cefile.ce_file);
 
-                    mh_xfree(ct->c_cefile.ce_file);
+                    free(ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = stripped_content_file;
                     ct->c_cefile.ce_unlink = 1;
 

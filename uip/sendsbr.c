@@ -302,7 +302,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
     /* Only one part, nothing to split */
     if (nparts == 1) {
 	free (cp);
-        mh_xfree(dp);
+        free(dp);
 
 	fclose (in);
 	return sendaux (vec, vecp, program, drft, st);
@@ -408,7 +408,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
     }
 
     free (cp);
-    mh_xfree(dp);
+    free(dp);
 
     fclose (in);	/* close the draft */
     return status;

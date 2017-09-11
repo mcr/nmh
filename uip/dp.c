@@ -139,7 +139,7 @@ process (char *date, int length)
 
     cptr = fmt_findcomp ("text");
     if (cptr) {
-        mh_xfree(cptr->c_text);
+        free(cptr->c_text);
 	cptr->c_text = mh_xstrdup(date);
     }
     fmt_scan (fmt, scanl, length, dat, NULL);

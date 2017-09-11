@@ -18,7 +18,7 @@
  */
 
 static char msgbuf[NMH_BUFSIZ];
-#define COMPFREE(c) mh_xfree(c->c_text)
+#define COMPFREE(c) free(c->c_text)
 
 /*
  * A list of components we treat as addresses

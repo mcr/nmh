@@ -48,7 +48,7 @@ void *mh_xrealloc(void *ptr, size_t size)
 
     /* Copy POSIX behaviour, coping with non-POSIX systems. */
     if (size == 0) {
-        mh_xfree(ptr);
+        free(ptr);
         return mh_xmalloc(1); /* Get a unique pointer. */
     }
     if (!ptr)
@@ -87,13 +87,6 @@ char *mh_xstrdup(const char *src)
     memcpy(dest, src, n);
 
     return dest;
-}
-
-/* Call free(3), if ptr isn't NULL. */
-void mh_xfree(void *ptr)
-{
-    if (ptr)
-        free(ptr); /* Some very old platforms can't cope with NULL. */
 }
 
 /*

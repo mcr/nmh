@@ -204,13 +204,13 @@ mnfree (struct mailname *mp)
     if (!mp)
 	return;
 
-    mh_xfree(mp->m_text);
-    mh_xfree(mp->m_pers);
-    mh_xfree(mp->m_mbox);
-    mh_xfree(mp->m_host);
-    mh_xfree(mp->m_path);
-    mh_xfree(mp->m_gname);
-    mh_xfree(mp->m_note);
+    free(mp->m_text);
+    free(mp->m_pers);
+    free(mp->m_mbox);
+    free(mp->m_host);
+    free(mp->m_path);
+    free(mp->m_gname);
+    free(mp->m_note);
 
     free(mp);
 }

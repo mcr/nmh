@@ -934,7 +934,7 @@ TWSaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 	switch (state = m_getfld2(&gstate, name, buf, &bufsz)) {
 	    case FLD: 
 	    case FLDPLUS: 
-                mh_xfree(bp);
+                free(bp);
 		bp = mh_xstrdup(buf);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
@@ -951,7 +951,7 @@ TWSaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 	    case FMTERR: 
 		if (state == LENERR || state == FMTERR)
 		    inform("format error in message %d", msgnum);
-                mh_xfree(bp);
+                free(bp);
 		return 0;
 
 	    default: 
@@ -968,6 +968,6 @@ TWSaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 	state = n->n_after ? (twsort (tw, &n->n_tws) > 0)
 	    : (twsort (tw, &n->n_tws) < 0);
 
-    mh_xfree(bp);
+    free(bp);
     return state;
 }

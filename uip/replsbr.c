@@ -161,7 +161,7 @@ finished:
     /* set up the "fcc" pseudo-component */
     cptr = fmt_findcomp ("fcc");
     if (cptr) {
-	mh_xfree(cptr->c_text);
+	free(cptr->c_text);
 	if (fcc)
 	    cptr->c_text = mh_xstrdup(fcc);
 	else
@@ -169,7 +169,7 @@ finished:
     }
     cptr = fmt_findcomp ("user");
     if (cptr) {
-	mh_xfree(cptr->c_text);
+	free(cptr->c_text);
 	if ((cp = getenv("USER")))
 	    cptr->c_text = mh_xstrdup(cp);
 	else

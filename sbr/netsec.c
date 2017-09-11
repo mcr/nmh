@@ -188,19 +188,19 @@ netsec_init(void)
 void
 netsec_shutdown(netsec_context *nsc)
 {
-    mh_xfree(nsc->ns_userid);
-    mh_xfree(nsc->ns_hostname);
-    mh_xfree(nsc->ns_inbuffer);
-    mh_xfree(nsc->ns_outbuffer);
-    mh_xfree(nsc->sasl_mech);
-    mh_xfree(nsc->sasl_chosen_mech);
+    free(nsc->ns_userid);
+    free(nsc->ns_hostname);
+    free(nsc->ns_inbuffer);
+    free(nsc->ns_outbuffer);
+    free(nsc->sasl_mech);
+    free(nsc->sasl_chosen_mech);
 #ifdef OAUTH_SERVICE
-    mh_xfree(nsc->oauth_service);
+    free(nsc->oauth_service);
 #endif /* OAUTH_SERVICE */
 #ifdef CYRUS_SASL
     if (nsc->sasl_conn)
 	sasl_dispose(&nsc->sasl_conn);
-    mh_xfree(nsc->sasl_cbs);
+    free(nsc->sasl_cbs);
     if (nsc->sasl_creds)
 	nmh_credentials_free(nsc->sasl_creds);
     if (nsc->sasl_secret) {
@@ -209,7 +209,7 @@ netsec_shutdown(netsec_context *nsc)
 	}
 	free(nsc->sasl_secret);
     }
-    mh_xfree(nsc->sasl_tmpbuf);
+    free(nsc->sasl_tmpbuf);
 #endif /* CYRUS_SASL */
 #ifdef TLS_SUPPORT
     if (nsc->ssl_io)
@@ -1282,7 +1282,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	rc = sasl_client_step(nsc->sasl_conn, (char *) outbuf, outbuflen, NULL,
 			      (const char **) &saslbuf, &saslbuflen);
 
-        mh_xfree(outbuf);
+        free(outbuf);
 
 	if (rc != SASL_OK && rc != SASL_CONTINUE) {
 	    netsec_err(errstr, "SASL client negotiation failed: %s",
