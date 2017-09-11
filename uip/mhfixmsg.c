@@ -1742,8 +1742,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
                      boundary_in_content (&new_part->c_cefile.ce_fp,
                                           new_part->c_cefile.ce_file,
                                           boundary)) == NOTOK) {
-                    free_content (ct);
-                    return NULL;
+                    goto return_null;
                 }
             }
 
@@ -1754,8 +1753,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
                      boundary_in_content (&new_part->c_fp,
                                           new_part->c_file,
                                           boundary)) == NOTOK) {
-                    free_content (ct);
-                    return NULL;
+                    goto return_null;
                 }
             }
 
@@ -1775,8 +1773,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
 
         if (found_boundary) {
             inform("giving up trying to find a unique boundary");
-            free_content (ct);
-            return NULL;
+            goto return_null;
         }
     }
 
@@ -1821,6 +1818,11 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     free (boundary);
 
     return ct;
+
+return_null:
+    free_content(ct);
+    free(boundary);
+    return NULL;
 }
 
 
