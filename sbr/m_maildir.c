@@ -36,6 +36,7 @@ m_maildir (char *folder)
 }
 
 
+/* Return value must be free(3)'d. */
 char *
 m_mailpath (char *folder)
 {

@@ -37,6 +37,7 @@ main (int argc, char **argv)
     int defolder = 0, interactive = -1;
     char *cp, *folder = NULL, newfolder[BUFSIZ];
     char buf[BUFSIZ], **argp, **arguments;
+    char *fp;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -84,8 +85,10 @@ main (int argc, char **argv)
 	folder = getfolder (1);
 	defolder++;
     }
-    if (strcmp (m_mailpath (folder), pwd ()) == 0)
+    fp = m_mailpath(folder);
+    if (!strcmp(fp, pwd()))
 	adios (NULL, "sorry, you can't remove the current working directory");
+    free(fp);
 
     if (interactive == -1)
 	interactive = defolder;
@@ -124,6 +127,7 @@ static int
 rmf (char *folder)
 {
     int i, others;
+    char *fp;
     char *maildir;
     char cur[BUFSIZ];
     struct dirent *dp;
@@ -136,8 +140,9 @@ rmf (char *folder)
 	    /* FALLTHRU */
 
 	case NOTOK: 
-	    snprintf (cur, sizeof(cur), "atr-%s-%s",
-			current, m_mailpath (folder));
+            fp = m_mailpath(folder);
+	    snprintf (cur, sizeof(cur), "atr-%s-%s", current, fp);
+            free(fp);
 	    if (!context_del (cur)) {
 		printf ("[+%s de-referenced]\n", folder);
 		return OK;
@@ -243,4 +248,6 @@ rma (char *folder)
 	    pp = np;
 	}
     }
+
+    free(cp);
 }
