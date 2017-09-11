@@ -31,14 +31,17 @@ pluspath(char *name)
 char *
 path(char *name, int flag)
 {
-    char *cp, *ep;
+    char *p, *last;
 
-    if ((cp = expath (name, flag))
-	    && (ep = cp + strlen (cp) - 1) > cp
-	    && *ep == '/')
-	*ep = '\0';
+    p = expath(name, flag);
+    if (!p)
+        return NULL;
 
-    return cp;
+    last = p + strlen(p) - 1;
+    if (last > p && *last == '/')
+	*last = '\0';
+
+    return p;
 }
 
 
