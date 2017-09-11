@@ -34,9 +34,6 @@ path(char *name, int flag)
     char *p, *last;
 
     p = expath(name, flag);
-    if (!p)
-        return NULL;
-
     last = p + strlen(p) - 1;
     if (last > p && *last == '/')
 	*last = '\0';
