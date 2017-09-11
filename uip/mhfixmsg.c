@@ -2292,6 +2292,7 @@ strip_crs (CT ct, int *message_mods) {
                     inform("unable to write temporary file %s, continuing...",
                               stripped_content_file);
                     (void) m_unlink (stripped_content_file);
+                    free(stripped_content_file);
                     status = NOTOK;
                 } else {
                     /* Replace the decoded file with the converted one. */
