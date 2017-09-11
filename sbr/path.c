@@ -22,12 +22,16 @@ static char *pwds;
 static char *expath(char *,int);
 static void compath(char *);
 
+
+/* Return value must be free(3)'d. */
 char *
 pluspath(char *name)
 {
 	return path(name + 1, *name == '+' ? TFOLDER : TSUBCWF);
 }
 
+
+/* Return value must be free(3)'d. */
 char *
 path(char *name, int flag)
 {
@@ -42,6 +46,7 @@ path(char *name, int flag)
 }
 
 
+/* Return value must be free(3)'d. */
 static char *
 expath (char *name, int flag)
 {
