@@ -22,6 +22,7 @@ static char mailfold[BUFSIZ];
 static char *exmaildir (char *);
 
 
+/* Returns static char[], never NULL. */
 char *
 m_maildir (char *folder)
 {
@@ -59,6 +60,7 @@ m_mailpath (char *folder)
 }
 
 
+/* Returns static char[], never NULL. */
 static char *
 exmaildir (char *folder)
 {
@@ -85,7 +87,9 @@ exmaildir (char *folder)
 	}
 	cp = stpcpy(cp, pp);
     } else {
-	cp = stpcpy(cp, path("./", TFOLDER));
+        char *p = path("./", TFOLDER);
+	cp = stpcpy(cp, p);
+        free(p);
     }
     if (cp[-1] != '/')
 	*cp++ = '/';
