@@ -218,7 +218,7 @@ token(char *tokval)
 
     for (t = toktabs; t->tokstr; t++)
 	if (!strcmp(t->tokstr, tokval))
-	    return (t->tval);
+	    return t->tval;
 
-    return (ID);
+    return ID;
 }

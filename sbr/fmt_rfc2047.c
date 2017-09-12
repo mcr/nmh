@@ -52,7 +52,7 @@ decode_qp (unsigned char byte1, unsigned char byte2)
 {
     if (hexindex[byte1] == -1 || hexindex[byte2] == -1)
 	return -1;
-    return (hexindex[byte1] << 4 | hexindex[byte2]);
+    return hexindex[byte1] << 4 | hexindex[byte2];
 }
 
 /* Check if character is linear whitespace */

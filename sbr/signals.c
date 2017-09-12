@@ -39,8 +39,8 @@ SIGNAL (int sig, SIGNAL_HANDLER func)
 # endif
     }
     if (sigaction(sig, &act, &oact) < 0)
-	return (SIG_ERR);
-    return (oact.sa_handler);
+	return SIG_ERR;
+    return oact.sa_handler;
 }
 
 
@@ -56,7 +56,7 @@ SIGNAL2 (int sig, SIGNAL_HANDLER func)
     struct sigaction act, oact;
 
     if (sigaction(sig, NULL, &oact) < 0)
-	return (SIG_ERR);
+	return SIG_ERR;
     if (oact.sa_handler != SIG_IGN) {
 	act.sa_handler = func;
 	sigemptyset(&act.sa_mask);
@@ -72,9 +72,9 @@ SIGNAL2 (int sig, SIGNAL_HANDLER func)
 # endif
 	}
 	if (sigaction(sig, &act, &oact) < 0)
-	    return (SIG_ERR);
+	    return SIG_ERR;
     }
-    return (oact.sa_handler);
+    return oact.sa_handler;
 }
 
 

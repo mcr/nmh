@@ -41,5 +41,5 @@ smatch(const char *string, const struct swit *swp)
 	    firstone = AMBIGSW;
     }
 
-    return (firstone);
+    return firstone;
 }

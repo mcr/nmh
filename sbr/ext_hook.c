@@ -23,7 +23,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
     static  int	did_message = 0;	/* set if we've already output a message */
 
     if ((hook = context_find(hook_name)) == NULL)
-	return (OK);
+	return OK;
 
     switch (pid = fork()) {
     case -1:
@@ -59,7 +59,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
 	    did_message = 1;
 	}
 
-	return (NOTOK);
+	return NOTOK;
     } else
-	return (OK);
+	return OK;
 }

@@ -108,7 +108,7 @@ formataddr (char *orig, char *str)
 
     *dst = '\0';
     last_dst = dst;
-    return (buf);
+    return buf;
 }
 
 char *concataddr (char *orig, char *str)

@@ -470,7 +470,7 @@ ct_compar (CT *a, CT *b)
     struct partial *am = (struct partial *) ((*a)->c_ctparams);
     struct partial *bm = (struct partial *) ((*b)->c_ctparams);
 
-    return (am->pm_marked - bm->pm_marked);
+    return am->pm_marked - bm->pm_marked;
 }
 
 

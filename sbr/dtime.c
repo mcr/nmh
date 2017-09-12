@@ -118,7 +118,7 @@ dlocaltime (time_t *clock)
 
     tw.tw_clock = *clock;
 
-    return (&tw);
+    return &tw;
 }
 
 
@@ -165,7 +165,7 @@ dgmtime (time_t *clock)
 
     tw.tw_clock = *clock;
 
-    return (&tw);
+    return &tw;
 }
 
 

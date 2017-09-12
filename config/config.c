@@ -77,7 +77,7 @@ try_it:
 
     /* Check nmh `etc' directory */
     snprintf (epath, sizeof(epath), nmhetcdir(/%s), file);
-    return (access (epath, R_OK) != NOTOK ? epath : file);
+    return access(epath, R_OK) != NOTOK ? epath : file;
 }
 
 

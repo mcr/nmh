@@ -882,7 +882,7 @@ buildfile (char **argp, char *file)
     i = editfile (&ed, args, file, NOUSE, NULL, NULL, NULL, 0, 0);
     free (args);
 
-    return (i ? NOTOK : OK);
+    return i ? NOTOK : OK;
 }
 
 
@@ -1283,7 +1283,7 @@ whomfile (char **arg, char *file)
 	    _exit (-1);		/* NOTREACHED */
 
 	default:
-	    return (pidwait (pid, NOTOK) & 0377 ? 1 : 0);
+	    return pidwait(pid, NOTOK) & 0377 ? 1 : 0;
     }
 }
 
@@ -1316,7 +1316,7 @@ checkmimeheader (char *drft)
 
     if ((f = fopen(drft, "r")) == NULL) {
 	admonish(drft, "unable to read draft");
-	return (0);
+	return 0;
     }
 
     gstate = m_getfld_state_init(f);

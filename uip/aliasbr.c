@@ -154,7 +154,7 @@ aleq (char *string, char *aliasent)
         aliasent++;
     }
 
-    return (*aliasent == 0 || *aliasent == '*');
+    return *aliasent == 0 || *aliasent == '*';
 }
 
 

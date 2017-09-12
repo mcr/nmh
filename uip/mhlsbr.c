@@ -1111,7 +1111,7 @@ mcomp_flags (char *name)
 
     for (ap = pairs; ap->p_name; ap++)
 	if (!strcasecmp (ap->p_name, name))
-	    return (ap->p_flags);
+	    return ap->p_flags;
 
     return 0;
 }

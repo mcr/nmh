@@ -1714,11 +1714,11 @@ size_encoding (CT ct)
     }
 
     if (ct->c_encoding == CE_EXTERNAL)
-	return (ct->c_end - ct->c_begin);	
+	return ct->c_end - ct->c_begin;	
 
     file = NULL;
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
-	return (ct->c_end - ct->c_begin);
+	return ct->c_end - ct->c_begin;
 
     if (fstat (fd, &st) != NOTOK)
 	size = (long) st.st_size;

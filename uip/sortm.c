@@ -343,7 +343,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 
     if ((in = fopen (msgnam = m_name (msg), "r")) == NULL) {
 	admonish (msgnam, "unable to read message");
-	return (0);
+	return 0;
     }
     gstate = m_getfld_state_init(in);
     for (compnum = 1;;) {
@@ -393,7 +393,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
             free(datecomp);
             free(subjcomp);
 	    fclose (in);
-	    return (0);
+	    return 0;
 
 	default:
 	    adios (NULL, "internal error -- you lose");
@@ -455,7 +455,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
     fclose (in);
     free(datecomp);
 
-    return (1);
+    return 1;
 }
 
 /*
@@ -465,12 +465,12 @@ static int
 dsort (struct smsg **a, struct smsg **b)
 {
     if ((*a)->s_clock < (*b)->s_clock)
-	return (-1);
+	return -1;
     if ((*a)->s_clock > (*b)->s_clock)
-	return (1);
+	return 1;
     if ((*a)->s_msg < (*b)->s_msg)
-	return (-1);
-    return (1);
+	return -1;
+    return 1;
 }
 
 /*
@@ -482,7 +482,7 @@ subsort (struct smsg **a, struct smsg **b)
     int i;
 
     if ((i = strcmp ((*a)->s_subj, (*b)->s_subj)))
-	return (i);
+	return i;
 
     return (dsort (a, b));
 }
@@ -493,10 +493,10 @@ txtsort (struct smsg **a, struct smsg **b)
     int i;
 
     if ((i = strcmp ((*a)->s_subj, (*b)->s_subj)))
-	return (i);
+	return i;
     if ((*a)->s_msg < (*b)->s_msg)
-	return (-1);
-    return (1);
+	return -1;
+    return 1;
 }
 
 static void

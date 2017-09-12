@@ -345,7 +345,7 @@ replformataddr (char *orig, char *str)
 
     *dst = '\0';
     last_dst = dst;
-    return (buf);
+    return buf;
 }
 
 

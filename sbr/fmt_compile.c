@@ -419,7 +419,7 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
     *fmt = formatvec;
 
     free(format_string);
-    return (ncomp);
+    return ncomp;
 }
 
 static char *
@@ -444,7 +444,7 @@ compile (char *sp)
 	    break;
 	}
 	if (c == 0)
-	    return (cp);
+	    return cp;
 
 	switch (c = *++cp) {
 	case '%':
@@ -456,7 +456,7 @@ compile (char *sp)
 	case '>':
 	case '?':
 	case ']':
-	    return (cp);
+	    return cp;
 
 	case '<':
 	    cp = do_if(++cp);
@@ -531,7 +531,7 @@ do_spec(char *sp)
     fp->f_width = wid;
     fp->f_fill = fill;
 
-    return (cp);
+    return cp;
 }
 
 /*
@@ -595,7 +595,7 @@ do_name(char *sp, int preprocess)
 	cm->c_type |= CT_ADDR;
 	break;
     }
-    return (cp);
+    return cp;
 }
 
 /*
@@ -759,7 +759,7 @@ do_func(char *sp)
 	CERROR("')' expected");
     }
     --infunction;
-    return (cp);
+    return cp;
 }
 
 /*
@@ -778,13 +778,13 @@ do_expr (char *sp, int preprocess)
     } else if (c == '(') {
 	cp = do_func (cp);
     } else if (c == ')') {
-	return (--cp);
+	return --cp;
     } else if (c == '%' && *cp == '<') {
 	cp = do_if (cp+1);
     } else {
 	CERROR ("'(', '{', '%<' or ')' expected");
     }
-    return (cp);
+    return cp;
 }
 
 /*
@@ -921,7 +921,7 @@ do_if(char *sp)
     if (fexpr)				/* IF ... [ELSIF ...] ENDIF */
 	fexpr->f_skip = next_fp - fexpr;
 
-    return (cp);
+    return cp;
 }
 
 /*

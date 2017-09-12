@@ -1206,5 +1206,5 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	}
     }
 
-    return (NULL);
+    return NULL;
 }

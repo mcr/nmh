@@ -17,7 +17,7 @@ stringdex (char *p1, char *p2)
 
     for (p = p2; *p; p++)
 	if (uprf (p, p1))
-	    return (p - p2);
+	    return p - p2;
 
     return -1;
 }

@@ -252,7 +252,7 @@ find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
 	    	adios (msgnam, "does not have any message/rfc822 parts");
 	    if (msgp > 1) {
 	    	*mimesw = 1;
-		return (msgp - 1);
+		return msgp - 1;
 	    }
 	}
     }
@@ -315,7 +315,7 @@ find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
     }
 
     fclose (in);
-    return (msgp - 1);		/* return the number of messages burst */
+    return msgp - 1;		/* return the number of messages burst */
 }
 
 

@@ -16,7 +16,7 @@ context_find (const char *str)
     str = FENDNULL(str);
     for (np = m_defs; np; np = np->n_next)
 	if (!strcasecmp(FENDNULL(np->n_name), str))
-	    return (np->n_field);
+	    return np->n_field;
 
     return NULL;
 }

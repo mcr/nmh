@@ -793,7 +793,7 @@ advance (char *alp, char *aep)
 		do {
 		    lp--;
 		    if (advance ((char *) lp, (char *) ep))
-			return (1);
+			return 1;
 		} while (lp > curlp);
 		return 0;
 
@@ -812,14 +812,14 @@ cclass (unsigned char *aset, int ac, int af)
 
     set = aset;
     if ((c = ac) == 0)
-	return (0);
+	return 0;
 
     n = *set++;
     while (n--)
 	if (*set++ == c || set[-1] == cc[c])
-	    return (af);
+	    return af;
 
-    return (!af);
+    return !af;
 }
 
 

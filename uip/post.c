@@ -1224,7 +1224,7 @@ get_header (char *header, struct headers *table)
     header = FENDNULL(header);
     for (h = table; h->value; h++)
 	if (!strcasecmp(FENDNULL(h->value), header))
-	    return (h - table);
+	    return h - table;
 
     return NOTOK;
 }
@@ -1300,7 +1300,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out,
 
     linepos += len;
 
-    return (flags & HTRY);
+    return flags & HTRY;
 }
 
 
