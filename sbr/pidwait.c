@@ -31,5 +31,5 @@ pidwait (pid_t id, int sigsok)
 	SIGNAL (SIGQUIT, qstat);
     }
 
-    return (pid == -1 ? -1 : status);
+    return pid == -1 ? -1 : status;
 }

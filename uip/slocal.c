@@ -636,7 +636,7 @@ usr_delivery (int fd, char *delivery, int su)
     }
 
     fclose (fp);
-    return (won ? 0 : -1);
+    return won ? 0 : -1;
 }
 
 
@@ -1121,7 +1121,7 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
                     else
                         pidstatus (status, stdout, ", failed");
 		}
-		return (status == 0 ? 0 : -1);
+		return status == 0 ? 0 : -1;
 	    }
             /*
              * Ruthlessly kill the child and anything

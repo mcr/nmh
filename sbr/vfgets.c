@@ -28,7 +28,7 @@ vfgets (FILE *in, char **bp)
 		*bp = pp;
 		return 0;
 	    }
-	    return (ferror (in) && !feof (in) ? -1 : 1);
+	    return ferror(in) && !feof(in) ? -1 : 1;
 	}
 
 	if ((dp = cp + strlen (cp) - 2) < cp || *dp != QUOTE) {

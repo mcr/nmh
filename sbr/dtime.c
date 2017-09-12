@@ -408,6 +408,6 @@ twsort (struct tws *tw1, struct tws *tw2)
     if (tw2->tw_clock == 0)
 	dmktime (tw2);
 
-    return ((c1 = tw1->tw_clock) > (c2 = tw2->tw_clock) ? 1
-	    : c1 == c2 ? 0 : -1);
+    return (c1 = tw1->tw_clock) > (c2 = tw2->tw_clock) ? 1
+	    : c1 == c2 ? 0 : -1;
 }

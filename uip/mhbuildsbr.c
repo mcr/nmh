@@ -1620,7 +1620,7 @@ scan_content (CT ct, size_t maxunencoded)
         }
     }
 
-    return (boundaryclash ? NOTOK : OK);
+    return boundaryclash ? NOTOK : OK;
 }
 
 

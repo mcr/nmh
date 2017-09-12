@@ -51,7 +51,7 @@
     tw.tw_year += 1900; \
   if(tw.tw_year < 1970) \
     tw.tw_year += 100; \
-  return(&tw)
+  return &tw
 
 /*
  * Table to convert month names to numeric month.  We use the

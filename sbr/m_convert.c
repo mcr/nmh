@@ -293,16 +293,16 @@ m_conv (struct msgs *mp, char *str, int call)
     delimp = cp;
 
     if (!strcmp (buf, "first"))
-	return (mp->hghmsg || !(mp->msgflags & ALLOW_NEW)
-		? mp->lowmsg : BADMSG);
+	return mp->hghmsg || !(mp->msgflags & ALLOW_NEW) ?
+            mp->lowmsg : BADMSG;
 
     if (!strcmp (buf, "last")) {
 	convdir = -1;
-	return (mp->hghmsg || !(mp->msgflags & ALLOW_NEW) ? mp->hghmsg : BADMSG);
+	return mp->hghmsg || !(mp->msgflags & ALLOW_NEW) ? mp->hghmsg : BADMSG;
     }
 
     if (!strcmp (buf, "cur") || !strcmp (buf, "."))
-	return (mp->curmsg > 0 ? mp->curmsg : BADMSG);
+	return mp->curmsg > 0 ? mp->curmsg : BADMSG;
 
     if (!strcmp (buf, "prev")) {
 	convdir = -1;

@@ -348,7 +348,7 @@ finished:
     if (scnout && (ferror(scnout) || fclose (scnout) == EOF))
 	DIEWRERR();
 
-    return (state != FILEEOF ? SCNERR : encrypted ? SCNENC : SCNMSG);
+    return state != FILEEOF ? SCNERR : encrypted ? SCNENC : SCNMSG;
 }
 
 

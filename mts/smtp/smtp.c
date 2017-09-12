@@ -533,7 +533,7 @@ sm_wtxt (char *buffer, int len)
 
     result = sm_wstream (buffer, len);
 
-    return (result == NOTOK ? RP_BHST : RP_OK);
+    return result == NOTOK ? RP_BHST : RP_OK;
 }
 
 
@@ -632,7 +632,7 @@ sm_end (int type)
 	status = OK;
     }
 
-    return (status ? RP_BHST : RP_OK);
+    return status ? RP_BHST : RP_OK;
 }
 
 

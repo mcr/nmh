@@ -576,7 +576,7 @@ lockit (struct lockinfo *li)
     fd = link(tmpfile, curlock);
     (void) m_unlink(tmpfile);
 
-    return (fd == -1 ? -1 : 0);
+    return fd == -1 ? -1 : 0;
 }
 #endif /* HAVE_LIBLOCKFILE */
 

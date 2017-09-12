@@ -47,6 +47,6 @@ refile (char **arg, char *file)
 
 	default: 
 	    arglist_free(program, vec);
-	    return (pidwait (pid, -1));
+	    return pidwait(pid, -1);
     }
 }

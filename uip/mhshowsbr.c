@@ -499,7 +499,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
             arglist_free(file, vec);
 	    if (fd != NOTOK)
 		(*ct->c_ceclosefnx) (ct);
-	    return (alternate ? OK : status);
+	    return alternate ? OK : status;
         }
     }
 }

@@ -321,7 +321,7 @@ read_hdrs (struct msgs *mp, char *datesw)
 	}
     }
     s->s_msg = 0;
-    return(s - smsgs);
+    return s - smsgs;
 }
 
 
@@ -484,7 +484,7 @@ subsort (struct smsg **a, struct smsg **b)
     if ((i = strcmp ((*a)->s_subj, (*b)->s_subj)))
 	return i;
 
-    return (dsort (a, b));
+    return dsort(a, b);
 }
 
 static int

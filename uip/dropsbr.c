@@ -187,7 +187,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 	    if (write (md, MMDF_DELIM, j) != j)
 		return NOTOK;
 
-	    return (i != NOTOK ? OK : NOTOK);
+	    return i != NOTOK ? OK : NOTOK;
 
 	case MBOX_FORMAT:
 	    if ((j = dup (fd)) == NOTOK)

@@ -100,5 +100,5 @@ seq_list(struct msgs *mp, char *seqname)
 	    bp += strlen(bp);
 	}
     }
-    return (bp > buffer? buffer : NULL);
+    return bp > buffer ? buffer : NULL;
 }

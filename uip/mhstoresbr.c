@@ -782,7 +782,7 @@ losing:
 
 	fclose (fp);
 
-	return (cc != NOTOK ? OK : NOTOK);
+	return cc != NOTOK ? OK : NOTOK;
     }
 
     if (!ct->c_fp && (ct->c_fp = fopen (ct->c_file, "r")) == NULL) {

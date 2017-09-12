@@ -385,7 +385,7 @@ intrser (int i)
 static int
 chrcnv (char *cp)
 {
-    return (*cp != QUOTE ? *cp : m_atoi (++cp));
+    return *cp != QUOTE ? *cp : m_atoi(++cp);
 }
 
 

@@ -16,5 +16,5 @@ read_yes_or_no_if_tty (const char *prompt)
     if (interactive < 0)
         interactive = isatty (fileno (stdin));
 
-    return (interactive ? read_switch (prompt, anoyes) : 1);
+    return interactive ? read_switch(prompt, anoyes) : 1;
 }

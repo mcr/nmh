@@ -1427,7 +1427,7 @@ annoaux (struct mailname *mp)
     snprintf (buffer, sizeof(buffer), "%s\n", adrformat (mp));
     i = strlen (buffer);
 
-    return (write (pfd, buffer, i) == i ? OK : NOTOK);
+    return write(pfd, buffer, i) == i ? OK : NOTOK;
 }
 
 

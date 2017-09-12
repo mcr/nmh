@@ -594,7 +594,7 @@ vcommand (const char *fmt, va_list ap)
 	case OK: 
 	    if (poprint)
 		fprintf (stderr, "<--- %s\n", response);
-	    return (*response == '+' ? OK : NOTOK);
+	    return *response == '+' ? OK : NOTOK;
 
 	case NOTOK: 
 	case DONE: 

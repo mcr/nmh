@@ -79,7 +79,7 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 
 	default:
 	    arglist_free(prog, vec);
-	    return (pidwait (pid, -1));
+	    return pidwait(pid, -1);
 	}
     }
 

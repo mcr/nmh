@@ -982,8 +982,8 @@ findlabel(struct format *addr)
 
 	for (i = 0; i < lused; ++i)
 		if (addr == lvec[i])
-			return(i);
-	return(-1);
+			return i;
+	return -1;
 }
 
 static void
@@ -1101,7 +1101,7 @@ f_typestr(int t)
 	case FT_V_AMATCH: return "V_AMATCH";
 	default:
 		snprintf(buf, sizeof(buf), "/* ??? #%d */", t);
-		return(buf);
+		return buf;
 	}
 }
 
@@ -1111,7 +1111,7 @@ c_typestr(int t)
 	static char buf[64];
 
 	snprintb(buf, sizeof(buf), t, CT_BITS);
-	return(buf);
+	return buf;
 }
 
 static char *
@@ -1120,7 +1120,7 @@ c_flagsstr(int t)
 	static char buf[64];
 
 	snprintb(buf, sizeof(buf), t, CF_BITS);
-	return(buf);
+	return buf;
 }
 
 static void
