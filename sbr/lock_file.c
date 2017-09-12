@@ -522,6 +522,7 @@ lkopen_dot (const char *file, int access, mode_t mode, int *failed_to_lock)
             lockname (file, &lkinfo, 1);
 	}
 
+        close(fd);
         *failed_to_lock = 1;
         return -1;
     }
