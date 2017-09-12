@@ -33,17 +33,13 @@ mime_type(const char *file_name) {
         /* Try to append charset for text content. */
         char *mimeencoding;
 
-        if (strncasecmp(mimetype, "text", 4) == 0) {
-            if ((mimeencoding = get_file_info(MIMEENCODINGPROC, file_name))) {
-                content_type = concat(mimetype, "; charset=", mimeencoding,
-                                      NULL);
-                free (mimetype);
-            } else {
-                content_type = mimetype;
-            }
-        } else {
+        if (!strncasecmp(mimetype, "text", 4) &&
+            (mimeencoding = get_file_info(MIMEENCODINGPROC, file_name))) {
+            content_type = concat(mimetype, "; charset=", mimeencoding, NULL);
+            free(mimeencoding);
+            free(mimetype);
+        } else
             content_type = mimetype;
-        }
 #else  /* MIMEENCODINGPROC */
         content_type = mimetype;
 #endif /* MIMEENCODINGPROC */
@@ -112,7 +108,7 @@ mime_type(const char *file_name) {
 #ifdef MIMETYPEPROC
 /*
  * Get information using proc about a file.
- */
+ * Non-null return value must be free(3)'d. */
 static char *
 get_file_info(const char *proc, const char *file_name)
 {
