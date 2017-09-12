@@ -345,12 +345,15 @@ dmktime (struct tws *tw)
     while (--mon)
 	result += dmsize[mon - 1];
     result += mday - 1;
-    result = 24 * result + hour;
-    result = 60 * result + min;
-    result = 60 * result + sec;
+    result *= 24; /* Days to hours. */
+    result += hour;
+    result *= 60; /* Hours to minutes. */
+    result += min;
+    result *= 60; /* Minutes to seconds. */
+    result += sec;
     result -= 60 * tw->tw_zone;
     if (tw->tw_flags & TW_DST)
-	result -= 60 * 60;
+	result -= 60 * 60; /* One hour. */
 
     return (tw->tw_clock = result);
 }
