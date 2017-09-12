@@ -128,7 +128,7 @@ mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
 }
 
 /* Return value must be free(3)'d. */
-const char *
+char *
 mh_oauth_cred_fn(const char *svc)
 {
     char *key = mh_oauth_node_name_for_svc("credential-file", svc);

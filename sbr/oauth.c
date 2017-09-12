@@ -145,7 +145,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
 
     if (log != NULL) mh_oauth_log_to(stderr, ctx);
 
-    fn = mh_xstrdup(mh_oauth_cred_fn(svc));
+    fn = mh_oauth_cred_fn(svc);
     fp = lkfopendata(fn, "r+", &failed_to_lock);
     if (fp == NULL) {
         if (errno == ENOENT) {

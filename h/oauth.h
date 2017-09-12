@@ -220,7 +220,7 @@ mh_oauth_cred_free(mh_oauth_cred *cred);
  *
  * Never returns NULL.
  */
-const char *
+char *
 mh_oauth_cred_fn(const char *svc_name);
 
 /*

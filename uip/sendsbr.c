@@ -823,7 +823,7 @@ setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
 	    vec[(*vecp)++] = mh_xstrdup("-authservice");
 	    vec[(*vecp)++] = mh_xstrdup(auth_svc);
 	    vec[(*vecp)++] = mh_xstrdup("-oauthcredfile");
-	    vec[(*vecp)++] = mh_xstrdup(mh_oauth_cred_fn(auth_svc));
+	    vec[(*vecp)++] = mh_oauth_cred_fn(auth_svc);
 	    vec[(*vecp)++] = mh_xstrdup("-oauthclientid");
 	    vec[(*vecp)++] = getcpy(svc.client_id);
 	    vec[(*vecp)++] = mh_xstrdup("-oauthclientsecret");

@@ -71,7 +71,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
         mh_oauth_log_to(stderr, ctx);
     }
 
-    fn = mh_xstrdup(mh_oauth_cred_fn(svc));
+    fn = mh_oauth_cred_fn(svc);
 
     if ((url = mh_oauth_get_authorize_url(ctx)) == NULL) {
       adios(NULL, "%s", mh_oauth_get_err_string(ctx));
