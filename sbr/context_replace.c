@@ -14,13 +14,15 @@ context_replace (char *key, char *value)
 {
     struct node *np;
 
+    key = FENDNULL(key);
+
     /*
      * If list is empty, allocate head of profile/context list.
      */
     if (!m_defs) {
 	NEW(np);
         m_defs = np;
-	np->n_name = getcpy (key);
+	np->n_name = mh_xstrdup(key);
 	np->n_field = getcpy (value);
 	np->n_context = 1;
 	np->n_next = NULL;
@@ -33,7 +35,7 @@ context_replace (char *key, char *value)
      * this key, and replace its value if found.
      */
     for (np = m_defs;; np = np->n_next) {
-	if (!strcasecmp (FENDNULL(np->n_name), FENDNULL(key))) {
+	if (!strcasecmp(FENDNULL(np->n_name), key)) {
 	    if (strcmp (value, np->n_field)) {
 		if (!np->n_context)
 		    inform("bug: context_replace(key=\"%s\",value=\"%s\"), continuing...", key, value);
@@ -52,7 +54,7 @@ context_replace (char *key, char *value)
      */
     NEW(np->n_next);
     np = np->n_next;
-    np->n_name = getcpy (key);
+    np->n_name = mh_xstrdup(key);
     np->n_field = getcpy (value);
     np->n_context = 1;
     np->n_next = NULL;

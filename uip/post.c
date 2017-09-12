@@ -1221,8 +1221,9 @@ get_header (char *header, struct headers *table)
 {
     struct headers *h;
 
+    header = FENDNULL(header);
     for (h = table; h->value; h++)
-	if (!strcasecmp (FENDNULL(header), FENDNULL(h->value)))
+	if (!strcasecmp(FENDNULL(h->value), header))
 	    return (h - table);
 
     return NOTOK;
