@@ -127,28 +127,25 @@ mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
     return update_svc(svcinfo, svc_name, errbuf, errbuflen);
 }
 
+/* Return value must be free(3)'d. */
 const char *
 mh_oauth_cred_fn(const char *svc)
 {
-    char *result, *result_if_allocated;
+    char *key = mh_oauth_node_name_for_svc("credential-file", svc);
+    char *value = context_find(key);
+    free(key);
 
-    char *component = mh_oauth_node_name_for_svc("credential-file", svc);
-    result = context_find(component);
-    free(component);
+    bool found = value;
+    if (found) {
+        if (*value == '/')
+            return mh_xstrdup(value);
+    } else
+        value = concat("oauth-", svc, NULL);
 
-    if (result == NULL) {
-        result = concat("oauth-", svc, NULL);
-        result_if_allocated = result;
-    } else {
-        result_if_allocated = NULL;
-    }
+    const char *md = m_maildir(value);
+    if (!found)
+        free(value);
 
-    if (result[0] != '/') {
-        const char *tmp = m_maildir(result);
-        free(result_if_allocated);
-        result = getcpy(tmp);
-    }
-
-    return result;
+    return mh_xstrdup(md);
 }
 #endif
