@@ -75,16 +75,12 @@ initialize_readline(void)
 static char **
 nmh_completion(const char *text, int start, int end)
 {
-    char **matches;
-
     NMH_UNUSED (end);
 
-    matches = NULL;
-
     if (start == 0)
-    	matches = rl_completion_matches(text, nmh_command_generator);
+    	return rl_completion_matches(text, nmh_command_generator);
 
-    return matches;
+    return NULL;
 }
 
 static char *
