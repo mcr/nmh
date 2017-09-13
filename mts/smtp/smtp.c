@@ -540,7 +540,7 @@ sm_wtxt (char *buffer, int len)
 int
 sm_wtend (void)
 {
-    if (sm_wstream ((char *) NULL, 0) == NOTOK)
+    if (sm_wstream(NULL, 0) == NOTOK)
 	return RP_BHST;
 
     switch (smtalk (SM_DOT + 3 * sm_addrs, ".")) {

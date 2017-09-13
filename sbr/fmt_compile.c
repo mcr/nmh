@@ -856,7 +856,7 @@ do_if(char *sp)
 {
     char *cp = sp;
     struct format *fexpr,
-			   *fif = (struct format *)NULL;
+        *fif = NULL;
     int c = '<';
 
     for (;;) {
@@ -897,7 +897,7 @@ do_if(char *sp)
 	    fif = fp;			/* loc of GOTO */
 	    fexpr->f_skip = next_fp - fexpr;
 
-	    fexpr = (struct format *)NULL;/* no extra ENDIF */
+	    fexpr = NULL;               /* no extra ENDIF */
 
 	    cp = compile (cp);		/* compile ELSE stmts */
 	    fif->f_skip = next_fp - fif;

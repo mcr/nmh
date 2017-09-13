@@ -226,7 +226,7 @@ set_err_http(mh_oauth_ctx *ctx, const struct curl_ctx *curl_ctx)
     if (curl_ctx->res_len > 0
         && is_json(curl_ctx->content_type)
         && get_json_strings(curl_ctx->res_body, curl_ctx->res_len, ctx->log,
-                            "error", &error, (void *)NULL)
+                            "error", &error, NULL)
         && error != NULL) {
         if (strcmp(error, "invalid_grant") == 0) {
             code = MH_OAUTH_BAD_GRANT;
@@ -386,7 +386,7 @@ mh_oauth_get_authorize_url(mh_oauth_ctx *ctx)
                         "client_id", ctx->svc.client_id,
                         "redirect_uri", ctx->svc.redirect_uri,
                         "scope", ctx->svc.scope,
-                        (void *)NULL)) {
+                        NULL)) {
         set_err(ctx, MH_OAUTH_REQUEST_INIT);
         return NULL;
     }
@@ -410,7 +410,7 @@ cred_from_response(mh_oauth_cred *cred, const char *content_type,
                           "access_token", &access_token,
                           "expires_in", &expires_in,
                           "refresh_token", &refresh_token,
-                          (void *)NULL)) {
+                          NULL)) {
         goto out;
     }
 
@@ -498,7 +498,7 @@ mh_oauth_authorize(const char *code, mh_oauth_ctx *ctx)
                         "redirect_uri", ctx->svc.redirect_uri,
                         "client_id", ctx->svc.client_id,
                         "client_secret", ctx->svc.client_secret,
-                        (void *)NULL)) {
+                        NULL)) {
         set_err(ctx, MH_OAUTH_REQUEST_INIT);
         return NULL;
     }
@@ -531,7 +531,7 @@ mh_oauth_refresh(mh_oauth_cred *cred)
                         "refresh_token", cred->refresh_token,
                         "client_id", ctx->svc.client_id,
                         "client_secret", ctx->svc.client_secret,
-                        (void *)NULL)) {
+                        NULL)) {
         set_err(ctx, MH_OAUTH_REQUEST_INIT);
         return false;
     }

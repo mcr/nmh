@@ -64,7 +64,7 @@ add_children (char *name, struct crawl_context *crawl)
     if (strcmp (name, ".") == 0) {
 	prefix = mh_xstrdup("");
     } else {
-	prefix = concat (name, "/", (void *)NULL);
+	prefix = concat(name, "/", NULL);
     }
 
     while ((dp = readdir (dd))) {
@@ -81,7 +81,7 @@ add_children (char *name, struct crawl_context *crawl)
 	if (!strcmp (dp->d_name, ".") || !strcmp (dp->d_name, "..")) {
 	    continue;
 	}
-	child = concat (prefix, dp->d_name, (void *)NULL);
+	child = concat(prefix, dp->d_name, NULL);
 	/* If we have no d_type or d_type is DT_LNK or DT_UNKNOWN, stat the
 	 * child to see what it is. */
 	if (child_is_folder == -1) {

@@ -45,7 +45,7 @@
 
 #define yyterminate() (void)yy_delete_buffer(lexhandle); \
   if(!(tw.tw_flags & TW_SUCC)) { \
-    return (struct tws *)NULL; \
+    return NULL; \
   } \
   if(tw.tw_year < 1970) \
     tw.tw_year += 1900; \

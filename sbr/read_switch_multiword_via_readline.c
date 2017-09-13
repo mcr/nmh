@@ -79,7 +79,7 @@ nmh_completion(const char *text, int start, int end)
 
     NMH_UNUSED (end);
 
-    matches = (char **) NULL;
+    matches = NULL;
 
     if (start == 0)
     	matches = rl_completion_matches(text, nmh_command_generator);

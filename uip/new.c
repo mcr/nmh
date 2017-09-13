@@ -114,7 +114,7 @@ get_msgnums(char *folder, char *sequences[])
 	return NULL;
 
     /* get filename of sequence file */
-    seqfile = concat(m_maildir(folder), "/", mh_seq, (void *)NULL);
+    seqfile = concat(m_maildir(folder), "/", mh_seq, NULL);
 
     if (seqfile == NULL)
     	return NULL;
@@ -150,7 +150,7 @@ get_msgnums(char *folder, char *sequences[])
 			} else {
 			    old_msgnums = msgnums;
 			    msgnums = concat(old_msgnums, " ",
-					     this_msgnums, (void *)NULL);
+					     this_msgnums, NULL);
 			    free(old_msgnums);
 			    free(this_msgnums);
 			}
@@ -165,7 +165,7 @@ get_msgnums(char *folder, char *sequences[])
 			} else {
 			    old_msgnums = msgnums;
 			    msgnums = concat(old_msgnums, " ",
-					     this_msgnums, (void *)NULL);
+					     this_msgnums, NULL);
 			    free(old_msgnums);
 			    free(this_msgnums);
 			}
@@ -395,7 +395,7 @@ doit(char *cur, char *folders, char *sequences[])
 
 	    /* TODO: Split enough of scan.c out so that we can call it here. */
 	    command = concat("scan +", node->n_name, " ", sequences_s,
-			     (void *)NULL);
+			     NULL);
 	    status = system(command);
 	    if (! WIFEXITED (status)) {
 		adios (command, "system");
