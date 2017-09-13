@@ -46,20 +46,20 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
 	break;
     }
 
-    if (status != OK) {
-	if (did_message == 0) {
-	    char *msghook;
-	    if ((msghook = context_find("msg-hook")) != NULL)
-                inform("%s", msghook);
-	    else {
-	    	char errbuf[BUFSIZ];
-		snprintf(errbuf, sizeof(errbuf), "external hook \"%s\"", hook);
-		pidstatus(status, stderr, errbuf);
-	    }
-	    did_message = 1;
-	}
-
-	return NOTOK;
-    } else
+    if (status == OK)
 	return OK;
+
+    if (did_message == 0) {
+        char *msghook;
+        if ((msghook = context_find("msg-hook")) != NULL)
+            inform("%s", msghook);
+        else {
+            char errbuf[BUFSIZ];
+            snprintf(errbuf, sizeof(errbuf), "external hook \"%s\"", hook);
+            pidstatus(status, stderr, errbuf);
+        }
+        did_message = 1;
+    }
+
+    return NOTOK;
 }
