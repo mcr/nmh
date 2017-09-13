@@ -370,10 +370,9 @@ doit(char *cur, char *folders, char *sequences[])
                 /* Found current folder in fprev mode; if we have a
                  * previous node in the list, return it; else return
                  * the last node. */
-                if (prev == NULL) {
-                    return last;
-                }
-                return prev;
+                if (prev)
+                    return prev;
+                return last;
             }
         } else if (run_mode == RM_UNSEEN) {
             int status;
