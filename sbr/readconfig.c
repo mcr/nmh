@@ -122,7 +122,7 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
     if (opp == NULL) {
 	/* Check for duplicated non-null profile entries.  Except
 	   allow multiple profile entries named "#", because that's
-	   what the mh-profile man page suggests using for comments.
+	   what mh-profile(5) suggests using for comments.
 
 	   Only do this check on the very first call from
 	   context_read(), when opp is NULL.  That way, entries in

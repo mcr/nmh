@@ -264,7 +264,7 @@ Options for configure
      however, so that each time nmh is reinstalled, the right value will be
      there.
 
-     See the mh-tailor(5) man page for full documentation of "servers:".
+     See mh-tailor(5) for full documentation of "servers:".
 
 --with-cyrus-sasl	(DEFAULT is to autodetect))
      Enable SASL support for SMTP and POP via the Cyrus SASL library.

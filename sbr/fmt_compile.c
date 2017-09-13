@@ -35,7 +35,7 @@
  *
  * - Add code to fmttest.c to display your new function.
  *
- * - Document the new function in the mh-format(5) man page.
+ * - Document the new function in mh-format(5).
  *
  */
 

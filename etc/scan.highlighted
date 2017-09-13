@@ -13,7 +13,7 @@
 %; You can optionally copy this file to your MH Path and modify as
 %; desired.
 %;
-%; The mh-sequence(5) man page describes the unseen sequence.
+%; mh-sequence(5) describes the unseen sequence.
 %;
 %; A more readable approach would add escape sequences to your profile, e.g.:
 %;     normal: [m

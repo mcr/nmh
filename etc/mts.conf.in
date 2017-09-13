@@ -1,7 +1,7 @@
 #
 # nmh mail transport interface customization file.
 #
-# Check the mh-tailor(5) man page for descriptions of available options.
+# mh-tailor(5) describes the options.
 #
 
 # The delivery method to use, which must be one of the following:
