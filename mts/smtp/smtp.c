@@ -935,7 +935,7 @@ EHLOset (char *s)
 	}
     }
 
-    return 0;
+    return NULL;
 }
 
 /*
