@@ -267,7 +267,7 @@ auxformat (struct mailname *mp, int extras)
  * Check if this is my address
  */
 
-int
+bool
 ismymbox (struct mailname *np)
 {
     int oops;
@@ -294,12 +294,12 @@ ismymbox (struct mailname *np)
 
 	    if ((cp = getname(am)) == NULL) {
 	        inform("Unable to find address in local-mailbox, continuing...");
-		return 0;
+		return false;
 	    }
 
 	    if ((mq.m_next = getm (cp, NULL, 0, NULL, 0)) == NULL) {
                 inform("invalid entry in local-mailbox: %s, continuing...", cp);
-		return 0;
+		return false;
 	    }
 
 	    /* Sigh, it turns out that the address parser gets messed up
@@ -358,7 +358,7 @@ ismymbox (struct mailname *np)
     }
 
     if (np == NULL) /* XXX */
-	return 0;
+	return false;
     
     /*
      * Don't perform this "local" test if we have a Local-Mailbox set
@@ -379,7 +379,7 @@ ismymbox (struct mailname *np)
 	    case LOCALHOST:
 local_test: ;
 		if (!strcasecmp (np->m_mbox, mq.m_mbox))
-		    return 1;
+		    return true;
 		break;
 
 	    default:
@@ -417,7 +417,7 @@ local_test: ;
 	}
 
 	if (mp->m_nohost)
-	    return 1;
+	    return true;
 	if (np->m_host == NULL || mp->m_host == NULL)
 	    continue;
 	if ((len = strlen (cp = np->m_host))
@@ -441,8 +441,8 @@ local_test: ;
 		    continue;
 		break;
 	}
-	return 1;
+	return true;
     }
 
-    return 0;
+    return false;
 }

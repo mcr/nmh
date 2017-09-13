@@ -36,7 +36,7 @@ struct mailname {
  *  prototypes
  */
 void mnfree(struct mailname *);
-int ismymbox(struct mailname *);
+bool ismymbox(struct mailname *);
 
 /*
  * Enable Email Address Internationalization, which requires
