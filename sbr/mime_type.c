@@ -148,7 +148,7 @@ get_file_info(const char *proc, const char *file_name)
     if (!ok)
         return NULL;
 
-    /* s#^.*:[ \t]*##. */
+    /* s#^[^:]*:[ \t]*##. */
     info = buf;
     if ((needle = strchr(info, ':'))) {
         info = needle + 1;
