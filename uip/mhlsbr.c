@@ -969,7 +969,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    }
 		    fflush (stdout);
 		    buf[0] = 0;
-		    if (read (fileno (stdout), buf, sizeof(buf)) < 0) {
+		    if (read(0, buf, sizeof(buf)) < 0) {
 			advise ("stdout", "read");
 		    }
 		}
@@ -1524,7 +1524,7 @@ putch (char ch, unsigned long flags)
 		putchar ('\007');
 	    fflush (stdout);
 	    buf[0] = 0;
-	    if (read (fileno (stdout), buf, sizeof(buf)) < 0) {
+	    if (read(0, buf, sizeof(buf)) < 0) {
 		advise ("stdout", "read");
 	    }
 	    if (strchr(buf, '\n')) {
