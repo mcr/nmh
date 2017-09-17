@@ -325,6 +325,7 @@ static void putcomp (struct mcomp *, struct mcomp *, int);
 static char *oneline (char *, unsigned long);
 static void putstr (char *, unsigned long);
 static void putch (char, unsigned long);
+static bool linefeed_typed(void);
 static void intrser (int);
 static void pipeser (int);
 static void quitser (int);
@@ -960,7 +961,6 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		break;
 
 	    case ISTTY: 
-		strncpy (buf, "\n", sizeof(buf));
 		if (ofilec > 1) {
 		    if (SOprintf ("Press <return> to list \"%s\"...", mname)) {
 			if (ofilen > 1)
@@ -968,12 +968,8 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			printf ("Press <return> to list \"%s\"...", mname);
 		    }
 		    fflush (stdout);
-		    buf[0] = 0;
-		    if (read(0, buf, sizeof(buf)) < 0) {
-			advise ("stdout", "read");
-		    }
 		}
-		if (strchr(buf, '\n')) {
+                if (ofilec == 1 || linefeed_typed()) {
 		    if ((global.c_flags & CLEARSCR))
 			nmh_clear_screen ();
 		}
@@ -1507,8 +1503,6 @@ putstr (char *string, unsigned long flags)
 static void
 putch (char ch, unsigned long flags)
 {
-    char buf[BUFSIZ];
-
     if (llim == 0)
 	return;
 
@@ -1523,11 +1517,7 @@ putch (char ch, unsigned long flags)
 	    if (global.c_flags & BELL)
 		putchar ('\007');
 	    fflush (stdout);
-	    buf[0] = 0;
-	    if (read(0, buf, sizeof(buf)) < 0) {
-		advise ("stdout", "read");
-	    }
-	    if (strchr(buf, '\n')) {
+            if (linefeed_typed()) {
 		if (global.c_flags & CLEARSCR)
 		    nmh_clear_screen ();
 		row = 0;
@@ -1595,6 +1585,33 @@ putch (char ch, unsigned long flags)
     } else {
         putchar (ch);
     }
+}
+
+/* linefeed_typed() makes a single read(2) from stdin and returns true
+ * if a linefeed character is amongst the characters read.
+ * A read error is treated as if linefeed wasn't typed.
+ *
+ * Typing on a TTY can cause read() to return data without typing Enter
+ * by using the TTY's EOF character instead, normally ASCII EOT, Ctrl-D.
+ * The linefeed can also be escaped with the TTY's LNEXT character,
+ * normally ASCII SYN, Ctrl-V, by typing Ctrl-V Ctrl-J.
+ * It's not possible to distinguish between the user typing a buffer's
+ * worth of characters and then EOT, or more than the buffer can hold.
+ * Either way, the result depends on ASCII LF, either from typing Enter
+ * or an escaped Ctrl-J, being amongst the read characters.
+ */
+static bool linefeed_typed(void)
+{
+    char buf[128];
+    ssize_t n;
+
+    n = read(0, buf, sizeof buf);
+    if (n == -1) {
+        advise("stdin", "read");
+        return false; /* Treat as EOF. */
+    }
+
+    return memchr(buf, '\n', n);
 }
 
 
