@@ -2000,9 +2000,6 @@ openQuoted (CT ct, char **file)
 	MD5Init (&mdContext);
 
     quoted = 0;
-#ifdef lint
-    mask = 0;
-#endif
 
     fseek (ct->c_fp, ct->c_begin, SEEK_SET);
     while (len > 0) {

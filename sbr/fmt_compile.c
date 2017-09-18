@@ -488,9 +488,7 @@ do_spec(char *sp)
 {
     char *cp = sp;
     int c;
-#ifndef	lint
     int ljust = 0;
-#endif	/* not lint */
     int wid = 0;
     char fill = ' ';
 

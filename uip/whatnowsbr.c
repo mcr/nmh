@@ -1201,9 +1201,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 
     if ((cp = getenv ("mhdist"))
 	    && *cp
-#ifndef lint
 	    && atoi(cp)
-#endif /* not lint */
 	    && altmsg) {
 	vec[vecp++] = "-dist";
 	if ((cp = m_mktemp2(altmsg, invo_name, NULL, NULL)) == NULL) {
