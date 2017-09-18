@@ -352,7 +352,7 @@ lookup(char *name)
 
     while ((nm = t->name)) {
 	if (*nm == c && strcmp (nm, name) == 0)
-	    return (ftbl = t);
+	    return ftbl = t;
 
 	t++;
     }

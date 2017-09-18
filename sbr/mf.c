@@ -540,7 +540,7 @@ my_lex (char *buffer)
     bp = buffer;
     *bp = 0;
     if (!cp)
-	return (last_lex = LX_END);
+	return last_lex = LX_END;
 
     gotat = isat (cp);
     c = *cp++;
@@ -548,7 +548,7 @@ my_lex (char *buffer)
 	c = *cp++;
     if (c == 0) {
 	cp = NULL;
-	return (last_lex = LX_END);
+	return last_lex = LX_END;
     }
 
     if (c == '(') {
@@ -557,12 +557,12 @@ my_lex (char *buffer)
 	    switch (c = *cp++) {
 		case 0: 
 		    cp = NULL;
-		    return (last_lex = LX_ERR);
+		    return last_lex = LX_ERR;
 		case '\\': 
 		    ADDCHR(c);
 		    if ((c = *cp++) == 0) {
 			cp = NULL;
-			return (last_lex = LX_ERR);
+			return last_lex = LX_ERR;
 		    }
 		    ADDCHR(c);
 		    continue;
@@ -589,12 +589,12 @@ my_lex (char *buffer)
 	    switch (c = *cp++) {
 		case 0: 
 		    cp = NULL;
-		    return (last_lex = LX_ERR);
+		    return last_lex = LX_ERR;
 		case '\\': 
 		    ADDCHR(c);
 		    if ((c = *cp++) == 0) {
 			cp = NULL;
-			return (last_lex = LX_ERR);
+			return last_lex = LX_ERR;
 		    }
 		    /* FALLTHRU */
 		default: 
@@ -603,7 +603,7 @@ my_lex (char *buffer)
 		case '"': 
 		    ADDCHR(c);
 		    *bp = 0;
-		    return (last_lex = LX_QSTR);
+		    return last_lex = LX_QSTR;
 	    }
     }
     
@@ -613,12 +613,12 @@ my_lex (char *buffer)
 	    switch (c = *cp++) {
 		case 0: 
 		    cp = NULL;
-		    return (last_lex = LX_ERR);
+		    return last_lex = LX_ERR;
 		case '\\': 
 		    ADDCHR(c);
 		    if ((c = *cp++) == 0) {
 			cp = NULL;
-			return (last_lex = LX_ERR);
+			return last_lex = LX_ERR;
 		    }
 		    /* FALLTHRU */
 		default: 
@@ -627,7 +627,7 @@ my_lex (char *buffer)
 		case ']': 
 		    ADDCHR(c);
 		    *bp = 0;
-		    return (last_lex = LX_DLIT);
+		    return last_lex = LX_DLIT;
 	    }
     }
     
@@ -635,10 +635,10 @@ my_lex (char *buffer)
     *bp = 0;
     for (i = 0; special[i].lx_chr != 0; i++)
 	if (c == special[i].lx_chr)
-	    return (last_lex = special[i].lx_val);
+	    return last_lex = special[i].lx_val;
 
     if (iscntrl ((unsigned char) c))
-	return (last_lex = LX_ERR);
+	return last_lex = LX_ERR;
 
     for (;;) {
 	if ((c = *cp++) == 0)
@@ -663,7 +663,7 @@ got_atom: ;
  my_lex_buffull:
     /* Out of buffer space. *bp is the last byte in the buffer */
     *bp = 0;
-    return (last_lex = LX_ERR);
+    return last_lex = LX_ERR;
 }
 
 

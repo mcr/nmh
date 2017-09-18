@@ -748,7 +748,7 @@ evalvar (struct mcomp *c1)
     if (!strcasecmp (name, "length"))
 	return ptoi (name, &c1->c_length);
     if (!strcasecmp (name, "nodashstuffing"))
-	return (dashstuff = -1);
+	return dashstuff = -1;
 
     for (ap = triples; ap->t_name; ap++)
 	if (!strcasecmp (ap->t_name, name)) {
@@ -1409,7 +1409,7 @@ oneline (char *stuff, unsigned long flags)
     if (onelp == NULL)
 	onelp = stuff;
     if (*onelp == 0)
-	return (onelp = NULL);
+	return onelp = NULL;
 
     ret = onelp;
     term = 0;

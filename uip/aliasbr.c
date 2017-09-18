@@ -343,13 +343,13 @@ getalias (char *addrs)
     if (cp == NULL)
 	cp = addrs;
     else if (*cp == 0)
-        return (cp = NULL);
+        return cp = NULL;
 
     /* Remove leading any space from the address. */
     for (pp = cp; isspace ((unsigned char) *pp); pp++)
 	continue;
     if (*pp == 0)
-	return (cp = NULL);
+	return cp = NULL;
     /* Find the end of the address. */
     for (qp = pp; *qp != 0 && *qp != ','; qp++)
 	continue;

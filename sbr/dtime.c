@@ -355,7 +355,7 @@ dmktime (struct tws *tw)
     if (tw->tw_flags & TW_DST)
 	result -= 60 * 60; /* One hour. */
 
-    return (tw->tw_clock = result);
+    return tw->tw_clock = result;
 }
 
 

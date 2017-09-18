@@ -23,5 +23,5 @@ get_default_editor(void)
 	str = "vi";
     }
 
-    return (default_editor = str);
+    return default_editor = str;
 }

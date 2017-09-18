@@ -931,13 +931,13 @@ logged_in (void)
             if (debug)
                 continue;
             endutxent();
-            return (utmped = DONE);
+            return utmped = DONE;
         }
     }
 
     endutxent();
 #endif /* HAVE_GETUTXENT */
-    return (utmped = NOTOK);
+    return utmped = NOTOK;
 }
 
 #define	check(t,a,b)		if (t < a || t > b) return -1
