@@ -174,7 +174,6 @@ main (int argc, char **argv)
 	if (distout (msg, cp, backup) == NOTOK)
 	    done (1);
 	vec[vecp++] = "-dist";
-	distsw++;
     }
     vec[vecp] = NULL;
 
