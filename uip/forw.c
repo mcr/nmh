@@ -540,7 +540,7 @@ mhl_draft (int out, char *digest, int volume, int issue,
 	    execvp (program, vec.msgs);
 	    fprintf (stderr, "unable to exec ");
 	    perror (mhlproc);
-	    _exit (-1);
+	    _exit(1);
 
 	default: 
 	    close (pd[1]);

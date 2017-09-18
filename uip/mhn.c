@@ -370,7 +370,7 @@ do_cache:
 
 	execvp ("mhbuild", vec);
 	fprintf (stderr, "unable to exec ");
-	_exit (-1);
+	_exit(1);
     }
 
     /*
@@ -397,7 +397,7 @@ do_cache:
 
 	execvp ("mhbuild", vec);
 	fprintf (stderr, "unable to exec ");
-	_exit (-1);
+	_exit(1);
     }
 
     if (file && msgs.size)

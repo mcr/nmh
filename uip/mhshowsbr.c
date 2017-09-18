@@ -227,7 +227,7 @@ DisplayMsgHeader (CT ct, char *form, int concatsw)
 	execvp (file, vec);
 	fprintf (stderr, "unable to exec ");
 	perror (mhlproc);
-	_exit (-1);
+	_exit(1);
 	/* NOTREACHED */
 
     default:
@@ -483,7 +483,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	    execvp (file, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (buffer);
-	    _exit (-1);
+	    _exit(1);
 	    /* NOTREACHED */
 
 	default: {

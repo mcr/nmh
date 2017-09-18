@@ -470,7 +470,7 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 		write(2, "\n", 1) < 0) {
 		advise ("stderr", "write");
 	    }
-	    _exit (-1);
+	    _exit(1);
 
 	default:
 	    if (pidXwait (pid, mhl))

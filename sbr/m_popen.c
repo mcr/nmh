@@ -47,7 +47,7 @@ m_popen (char *name, int savestdout)
 	    execvp (file, arglist);
 	    fprintf (stderr, "unable to exec ");
 	    perror (name);
-	    _exit (-1);
+	    _exit(1);
 
 	default: 
 	    close (pd[0]);

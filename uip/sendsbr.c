@@ -100,7 +100,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	execvp(buildprogram, buildvec);
 	fprintf(stderr, "unable to exec ");
 	perror(buildmimeproc);
-	_exit(-1);
+	_exit(1);
 	break;
 
     default:
@@ -467,7 +467,7 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 	execvp (program, vec);
 	fprintf (stderr, "unable to exec ");
 	perror (postproc);
-	_exit (-1);
+	_exit(1);
 
     default:
 	/*
@@ -570,7 +570,7 @@ alert (char *file, int out)
 	    execvp (program, arglist);
 	    fprintf (stderr, "unable to exec ");
 	    perror (mailproc);
-	    _exit (-1);
+	    _exit(1);
 
 	default: 		/* no waiting... */
 	    break;

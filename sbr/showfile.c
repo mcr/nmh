@@ -54,7 +54,7 @@ showfile (char **arg, char *file)
 	execvp (program, vec);
 	fprintf (stderr, "unable to exec ");
 	perror (lproc);
-	_exit (-1);
+	_exit(1);
 
     default:
 	/* parent */

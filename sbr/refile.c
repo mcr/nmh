@@ -43,7 +43,7 @@ refile (char **arg, char *file)
 	    execvp (program, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (fileproc);
-	    _exit (-1);
+	    _exit(1);
 
 	default: 
 	    arglist_free(program, vec);

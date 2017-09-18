@@ -1334,7 +1334,7 @@ raw:
 		execvp ("/bin/sh", vec);
 		fprintf (stderr, "unable to exec ");
 		perror ("/bin/sh");
-		_exit (-1);
+		_exit(1);
 		/* NOTREACHED */
 
 	    default:

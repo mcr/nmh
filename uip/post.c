@@ -1537,7 +1537,7 @@ make_bcc_file (int dashstuff)
 		execvp (program, vec);
 		fprintf (stderr, "unable to exec ");
 		perror (mhlproc);
-		_exit (-1);
+		_exit(1);
 
 	    default: 
 		pidXwait (child_id, mhlproc);
@@ -2012,7 +2012,7 @@ fcc (char *file, char *folder)
 	    arglist[argp++] = fold;
 	    arglist[argp] = NULL;
 	    execvp (program, arglist);
-	    _exit (-1);
+	    _exit(1);
 
 	default: 
 	    if ((status = pidwait (child_id, OK))) {

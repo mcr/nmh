@@ -75,7 +75,7 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 	    execvp (prog, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (rmmproc);
-	    _exit (-1);
+	    _exit(1);
 
 	default:
 	    arglist_free(prog, vec);

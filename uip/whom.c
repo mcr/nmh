@@ -202,5 +202,5 @@ main (int argc, char **argv)
     execvp (postproc, vec);
     fprintf (stderr, "unable to exec ");
     perror (postproc);
-    _exit (-1);
+    _exit(1);
 }

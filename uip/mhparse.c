@@ -2583,7 +2583,7 @@ openFTP (CT ct, char **file)
 		execvp (ftp, vec);
 		fprintf (stderr, "unable to exec ");
 		perror (ftp);
-		_exit (-1);
+		_exit(1);
 		/* NOTREACHED */
 
 	    default:
@@ -2716,7 +2716,7 @@ openMail (CT ct, char **file)
 	    execvp (mailproc, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (mailproc);
-	    _exit (-1);
+	    _exit(1);
 	    /* NOTREACHED */
 
 	default:
@@ -2844,7 +2844,7 @@ openURL (CT ct, char **file)
 	execvp(program, args.msgs);
 	fprintf(stderr, "Unable to exec ");
 	perror(program);
-	_exit(-1);
+	_exit(1);
 	/* NOTREACHED */
 
     default:

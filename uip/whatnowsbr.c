@@ -722,7 +722,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    execvp (prog, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (*ed);
-	    _exit (-1);
+	    _exit(1);
 
 	default:
 	    if ((status = pidwait (pid, NOTOK))) {
@@ -836,7 +836,7 @@ sendfile (char **arg, char *file, int pushsw)
 	    execvp (program, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (sendproc);
-	    _exit (-1);
+	    _exit(1);
 
 	default:
 	    if (pidwait(child_id, OK) == 0)
@@ -1276,7 +1276,7 @@ whomfile (char **arg, char *file)
 	    execvp (program, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (whomproc);
-	    _exit (-1);		/* NOTREACHED */
+	    _exit(1);		/* NOTREACHED */
 
 	default:
 	    return pidwait(pid, NOTOK) & 0377 ? 1 : 0;

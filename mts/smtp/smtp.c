@@ -339,7 +339,7 @@ sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
 	    execvp (sendmail, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (sendmail);
-	    _exit (-1);		/* NOTREACHED */
+	    _exit(1);		/* NOTREACHED */
 
 	default: 
 	    SIGNAL (SIGPIPE, SIG_IGN);

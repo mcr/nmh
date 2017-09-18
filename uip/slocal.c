@@ -1091,7 +1091,7 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 	    setenv("SHELL", pw->pw_shell, 1);
 
 	    execvp (pgm, vec);
-	    _exit (-1);
+	    _exit(1);
 
 	default: 
 	    /* parent process */

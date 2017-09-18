@@ -38,7 +38,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
 	vec[vecp++] = NULL;
 	execvp(program, vec);
 	advise(program, "Unable to execute");
-	_exit(-1);
+	_exit(1);
 	/* NOTREACHED */
 
     default:

@@ -230,11 +230,11 @@ message_fd (char **vec)
     /* child process */
     rewind (stdin);
     if (dup2 (fd, 1) == NOTOK || dup2 (fd, 2) == NOTOK)
-	_exit (-1);
+	_exit(1);
     closefds (3);
     setpgid(0, getpid());	/* put in own process group */
     if (execvp (vec[0], vec) == NOTOK) {
-        _exit (-1);
+        _exit(1);
     }
 
     return NOTOK;
