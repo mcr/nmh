@@ -59,7 +59,8 @@ main (int argc, char **argv)
 {
     pid_t child_id = OK;
     int status, isdf = 0;
-    int distsw = 0, vecp = 0;
+    int vecp = 0;
+    bool distsw;
     char *cp, *dfolder = NULL, *dmsg = NULL;
     char *msg = NULL, **ap, **argp, backup[BUFSIZ];
     char buf[BUFSIZ], **arguments, *vec[MAXARGS];
@@ -166,11 +167,10 @@ main (int argc, char **argv)
 	    cp  = getcpy (m_draft (dfolder, dmsg, 1, &isdf));
 	msg = vec[vecp++] = cp;
     }
-    if ((cp = getenv ("mhdist"))
-	    && *cp
-	    && (distsw = atoi (cp))
-	    && (cp = getenv ("mhaltmsg"))
-	    && *cp) {
+
+    distsw = (cp = getenv("mhdist")) && *cp && atoi(cp) &&
+        (cp = getenv("mhaltmsg")) && *cp;
+    if (distsw) {
 	if (distout (msg, cp, backup) == NOTOK)
 	    done (1);
 	vec[vecp++] = "-dist";
