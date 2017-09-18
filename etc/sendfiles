@@ -41,7 +41,7 @@ help() {
 
 die() {
   printf '%s\n' "$usage"
-  exit ${1:-1}
+  exit 1
 }
 
 bindir=`finddir $0`
