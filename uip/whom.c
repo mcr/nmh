@@ -179,32 +179,28 @@ main (int argc, char **argv)
 
     closefds (3);
 
-    if (distsw)
-	child_id = fork();
-
-    switch (distsw ? child_id : OK) {
-	case NOTOK:
+    if (distsw) {
+        if ((child_id = fork()) == -1)
             adios("fork", "failed:");
 
-	case OK:
-	    execvp (postproc, vec);
-	    fprintf (stderr, "unable to exec ");
-	    perror (postproc);
-	    _exit (-1);
+        if (child_id) {
+            SIGNAL (SIGHUP, SIG_IGN);
+            SIGNAL (SIGINT, SIG_IGN);
+            SIGNAL (SIGQUIT, SIG_IGN);
+            SIGNAL (SIGTERM, SIG_IGN);
 
-	default:
-	    SIGNAL (SIGHUP, SIG_IGN);
-	    SIGNAL (SIGINT, SIG_IGN);
-	    SIGNAL (SIGQUIT, SIG_IGN);
-	    SIGNAL (SIGTERM, SIG_IGN);
+            status = pidwait(child_id, OK);
 
-	    status = pidwait(child_id, OK);
-
-	    (void) m_unlink (msg);
-	    if (rename (backup, msg) == NOTOK)
-		adios (msg, "unable to rename %s to", backup);
-	    done (status);
+            (void) m_unlink (msg);
+            if (rename (backup, msg) == NOTOK)
+                adios (msg, "unable to rename %s to", backup);
+            done (status);
+        }
     }
 
-    return 0;  /* dead code to satisfy the compiler */
+    /* Either the child, or no fork occurred. */
+    execvp (postproc, vec);
+    fprintf (stderr, "unable to exec ");
+    perror (postproc);
+    _exit (-1);
 }
