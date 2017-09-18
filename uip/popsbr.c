@@ -182,7 +182,7 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 	   close(1);
 	   free(*argv);
 	   free(argv);
-	   exit(10);
+	   exit(1);
        }
 
        /* okay in the parent we do some stuff */
