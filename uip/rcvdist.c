@@ -127,8 +127,8 @@ main (int argc, char **argv)
     child_id = fork();
     switch (child_id) {
 	case NOTOK: 
-	    inform("unable to fork, continuing...");
-	    /* FALLTHRU */
+            adios("fork", "failed:");
+
 	case OK: 
 	    execvp (program, vec);
 	    fprintf (stderr, "unable to exec ");

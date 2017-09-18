@@ -821,8 +821,8 @@ sendfile (char **arg, char *file, int pushsw)
     child_id = fork();
     switch (child_id) {
 	case NOTOK:
-	    inform("unable to fork, so sending directly...");
-	    /* FALLTHRU */
+            adios("fork", "failed:");
+
 	case OK:
 	    vec = argsplit(sendproc, &program, &vecp);
 	    if (pushsw)
