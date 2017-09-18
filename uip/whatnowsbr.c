@@ -979,10 +979,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
     int snoop = 0;
     struct stat st;
 
-#ifndef	lint
-    int	distsw = 0;
-#endif
-
     /*
      * Make sure these are defined.  In particular, we need
      * savearg[1] to be NULL, in case "arg" is NULL below.  It
@@ -1206,7 +1202,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
     if ((cp = getenv ("mhdist"))
 	    && *cp
 #ifndef lint
-	    && (distsw = atoi (cp))
+	    && atoi(cp)
 #endif /* not lint */
 	    && altmsg) {
 	vec[vecp++] = "-dist";

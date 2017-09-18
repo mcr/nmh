@@ -112,7 +112,7 @@ extern char *distfile;
 int
 main (int argc, char **argv)
 {
-    int msgp = 0, distsw = 0, vecp;
+    int msgp = 0, vecp;
     int isdf = 0, mime = 0;
     int msgnum, status;
     char *cp, *dfolder = NULL, *maildir = NULL;
@@ -397,7 +397,7 @@ go_to_it:
 
     if ((cp = getenv ("mhdist"))
 	    && *cp
-	    && (distsw = atoi (cp))
+	    && atoi(cp)
 	    && altmsg) {
 	vec[vecp++] = "-dist";
 	if ((cp = m_mktemp2(altmsg, invo_name, NULL, NULL)) == NULL) {
