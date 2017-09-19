@@ -292,7 +292,7 @@ to the remote POP server.
 .B inc
 will negotiate TLS immediately after the connection has taken place,
 before any POP commands are sent or received.  Data encrypted by TLS is
-labeled `(tls-encrypted)' and `(tls-decrypted)` when viewing the POP
+labeled `(tls-encrypted)' and `(tls-decrypted)' when viewing the POP
 transaction with the
 .B \-snoop
 switch.  The
