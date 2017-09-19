@@ -303,8 +303,6 @@ static char delim3[] =		/* from forw.c */
     "\n----------------------------------------------------------------------\n\n";
 static char delim4[] = "\n------------------------------\n\n";
 
-static FILE *(*mhl_action)(char *);
-
 /*
  * prototypes
  */
@@ -475,12 +473,8 @@ mhl (int argc, char **argv)
 
     if (isatty (fileno (stdout))) {
 	if (!nomore && moreproc && *moreproc != '\0') {
-	    if (mhl_action) {
-		SIGNAL (SIGINT, SIG_IGN);
-		SIGNAL2 (SIGQUIT, quitser);
-	    }
 	    SIGNAL2 (SIGPIPE, pipeser);
-	    m_popen (moreproc, mhl_action != NULL);
+	    m_popen(moreproc, false);
 	    ontty = PITTY;
 	} else {
 	    SIGNAL (SIGINT, SIG_IGN);
@@ -879,7 +873,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
     switch (setjmp (env)) {
 	case OK: 
 	    if (fname) {
-		fp = mhl_action ? (*mhl_action) (fname) : fopen (fname, "r");
+		fp = fopen(fname, "r");
 		if (fp == NULL) {
 		    advise (fname, "unable to open");
 		    exitstat++;
@@ -911,7 +905,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 	default:
 	    if (ontty != PITTY)
 		SIGNAL (SIGINT, SIG_IGN);
-	    if (mhl_action == NULL && fp != stdin && fp != NULL)
+	    if (fp != stdin && fp != NULL)
 		fclose (fp);
             free(holder.c_text);
             holder.c_text = NULL;
