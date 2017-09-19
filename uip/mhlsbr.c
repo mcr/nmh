@@ -298,7 +298,6 @@ static int num_ignores = 0;
 static char *ignores[MAXARGS];
 
 static  jmp_buf env;
-static  jmp_buf mhlenv;
 
 static char delim3[] =		/* from forw.c */
     "\n----------------------------------------------------------------------\n\n";
@@ -1662,8 +1661,6 @@ static void
 mhldone (int status)
 {
     exitstat = status;
-    if (mhl_action)
-	longjmp (mhlenv, DONE);
     done (exitstat);
 }
 
