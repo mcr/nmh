@@ -335,6 +335,7 @@ noinst_HEADERS = \
     h/addrsbr.h \
     h/aliasbr.h \
     h/crawl_folders.h \
+    h/done.h \
     h/dropsbr.h \
     h/fmt_compile.h \
     h/fmt_scan.h \

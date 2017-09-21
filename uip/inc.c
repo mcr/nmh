@@ -40,6 +40,7 @@
 #include <h/signals.h>
 #include <h/tws.h>
 #include <h/mts.h>
+#include "h/done.h"
 #include "sbr/lock_file.h"
 #include "sbr/m_maildir.h"
 #include "sbr/m_mktemp.h"
@@ -196,7 +197,7 @@ main (int argc, char **argv)
 
     int nmsgs, nbytes;
     char *MAILHOST_env_variable;
-    done=inc_done;
+    set_done(inc_done);
 
 /* absolutely the first thing we do is save our privileges,
  * and drop them if we can.
@@ -907,7 +908,7 @@ skip:
 static void NORETURN
 inc_done (int status)
 {
-    done = exit;
+    set_done(exit);
     if (locked)
     {
         GETGROUPPRIVS();

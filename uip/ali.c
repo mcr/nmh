@@ -9,6 +9,7 @@
 #include <h/addrsbr.h>
 #include <h/aliasbr.h>
 #include <h/mts.h>
+#include "h/done.h"
 #include <h/utils.h>
 
 #define ALI_SWITCHES \

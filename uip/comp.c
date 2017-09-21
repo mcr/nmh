@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/fmt_scan.h>
+#include "h/done.h"
 #include "sbr/m_maildir.h"
 #include <fcntl.h>
 

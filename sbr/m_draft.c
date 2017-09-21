@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include "m_maildir.h"
+#include "h/done.h"
 
 
 char *

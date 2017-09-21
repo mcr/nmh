@@ -9,6 +9,7 @@
 
 #include <h/mh.h>
 #include <h/crawl_folders.h>
+#include "h/done.h"
 #include <h/utils.h>
 #include "sbr/m_maildir.h"
 

@@ -9,6 +9,7 @@
 #include <h/fmt_scan.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
+#include "h/done.h"
 #include <h/utils.h>
 #include <h/signals.h>
 #include "sbr/m_maildir.h"

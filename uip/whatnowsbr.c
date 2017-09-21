@@ -44,6 +44,7 @@
 #ifdef OAUTH_SUPPORT
 # include <h/oauth.h>
 #endif
+#include "h/done.h"
 #include "sbr/m_maildir.h"
 #include "sbr/m_mktemp.h"
 #include "sbr/mime_type.h"

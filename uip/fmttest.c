@@ -11,6 +11,7 @@
 #include <h/utils.h>
 #include <h/scansbr.h>
 #include <h/addrsbr.h>
+#include "h/done.h"
 #include "sbr/m_maildir.h"
 #include "sbr/terminal.h"
 

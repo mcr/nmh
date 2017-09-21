@@ -21,6 +21,7 @@
 #include <h/fmt_scan.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
+#include "h/done.h"
 #include <h/utils.h>
 #include "h/mhcachesbr.h"
 #include "mhmisc.h"
@@ -445,7 +446,7 @@ finish_field:
         CT *ctp;
         convert_list *next;
 
-        done = freects_done;
+        set_done(freects_done);
 
         /* In case there are multiple calls that land here, prevent leak. */
         for (ctp = cts; ctp && *ctp; ++ctp) { free_content (*ctp); }

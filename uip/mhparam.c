@@ -10,6 +10,7 @@
 
 #include <h/mh.h>
 #include <h/mts.h>
+#include "h/done.h"
 #include <h/utils.h>
 
 #define MHPARAM_SWITCHES \

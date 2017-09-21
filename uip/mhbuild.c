@@ -13,6 +13,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
+#include "h/done.h"
 #include <h/utils.h>
 #include "sbr/m_maildir.h"
 #include "sbr/m_mktemp.h"
@@ -108,7 +109,7 @@ main (int argc, char **argv)
 
     if (nmh_init(argv[0], 2)) { return 1; }
 
-    done=unlink_done;
+    set_done(unlink_done);
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

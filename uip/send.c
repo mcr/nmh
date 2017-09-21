@@ -7,6 +7,7 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
+#include "h/done.h"
 #include <h/utils.h>
 #ifdef OAUTH_SUPPORT
 # include <h/oauth.h>

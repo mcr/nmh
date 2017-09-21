@@ -9,6 +9,7 @@
 #include <h/utils.h>
 #include "sbr/m_maildir.h"
 #include <fcntl.h>
+#include "h/done.h"
 
 #define DIST_SWITCHES \
     X("annotate", 0, ANNOSW) \

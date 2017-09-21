@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/tws.h>
 #include <h/picksbr.h>
+#include "h/done.h"
 #include <h/utils.h>
 #include "sbr/m_maildir.h"
 
@@ -72,7 +73,7 @@ main (int argc, char **argv)
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
-    done=putzero_done;
+    set_done(putzero_done);
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

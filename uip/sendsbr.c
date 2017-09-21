@@ -24,6 +24,7 @@
 #ifdef OAUTH_SUPPORT
 #include <h/oauth.h>
 #endif
+#include "h/done.h"
 #include "sbr/m_maildir.h"
 #include "sbr/m_mktemp.h"
 #include "sbr/message_id.h"
@@ -109,7 +110,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	break;
     }
 
-    done=armed_done;
+    set_done(armed_done);
     switch (setjmp (env)) {
     case OK:
 	/*
@@ -175,7 +176,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	break;
     }
 
-    done=exit;
+    set_done(exit);
     if (distfile)
 	(void) m_unlink (distfile);
 
