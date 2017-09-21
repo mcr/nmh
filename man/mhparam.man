@@ -85,52 +85,52 @@ Examples:
 .RS 5
 .nf
 .ta \w'AliasFile:'u+2n
-% mhparam path
+$ mhparam path
 Mail
 
-% mhparam mhlproc
+$ mhparam mhlproc
 %nmhlibexecdir%/mhl
 
-% mhparam \-component Path
+$ mhparam \-component Path
 Path: Mail
 
-% mhparam AliasFile rmmproc
+$ mhparam AliasFile rmmproc
 AliasFile: aliases
 rmmproc: rmmproc
 
-% mhparam \-nocomponent AliasFile rmmproc
+$ mhparam \-nocomponent AliasFile rmmproc
 aliases
 rmmproc
 
-% mhparam path nonexistent context
+$ mhparam path nonexistent context
 Path: Mail
 context: context
 
-% mhparam version
+$ mhparam version
 %nmhversion%
 
-% mhparam etcdir
+$ mhparam etcdir
 %nmhetcdir%
 
-% mhparam libexecdir
+$ mhparam libexecdir
 %nmhlibexecdir%
 
-% mhparam spoollocking
+$ mhparam spoollocking
 %default_locking%
 
-% mhparam datalocking
+$ mhparam datalocking
 fcntl
 
-% mhparam sasl
+$ mhparam sasl
 cyrus_sasl
 
-% mhparam tls
+$ mhparam tls
 tls
 
-% mhparam iconv
+$ mhparam iconv
 iconv
 
-% mhparam oauth
+$ mhparam oauth
 oauth
 .fi
 .RE
@@ -140,7 +140,7 @@ is also useful in backquoted operations:
 .PP
 .RS 5
 .nf
-% fgrep cornell.edu \`mhpath +\`/\`mhparam aliasfile\`
+$ fgrep cornell.edu \`mhpath +\`/\`mhparam aliasfile\`
 .fi
 .SH "EXIT STATUS"
 The exit status is zero if all components are found,

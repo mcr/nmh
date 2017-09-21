@@ -113,22 +113,22 @@ subsequently uncompress and untar it.  For instance:
 .PP
 .RS 5
 .nf
-% mhlist 5-8
+$ mhlist 5-8
  msg part  type/subtype             size description
    5       message/partial           47K part 1 of 4
    6       message/partial           47K part 2 of 4
    7       message/partial           47K part 3 of 4
    8       message/partial           18K part 4 of 4
-% mhstore 5-8
+$ mhstore 5-8
 reassembling partials 5,6,7,8 to folder inbox as message 9
-% mhlist -verbose 9
+$ mhlist -verbose 9
  msg part  type/subtype             size description
    9       application/octet-stream 118K
              (extract with uncompress | tar xvpf -)
              type=tar
              conversions=compress
-% mhstore 9
-% uncompress < 9.tar.Z | tar xvpf -
+$ mhstore 9
+$ uncompress < 9.tar.Z | tar xvpf -
 .fi
 .RE
 .PP
@@ -140,21 +140,21 @@ will automatically do the extraction for you:
 .PP
 .RS 5
 .nf
-% mhlist 5-8
+$ mhlist 5-8
  msg part  type/subtype             size description
    5       message/partial           47K part 1 of 4
    6       message/partial           47K part 2 of 4
    7       message/partial           47K part 3 of 4
    8       message/partial           18K part 4 of 4
-% mhstore 5-8
+$ mhstore 5-8
 reassembling partials 5,6,7,8 to folder inbox as message 9
-% mhlist -verbose 9
+$ mhlist -verbose 9
  msg part  type/subtype             size description
    9       application/octet-stream 118K
              (extract with uncompress | tar xvpf -)
              type=tar
              conversions=compress
-% mhstore -auto 9
+$ mhstore -auto 9
 -- tar listing appears here as files are extracted
 .fi
 .RE

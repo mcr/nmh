@@ -61,43 +61,43 @@ Cur is 4.
 .PP
 .RS 5
 .nf
-% mhpath
+$ mhpath
 /r/phyl/Mail/foo
 
-% mhpath all
+$ mhpath all
 /r/phyl/Mail/foo/3
 /r/phyl/Mail/foo/5
 /r/phyl/Mail/foo/6
 
-% mhpath 2001
+$ mhpath 2001
 mhpath: message 2001 out of range 1-6
 
-% mhpath 1\-2001
+$ mhpath 1\-2001
 /r/phyl/Mail/foo/3
 /r/phyl/Mail/foo/5
 /r/phyl/Mail/foo/6
 
-% mhpath new
+$ mhpath new
 /r/phyl/Mail/foo/7
 
-% mhpath last new
+$ mhpath last new
 /r/phyl/Mail/foo/6
 /r/phyl/Mail/foo/7
 
-% mhpath last\-new
+$ mhpath last\-new
 mhpath: bad message list last\-new
 
-% mhpath cur
+$ mhpath cur
 /r/phyl/Mail/foo/4
 
-% mhpath 1\-2
+$ mhpath 1\-2
 mhpath: no messages in range 1\-2
 
-% mhpath first:2
+$ mhpath first:2
 /r/phyl/Mail/foo/3
 /r/phyl/Mail/foo/5
 
-% mhpath 1 2
+$ mhpath 1 2
 /r/phyl/Mail/foo/1
 /r/phyl/Mail/foo/2
 .fi
@@ -108,9 +108,9 @@ is also useful in backquoted operations:
 .PP
 .RS 5
 .nf
-% cd \`mhpath +inbox\`
+$ cd \`mhpath +inbox\`
 
-% echo \`mhpath +\`
+$ echo \`mhpath +\`
 /r/phyl/Mail
 .fi
 .RE
