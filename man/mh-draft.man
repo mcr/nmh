@@ -264,7 +264,7 @@ The prompt is
 .PP
 .RS 5
 .nf
-Draft ``/home/foobar/nmhbox/draft'' exists (xx bytes).
+Draft "/home/foobar/nmhbox/draft" exists (xx bytes).
 Disposition?
 .fi
 .RE
