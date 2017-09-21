@@ -108,9 +108,9 @@ is also useful in backquoted operations:
 .PP
 .RS 5
 .nf
-% cd `mhpath +inbox`
+% cd \`mhpath +inbox\`
 
-% echo `mhpath +`
+% echo \`mhpath +\`
 /r/phyl/Mail
 .fi
 .RE
@@ -123,7 +123,7 @@ the command
 .PP
 .RS 5
 .nf
-mv `mhpath 501 500`
+mv \`mhpath 501 500\`
 .fi
 .RE
 .PP
@@ -131,7 +131,7 @@ to will not move 501 to 500; quite the reverse.  But
 .PP
 .RS 5
 .nf
-mv `mhpath 501` `mhpath 500`
+mv \`mhpath 501\` \`mhpath 500\`
 .fi
 .RE
 .PP

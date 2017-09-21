@@ -56,9 +56,9 @@ typical usage:
 .PP
 .RS 5
 .nf
-scan\0`pick\0\-from\0jones`
+scan\0\`pick\0\-from\0jones\`
 pick\0\-to\0holloway\0\-sequence\0select
-show\0`pick\0\-before\0friday`
+show\0\`pick\0\-before\0friday\`
 .fi
 .RE
 .ad
@@ -232,7 +232,7 @@ programs by using the \*(lqbackquoting\*(rq syntax of the shell.
 For example, the command
 .PP
 .RS 5
-scan\0`pick\0+todo\0\-after\0\*(lq31 Mar 83 0123 PST\*(rq`
+scan\0\`pick\0+todo\0\-after\0\*(lq31 Mar 83 0123 PST\*(rq\`
 .RE
 .PP
 says to
@@ -295,7 +295,7 @@ If
 is used in a backquoted operation, such as
 .PP
 .RS 5
-scan\0`pick\0\-from\0jones`
+scan\0\`pick\0\-from\0jones\`
 .RE
 .PP
 and
@@ -375,7 +375,7 @@ not, and merely matches the messages you specify.  This lets you type
 something like:
 .PP
 .RS 5
-show\0`pick\0last:20\0\-seq\0fear`
+show\0\`pick\0last:20\0\-seq\0fear\`
 .RE
 .PP
 instead of typing

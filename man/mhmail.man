@@ -89,7 +89,7 @@ would do.  For example:
 .PP
 .RS 5
 .nf
-mhmail u2@example.com -resent < `mhpath cur`
+mhmail u2@example.com -resent <\`mhpath cur\`
 .fi
 .RE
 .PP

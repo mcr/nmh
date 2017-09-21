@@ -140,7 +140,7 @@ is also useful in backquoted operations:
 .PP
 .RS 5
 .nf
-% fgrep cornell.edu `mhpath +`/`mhparam aliasfile`
+% fgrep cornell.edu \`mhpath +\`/\`mhparam aliasfile\`
 .fi
 .SH "EXIT STATUS"
 The exit status is zero if all components are found,

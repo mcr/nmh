@@ -340,7 +340,7 @@ immediately after a successful invocation of
 One approach could be based on:
 .PP
 .RS 5
-msgs=`inc -format '%(msg)'`  &&  [ -n "$msgs" ]  &&  scan $msgs  &&  \
+msgs=\`inc -format '%(msg)'\`  &&  [ -n "$msgs" ]  &&  scan $msgs  &&  \
 mhfixmsg -nochangecur $msgs
 .RE
 .PP
@@ -371,7 +371,7 @@ could be called on the message after it is stored.
 .ta \w'\-fixboundary 'u
 PATH = %bindir%:$PATH
 LANG = en_US.utf8
-MAILDIR = `mhparam path`
+MAILDIR = \`mhparam path\`
 #### The Backups directory is relative to MAILDIR.
 MKSTEMP = 'mkstemp -directory Backups -prefix mhfixmsg'
 MHFIXMSG = 'mhfixmsg -noverbose -file - -outfile -'
@@ -379,7 +379,7 @@ STORE = %nmhlibexecdir%/rcvstore
 
 :0 w: nmh-workers/procmail.$LOCKEXT
 * ^TOnmh-workers@nongnu.org
-| tee `$MKSTEMP` | $MHFIXMSG | $STORE +nmh-workers
+| tee \`$MKSTEMP\` | $MHFIXMSG | $STORE +nmh-workers
 .fi
 .RE
 .SH "EXAMPLES"
@@ -461,7 +461,7 @@ can be run on each message separately, e.g., using a Bourne shell loop:
 .PP
 .RS
 .nf
-for msg in `pick +folder`; do mhfixmsg +folder $msg; done
+for msg in \`pick +folder\`; do mhfixmsg +folder $msg; done
 .fi
 .RE
 .PP

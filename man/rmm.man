@@ -77,7 +77,7 @@ alias rmm 'refile +d'
 where folder `+d' is a folder for deleted messages, and
 .PP
 .RS 5
-alias mexp 'rm `mhpath +d all`'
+alias mexp 'rm \`mhpath +d all\`'
 .RE
 .PP
 is used to \*(lqexpunge\*(rq deleted messages.

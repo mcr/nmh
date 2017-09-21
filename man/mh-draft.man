@@ -174,7 +174,7 @@ to do the work:
 .PP
 .RS 5
 .nf
-comp -use `pick +drafts -to nmh-workers`
+comp -use \`pick +drafts -to nmh-workers\`
 .fi
 .RE
 .PP
@@ -182,7 +182,7 @@ or
 .PP
 .RS 5
 .nf
-sendf `pick +drafts -to nmh-workers`
+sendf \`pick +drafts -to nmh-workers\`
 .fi
 .RE
 .PP
