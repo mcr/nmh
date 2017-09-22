@@ -21,6 +21,7 @@
 
 #define COMMAND_TIMEOUT 30
 
+static int open_master_pty(const char *desc);
 static void die(const char *fmt, ...);
 
 int
@@ -39,31 +40,8 @@ main(int argc, char *argv[])
             *argv, *argv);
     }
 
-    if ((master_in = posix_openpt(O_RDWR | O_NOCTTY)) < 0) {
-	die("Unable to open master pseudo-tty: %s\n", strerror(errno));
-    }
-
-    if ((master_out = posix_openpt(O_RDWR | O_NOCTTY)) < 0) {
-	die("Unable to open master pseudo-tty: %s\n", strerror(errno));
-    }
-
-    if (grantpt(master_in) < 0) {
-	die("Unable to grant permissions to master pty: %s\n",
-            strerror(errno));
-    }
-
-    if (grantpt(master_out) < 0) {
-	die("Unable to grant permissions to master pty: %s\n",
-            strerror(errno));
-    }
-
-    if (unlockpt(master_in) < 0) {
-	die("Unable to unlock master pty: %s\n", strerror(errno));
-    }
-
-    if (unlockpt(master_out) < 0) {
-	die("Unable to unlock master pty: %s\n", strerror(errno));
-    }
+    master_in = open_master_pty("input");
+    master_out = open_master_pty("output");
 
     child = fork();
 
@@ -172,6 +150,25 @@ main(int argc, char *argv[])
     waitpid(child, &status, 0);
 
     exit(0);
+}
+
+static int
+open_master_pty(const char *desc)
+{
+    int fd;
+
+    if ((fd = posix_openpt(O_RDWR | O_NOCTTY)) == -1) {
+	die("Unable to open master %s pseudo-tty: %s\n", desc, strerror(errno));
+    }
+    if (grantpt(fd) == -1) {
+	die("Unable to grant permissions to master %s pty: %s\n", desc,
+            strerror(errno));
+    }
+    if (unlockpt(fd) == -1) {
+	die("Unable to unlock master %s pty: %s\n", desc, strerror(errno));
+    }
+
+    return fd;
 }
 
 static void
