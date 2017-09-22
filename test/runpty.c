@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
@@ -19,6 +20,8 @@
 #include <errno.h>
 
 #define COMMAND_TIMEOUT 30
+
+static void die(const char *fmt, ...);
 
 int
 main(int argc, char *argv[])
@@ -31,43 +34,35 @@ main(int argc, char *argv[])
     FILE *output;
 
     if (argc < 3) {
-	fprintf(stderr, "Usage: %s output-filename command [arguments ...]\n",
-		argv[0]);
-	exit(1);
+        die("%s: too few arguments\n"
+            "usage: %s output-filename command [arguments...]\n",
+            *argv, *argv);
     }
 
     if ((master_in = posix_openpt(O_RDWR | O_NOCTTY)) < 0) {
-	fprintf(stderr, "Unable to open master pseudo-tty: %s\n",
-		strerror(errno));
-	exit(1);
+	die("Unable to open master pseudo-tty: %s\n", strerror(errno));
     }
 
     if ((master_out = posix_openpt(O_RDWR | O_NOCTTY)) < 0) {
-	fprintf(stderr, "Unable to open master pseudo-tty: %s\n",
-		strerror(errno));
-	exit(1);
+	die("Unable to open master pseudo-tty: %s\n", strerror(errno));
     }
 
     if (grantpt(master_in) < 0) {
-	fprintf(stderr, "Unable to grant permissions to master pty: %s\n",
-		strerror(errno));
-	exit(1);
+	die("Unable to grant permissions to master pty: %s\n",
+            strerror(errno));
     }
 
     if (grantpt(master_out) < 0) {
-	fprintf(stderr, "Unable to grant permissions to master pty: %s\n",
-		strerror(errno));
-	exit(1);
+	die("Unable to grant permissions to master pty: %s\n",
+            strerror(errno));
     }
 
     if (unlockpt(master_in) < 0) {
-	fprintf(stderr, "Unable to unlock master pty: %s\n", strerror(errno));
-	exit(1);
+	die("Unable to unlock master pty: %s\n", strerror(errno));
     }
 
     if (unlockpt(master_out) < 0) {
-	fprintf(stderr, "Unable to unlock master pty: %s\n", strerror(errno));
-	exit(1);
+	die("Unable to unlock master pty: %s\n", strerror(errno));
     }
 
     child = fork();
@@ -79,15 +74,13 @@ main(int argc, char *argv[])
 
     if (child == 0) {
 	if (!(slavename = ptsname(master_in))) {
-	    fprintf(stderr, "Unable to determine name of slave pty: %s\n",
-		    strerror(errno));
-	    exit(1);
+	    die("Unable to determine name of slave pty: %s\n",
+                strerror(errno));
 	}
 
 	if ((slave = open(slavename, O_RDWR)) < 0) {
-	    fprintf(stderr, "Unable to open slave pty \"%s\": %s\n", slavename,
-		    strerror(errno));
-	    exit(1);
+	    die("Unable to open slave pty \"%s\": %s\n", slavename,
+                strerror(errno));
 	}
 
 	dup2(slave, STDIN_FILENO);
@@ -95,15 +88,13 @@ main(int argc, char *argv[])
 	close(master_in);
 
 	if (!(slavename = ptsname(master_out))) {
-	    fprintf(stderr, "Unable to determine name of slave pty: %s\n",
-		    strerror(errno));
-	    exit(1);
+	    die("Unable to determine name of slave pty: %s\n",
+                strerror(errno));
 	}
 
 	if ((slave = open(slavename, O_RDWR | O_NOCTTY)) < 0) {
-	    fprintf(stderr, "Unable to open slave pty \"%s\": %s\n", slavename,
-		    strerror(errno));
-	    exit(1);
+	    die("Unable to open slave pty \"%s\": %s\n", slavename,
+                strerror(errno));
 	}
 
 	dup2(slave, STDOUT_FILENO);
@@ -113,18 +104,15 @@ main(int argc, char *argv[])
 
 	execvp(argv[2], argv + 2);
 
-	fprintf(stderr, "execvp(%s) failed: %s\n", argv[2], strerror(errno));
-	exit(1);
+	die("execvp(%s) failed: %s\n", argv[2], strerror(errno));
 
     } else if (child < 0) {
-	fprintf(stderr, "fork() failed: %s\n", strerror(errno));
-	exit(1);
+	die("fork() failed: %s\n", strerror(errno));
     }
 
     if (!(output = fopen(argv[1], "w"))) {
-	fprintf(stderr, "Unable to open \"%s\" for output: %s\n", argv[1],
-		strerror(errno));
-	exit(1);
+	die("Unable to open \"%s\" for output: %s\n", argv[1],
+            strerror(errno));
     }
 
     starttime = time(NULL);
@@ -151,8 +139,7 @@ main(int argc, char *argv[])
 	cc = select(master_out + 1, &readfds, NULL, NULL, &tv);
 
 	if (cc < 0) {
-	    fprintf(stderr, "select() failed: %s\n", strerror(errno));
-	    exit(1);
+	    die("select() failed: %s\n", strerror(errno));
 	}
 
 	if (cc > 0 && FD_ISSET(master_out, &readfds)) {
@@ -185,4 +172,16 @@ main(int argc, char *argv[])
     waitpid(child, &status, 0);
 
     exit(0);
+}
+
+static void
+die(const char *fmt, ...)
+{
+    va_list args;
+
+    va_start(args, fmt);
+    vfprintf(stderr, fmt, args);
+    va_end(args);
+
+    exit(1);
 }
