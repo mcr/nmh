@@ -21,15 +21,15 @@
 
 #define COMMAND_TIMEOUT 30
 
+static void run_command(char *argv[], int master_in, int master_out);
 static int open_master_pty(const char *desc);
 static void die(const char *fmt, ...);
 
 int
 main(int argc, char *argv[])
 {
-    int master_in, master_out, slave, cc, status;
+    int master_in, master_out, cc, status;
     time_t starttime, now;
-    const char *slavename;
     pid_t child;
     unsigned char readbuf[1024];
     FILE *output;
@@ -46,45 +46,8 @@ main(int argc, char *argv[])
     if ((child = fork()) == -1) {
 	die("fork() failed: %s\n", strerror(errno));
     }
-
-    /*
-     * Start the child process if we are in the child; open the two
-     * slave pseudo-ttys and close the masters after we are done with them.
-     */
-
     if (child == 0) {
-	if (!(slavename = ptsname(master_in))) {
-	    die("Unable to determine name of slave pty: %s\n",
-                strerror(errno));
-	}
-
-	if ((slave = open(slavename, O_RDWR)) < 0) {
-	    die("Unable to open slave pty \"%s\": %s\n", slavename,
-                strerror(errno));
-	}
-
-	dup2(slave, STDIN_FILENO);
-	close(slave);
-	close(master_in);
-
-	if (!(slavename = ptsname(master_out))) {
-	    die("Unable to determine name of slave pty: %s\n",
-                strerror(errno));
-	}
-
-	if ((slave = open(slavename, O_RDWR | O_NOCTTY)) < 0) {
-	    die("Unable to open slave pty \"%s\": %s\n", slavename,
-                strerror(errno));
-	}
-
-	dup2(slave, STDOUT_FILENO);
-	dup2(slave, STDERR_FILENO);
-	close(slave);
-	close(master_out);
-
-	execvp(argv[2], argv + 2);
-
-	die("execvp(%s) failed: %s\n", argv[2], strerror(errno));
+        run_command(argv + 2, master_in, master_out); /* Does not return. */
     }
 
     if (!(output = fopen(argv[1], "w"))) {
@@ -149,6 +112,49 @@ main(int argc, char *argv[])
     waitpid(child, &status, 0);
 
     exit(0);
+}
+
+static void
+run_command(char *argv[], int master_in, int master_out)
+{
+    const char *slavename;
+    int slave;
+
+    /* Open the two slave pseudo-ttys and close the masters after we are
+     * done with them. */
+
+    if (!(slavename = ptsname(master_in))) {
+        die("Unable to determine name of slave pty: %s\n",
+            strerror(errno));
+    }
+
+    if ((slave = open(slavename, O_RDWR)) == -1) {
+        die("Unable to open slave pty \"%s\": %s\n", slavename,
+            strerror(errno));
+    }
+
+    dup2(slave, STDIN_FILENO);
+    close(slave);
+    close(master_in);
+
+    if (!(slavename = ptsname(master_out))) {
+        die("Unable to determine name of slave pty: %s\n",
+            strerror(errno));
+    }
+
+    if ((slave = open(slavename, O_RDWR | O_NOCTTY)) < 0) {
+        die("Unable to open slave pty \"%s\": %s\n", slavename,
+            strerror(errno));
+    }
+
+    dup2(slave, STDOUT_FILENO);
+    dup2(slave, STDERR_FILENO);
+    close(slave);
+    close(master_out);
+
+    execvp(*argv, argv);
+
+    die("execvp(%s) failed: %s\n", *argv, strerror(errno));
 }
 
 static int
