@@ -36,6 +36,7 @@ check "$THISDIR/md5sums" "$MH_TEST_DIR/inctest.md5sums" 'keep first'
 
 FILLER="$THISDIR/filler.txt"
 FROMLINE="$THISDIR/fromline.txt"
+MMDF_DELIM='printf "\x01\x01\x01\x01\x0a"'
 HDR="$THISDIR/msgheader.txt"
 
 if grep From "$FILLER" >/dev/null; then
@@ -52,6 +53,7 @@ fi
 STDIO_BUFSZ=16384
 
 FROMLINESZ=`wc -c < "$FROMLINE"`
+MMDFDELIMLINESZ=1
 HDRSZ=`wc -c < "$HDR"`
 
 # makembox_A mboxname sz
@@ -74,6 +76,20 @@ makembox_A () {
   echo >> "$MBOX"
 }
 
+# makemmdf_A mmdfboxname sz
+makemmdf_A () {
+  MBOX="$1"
+  SZ=$2
+
+  arith_eval $SZ - $HDRSZ - $MMDFDELIMLINESZ - 1; WANTSZ=$arith_val
+  dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
+  echo >> "$MBOX.body"
+  #### The trailing $MMDF_DELIM's allows $MBOX to exactly match a file
+  #### created by packf.
+  (eval "$MMDF_DELIM"; cat "$HDR" "$MBOX.body"; eval "$MMDF_DELIM"; \
+   eval "$MMDF_DELIM"; cat "$HDR" "$FILLER"; eval "$MMDF_DELIM") > "$MBOX"
+}
+
 # make_mbox_B mboxname sz
 # Test B makes a mailbox with one message of sz bytes long,
 # which ends in a partial mbox delimiter (ie part of the string
@@ -91,12 +107,29 @@ makembox_B () {
   echo >> "$MBOX"
 }
 
-# do_one_test_A sz
+# makemmdf_B mmdfboxname sz
+makemmdf_B () {
+  MBOX="$1"
+  SZ=$2
+
+  arith_eval $SZ - $HDRSZ - $MMDFDELIMLINESZ - 1; WANTSZ=$arith_val
+  dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
+  echo >> "$MBOX.body"
+  #### The final $MMDF_DELIM allows $MBOX to exactly match a file
+  #### created by packf.
+  (eval "$MMDF_DELIM"; cat "$HDR" "$MBOX.body"; eval "$MMDF_DELIM") > "$MBOX"
+}
+
+# do_one_test_A sz mbox_type
 # Do a single test with message one's body of size sz.
 do_one_test_A () {
   SZ=$1
-  printf '%5s A\r' $SZ
-  makembox_A "$MH_TEST_DIR/eom-align.mbox" $SZ
+  MBOX_TYPE=$2
+  printf '%5s %s A\r' $SZ $MBOX_TYPE
+  case $MBOX_TYPE in
+      mbox) makembox_A "$MH_TEST_DIR/eom-align.mbox" $SZ ;;
+      mmdf) makemmdf_A "$MH_TEST_DIR/eom-align.mbox" $SZ ;;
+  esac
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the messages should be 11 and 12 in inbox
   # Now get the bodies back out.
@@ -109,12 +142,16 @@ do_one_test_A () {
   rmm 11 12
 }
 
-# do_one_test_B sz
+# do_one_test_B sz mbox_type
 # Do a test type B
 do_one_test_B () {
   SZ=$1
-  printf '%5s B\r' $SZ
-  makembox_B "$MH_TEST_DIR/eom-align.mbox" $SZ
+  MBOX_TYPE=$2
+  printf '%5s %s B\r' $SZ $MBOX_TYPE
+  case $MBOX_TYPE in
+      mbox) makembox_B "$MH_TEST_DIR/eom-align.mbox" $SZ ;;
+      mmdf) makemmdf_B "$MH_TEST_DIR/eom-align.mbox" $SZ ;;
+  esac
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the message should be 11 in the inbox
   body1="$MH_TEST_DIR/eom-align.inbox.body1"
@@ -133,19 +170,23 @@ arith_eval $STDIO_BUFSZ + $HDRSZ + $FROMLINESZ + 32; FINISH=$arith_val
 
 #### Trouble spots for the particular input, with BUFSZ of 8192:
 for sz in 3146 3147 7241 7242 7243 11338 11339 15433 15434 15435; do
-  do_one_test_A $sz
+  do_one_test_A $sz mbox
+  do_one_test_A $sz mmdf
 done
 
 # Also 155, 174, 175, but they're too small for makembox_B to handle.
 for sz in 684 4074 4097 4148 4610 4611 5121 5122 6654 6655 8170 \
           8193 8244 8364 12266 12289 12340 16362 16385 16436; do
-  do_one_test_B $sz
+  do_one_test_B $sz mbox
+  do_one_test_B $sz mmdf
 done
 
 i="$START"
 while test $i -le $FINISH; do
-  do_one_test_A $i
-  do_one_test_B $i
+  do_one_test_A $i mbox
+  do_one_test_A $i mmdf
+  do_one_test_B $i mbox
+  do_one_test_B $i mmdf
   i=`expr $i + 1`
 done
 printf '\n'
