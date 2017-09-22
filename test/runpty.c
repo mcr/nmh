@@ -43,7 +43,9 @@ main(int argc, char *argv[])
     master_in = open_master_pty("input");
     master_out = open_master_pty("output");
 
-    child = fork();
+    if ((child = fork()) == -1) {
+	die("fork() failed: %s\n", strerror(errno));
+    }
 
     /*
      * Start the child process if we are in the child; open the two
@@ -83,9 +85,6 @@ main(int argc, char *argv[])
 	execvp(argv[2], argv + 2);
 
 	die("execvp(%s) failed: %s\n", argv[2], strerror(errno));
-
-    } else if (child < 0) {
-	die("fork() failed: %s\n", strerror(errno));
     }
 
     if (!(output = fopen(argv[1], "w"))) {
