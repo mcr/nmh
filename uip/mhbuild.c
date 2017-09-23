@@ -380,7 +380,7 @@ main (int argc, char **argv)
 
     /* output MIME message to this temporary file */
     if ((cp = m_mktemp2(compfile, invo_name, NULL, &fp_out)) == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	adios(NULL, "unable to create temporary file");
     }
     strncpy(outfile, cp, sizeof(outfile));
 

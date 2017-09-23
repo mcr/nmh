@@ -120,8 +120,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	if (pushsw && unique) {
 	    char *cp = m_mktemp2(drft, invo_name, NULL, NULL);
 	    if (cp == NULL) {
-		adios(NULL, "unable to create temporary file in %s",
-		      get_temp_dir());
+		adios(NULL, "unable to create temporary file");
 	    }
 	    if (rename (drft, strncpy(file, cp, sizeof(file))) == NOTOK)
 		adios (file, "unable to rename %s to", drft);
@@ -330,8 +329,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 
 	char *cp = m_mktemp2(drft, invo_name, NULL, &out);
         if (cp == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
-		  get_temp_dir());
+	    adios(NULL, "unable to create temporary file");
         }
 	strncpy(tmpdrf, cp, sizeof(tmpdrf));
 

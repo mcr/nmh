@@ -186,7 +186,7 @@ annosbr (int fd, char *file, char *comp, char *text, bool inplace, bool datesw, 
     mode = fstat (fd, &st) != NOTOK ? (int) (st.st_mode & 0777) : m_gmprot ();
 
     if ((cp = m_mktemp2(file, "annotate", NULL, &tmp)) == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	adios(NULL, "unable to create temporary file");
     }
     strncpy (tmpfil, cp, sizeof(tmpfil));
     chmod (tmpfil, mode);

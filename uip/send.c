@@ -402,8 +402,7 @@ go_to_it:
 	    && altmsg) {
 	vec[vecp++] = "-dist";
 	if ((cp = m_mktemp2(altmsg, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
-		  get_temp_dir());
+	    adios(NULL, "unable to create temporary file");
 	}
 	distfile = mh_xstrdup(cp);
 	(void) m_unlink(distfile);
