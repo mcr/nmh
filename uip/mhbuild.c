@@ -83,12 +83,7 @@ int contentidsw = 1;
  * Temporary files
  */
 static char infile[BUFSIZ];
-static int unlink_infile  = 0;
-
 static char outfile[BUFSIZ];
-static int unlink_outfile = 0;
-
-static void unlink_done (int) NORETURN;
 
 
 int
@@ -108,8 +103,6 @@ main (int argc, char **argv)
     size_t n;
 
     if (nmh_init(argv[0], 2)) { return 1; }
-
-    set_done(unlink_done);
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -329,10 +322,7 @@ main (int argc, char **argv)
 	    adios(NULL, "unable to create temporary file in %s",
 		  get_temp_dir());
 	}
-
-	/* save a copy of the name for later removal */
 	strncpy (infile, cp, sizeof(infile));
-	unlink_infile = 1;
 
 	/* copy standard input to temporary file */
 	while ((n = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
@@ -393,7 +383,6 @@ main (int argc, char **argv)
 	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
     }
     strncpy(outfile, cp, sizeof(outfile));
-    unlink_outfile = 1;
 
     /* output the message */
     output_message_fp (ct, fp_out, outfile);
@@ -417,25 +406,12 @@ main (int argc, char **argv)
 	rename (buffer, compfile);
 	done (1);
     }
-    unlink_outfile = 0;
+    /* Remove from atexit(3) list of files to unlink. */
+    if (!(m_unlink(outfile) == -1 && errno == ENOENT)) {
+        adios(outfile, "file exists after rename:");
+    }
 
     free_content (ct);
     done (0);
     return 1;
-}
-
-
-static void NORETURN
-unlink_done (int status)
-{
-    /*
-     * Check if we need to remove stray
-     * temporary files.
-     */
-    if (unlink_infile)
-	(void) m_unlink (infile);
-    if (unlink_outfile)
-	(void) m_unlink (outfile);
-
-    exit (status);
 }
