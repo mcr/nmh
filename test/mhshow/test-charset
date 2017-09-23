@@ -29,7 +29,7 @@ else
     #### FreeBSD10 buildbot.  It doesn't support EBCDIC-US, which is used
     #### by the checks, so check for that.  Though that doesn't seem to be
     #### the reason.
-    printf '\0344' | iconv -f EBCDIC-US -t UTF-8 >/dev/null 2>&1  ||
+    printf '\344' | iconv -f EBCDIC-US -t UTF-8 >/dev/null 2>&1  ||
         skip_param_value_checks=1
 fi
 
