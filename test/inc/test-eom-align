@@ -36,7 +36,7 @@ check "$THISDIR/md5sums" "$MH_TEST_DIR/inctest.md5sums" 'keep first'
 
 FILLER="$THISDIR/filler.txt"
 FROMLINE="$THISDIR/fromline.txt"
-MMDF_DELIM='printf "\x01\x01\x01\x01\x0a"'
+MMDF_DELIM='printf "\01\01\01\01\012"'
 HDR="$THISDIR/msgheader.txt"
 
 if grep From "$FILLER" >/dev/null; then
