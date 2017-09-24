@@ -302,7 +302,7 @@ cleanup() {
     #### cd to $MH_TEST_DIR before trying to remove its Mail
     #### subdirectory.  rm on Solaris won't remove it if it's in the
     #### path of the current working directory.
-    test -z "$MH_TEST_NOCLEANUP" && (cd "$MH_TEST_DIR"; rm -rf "$MH_TEST_DIR"/Mail)
+    test -z "$MH_TEST_NOCLEANUP" && (cd "$MH_TEST_DIR" && rm -rf "$MH_TEST_DIR"/Mail)
 
     #### Report test name if set, which indicates failure.
     #### Relies on set -e to invoke the trap which calls
