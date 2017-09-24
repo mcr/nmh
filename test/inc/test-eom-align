@@ -137,10 +137,7 @@ do_one_test_A () {
   SZ=$1
   MBOX_TYPE=$2
   printf '%5s %s A\r' $SZ $MBOX_TYPE
-  case $MBOX_TYPE in
-      mbox) makembox_A "$MH_TEST_DIR/eom-align.mbox" $SZ ;;
-      mmdf) makemmdf_A "$MH_TEST_DIR/eom-align.mbox" $SZ ;;
-  esac
+  make${MBOX_TYPE}_A "$MH_TEST_DIR/eom-align.mbox" $SZ
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the messages should be 11 and 12 in inbox
   # Now get the bodies back out.
@@ -159,10 +156,7 @@ do_one_test_B () {
   SZ=$1
   MBOX_TYPE=$2
   printf '%5s %s B\r' $SZ $MBOX_TYPE
-  case $MBOX_TYPE in
-      mbox) makembox_B "$MH_TEST_DIR/eom-align.mbox" $SZ ;;
-      mmdf) makemmdf_B "$MH_TEST_DIR/eom-align.mbox" $SZ ;;
-  esac
+  make${MBOX_TYPE}_B "$MH_TEST_DIR/eom-align.mbox" $SZ
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the message should be 11 in the inbox
   body1="$MH_TEST_DIR/eom-align.inbox.body1"
