@@ -332,7 +332,7 @@ annosbr (int fd, char *file, char *comp, char *text, bool inplace, bool datesw, 
 	 *  Get rid of the field buffer because we're done with it.
 	 */
 
-	free((void *)field);
+	free(field);
     }
 
     else {
