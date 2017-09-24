@@ -34,9 +34,22 @@ fi
  done)
 check "$THISDIR/md5sums" "$MH_TEST_DIR/inctest.md5sums" 'keep first'
 
+f="$MH_TEST_DIR/mmdf-magic"
+printf '\1\1\1\1\n' >$f
+got="`output_md5 $f`"
+want=2636d725e650779eca70d6564c4f5982
+if test "$got" != "$want"; then
+    printf '%s: MMDF magic: %s: got %s, want %s\n' \
+        "$0" "$f" "$got" "$want" >&2
+    exit 1
+fi
+mmdf_magic="$f"
+
+empty_line="$MH_TEST_DIR/empty-line"
+printf '\n' >"$empty_line"
+
 FILLER="$THISDIR/filler.txt"
 FROMLINE="$THISDIR/fromline.txt"
-MMDF_DELIM='printf "\01\01\01\01\012"'
 HDR="$THISDIR/msgheader.txt"
 
 if grep From "$FILLER" >/dev/null; then
@@ -53,7 +66,7 @@ fi
 STDIO_BUFSZ=16384
 
 FROMLINESZ=`wc -c < "$FROMLINE"`
-MMDFDELIMLINESZ=5
+MMDFDELIMLINESZ=`wc -c <"$mmdf_magic"`
 HDRSZ=`wc -c < "$HDR"`
 
 # makembox_A mboxname sz
@@ -70,10 +83,8 @@ makembox_A () {
   arith_eval $SZ - $HDRSZ - $FROMLINESZ - 1; WANTSZ=$arith_val
   dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
   echo >> "$MBOX.body"
-  cat "$FROMLINE" "$HDR" "$MBOX.body" > "$MBOX"
-  echo >> "$MBOX"
-  cat "$FROMLINE" "$HDR" "$FILLER" >> "$MBOX"
-  echo >> "$MBOX"
+  cat "$FROMLINE" "$HDR" "$MBOX.body" "$empty_line" \
+      "$FROMLINE" "$HDR" "$FILLER" "$empty_line" >"$MBOX"
 }
 
 # makemmdf_A mmdfboxname sz
@@ -86,10 +97,8 @@ makemmdf_A () {
   arith_eval $SZ - $MMDFDELIMLINESZ - $HDRSZ - 1 - $MMDFDELIMLINESZ; WANTSZ=$arith_val
   dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
   echo >> "$MBOX.body"
-  #### The trailing $MMDF_DELIM's allows $MBOX to exactly match a file
-  #### created by packf.
-  (eval "$MMDF_DELIM"; cat "$HDR" "$MBOX.body"; eval "$MMDF_DELIM"; \
-   eval "$MMDF_DELIM"; cat "$HDR" "$FILLER"; eval "$MMDF_DELIM") > "$MBOX"
+  cat "$mmdf_magic" "$HDR" "$MBOX.body" "$mmdf_magic" \
+    "$mmdf_magic" "$HDR" "$FILLER" "$mmdf_magic" >"$MBOX"
 }
 
 # make_mbox_B mboxname sz
@@ -105,8 +114,7 @@ makembox_B () {
   arith_eval $SZ - $HDRSZ - $FROMLINESZ - 1; WANTSZ=$arith_val
   dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
   echo >> "$MBOX.body"
-  cat "$FROMLINE" "$HDR" "$MBOX.body" > "$MBOX"
-  echo >> "$MBOX"
+  cat "$FROMLINE" "$HDR" "$MBOX.body" "$empty_line" >"$MBOX"
 }
 
 # makemmdf_B mmdfboxname sz
@@ -119,9 +127,8 @@ makemmdf_B () {
 
   arith_eval $SZ - $MMDFDELIMLINESZ - $HDRSZ - 1 - 4 - $MMDFDELIMLINESZ; WANTSZ=$arith_val
   dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
-  echo >> "$MBOX.body"
-  printf '\1\1\1\n' >>"$MBOX.body"
-  (eval "$MMDF_DELIM"; cat "$HDR" "$MBOX.body"; eval "$MMDF_DELIM") > "$MBOX"
+  printf '\n\1\1\1\n' >>"$MBOX.body"
+  cat "$mmdf_magic" "$HDR" "$MBOX.body" "$mmdf_magic" >"$MBOX"
 }
 
 # do_one_test_A sz mbox_type
