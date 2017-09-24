@@ -150,7 +150,7 @@ do_one_test_A () {
   sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/12" > "$body2"
   check "$MH_TEST_DIR/eom-align.mbox.body" "$body1" 'keep first'
   check "$FILLER" "$body2" 'keep first'
-  rmm 11 12
+  rm "$MH_TEST_DIR/Mail/inbox/11" "$MH_TEST_DIR/Mail/inbox/12"
 }
 
 # do_one_test_B sz mbox_type
@@ -168,7 +168,7 @@ do_one_test_B () {
   body1="$MH_TEST_DIR/eom-align.inbox.body1"
   sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/11" > "$body1"
   check "$MH_TEST_DIR/eom-align.mbox.body" "$body1" 'keep first'
-  rmm 11
+  rm "$MH_TEST_DIR/Mail/inbox/11"
 }
 
 # Cover a decent range around the stdio buffer size to make sure we catch
