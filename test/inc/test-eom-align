@@ -189,8 +189,8 @@ done
 i="$START"
 while test $i -le $FINISH; do
   do_one_test_A $i mbox
-  do_one_test_A $i mmdf
   do_one_test_B $i mbox
+  do_one_test_A $i mmdf
   do_one_test_B $i mmdf
   i=`expr $i + 1`
 done
