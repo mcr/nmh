@@ -519,7 +519,10 @@ PRaction (struct nexus *n, int level)
 		dasctime (&n->n_tws, TW_NULL));
 	return;
     }
-    fprintf(stderr, "UNKNOWN(%#llx)\n", (unsigned long long)n->n_action);
+
+    generic_pointer gp;
+    gp.f = (void (*)(void))n->n_action;
+    fprintf(stderr, "UNKNOWN(%p)\n", gp.v);
 }
 
 

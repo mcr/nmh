@@ -7,19 +7,6 @@
 
 #include <h/mh.h>
 
-/* It's undefined behaviour in C99 to convert from a function pointer to
- * a data-object pointer, e.g. void pointer.  gcc's -pedantic warns of
- * this and can stop compilation.  POSIX requires the operation however,
- * e.g. for dlsym(3), and so we know it's safe on POSIX platforms, e.g.
- * the pointers are of the same size.  Thus use a union to subvert gcc's
- * check.  The function-pointer equivalent of a void pointer is any
- * function-pointer type as all function pointers are defined to be
- * convertible from one another;  use the simplest available. */
-typedef union {
-    void *v;
-    void (*f)(void);
-} generic_pointer;
-
 static void (*altexit)(int) NORETURN = exit;
 
 /* set_done changes the path of done() from exit(3), or back to exit(3).
