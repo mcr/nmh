@@ -229,7 +229,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	    if (use_iconv) {
 		saveq = q;
 		savedstlen = dstlen;
-                q = convbuf = (char *) mh_xmalloc(endofmime - startofmime);
+                q = convbuf = mh_xmalloc(endofmime - startofmime);
             }
 /* ADDCHR2 is for adding characters when q is or might be convbuf:
  * in this case on buffer-full we want to run iconv before returning.

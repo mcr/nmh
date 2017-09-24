@@ -1085,7 +1085,7 @@ netsec_get_password(sasl_conn_t *conn, void *context, int id,
      * us room for a terminating NUL
      */
 
-    *psecret = (sasl_secret_t *) malloc(sizeof(sasl_secret_t) + len);
+    *psecret = malloc(sizeof(sasl_secret_t) + len);
 
     if (! *psecret)
 	return SASL_NOMEM;

@@ -127,7 +127,7 @@ main(int argc, char **argv)
     /* allocate the initial space to record the folder names */
     numfolders = 0;
     maxfolders = MAXFOLDERS;
-    foldersToDo = (char **) mh_xmalloc ((size_t) (maxfolders * sizeof(*foldersToDo)));
+    foldersToDo = mh_xmalloc ((size_t) (maxfolders * sizeof(*foldersToDo)));
 
     /* no sequences yet */
     sequencesToDo = svector_create (0);
@@ -203,7 +203,7 @@ main(int argc, char **argv)
 	     */
 	    if (numfolders >= maxfolders) {
 		maxfolders += MAXFOLDERS;
-		foldersToDo = (char **) mh_xrealloc (foldersToDo,
+		foldersToDo = mh_xrealloc (foldersToDo,
 		    (size_t) (maxfolders * sizeof(*foldersToDo)));
 	    }
 	    if (*cp == '+' || *cp == '@') {
@@ -275,7 +275,7 @@ GetFolderOrder(void)
 	    AllocFolders(&orders, &nOrdersAlloced, nOrders + 1);
 	    o = &orders[nOrders++];
 	    o->priority = priority++;
-	    o->name = (char *) mh_xmalloc(p - s + 1);
+	    o->name = mh_xmalloc(p - s + 1);
 	    strncpy(o->name, s, p - s);
 	    o->name[p - s] = 0;
 	} else
@@ -615,10 +615,10 @@ AllocFolders(struct Folder **f, int *nfa, int n)
 	return;
     if (*f == NULL) {
 	*nfa = 10;
-	*f = (struct Folder *) mh_xmalloc (*nfa * (sizeof(struct Folder)));
+	*f = mh_xmalloc (*nfa * (sizeof(struct Folder)));
     } else {
 	*nfa *= 2;
-	*f = (struct Folder *) mh_xrealloc (*f, *nfa * (sizeof(struct Folder)));
+	*f = mh_xrealloc (*f, *nfa * (sizeof(struct Folder)));
     }
 }
 

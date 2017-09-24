@@ -926,7 +926,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
      * separator) or the last char (since the matchc would have found it
      * if it was a real delim).
      */
-    s->pat_map = (char **) mh_xcalloc (256, sizeof(char *));
+    s->pat_map = mh_xcalloc (256, sizeof(char *));
 
     for (cp = s->fdelim + 1; cp < s->delimend; cp++ )
 	s->pat_map[(unsigned char)*cp] = cp;

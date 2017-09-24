@@ -27,7 +27,7 @@ getarguments (char *invo_name, int argc, char **argv, int check_context)
 	    n++;
     }
 
-    arguments = (char **) mh_xmalloc ((argc + n) * sizeof(*arguments));
+    arguments = mh_xmalloc ((argc + n) * sizeof(*arguments));
     bp = arguments;
 
     /* Copy any arguments from profile/context */

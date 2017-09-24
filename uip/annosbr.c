@@ -96,7 +96,7 @@ annolist(char *file, char *comp, char *text, int number)
      *  This buffer might need to be quite large, so we grow it as needed.
      */
 
-    field = (char *)mh_xmalloc(field_size = 256);
+    field = mh_xmalloc(field_size = 256);
 
     /*
      *  Get the length of the field name since we use it often.
@@ -121,7 +121,7 @@ annolist(char *file, char *comp, char *text, int number)
 	    }
 
 	    if (++n >= field_size - 1) {
-		field = (char *) mh_xrealloc((void *)field, field_size += 256);
+		field = mh_xrealloc((void *)field, field_size += 256);
 		
 		cp = field + n - 1;
 	    }
@@ -203,7 +203,7 @@ annosbr (int fd, char *file, char *comp, char *text, bool inplace, bool datesw, 
 	if ((fp = fdopen(fd, "r")) == NULL)
 	    adios(NULL, "unable to fdopen file.");
 
-	field = (char *)mh_xmalloc(field_size = 256);
+	field = mh_xmalloc(field_size = 256);
     }
 
     /*
@@ -257,7 +257,7 @@ annosbr (int fd, char *file, char *comp, char *text, bool inplace, bool datesw, 
 		}
 
 		if (++n >= field_size - 1) {
-		    field = (char *) mh_xrealloc((void *)field, field_size *= 2);
+		    field = mh_xrealloc((void *)field, field_size *= 2);
 		
 		    cp = field + n - 1;
 		}

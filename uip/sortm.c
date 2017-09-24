@@ -215,7 +215,7 @@ main (int argc, char **argv)
     /*
      * sort a list of pointers to our "messages to be sorted".
      */
-    dlist = (struct smsg **) mh_xmalloc ((nmsgs+1) * sizeof(*dlist));
+    dlist = mh_xmalloc ((nmsgs+1) * sizeof(*dlist));
     for (i = 0; i < nmsgs; i++)
 	dlist[i] = &smsgs[i];
     dlist[nmsgs] = 0;
@@ -243,7 +243,7 @@ main (int argc, char **argv)
 	struct smsg **slist, **flist;
 	struct smsg ***il, **fp, **dp;
 
-	slist = (struct smsg **) mh_xmalloc ((nmsgs+1) * sizeof(*slist));
+	slist = mh_xmalloc ((nmsgs+1) * sizeof(*slist));
 	memcpy((char *)slist, (char *)dlist, (nmsgs+1)*sizeof(*slist));
 	qsort((char *)slist, nmsgs, sizeof(*slist), (qsort_comp) subsort);
 
@@ -259,7 +259,7 @@ main (int argc, char **argv)
 	 * make up the final list, chronological but with
 	 * all the same subjects grouped together.
 	 */
-	flist = (struct smsg **) mh_xmalloc ((nmsgs+1) * sizeof(*flist));
+	flist = mh_xmalloc ((nmsgs+1) * sizeof(*flist));
 	fp = flist;
 	for (dp = dlist; *dp;) {
 	    struct smsg **s = il[(*dp++)->s_msg];

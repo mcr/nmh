@@ -59,7 +59,7 @@ folder_read (char *name, int lockflag)
      * name of the messages in this folder.
      */
     len = NUMMSGS;
-    mi = (int *) mh_xmalloc ((size_t) (len * sizeof(*mi)));
+    mi = mh_xmalloc ((size_t) (len * sizeof(*mi)));
 
     while ((dp = readdir (dd))) {
 	if ((msgnum = m_atoi (dp->d_name)) && msgnum > 0) {
@@ -69,7 +69,7 @@ folder_read (char *name, int lockflag)
 	     */
 	    if (mp->nummsg >= len) {
 		len += NUMMSGS;
-		mi = (int *) mh_xrealloc (mi, (size_t) (len * sizeof(*mi)));
+		mi = mh_xrealloc (mi, (size_t) (len * sizeof(*mi)));
 	    }
 
 	    /* Check if this is the first message we've seen */

@@ -865,7 +865,7 @@ buildfile (char **argp, char *file)
 	while (argp[i])
 	    i++;
     }
-    args = (char **) mh_xmalloc((i + 2) * sizeof(char *));
+    args = mh_xmalloc((i + 2) * sizeof(char *));
 
     /*
      * For backward compatibility, we need to add -build

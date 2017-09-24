@@ -30,7 +30,7 @@ brkstring (char *str, char *brksep, char *brkterm)
     /* allocate initial space for pointers on first call */
     if (!broken) {
 	len = NUMBROKEN;
-	broken = (char **) mh_xmalloc ((size_t) (len * sizeof(*broken)));
+	broken = mh_xmalloc ((size_t) (len * sizeof(*broken)));
     }
 
     /*
