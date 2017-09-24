@@ -358,7 +358,7 @@ store_partial (CT ct, mhstoreinfo_t info)
     *ctq = NULL;
 
     if (i > 1)
-	qsort ((char *) base, i, sizeof(*base), (qsort_comp) ct_compar);
+	qsort(base, i, sizeof(*base), (qsort_comp) ct_compar);
 
     cur = 1;
     for (ctq = base; *ctq; ctq++) {

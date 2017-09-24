@@ -2100,7 +2100,7 @@ openQuoted (CT ct, char **file)
 	unsigned char digest[16];
 
 	MD5Final (digest, &mdContext);
-	if (memcmp((char *) digest, (char *) ct->c_digest,
+	if (memcmp(digest, ct->c_digest,
 		   sizeof digest))
 	    content_error (NULL, ct,
 			   "content integrity suspect (digest mismatch) -- continuing");

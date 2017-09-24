@@ -231,7 +231,7 @@ main (int argc, char **argv)
     }
 
     /* first sort by date, or by subject-major, date-minor */
-    qsort ((char *) dlist, nmsgs, sizeof(*dlist),
+    qsort (dlist, nmsgs, sizeof(*dlist),
 	    (qsort_comp) (submajor && subjsort ? txtsort : dsort));
 
     /*
@@ -244,8 +244,8 @@ main (int argc, char **argv)
 	struct smsg ***il, **fp, **dp;
 
 	slist = mh_xmalloc ((nmsgs+1) * sizeof(*slist));
-	memcpy((char *)slist, (char *)dlist, (nmsgs+1)*sizeof(*slist));
-	qsort((char *)slist, nmsgs, sizeof(*slist), (qsort_comp) subsort);
+	memcpy(slist, dlist, (nmsgs+1)*sizeof(*slist));
+	qsort(slist, nmsgs, sizeof(*slist), (qsort_comp) subsort);
 
 	/*
 	 * make an inversion list so we can quickly find
