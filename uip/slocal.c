@@ -803,12 +803,12 @@ parse (int fd)
 	p->p_value = getcpy (q ? q->p_value : "");
 	p->p_flags &= ~P_CHK;
 	if (debug)
-	    debug_printf ("vars[%ld]: name=\"%s\" value=\"%s\"\n",
-		    p - vars, p->p_name, trim(p->p_value));
+            debug_printf ("vars[%td]: name=\"%s\" value=\"%s\"\n",
+                p - vars, p->p_name, trim(p->p_value));
     }
     if (debug) {
 	for (p = hdrs; p->p_name; p++)
-	    debug_printf ("hdrs[%ld]: name=\"%s\" value=\"%s\"\n",
+	    debug_printf ("hdrs[%td]: name=\"%s\" value=\"%s\"\n",
 		p - hdrs, p->p_name, p->p_value ? trim(p->p_value) : "");
     }
 
@@ -888,7 +888,7 @@ glob (int fd)
 
     if (debug) {
 	for (p = vars; p->p_name; p++)
-	    debug_printf ("vars[%ld]: name=\"%s\" value=\"%s\"\n",
+	    debug_printf ("vars[%td]: name=\"%s\" value=\"%s\"\n",
 		    p - vars, p->p_name, trim(p->p_value));
     }
 }
