@@ -108,7 +108,7 @@ parse_proxy(char *proxy, char *host)
 
    /* put together list of arguments */
     p = pargv = mh_xmalloc(pargc * sizeof(char *));
-    c = *pargv = mh_xmalloc(plen * sizeof(char));
+    c = *pargv = mh_xmalloc(plen);
     for (cur = pro; *cur; cur++) {
         if (isspace(*cur) && cur[1] && !isspace(cur[1])) {
 	    *c++ = '\0';
