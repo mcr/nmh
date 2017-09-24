@@ -110,15 +110,17 @@ makembox_B () {
 }
 
 # makemmdf_B mmdfboxname sz
+# The mbox file will be sz bytes and contain a single email, topped and
+# tailed with MMDF's magic strings.  The end of the email's body looks
+# the same as the magic string for three bytes.
 makemmdf_B () {
   MBOX="$1"
   SZ=$2
 
-  arith_eval $SZ - $HDRSZ - $MMDFDELIMLINESZ - 1; WANTSZ=$arith_val
+  arith_eval $SZ - $MMDFDELIMLINESZ - $HDRSZ - 1 - 4 - $MMDFDELIMLINESZ; WANTSZ=$arith_val
   dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
   echo >> "$MBOX.body"
-  #### The final $MMDF_DELIM allows $MBOX to exactly match a file
-  #### created by packf.
+  printf '\1\1\1\n' >>"$MBOX.body"
   (eval "$MMDF_DELIM"; cat "$HDR" "$MBOX.body"; eval "$MMDF_DELIM") > "$MBOX"
 }
 
