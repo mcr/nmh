@@ -53,7 +53,7 @@ fi
 STDIO_BUFSZ=16384
 
 FROMLINESZ=`wc -c < "$FROMLINE"`
-MMDFDELIMLINESZ=1
+MMDFDELIMLINESZ=5
 HDRSZ=`wc -c < "$HDR"`
 
 # makembox_A mboxname sz
@@ -77,11 +77,13 @@ makembox_A () {
 }
 
 # makemmdf_A mmdfboxname sz
+# The first email in $MBOX will be sz bytes long, including its MMDF
+# magic strings that top and tail it.
 makemmdf_A () {
   MBOX="$1"
   SZ=$2
 
-  arith_eval $SZ - $HDRSZ - $MMDFDELIMLINESZ - 1; WANTSZ=$arith_val
+  arith_eval $SZ - $MMDFDELIMLINESZ - $HDRSZ - 1 - $MMDFDELIMLINESZ; WANTSZ=$arith_val
   dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
   echo >> "$MBOX.body"
   #### The trailing $MMDF_DELIM's allows $MBOX to exactly match a file
