@@ -117,13 +117,15 @@ pwd(void)
     return curwd;
 }
 
-/*
- * add   -- If "s1" is NULL, this routine just creates a
- *       -- copy of "s2" into newly malloc'ed memory.
- *       --
- *       -- If "s1" is not NULL, then copy the concatenation
- *       -- of "s1" and "s2" (note the order) into newly
- *       -- malloc'ed memory.  Then free "s1".
+/* add returns a newly malloc'd string, exiting on failure.  The order
+ * of the parameters is unusual.  A NULL parameter is treated as an
+ * empty string.  s1 is free'd.  Use mh_xstrdup(s) rather than add(s,
+ * NULL), with FENDNULL() if s might be NULL.
+ *
+ *     add(NULL, NULL) -> ""
+ *     add(NULL, "foo") -> "foo"
+ *     add("bar", NULL) -> "bar"
+ *     add("bar", "foo") -> "foobar"
  */
 char *
 add (const char *s2, char *s1)
