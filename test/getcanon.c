@@ -1,5 +1,4 @@
-/*
- * getcanon.c - Print the canonical name of a host, default to localhost.
+/* getcanon.c - Print the canonical name of a host, default to localhost.
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

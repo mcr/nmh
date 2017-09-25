@@ -1,4 +1,3 @@
-dnl
 dnl Some systems have different arguments to the tputs callback; it can
 dnl be int (*)(int), or int (*)(char).  Try to probe to see which one it
 dnl actually is, so our callback can match the prototype.

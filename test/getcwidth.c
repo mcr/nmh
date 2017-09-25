@@ -1,5 +1,4 @@
-/*
- * getcwidth - Get the OS's idea of the width of Unicode codepoints
+/* getcwidth - Get the OS's idea of the width of Unicode codepoints
  *
  * This code is Copyright (c) 2013, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

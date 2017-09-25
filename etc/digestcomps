@@ -1,4 +1,3 @@
-%;
 %; digestcomps - the component template file used when doing "forw -digest"
 %;
 %; What happens here is the following:

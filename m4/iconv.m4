@@ -1,4 +1,3 @@
-dnl
 dnl Check for iconv support.  It may be in libiconv and may be iconv()
 dnl or libiconv()
 dnl

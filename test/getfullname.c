@@ -1,5 +1,4 @@
-/*
- * getfullname.c - Extract a user's name out of the GECOS field in
+/* getfullname.c - Extract a user's name out of the GECOS field in
  *		   the password file.
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the

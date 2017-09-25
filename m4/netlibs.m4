@@ -1,4 +1,3 @@
-dnl
 dnl Updated for more modern systems.  Check to see if we need to link against
 dnl optional libraries for networking functions.
 dnl

@@ -1,5 +1,4 @@
-/*
- * runpty.c - Run a process under a pseudo-tty
+/* runpty.c - Run a process under a pseudo-tty
  *
  * This code is Copyright (c) 2017, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

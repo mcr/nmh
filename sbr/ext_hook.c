@@ -1,6 +1,4 @@
-/*
- *
- *	Run a program that hooks into some other system.  The first argument is
+/*	Run a program that hooks into some other system.  The first argument is
  *	name of the hook to use, the second is the full path name of a mail message.
  *	The third argument is also the full path name of a mail message, or a NULL
  *	pointer if it isn't needed.  Look in the context for an error message if

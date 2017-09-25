@@ -1,4 +1,3 @@
-dnl
 dnl This is intended to be extensible, by just adding candidate C preprocessor
 dnl options to be checked in the for loop.  The first candidate is empty, in
 dnl case none are needed.  Also, the test program can be readily augmented.

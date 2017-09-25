@@ -1,5 +1,4 @@
-/*
- * fakepop - A fake POP server used by the nmh test suite
+/* fakepop - A fake POP server used by the nmh test suite
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

@@ -1,4 +1,3 @@
-dnl
 dnl Try to see if we have a program that can determine the MIME type
 dnl of a particular file
 dnl

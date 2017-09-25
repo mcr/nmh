@@ -1,4 +1,3 @@
-dnl
 dnl configure.ac -- autoconf template for nmh
 dnl
 

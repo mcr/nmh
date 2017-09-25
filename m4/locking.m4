@@ -1,4 +1,3 @@
-dnl
 dnl Our functions to check the locking functions available and select a
 dnl default locking function for the spool file
 dnl

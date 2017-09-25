@@ -1,4 +1,3 @@
-dnl
 dnl Our readline heuristic.  If we haven't been asked about readline, then
 dnl try to compile with it.  If we've been asked for it, then we fail
 dnl if we cannot use it.  If we were explicitly NOT asked for it, then

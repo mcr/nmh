@@ -1,5 +1,4 @@
-/*
- * fakehttp - A fake HTTP server used by the nmh test suite
+/* fakehttp - A fake HTTP server used by the nmh test suite
  *
  * This code is Copyright (c) 2014, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

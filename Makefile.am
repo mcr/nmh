@@ -1,4 +1,3 @@
-##
 ## Our Makefile.am template for Makefile.in (and, eventually, Makefile)
 ##
 ## Process this with automake to generate Makefile.in
