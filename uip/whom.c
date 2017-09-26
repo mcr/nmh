@@ -74,7 +74,7 @@ main (int argc, char **argv)
     vec[vecp++] = invo_name;
     vec[vecp++] = "-whom";
     vec[vecp++] = "-library";
-    vec[vecp++] = getcpy (m_maildir (""));
+    vec[vecp++] = mh_xstrdup(m_maildir(""));
 
     if ((cp = context_find ("credentials"))) {
 	/* post doesn't read context so need to pass credentials. */
@@ -165,7 +165,7 @@ main (int argc, char **argv)
     }
 
     if (msg == NULL) {
-	    cp  = getcpy (m_draft (dfolder, dmsg, 1, &isdf));
+	    cp  = mh_xstrdup(m_draft(dfolder, dmsg, 1, &isdf));
 	msg = vec[vecp++] = cp;
     }
 

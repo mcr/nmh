@@ -23,6 +23,7 @@
  * 3) Next, check in nmh Mail directory.
  * 4) Next, check in nmh `etc' directory.
  *
+ * Does not return NULL.
  */
 
 char *

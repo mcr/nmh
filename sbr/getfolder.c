@@ -8,6 +8,7 @@
 #include <h/mh.h>
 
 
+/* Does not return NULL. */
 char *
 getfolder(int wantcurrent)
 {

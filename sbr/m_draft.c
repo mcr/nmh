@@ -11,6 +11,7 @@
 #include "h/done.h"
 
 
+/* Does not return NULL. */
 char *
 m_draft (char *folder, char *msg, int use, int *isdf)
 {

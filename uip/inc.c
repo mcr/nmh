@@ -249,7 +249,7 @@ main (int argc, char **argv)
 	    case AUDSW:
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
-		audfile = getcpy (m_maildir (cp));
+		audfile = mh_xstrdup(m_maildir(cp));
 		continue;
 	    case NAUDSW:
 		audfile = NULL;

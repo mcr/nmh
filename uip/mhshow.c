@@ -209,7 +209,7 @@ do_cache:
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
                 free(formsw);
-		formsw = getcpy (etcpath (cp));
+		formsw = mh_xstrdup(etcpath(cp));
 		continue;
 
 	    case HEADSW:
@@ -308,7 +308,7 @@ do_cache:
     /* Check for private cache location */
     if (!(cache_private = context_find (nmhprivcache)))
 	cache_private = ".cache";
-    cache_private = getcpy (m_maildir (cache_private));
+    cache_private = mh_xstrdup(m_maildir(cache_private));
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));

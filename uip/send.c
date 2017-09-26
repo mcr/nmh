@@ -133,7 +133,7 @@ main (int argc, char **argv)
     vec = argsplit(postproc, &program, &vecp);
 
     vec[vecp++] = "-library";
-    vec[vecp++] = getcpy (m_maildir (""));
+    vec[vecp++] = mh_xstrdup(m_maildir(""));
 
     if ((cp = context_find ("fileproc"))) {
 	vec[vecp++] = "-fileproc";
@@ -317,7 +317,7 @@ main (int argc, char **argv)
 
     if (dfolder == NULL) {
 	if (msgp == 0) {
-	    msgs[msgp++] = getcpy (m_draft (NULL, NULL, 1, &isdf));
+	    msgs[msgp++] = mh_xstrdup(m_draft(NULL, NULL, 1, &isdf));
 	    if (stat (msgs[0], &st) == NOTOK)
 		adios (msgs[0], "unable to stat draft file");
 	    cp = concat ("Use \"", msgs[0], "\"? ", NULL);
@@ -339,7 +339,7 @@ main (int argc, char **argv)
 	    }
 	} else {
 	    for (msgnum = 0; msgnum < msgp; msgnum++)
-		msgs[msgnum] = getcpy (m_maildir (msgs[msgnum]));
+		msgs[msgnum] = mh_xstrdup(m_maildir(msgs[msgnum]));
 	}
     } else {
 	if (!context_find ("path"))

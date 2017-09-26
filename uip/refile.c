@@ -135,7 +135,7 @@ main (int argc, char **argv)
 		if (filep > NFOLDERS)
 		    adios (NULL, "only %d files allowed!", NFOLDERS);
 		isdf = 0;
-		files[filep++] = getcpy (m_draft (NULL, NULL, 1, &isdf));
+		files[filep++] = mh_xstrdup(m_draft(NULL, NULL, 1, &isdf));
 		continue;
 	    case FILESW:
 		if (filep > NFOLDERS)

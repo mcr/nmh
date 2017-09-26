@@ -50,7 +50,7 @@ m_mailpath (char *folder)
 	    && strcmp (folder, DOTDOT)
 	    && !has_prefix(folder, PWD)) {
 	strncpy (maildir, mailfold, sizeof(maildir));	/* preserve... */
-	cp = getcpy (m_maildir (folder));
+	cp = mh_xstrdup(m_maildir(folder));
 	strncpy (mailfold, maildir, sizeof(mailfold));
     } else {
 	cp = path (folder, TFOLDER);

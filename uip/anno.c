@@ -210,7 +210,7 @@ main (int argc, char **argv)
 	if (msgs.size != 0)
 	    adios(NULL, "can only have message numbers or -draft.");
 
-	draft = getcpy(m_draft(folder, NULL, 1, &isdf));
+	draft = mh_xstrdup(m_draft(folder, NULL, 1, &isdf));
 
 	make_comp(&comp);
 

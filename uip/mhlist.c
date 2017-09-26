@@ -229,7 +229,7 @@ do_cache:
     /* Check for private cache location */
     if (!(cache_private = context_find (nmhprivcache)))
 	cache_private = ".cache";
-    cache_private = getcpy (m_maildir (cache_private));
+    cache_private = mh_xstrdup(m_maildir(cache_private));
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));

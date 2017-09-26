@@ -10,6 +10,7 @@
 
 #include <h/mh.h>
 
+/* Does not return NULL. */
 char *
 r1bindex(char *str, int chr)
 {

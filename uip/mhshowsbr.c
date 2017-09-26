@@ -101,7 +101,7 @@ show_all_messages(CT *cts, int concat, int textonly, int inlineonly)
      * for showing headers of MIME messages.
      */
     if (!formsw)
-	formsw = getcpy (etcpath ("mhl.headers"));
+	formsw = mh_xstrdup(etcpath("mhl.headers"));
 
     /*
      * Compile the content marker and header format lines

@@ -204,7 +204,7 @@ WhatNow (int argc, char **argv)
     }
 
     if ((drft == NULL && (drft = getenv ("mhdraft")) == NULL) || *drft == 0)
-	drft = getcpy (m_draft (dfolder, dmsg, 1, &isdf));
+	drft = mh_xstrdup(m_draft(dfolder, dmsg, 1, &isdf));
 
     msgnam = (cp = getenv ("mhaltmsg")) && *cp ? mh_xstrdup(cp) : NULL;
 
@@ -1029,7 +1029,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
     vec = argsplit(postproc, &program, &vecp);
 
     vec[vecp++] = "-library";
-    vec[vecp++] = getcpy (m_maildir (""));
+    vec[vecp++] = mh_xstrdup(m_maildir(""));
 
     if ((cp = context_find ("fileproc"))) {
 	vec[vecp++] = "-fileproc";

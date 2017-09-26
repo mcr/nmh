@@ -26,6 +26,7 @@
 #include "m_maildir.h"
 #include "makedir.h"
 #include <pwd.h>				/* structure for getpwuid() results */
+#include "h/utils.h"
 
 void
 context_read (void)
@@ -137,7 +138,7 @@ context_read (void)
 	return;
     }
     
-    ctxpath = getcpy (m_maildir (cp));
+    ctxpath = mh_xstrdup(m_maildir(cp));
 
     if ((ib = lkfopendata (ctxpath, "r", &failed_to_lock))) {
 	readconfig(NULL, ib, cp, 1);

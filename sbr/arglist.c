@@ -57,7 +57,7 @@ argsplit(char *command, char **file, int *argp)
      */
 
     if (!space && !metachar) {
-    	argvarray[0] = getcpy(r1bindex(command, '/'));
+    	argvarray[0] = mh_xstrdup(r1bindex(command, '/'));
 	argvarray[1] = NULL;
 	*file = mh_xstrdup(command);
 	if (argp)

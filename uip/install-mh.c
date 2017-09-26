@@ -192,7 +192,7 @@ query:
 	fclose (in);
     }
 
-    ctxpath = getcpy (m_maildir (context = "context"));
+    ctxpath = mh_xstrdup(m_maildir(context = "context"));
 
     /* Initialize current folder to default */
     context_replace (pfolder, defaultfolder);

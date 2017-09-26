@@ -145,7 +145,7 @@ usage:
 		    app_msgarg(&vec, --cp);
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    app_msgarg(&vec, getcpy (etcpath(cp)));
+		    app_msgarg(&vec, mh_xstrdup(etcpath(cp)));
 		    continue;
 
 		case PROGSW:
@@ -204,7 +204,7 @@ usage:
 	if (msgs.size)
 	    adios (NULL, "only one file at a time!");
 	if (draftsw)
-	    app_msgarg(&vec, getcpy (m_draft (folder, NULL, 1, &isdf)));
+	    app_msgarg(&vec, mh_xstrdup(m_draft(folder, NULL, 1, &isdf)));
 	else
 	    app_msgarg(&vec, file);
 	headersw = 0;

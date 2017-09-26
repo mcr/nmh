@@ -258,7 +258,7 @@ main (int argc, char **argv)
 	    } else {
 		adios (NULL, "no other folder");
 	    }
-	    for (cp = getcpy (getfolder (1)); *ap; ap++)
+	    for (cp = mh_xstrdup(getfolder(1)); *ap; ap++)
 		cp = add (*ap, add (" ", cp));
 	    free (dp);
 	    context_replace (stack, cp);	/* update folder stack */
@@ -267,7 +267,7 @@ main (int argc, char **argv)
 	    context_replace (stack,
 		    (cp = context_find (stack))
 		    ? concat (getfolder (1), " ", cp, NULL)
-		    : getcpy (getfolder (1)));
+		    : mh_xstrdup(getfolder(1)));
 	}
     }
 

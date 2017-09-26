@@ -179,7 +179,7 @@ main (int argc, char **argv)
 		case FILTSW:
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    filter = getcpy (etcpath (cp));
+		    filter = mh_xstrdup(etcpath(cp));
 		    mime = 0;
 		    continue;
 		case FORMSW: 
@@ -188,7 +188,7 @@ main (int argc, char **argv)
 		    continue;
 
 		case FRMTSW:
-		    filter = getcpy (etcpath (mhlforward));
+		    filter = mh_xstrdup(etcpath(mhlforward));
 		    continue;
 		case NFRMTSW:
 		    filter = NULL;
