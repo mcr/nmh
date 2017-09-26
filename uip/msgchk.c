@@ -69,9 +69,6 @@ DEFINE_SWITCH_ARRAY(MSGCHK, switches);
 #define	NT_ALL	(NT_MAIL | NT_NMAI)
 
 #define	NONEOK	0x0
-#define	UUCPOLD	0x1
-#define	UUCPNEW	0x2
-#define	UUCPOK	(UUCPOLD | UUCPNEW)
 #define	MMDFOLD	0x4
 #define	MMDFNEW	0x8
 #define	MMDFOK	(MMDFOLD | MMDFNEW)
@@ -324,19 +321,14 @@ checkmail (char *user, char *home, int datesw, int notifysw, int personal)
     mf = (stat (buffer, &st) == NOTOK || st.st_size == 0) ? NONEOK
 	: st.st_atime <= st.st_mtime ? MMDFNEW : MMDFOLD;
 
-    if ((mf & UUCPOK) || (mf & MMDFOK)) {
+    if (mf & MMDFOK) {
 	if (notifysw & NT_MAIL) {
 	    if (personal)
 		printf ("You have ");
 	    else
 		printf ("%s has ", user);
-	    if (mf & UUCPOK)
-		printf ("%s old-style bell", mf & UUCPOLD ? "old" : "new");
-	    if ((mf & UUCPOK) && (mf & MMDFOK))
-		printf (" and ");
 	    if (mf & MMDFOK)
-		printf ("%s%s", mf & MMDFOLD ? "old" : "new",
-			mf & UUCPOK ? " Internet" : "");
+		printf ("%s", mf & MMDFOLD ? "old" : "new");
 	    printf (" mail waiting");
 	} else {
 	    notifysw = 0;
