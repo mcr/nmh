@@ -197,6 +197,7 @@ done
 printf '\n'
 
 test ${failed:-0} -eq 0  &&  \
-rm "$MH_TEST_DIR/eom-align.mbox" "$MH_TEST_DIR/eom-align.mbox.body"
+rm "$MH_TEST_DIR/eom-align.mbox" "$MH_TEST_DIR/eom-align.mbox.body" \
+   "$mmdf_magic" "$empty_line"
 
 exit $failed
