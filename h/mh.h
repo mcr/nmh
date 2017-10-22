@@ -132,11 +132,60 @@ struct swit {
 
     char *sw;
 
-    /* The minchars field is apparently used like this:
+    /*
+     * The previous comments here about minchars was incorrect; this is
+     * (AFAIK) the correct information.
+     *
+     * A minchars of "0" means this switch can be abbreviated to any number
+     * of characters (assuming the abbreviation does not match any other
+     * switches).
+     *
+     * A positive value for minchars means that when the user specifies
+     * the switch on the command line, it MUST be at least that many
+     * characters.
+     *
+     * A negative value for minchars means that the user-given switch must
+     * be that many characters, but will NOT be shown in -help output.
+     *
+     * So what should I use?  Well, for nearly all switches you want to specify
+     * a minchars of 0.  smatch will report an error if the switch given
+     * matches more than one entry.  Let's say you have the following
+     * two switches: -append and -apply.  -app will return AMBIGSW from
+     * smatch. -appe and -appl will work fine.  So 0 is the correct choice
+     * here.
+     *
+     * The only time you want to specify a minimum length is if you have
+     * a switch who's name is a substring of a longer switch.  The example
+     * you see sometimes in the code is -form and -format.  If you gave a
+     * minchars of 0 for both, -form would match both -form AND -format,
+     * and you'd always get AMBIGSW.  The solution is to specify a minchars
+     * of 5 for -format; that way just -form will just match -form.  When
+     * a minchars is given, the -help output will specify the minimum
+     * switch length, like this:
+     *
+     * -(forma)t string
+     *
+     * A negative value works the same way, except the switch isn't printed
+     * in -help.  Why would you do that?  Well, there are a few instances
+     * of internal switches and some switches which only appear if a particular
+     * feature is enabled (such as SASL or TLS).  Lately I've been of the
+     * opinion that all switches should be specified, even if they are
+     * internal or use non-available features, but currently the smatch
+     * code still supports this.
+     *
+     * This isn't the appropriate place to make this note, but since I was
+     * here ... when creating switches, you should make a negation switch
+     * right after the enabling switch.  E.g. you should have:
+     *
+     * X("sasl", 0, SASLSW) \
+     * X("nosasl", 0, NOSASLSW) \
+     *
+     * in the switch array, because when you run -help, print_sw will detect
+     * this and output:
+     *
+     * -[no]sasl
+     */
 
-       -# : Switch can be abbreviated to # characters; switch hidden in -help.
-       0  : Switch can't be abbreviated;               switch shown in -help.
-       #  : Switch can be abbreviated to # characters; switch shown in -help. */
     int minchars;
 
     /*
