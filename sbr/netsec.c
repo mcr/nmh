@@ -1024,12 +1024,8 @@ netsec_set_sasl_params(netsec_context *nsc, const char *service,
      */
 
     if (mechanism) {
-	char *p;
 	nsc->sasl_mech = mh_xstrdup(mechanism);
-
-	for (p = nsc->sasl_mech; *p; p++)
-	    if (isascii((unsigned char) *p)) /* Leave non-ASCII lower alone. */
-		*p = toupper((unsigned char) *p);
+	to_upper(nsc->sasl_mech);
     }
 
     nsc->sasl_proto_cb = callback;
