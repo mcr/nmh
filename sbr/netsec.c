@@ -74,6 +74,7 @@ struct _netsec_context {
     char *sasl_mech;		/* User-requested mechanism */
     char *sasl_chosen_mech;	/* Mechanism chosen by SASL */
     netsec_sasl_callback sasl_proto_cb; /* SASL callback we use */
+    void *sasl_proto_context;	/* Context to be used by SASL callback */
 #ifdef OAUTH_SUPPORT
     char *oauth_service;	/* OAuth2 service name */
 #endif /* OAUTH_SUPPORT */
@@ -161,6 +162,7 @@ netsec_init(void)
     nsc->sasl_mech = NULL;
     nsc->sasl_chosen_mech = NULL;
     nsc->sasl_proto_cb = NULL;
+    nsc->sasl_proto_context = NULL;
 #ifdef OAUTH_SUPPORT
     nsc->oauth_service = NULL;
 #endif /* OAUTH_SUPPORT */
@@ -951,7 +953,7 @@ netsec_flush(netsec_context *nsc, char **errstr)
 int
 netsec_set_sasl_params(netsec_context *nsc, const char *service,
 		       const char *mechanism, netsec_sasl_callback callback,
-		       char **errstr)
+		       void *context, char **errstr)
 {
 #ifdef CYRUS_SASL
     sasl_callback_t *sasl_cbs;
@@ -1029,6 +1031,7 @@ netsec_set_sasl_params(netsec_context *nsc, const char *service,
     }
 
     nsc->sasl_proto_cb = callback;
+    nsc->sasl_proto_context = context;
 
     return OK;
 }
@@ -1173,7 +1176,8 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	}
 
 	rc = nsc->sasl_proto_cb(NETSEC_SASL_START, xoauth_client_res,
-				xoauth_client_res_len, NULL, 0, errstr);
+				xoauth_client_res_len, NULL, 0,
+				nsc->sasl_proto_context, errstr);
 	free(xoauth_client_res);
 
 	if (rc != OK)
@@ -1186,7 +1190,8 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	 * error.
 	 */
 
-	rc = nsc->sasl_proto_cb(NETSEC_SASL_FINISH, NULL, 0, NULL, 0, errstr);
+	rc = nsc->sasl_proto_cb(NETSEC_SASL_FINISH, NULL, 0, NULL, 0,
+				nsc->sasl_proto_context, errstr);
 
 	if (rc != OK) {
 	    /*
@@ -1196,9 +1201,10 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	     * NOT get a success message at this point.
 	     */
 	    free(*errstr);
-	    nsc->sasl_proto_cb(NETSEC_SASL_WRITE, NULL, 0, NULL, 0, NULL);
+	    nsc->sasl_proto_cb(NETSEC_SASL_WRITE, NULL, 0, NULL, 0,
+			       nsc->sasl_proto_context, NULL);
 	    rc = nsc->sasl_proto_cb(NETSEC_SASL_FINISH, NULL, 0, NULL, 0,
-				    errstr);
+				    nsc->sasl_proto_context, errstr);
 	    if (rc == 0) {
 		netsec_err(errstr, "Unexpected success after OAuth failure!");
 	    }
@@ -1256,7 +1262,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
     nsc->sasl_chosen_mech = getcpy(chosen_mech);
 
     if (nsc->sasl_proto_cb(NETSEC_SASL_START, saslbuf, saslbuflen, NULL, 0,
-			   errstr) != OK)
+			   nsc->sasl_proto_context, errstr) != OK)
 	return NOTOK;
 
     /*
@@ -1270,8 +1276,9 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	 */
 
 	if (nsc->sasl_proto_cb(NETSEC_SASL_READ, NULL, 0, &outbuf, &outbuflen,
-			       errstr) != OK) {
-	    nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, NULL, 0, NULL);
+			       nsc->sasl_proto_context, errstr) != OK) {
+	    nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, NULL, 0,
+			       nsc->sasl_proto_context, NULL);
 	    return NOTOK;
 	}
 
@@ -1283,13 +1290,16 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	if (rc != SASL_OK && rc != SASL_CONTINUE) {
 	    netsec_err(errstr, "SASL client negotiation failed: %s",
 		       sasl_errdetail(nsc->sasl_conn));
-	    nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, NULL, 0, NULL);
+	    nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, NULL, 0,
+			       nsc->sasl_proto_context, NULL);
 	    return NOTOK;
 	}
 
 	if (nsc->sasl_proto_cb(NETSEC_SASL_WRITE, saslbuf, saslbuflen,
-			       NULL, 0, errstr) != OK) {
-	    nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, NULL, 0, NULL);
+			       NULL, 0, nsc->sasl_proto_context,
+			       errstr) != OK) {
+	    nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, NULL, 0,
+			       nsc->sasl_proto_context, NULL);
 	    return NOTOK;
 	}
     }
@@ -1300,7 +1310,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
      */
 
     if (nsc->sasl_proto_cb(NETSEC_SASL_FINISH, NULL, 0, NULL, 0,
-			   errstr) != OK) {
+			   nsc->sasl_proto_context, errstr) != OK) {
 	/*
 	 * At this point we can't really send an abort since the SASL dialog
 	 * has completed, so just bubble back up the error message.

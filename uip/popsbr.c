@@ -34,7 +34,7 @@ static int vcommand(const char *, va_list) CHECK_PRINTF(1, 0);
 static int pop_getline (char *, int, netsec_context *);
 static int pop_sasl_callback(enum sasl_message_type, unsigned const char *,
 			     unsigned int, unsigned char **, unsigned int *,
-			     char **);
+			     void *, char **);
 
 static int
 check_mech(char *server_mechs, size_t server_mechs_size)
@@ -223,7 +223,7 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 
     if (sasl) {
 	if (netsec_set_sasl_params(nsc, "pop", mech, pop_sasl_callback,
-				   &errstr) != OK) {
+				   NULL, &errstr) != OK) {
 	    snprintf(response, sizeof(response), "%s", errstr);
 	    free(errstr);
 	    return NOTOK;
@@ -292,11 +292,12 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 static int
 pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 		  unsigned int indatalen, unsigned char **outdata,
-		  unsigned int *outdatalen, char **errstr)
+		  unsigned int *outdatalen, void *context, char **errstr)
 {
     int rc, snoopoffset;
     char *mech, *line;
     size_t len, b64len;
+    NMH_UNUSED(context);
 
     switch (mtype) {
     case NETSEC_SASL_START:

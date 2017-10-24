@@ -68,7 +68,7 @@ static int smhear (void);
 static char *EHLOset (char *) PURE;
 static int sm_sasl_callback(enum sasl_message_type, unsigned const char *,
 			    unsigned int, unsigned char **, unsigned int *,
-			    char **);
+			    void *, char **);
 
 int
 sm_init (char *client, char *server, char *port, int watch, int verbose,
@@ -133,7 +133,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 
     if (sasl) {
 	if (netsec_set_sasl_params(nsc, "smtp", saslmech, sm_sasl_callback,
-				   &errstr) != OK)
+				   NULL, &errstr) != OK)
 	    return sm_nerror(errstr);
     }
 
@@ -295,7 +295,7 @@ sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
 
     if (sasl) {
 	if (netsec_set_sasl_params(nsc, "smtp", saslmech, sm_sasl_callback,
-				   &errstr) != OK)
+				   NULL, &errstr) != OK)
 	    return sm_nerror(errstr);
     }
 
@@ -947,11 +947,12 @@ EHLOset (char *s)
 static int
 sm_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 		 unsigned int indatalen, unsigned char **outdata,
-		 unsigned int *outdatalen, char **errstr)
+		 unsigned int *outdatalen, void *context, char **errstr)
 {
     int rc, snoopoffset;
     char *mech, *line;
     size_t len;
+    NMH_UNUSED(context);
 
     switch (mtype) {
     case NETSEC_SASL_START:

@@ -258,6 +258,7 @@ enum sasl_message_type {
  * indatasize	- The size of the input data in bytes
  * outdata	- Output data (freed by caller)
  * outdatasize	- Size of output data
+ * context	- Extra context information potentially required by callback
  * errstr	- An error string to be returned (freed by caller).
  *
  * As a general note, plugins should perform their own I/O.  Buffers returned
@@ -298,7 +299,8 @@ typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
 				    unsigned const char *indata,
 				    unsigned int indatasize,
 				    unsigned char **outdata,
-				    unsigned int *outdatasize, char **errstr);
+				    unsigned int *outdatasize,
+				    void *context, char **errstr);
 
 /*
  * Sets the SASL parameters for this connection.  If this function is
@@ -315,6 +317,7 @@ typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
  * mechanism	- The mechanism desired by the user.  If NULL, the SASL
  *		  library will attempt to negotiate the best mechanism.
  * callback	- SASL protocol callbacks 
+ * context	- Extra context information passed to the protocol callback
  * errstr	- Error string.
  *
  * Returns NOTOK if SASL is not supported.
@@ -322,7 +325,8 @@ typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
 
 int netsec_set_sasl_params(netsec_context *ns_context, const char *service,
 			   const char *mechanism,
-			   netsec_sasl_callback callback, char **errstr);
+			   netsec_sasl_callback callback,
+			   void *context, char **errstr);
 
 /*
  * Start SASL negotiation.  The Netsec library will use the callbacks
