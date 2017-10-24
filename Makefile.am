@@ -293,6 +293,10 @@ bin_PROGRAMS = \
     uip/whom \
     #
 
+noinst_PROGRAMS = \
+    uip/imaptest \
+    #
+
 bin_SCRIPTS = \
     etc/sendfiles \
     uip/mhmail \
@@ -695,6 +699,9 @@ uip_folder_LDADD = $(LDADD) $(POSTLINK)
 uip_forw_SOURCES = uip/forw.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c uip/forwsbr.c
 uip_forw_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
+
+uip_imaptest_SOURCES = uip/imaptest.c
+uip_imaptest_LDADD = $(LDADD) $(SASLLIB) $(CURLLIB) $(TLSLIB) $(POSTLINK)
 
 uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/popsbr.c
 uip_inc_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(SASLLIB) $(CURLLIB) \
