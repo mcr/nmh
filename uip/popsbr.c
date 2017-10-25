@@ -339,25 +339,27 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 			       "for initial challenge response");
 		    return NOTOK;
 		}
-		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
 		rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
-		netsec_set_snoop_callback(nsc, NULL, NULL);
 		free(b64data);
 		if (rc != OK)
 		    return NOTOK;
-		if (netsec_flush(nsc, errstr) != OK)
+		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
+		rc = netsec_flush(nsc, errstr);
+		netsec_set_snoop_callback(nsc, NULL, NULL);
+		if (rc != OK)
 		    return NOTOK;
 	    } else {
-		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder,
-					  &snoopoffset);
-		snoopoffset = 6 + strlen(mech);
 	        rc = netsec_printf(nsc, errstr, "AUTH %s %s\r\n", mech,
 				   b64data);
 		free(b64data);
-		netsec_set_snoop_callback(nsc, NULL, NULL);
 		if (rc != OK)
 		    return NOTOK;
-		if (netsec_flush(nsc, errstr) != OK)
+		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder,
+					  &snoopoffset);
+		snoopoffset = 6 + strlen(mech);
+		rc = netsec_flush(nsc, errstr);
+		netsec_set_snoop_callback(nsc, NULL, NULL);
+		if (rc != OK)
 		    return NOTOK;
 	    }
 	} else {
@@ -410,16 +412,18 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    unsigned char *b64data;
 	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
 	    writeBase64raw(indata, indatalen, b64data);
-	    netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
 	    rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
-	    netsec_set_snoop_callback(nsc, NULL, NULL);
 	    free(b64data);
 	}
 
 	if (rc != OK)
 	    return NOTOK;
 
-	if (netsec_flush(nsc, errstr) != OK)
+	if (indatalen > 0)
+	    netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
+	rc = netsec_flush(nsc, errstr);
+	netsec_set_snoop_callback(nsc, NULL, NULL);
+	if (rc != OK)
 	    return NOTOK;
 	break;
 
