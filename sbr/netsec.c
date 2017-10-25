@@ -57,9 +57,9 @@ struct _netsec_context {
     int ns_writefd;		/* Write descriptor for network connection */
     int ns_noclose;		/* Do not close file descriptors if set */
     int ns_snoop;		/* If true, display network data */
-    int ns_snoop_noend;		/* If true, didn't get a CR/LF on last line */
     netsec_snoop_callback *ns_snoop_cb; /* Snoop output callback */
     void *ns_snoop_context;	/* Context data for snoop function */
+    char *ns_snoop_savebuf;	/* Save buffer for snoop data */
     int ns_timeout;		/* Network read timeout, in seconds */
     char *ns_userid;		/* Userid for authentication */
     char *ns_hostname;		/* Hostname we've connected to */
@@ -145,9 +145,9 @@ netsec_init(void)
     nsc->ns_writefd = -1;
     nsc->ns_noclose = 0;
     nsc->ns_snoop = 0;
-    nsc->ns_snoop_noend = 0;
     nsc->ns_snoop_cb = NULL;
     nsc->ns_snoop_context = NULL;
+    nsc->ns_snoop_savebuf = NULL;
     nsc->ns_userid = NULL;
     nsc->ns_hostname = NULL;
     nsc->ns_timeout = 60;	/* Our default */
@@ -196,6 +196,7 @@ netsec_shutdown(netsec_context *nsc)
     free(nsc->ns_outbuffer);
     free(nsc->sasl_mech);
     free(nsc->sasl_chosen_mech);
+    free(nsc->ns_snoop_savebuf);
 #ifdef OAUTH_SERVICE
     free(nsc->oauth_service);
 #endif /* OAUTH_SERVICE */
@@ -846,35 +847,6 @@ retry:
         goto retry;
     }
 
-    if (nsc->ns_snoop) {
-	int outlen = rc;
-	if (outlen > 0 && nsc->ns_outptr[outlen - 1] == '\n') {
-	    outlen--;
-	    if (outlen > 0 && nsc->ns_outptr[outlen - 1] == '\r')
-		outlen--;
-	} else {
-	    nsc->ns_snoop_noend = 1;
-	}
-	if (outlen > 0 || nsc->ns_snoop_noend == 0) {
-#ifdef CYRUS_SASL
-	    if (nsc->sasl_seclayer)
-		fprintf(stderr, "(sasl-encrypted) ");
-#endif /* CYRUS_SASL */
-#ifdef TLS_SUPPORT
-	    if (nsc->tls_active)
-		fprintf(stderr, "(tls-encrypted) ");
-#endif /* TLS_SUPPORT */
-	    fprintf(stderr, "=> ");
-	    if (nsc->ns_snoop_cb)
-		nsc->ns_snoop_cb(nsc, (char *) nsc->ns_outptr, outlen,
-				 nsc->ns_snoop_context);
-	    else
-		 fprintf(stderr, "%.*s\n", outlen, nsc->ns_outptr); 
-	} else {
-	    nsc->ns_snoop_noend = 0;
-	}
-    }
-
     nsc->ns_outptr += rc;
     nsc->ns_outbuflen += rc;
 
@@ -899,6 +871,95 @@ netsec_flush(netsec_context *nsc, char **errstr)
 
     if (netoutlen == 0)
 	return OK;
+
+    /*
+     * If we have snoop turned on, output the data.
+     *
+     * Note here; if we don't have a CR or LF at the end, save the data
+     * in ns_snoop_savebuf for later and print it next time.
+     */
+
+    if (nsc->ns_snoop) {
+	unsigned int snoopoutlen = netoutlen;
+	const char *snoopoutbuf = nsc->ns_outbuffer;
+
+	while (snoopoutlen > 0) {
+	    const char *end = strpbrk(snoopoutbuf, "\r\n");
+	    unsigned int outlen;
+
+	    if (! end) {
+		if (nsc->ns_snoop_savebuf) {
+		    nsc->ns_snoop_savebuf = mh_xrealloc(nsc->ns_snoop_savebuf,
+						strlen(nsc->ns_snoop_savebuf) +
+						snoopoutlen + 1);
+		    strncat(nsc->ns_snoop_savebuf, snoopoutbuf, snoopoutlen);
+		} else {
+		    nsc->ns_snoop_savebuf = mh_xmalloc(snoopoutlen + 1);
+		    strncpy(nsc->ns_snoop_savebuf, snoopoutbuf, snoopoutlen);
+		    nsc->ns_snoop_savebuf[snoopoutlen] = '\0';
+		}
+		break;
+	    }
+
+	    outlen = end - snoopoutbuf;
+
+#ifdef CYRUS_SASL
+	    if (nsc->sasl_seclayer)
+		fprintf(stderr, "(sasl-encrypted) ");
+#endif /* CYRUS_SASL */
+#ifdef TLS_SUPPORT
+	    if (nsc->tls_active)
+		fprintf(stderr, "(tls-encrypted) ");
+#endif /* TLS_SUPPORT */
+	    fprintf(stderr, "=> ");
+	    if (nsc->ns_snoop_cb) {
+		char *ptr;
+		unsigned int cb_len = outlen;
+
+		if (nsc->ns_snoop_savebuf) {
+		    cb_len += strlen(nsc->ns_snoop_savebuf);
+		    nsc->ns_snoop_savebuf = mh_xrealloc(nsc->ns_snoop_savebuf,
+		    				outlen);
+		    ptr = nsc->ns_snoop_savebuf;
+		} else {
+		    ptr = snoopoutbuf;
+		}
+
+		nsc->ns_snoop_cb(nsc, ptr, cb_len, nsc->ns_snoop_context);
+
+		if (nsc->ns_snoop_savebuf) {
+		    free(nsc->ns_snoop_savebuf);
+		    nsc->ns_snoop_savebuf = NULL;
+		}
+	    } else {
+		if (nsc->ns_snoop_savebuf) {
+		    fprintf(stderr, "%s", nsc->ns_snoop_savebuf);
+		    free(nsc->ns_snoop_savebuf);
+		    nsc->ns_snoop_savebuf = NULL;
+		}
+		fprintf(stderr, "%.*s\n", outlen, snoopoutbuf);
+	    }
+
+	    /*
+	     * Alright, hopefully any previous leftover data is done,
+	     * and we have the current line output.  Move things past the
+	     * next CR/LF.
+	     */
+
+	    snoopoutlen -= outlen;
+	    snoopoutbuf += outlen;
+
+	    if (snoopoutlen > 0 && *snoopoutbuf == '\r') {
+		snoopoutlen--;
+		snoopoutbuf++;
+	    }
+
+	    if (snoopoutlen > 0 && *snoopoutbuf == '\n') {
+		snoopoutlen--;
+		snoopoutbuf++;
+	    }
+	}
+    }
 
     /*
      * If SASL security layers are in effect, run the data through
