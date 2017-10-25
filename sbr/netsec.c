@@ -881,7 +881,7 @@ netsec_flush(netsec_context *nsc, char **errstr)
 
     if (nsc->ns_snoop) {
 	unsigned int snoopoutlen = netoutlen;
-	const char *snoopoutbuf = nsc->ns_outbuffer;
+	const char *snoopoutbuf = (const char *) nsc->ns_outbuffer;
 
 	while (snoopoutlen > 0) {
 	    const char *end = strpbrk(snoopoutbuf, "\r\n");
@@ -913,7 +913,7 @@ netsec_flush(netsec_context *nsc, char **errstr)
 #endif /* TLS_SUPPORT */
 	    fprintf(stderr, "=> ");
 	    if (nsc->ns_snoop_cb) {
-		char *ptr;
+		const char *ptr;
 		unsigned int cb_len = outlen;
 
 		if (nsc->ns_snoop_savebuf) {
