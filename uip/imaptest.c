@@ -238,6 +238,33 @@ main (int argc, char **argv)
 	free(capstring);
     }
 
+    if (tls) {
+	if (!capability_set("STARTTLS")) {
+	    fprintf(stderr, "Requested STARTTLS with -tls, but IMAP server "
+		    "has no support for STARTTLS\n");
+	    goto finish;
+	}
+	if (send_imap_command(nsc, &errstr, "STARTTLS") != OK) {
+	    fprintf(stderr, "Unable to issue STARTTLS: %s\n", errstr);
+	    goto finish;
+	}
+
+	if (get_imap_response(nsc, NULL, NULL, &errstr) != OK) {
+	    fprintf(stderr, "STARTTLS failed: %s\n", errstr);
+	    goto finish;
+	}
+	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
+	    adios(NULL, errstr);
+	}
+    }
+
+    if (sasl) {
+	if (netsec_negotiate_sasl(nsc, saslmechs, &errstr) != OK) {
+	    fprintf(stderr, "SASL negotiation failed: %s\n", errstr);
+	    goto finish;
+	}
+    }
+
     send_imap_command(nsc, NULL, "LOGOUT");
     get_imap_response(nsc, NULL, NULL, NULL);
 
@@ -334,16 +361,113 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
 	    writeBase64raw(indata, indatalen, (unsigned char *) b64data);
 	    if (capability_set("SASL-IR")) {
+		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder,
+					  &snoopoffset);
+		/*
+		 * Sigh. We're assuming a short tag length here.  Really,
+		 * I guess we should figure out a way to get the length
+		 * of the next tag.
+		 */
+		snoopoffset = 17 + strlen(mech);
 		rc = send_imap_command(nsc, errstr, "AUTHENTICATE %s %s",
 				       mech, b64data);
 		free(b64data);
+		netsec_set_snoop_callback(nsc, NULL, NULL);
 		if (rc)
 		    return NOTOK;
 	    } else {
 		rc = send_imap_command(nsc, errstr, "AUTHENTICATE %s", mech);
+		line = netsec_readline(nsc, &len, errstr);
+		if (! line)
+		    return NOTOK;
+		/*
+		 * We should get a "+ ", nothing else.
+		 */
+		if (len != 2 || strcmp(line, "+ ") != 0) {
+		    netsec_err(errstr, "Did not get expected blank response "
+			       "for initial challenge response");
+		    return NOTOK;
+		}
+		rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
+		free(b64data);
+		if (rc != OK)
+		    return NOTOK;
+		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
+		rc = netsec_flush(nsc, errstr);
+		netsec_set_snoop_callback(nsc, NULL, NULL);
+		if (rc != OK)
+		    return NOTOK;
 	    }
+	} else {
+	    if (send_imap_command(nsc, errstr, "AUTHENTICATE %s", mech) != OK)
+		return NOTOK;
 	}
 
+	break;
+
+	/*
+	 * Get a response, decode it and process it.
+	 */
+
+    case NETSEC_SASL_READ:
+	netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, &snoopoffset);
+	snoopoffset = 2;
+	line = netsec_readline(nsc, &len, errstr);
+	netsec_set_snoop_callback(nsc, NULL, NULL);
+
+	if (line == NULL)
+	    return NOTOK;
+
+	if (len < 2 || (len == 2 && strcmp(line, "+ ") != 0)) {
+	    netsec_err(errstr, "Invalid format for SASL response");
+	    return NOTOK;
+	}
+
+	if (len == 2) {
+	    *outdata = NULL;
+	    *outdatalen = 0;
+	} else {
+	    rc = decodeBase64(line + 2, outdata, &len, 0, NULL);
+	    *outdatalen = len;
+	    if (rc != OK) {
+		netsec_err(errstr, "Unable to decode base64 response");
+		return NOTOK;
+	    }
+	}
+	break;
+
+	/*
+	 * Simple request encoding
+	 */
+
+    case NETSEC_SASL_WRITE:
+	if (indatalen > 0) {
+	    unsigned char *b64data;
+	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
+	    writeBase64raw(indata, indatalen, b64data);
+	    rc = netsec_printf(nsc, errstr, "%s", b64data);
+	    free(b64data);
+	    if (rc != OK)
+		return NOTOK;
+	}
+
+	if (netsec_printf(nsc, errstr, "\r\n") != OK)
+	    return NOTOK;
+
+	netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
+	rc = netsec_flush(nsc, errstr);
+	netsec_set_snoop_callback(nsc, NULL, NULL);
+	if (rc != OK)
+	    return NOTOK;
+	break;
+
+    /*
+     * Finish protocol
+     */
+
+    case NETSEC_SASL_FINISH:
+    	if (get_imap_response(nsc, NULL, NULL, errstr) != OK)
+	    return NOTOK;
 	break;
     }
     return OK;
