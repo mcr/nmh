@@ -56,9 +56,13 @@ static int imap_sasl_callback(enum sasl_message_type, unsigned const char *,
 
 static void parse_capability(const char *, unsigned int len);
 static int capability_set(const char *);
-static int send_imap_command(netsec_context *, char **errstr,
-			     const char *, ...);
-static int get_imap_response(netsec_context *, const char *, char **, char **);
+static void clear_capability(void);
+static int have_capability(void);
+static int send_imap_command(netsec_context *, int noflush, char **errstr,
+			     const char *fmt, ...);
+static int get_imap_response(netsec_context *, const char *token,
+			     char **tokenresp, char **status, int failerr,
+			     char **errstr);
 
 int
 main (int argc, char **argv)
@@ -219,12 +223,13 @@ main (int argc, char **argv)
     } else {
         char *capstring;
 
-	if (send_imap_command(nsc, &errstr, "CAPABILITY") != OK) {
+	if (send_imap_command(nsc, 0, &errstr, "CAPABILITY") != OK) {
 	    fprintf(stderr, "Unable to send CAPABILITY command: %s\n", errstr);
 	    goto finish;
 	}
 
-	if (get_imap_response(nsc, "CAPABILITY", &capstring, &errstr) != OK) {
+	if (get_imap_response(nsc, "CAPABILITY", &capstring, NULL, 1,
+			      &errstr) != OK) {
 	    fprintf(stderr, "Cannot get CAPABILITY response: %s\n", errstr);
 	    goto finish;
 	}
@@ -244,12 +249,12 @@ main (int argc, char **argv)
 		    "has no support for STARTTLS\n");
 	    goto finish;
 	}
-	if (send_imap_command(nsc, &errstr, "STARTTLS") != OK) {
+	if (send_imap_command(nsc, 0, &errstr, "STARTTLS") != OK) {
 	    fprintf(stderr, "Unable to issue STARTTLS: %s\n", errstr);
 	    goto finish;
 	}
 
-	if (get_imap_response(nsc, NULL, NULL, &errstr) != OK) {
+	if (get_imap_response(nsc, NULL, NULL, NULL, 1, &errstr) != OK) {
 	    fprintf(stderr, "STARTTLS failed: %s\n", errstr);
 	    goto finish;
 	}
@@ -263,10 +268,16 @@ main (int argc, char **argv)
 	    fprintf(stderr, "SASL negotiation failed: %s\n", errstr);
 	    goto finish;
 	}
+    } else {
+	if (capability_set("LOGINDISABLED")) {
+	    fprintf(stderr, "User did not request SASL, but LOGIN "
+		    "is disabled\n");
+	    goto finish;
+	}
     }
 
-    send_imap_command(nsc, NULL, "LOGOUT");
-    get_imap_response(nsc, NULL, NULL, NULL);
+    send_imap_command(nsc, 0, NULL, "LOGOUT");
+    get_imap_response(nsc, NULL, NULL, NULL, 0, NULL);
 
 finish:
     netsec_shutdown(nsc);
@@ -331,6 +342,23 @@ capability_set(const char *capability)
 }
 
 /*
+ * Clear the CAPABILITY list (used after we call STARTTLS, for example)
+ */
+
+static void
+capability_clear(void)
+{
+    svector_free(imap_capabilities);
+    imap_capabilities = NULL;
+}
+
+static int
+have_capability(void)
+{
+    return imap_capabilities != NULL;
+}
+
+/*
  * Our SASL callback, which handles the SASL authentication dialog
  */
 
@@ -341,7 +369,7 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 {
     int rc, snoopoffset;
     char *mech, *line;
-    size_t len, b64len;
+    size_t len;
     netsec_context *nsc = (netsec_context *) context;
 
     switch (mtype) {
@@ -369,14 +397,14 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 		 * of the next tag.
 		 */
 		snoopoffset = 17 + strlen(mech);
-		rc = send_imap_command(nsc, errstr, "AUTHENTICATE %s %s",
+		rc = send_imap_command(nsc, 0, errstr, "AUTHENTICATE %s %s",
 				       mech, b64data);
 		free(b64data);
 		netsec_set_snoop_callback(nsc, NULL, NULL);
 		if (rc)
 		    return NOTOK;
 	    } else {
-		rc = send_imap_command(nsc, errstr, "AUTHENTICATE %s", mech);
+		rc = send_imap_command(nsc, 0, errstr, "AUTHENTICATE %s", mech);
 		line = netsec_readline(nsc, &len, errstr);
 		if (! line)
 		    return NOTOK;
@@ -399,15 +427,16 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 		    return NOTOK;
 	    }
 	} else {
-	    if (send_imap_command(nsc, errstr, "AUTHENTICATE %s", mech) != OK)
+	    if (send_imap_command(nsc, 0, errstr, "AUTHENTICATE %s",
+				  mech) != OK)
 		return NOTOK;
 	}
 
 	break;
 
-	/*
-	 * Get a response, decode it and process it.
-	 */
+    /*
+     * Get a response, decode it and process it.
+     */
 
     case NETSEC_SASL_READ:
 	netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, &snoopoffset);
@@ -436,9 +465,9 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	}
 	break;
 
-	/*
-	 * Simple request encoding
-	 */
+    /*
+     * Simple request encoding
+     */
 
     case NETSEC_SASL_WRITE:
 	if (indatalen > 0) {
@@ -466,7 +495,32 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
      */
 
     case NETSEC_SASL_FINISH:
-    	if (get_imap_response(nsc, NULL, NULL, errstr) != OK)
+    	if (get_imap_response(nsc, NULL, NULL, &line, 1, errstr) != OK)
+	    return NOTOK;
+	/*
+	 * We MIGHT get a capability response here.  If so, be sure we
+	 * parse it.
+	 */
+
+	if (has_prefix(line, "OK [CAPABILITY ")) {
+	    char *p = line + 15, *q;
+	    q = strchr(p, ']');
+
+	    if (q)
+		parse_capability(p, q - p);
+	}
+
+	break;
+
+    /*
+     * Cancel an authentication dialog
+     */
+
+    case NETSEC_SASL_CANCEL:
+	rc = netsec_printf(nsc, errstr, "*\r\n");
+	if (rc == OK)
+	    rc = netsec_flush(nsc, errstr);
+	if (rc != OK)
 	    return NOTOK;
 	break;
     }
@@ -478,7 +532,8 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
  */
 
 static int
-send_imap_command(netsec_context *nsc, char **errstr, const char *fmt, ...)
+send_imap_command(netsec_context *nsc, int noflush, char **errstr,
+		  const char *fmt, ...)
 {
     static unsigned int seq = 0;	/* Tag sequence number */
     va_list ap;
@@ -506,7 +561,7 @@ send_imap_command(netsec_context *nsc, char **errstr, const char *fmt, ...)
 	return NOTOK;
     }
 
-    if (netsec_flush(nsc, errstr) != OK) {
+    if (!noflush && netsec_flush(nsc, errstr) != OK) {
 	free(cmd);
 	return NOTOK;
     }
@@ -524,10 +579,11 @@ send_imap_command(netsec_context *nsc, char **errstr, const char *fmt, ...)
 
 static int
 get_imap_response(netsec_context *nsc, const char *token, char **tokenresponse,
-		  char **errstr)
+		  char **status, int failerr, char **errstr)
 {
     char *line;
     struct imap_cmd *cmd;
+    int numerrs = 0;
 
     if (tokenresponse)
 	*tokenresponse = NULL;
@@ -553,7 +609,14 @@ getline:
 		    if (has_prefix(line, cmd->next->tag)) {
 		        struct imap_cmd *cmd2 = cmd->next;
 			cmd->next = cmd->next->next;
+			if (failerr && strncmp(line + strlen(cmd2->tag),
+							"OK ", 3) != 0) {
+			    numerrs++;
+			    netsec_err(errstr, "%s", line + strlen(cmd2->tag));
+			}
 			free(cmd2);
+			if (status)
+			    *status = getcpy(line);
 			goto getline;
 		    }
 		    netsec_err(errstr, "Non-matching response line: %s\n",
@@ -564,5 +627,5 @@ getline:
 	}
     }
 
-    return OK;
+    return numerrs == 0 ? OK : NOTOK;
 }
