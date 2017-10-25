@@ -529,10 +529,14 @@ sm_waend (void)
 int
 sm_wtxt (char *buffer, int len)
 {
-    int result;
+    int result, snoopstate;
+
+    if ((snoopstate = netsec_get_snoop(nsc)))
+	netsec_set_snoop(nsc, 0);
 
     result = sm_wstream (buffer, len);
 
+    netsec_set_snoop(nsc, snoopstate);
     return result == NOTOK ? RP_BHST : RP_OK;
 }
 
@@ -540,8 +544,29 @@ sm_wtxt (char *buffer, int len)
 int
 sm_wtend (void)
 {
+    int snoopstate;
+
+    if ((snoopstate = netsec_get_snoop(nsc)))
+	netsec_set_snoop(nsc, 0);
+
     if (sm_wstream(NULL, 0) == NOTOK)
 	return RP_BHST;
+
+    /*
+     * Because snoop output now happens at flush time, if we are using snoop
+     * we force an extra flush here.  While this introduces some extra network
+     * traffic, we're only doing it when snoop is in effect so I think it's
+     * reasonable.
+     */
+
+    if (snoopstate) {
+	char *errstr;
+	if (netsec_flush(nsc, &errstr) != OK) {
+	    sm_nerror(errstr);
+	    return RP_BHST;
+	}
+	netsec_set_snoop(nsc, snoopstate);
+    }
 
     switch (smtalk (SM_DOT + 3 * sm_addrs, ".")) {
 	case 250: 
@@ -975,15 +1000,19 @@ sm_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    snoopoffset = 6 + strlen(mech);
 	    rc = netsec_printf(nsc, errstr, "AUTH %s %s\r\n", mech, b64data);
 	    free(b64data);
-	    netsec_set_snoop_callback(nsc, NULL, NULL);
 	} else {
 	    rc = netsec_printf(nsc, errstr, "AUTH %s\r\n", mech);
 	}
 
-	if (rc != OK)
+	if (rc != OK) {
+	    netsec_set_snoop_callback(nsc, NULL, NULL);
 	    return NOTOK;
+	}
 
-	if (netsec_flush(nsc, errstr) != OK)
+	rc = netsec_flush(nsc, errstr);
+	netsec_set_snoop_callback(nsc, NULL, NULL);
+
+	if (rc != OK)
 	    return NOTOK;
 
 	break;
@@ -1037,14 +1066,16 @@ sm_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    writeBase64raw(indata, indatalen, b64data);
 	    netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
 	    rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
-	    netsec_set_snoop_callback(nsc, NULL, NULL);
 	    free(b64data);
 	}
 
 	if (rc != OK)
 	    return NOTOK;
 
-	if (netsec_flush(nsc, errstr) != OK)
+	rc = netsec_flush(nsc, errstr);
+	netsec_set_snoop_callback(nsc, NULL, NULL);
+
+	if (rc != OK)
 	    return NOTOK;
 	break;
 
