@@ -9,6 +9,7 @@
 #include <h/utils.h>
 #include <h/netsec.h>
 #include <stdarg.h>
+#include <sys/time.h>
 #include "h/done.h"
 #include "sbr/base64.h"
 
@@ -39,14 +40,27 @@ DEFINE_SWITCH_ENUM(IMAPTEST);
 DEFINE_SWITCH_ARRAY(IMAPTEST, switches);
 #undef X
 
+struct imap_msg;
+
+struct imap_msg {
+    char *command;		/* Command to send */
+    int queue;			/* If true, queue for later delivery */
+    struct imap_msg *next;	/* Next pointer */
+};
+
+struct imap_msg *msgqueue_head = NULL;
+struct imap_msg *msgqueue_tail = NULL;
+
 struct imap_cmd;
 
 struct imap_cmd {
     char tag[16];		/* Command tag */
+    struct timeval start;	/* Time command was sent */
     struct imap_cmd *next;	/* Next pointer */
 };
 
 static struct imap_cmd *cmdqueue = NULL;
+
 static char *saslmechs = NULL;
 svector_t imap_capabilities = NULL;
 
@@ -64,16 +78,24 @@ static int get_imap_response(netsec_context *, const char *token,
 			     char **tokenresp, char **status, int failerr,
 			     char **errstr);
 
+static void ts_report(const char *str, struct timeval *tv);
+
+static void add_msg(int queue, const char *fmt, ...);
+
+static bool timestamp = false;
+
 int
 main (int argc, char **argv)
 {
-    bool timestamp = false, sasl = false, tls = false, initialtls = false;
+    bool sasl = false, tls = false, initialtls = false;
     bool snoop = false;
     int fd;
     char *saslmech = NULL, *host = NULL, *port = "143", *user = NULL;
     char *cp, **argp, buf[BUFSIZ], *oauth_svc = NULL, *errstr, **arguments, *p;
     netsec_context *nsc = NULL;
+    struct imap_msg *imsg;
     size_t len;
+    struct timeval tv_start, tv_connect, tv_auth;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -150,6 +172,12 @@ main (int argc, char **argv)
 		timestamp = false;
 		continue;
 	    }
+	} else if (*cp == '+') {
+	    if (*(cp + 1) == '\0')
+		adios(NULL, "Invalid null folder name");
+	    add_msg(0, "SELECT \"%s\"", cp + 1);
+	} else {
+	    add_msg(0, "%s", cp);
 	}
     }
 
@@ -172,8 +200,16 @@ main (int argc, char **argv)
 	}
     }
 
+    if (timestamp)
+	gettimeofday(&tv_start, NULL);
+
     if ((fd = client(host, port, buf, sizeof(buf), snoop)) == NOTOK)
 	adios(NULL, "Connect failed: %s", buf);
+
+    if (timestamp) {
+	ts_report("Connect time", &tv_start);
+	gettimeofday(&tv_connect, NULL);
+    }
 
     netsec_set_fd(nsc, fd, fd);
     netsec_set_snoop(nsc, snoop);
@@ -286,11 +322,68 @@ main (int argc, char **argv)
 	}
     }
 
+    if (!have_capability()) {
+        char *capstring;
+
+	if (send_imap_command(nsc, 0, &errstr, "CAPABILITY") != OK) {
+	    fprintf(stderr, "Unable to send CAPABILITY command: %s\n", errstr);
+	    goto finish;
+	}
+
+	if (get_imap_response(nsc, "CAPABILITY", &capstring, NULL, 1,
+			      &errstr) != OK) {
+	    fprintf(stderr, "Cannot get CAPABILITY response: %s\n", errstr);
+	    goto finish;
+	}
+
+	if (! capstring) {
+	    fprintf(stderr, "No CAPABILITY response seen\n");
+	    goto finish;
+	}
+
+	parse_capability(capstring, strlen(capstring));
+	free(capstring);
+    }
+
+    if (timestamp) {
+	ts_report("Authentication time", &tv_connect);
+	gettimeofday(&tv_auth, NULL);
+    }
+
+    while (msgqueue_head != NULL) {
+	imsg = msgqueue_head;
+
+	if (send_imap_command(nsc, imsg->queue, &errstr, "%s",
+			      imsg->command) != OK) {
+	    fprintf(stderr, "Cannot send command \"%s\": %s\n", imsg->command,
+		    errstr);
+	    free(errstr);
+	    goto finish;
+	}
+
+	if (! imsg->queue) {
+	    if (get_imap_response(nsc, NULL, NULL, NULL, 0, &errstr) != OK) {
+		fprintf(stderr, "Unable to get response for command "
+			"\"%s\": %s\n", imsg->command, errstr);
+		goto finish;
+	    }
+	}
+
+	msgqueue_head = imsg->next;
+
+	free(imsg->command);
+	free(imsg);
+    }
+
+    ts_report("Total command execution time", &tv_auth);
+
     send_imap_command(nsc, 0, NULL, "LOGOUT");
     get_imap_response(nsc, NULL, NULL, NULL, 0, NULL);
 
 finish:
     netsec_shutdown(nsc);
+
+    ts_report("Total elapsed time", &tv_start);
 
     exit(0);
 }
@@ -554,6 +647,9 @@ send_imap_command(netsec_context *nsc, int noflush, char **errstr,
 
     snprintf(cmd->tag, sizeof(cmd->tag), "A%u ", seq++);
 
+    if (timestamp)
+	gettimeofday(&cmd->start, NULL);
+
     if (netsec_write(nsc, cmd->tag, strlen(cmd->tag), errstr) != OK) {
 	free(cmd);
 	return NOTOK;
@@ -612,6 +708,8 @@ getline:
 
 	    if (has_prefix(line, cmdqueue->tag)) {
 		cmd = cmdqueue;
+		if (timestamp)
+		    ts_report("Command execution time:", &cmd->start);
 		cmdqueue = cmd->next;
 		free(cmd);
 	    } else {
@@ -638,4 +736,58 @@ getline:
     }
 
     return numerrs == 0 ? OK : NOTOK;
+}
+
+/*
+ * Add an IMAP command to the msg queue
+ */
+
+static void
+add_msg(int queue, const char *fmt, ...)
+{
+    struct imap_msg *imsg;
+    va_list ap;
+    size_t msgbufsize;
+    char *msg = NULL;
+    int rc = 63;
+
+    do {
+	msgbufsize = rc + 1;
+	msg = mh_xrealloc(msg, msgbufsize);
+	va_start(ap, fmt);
+	rc = vsnprintf(msg, msgbufsize, fmt, ap);
+	va_end(ap);
+    } while (rc >= (int) msgbufsize);
+
+    imsg = mh_xmalloc(sizeof(*imsg));
+
+    imsg->command = msg;
+    imsg->queue = queue;
+    imsg->next = NULL;
+
+    if (msgqueue_head == NULL) {
+	msgqueue_head = imsg;
+	msgqueue_tail = imsg;
+    } else {
+	msgqueue_tail->next = imsg;
+	msgqueue_tail = imsg;
+    }
+}
+
+/*
+ * Give a timestamp report.
+ */
+
+static void
+ts_report(const char *str, struct timeval *tv)
+{
+    struct timeval now;
+    double delta;
+
+    gettimeofday(&now, NULL);
+
+    delta = ((double) now.tv_sec) - ((double) tv->tv_sec) +
+	    (now.tv_usec / 1E6 - tv->tv_usec / 1E6);
+
+    printf("%s: %f sec\n", str, delta);
 }
