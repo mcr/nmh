@@ -268,6 +268,16 @@ main (int argc, char **argv)
 	    fprintf(stderr, "SASL negotiation failed: %s\n", errstr);
 	    goto finish;
 	}
+	/*
+	 * Sigh. If we negotiated a SSF AND we got a capability response
+	 * as part of the AUTHENTICATE OK message, we can't actually trust
+	 * it because it's not protected at that point.  So discard the
+	 * capability list and we will generate a fresh CAPABILITY command
+	 * later.
+	 */
+	if (netsec_get_sasl_ssf(nsc) > 0) {
+	    clear_capability();
+	}
     } else {
 	if (capability_set("LOGINDISABLED")) {
 	    fprintf(stderr, "User did not request SASL, but LOGIN "
@@ -346,7 +356,7 @@ capability_set(const char *capability)
  */
 
 static void
-capability_clear(void)
+clear_capability(void)
 {
     svector_free(imap_capabilities);
     imap_capabilities = NULL;
