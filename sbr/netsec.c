@@ -1480,6 +1480,20 @@ netsec_get_sasl_mechanism(netsec_context *nsc)
 }
 
 /*
+ * Return the negotiated SASL strength security factor (SSF)
+ */
+
+int
+netsec_get_sasl_ssf(netsec_context *nsc)
+{
+#ifdef CYRUS_SASL
+    return nsc->sasl_ssf;
+#else /* CYRUS_SASL */
+    return 0;
+#endif /* CYRUS_SASL */
+}
+
+/*
  * Set an OAuth2 service name, if we support it.
  */
 

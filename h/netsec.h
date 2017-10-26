@@ -285,10 +285,12 @@ enum sasl_message_type {
  *			  this point SASL exchange should have completed
  *			  and we should get a message back from the server
  *			  telling us whether or not authentication is
- *			  successful.  All buffer parameters are NULL.
+ *			  successful; the plugin should return OK/NOTOK
+ *			  to indicate whether or not the authentication
+ *			  was successful.  All buffer parameters are NULL.
  * NETSEC_SASL_CANCEL	- Generate a protocol message that cancels the
- *			  SASL protocol exchange; outdata/outdatasize
- *			  should contain this message.
+ *			  SASL protocol exchange; the plugin should
+ *			  send this message.  All buffer parameters are NULL.
  *
  * The callback should return OK on success, NOTOK on failure.  Depending
  * at the point of the authentication exchange, the callback may be asked
@@ -357,6 +359,24 @@ int netsec_negotiate_sasl(netsec_context *ns_context, const char *mechlist,
  */
 
 char *netsec_get_sasl_mechanism(netsec_context *ns_context) PURE;
+
+/*
+ * Returns the SASL strength security factor (SSF) for the negotiated
+ * authentication mechanism.
+ *
+ * The exact meaning of the SSF depends on the mechanism chosen, but in
+ * general:
+ *
+ * 0	- No encryption or integrity protection via SASL.
+ * 1	- Integrity protection only.
+ * >1	- Encryption
+ *
+ * The SSF is distinct from any encryption that is negotiated by TLS;
+ * if TLS is negotiated then the netsec SASL code will automatically disable
+ * any attempt to negotiate a security layer and thus the SSF will be 0.
+ */
+
+int netsec_get_sasl_ssf(netsec_context *ns_context) PURE;
 
 /*
  * Set the OAuth service name used to retrieve the OAuth parameters from
