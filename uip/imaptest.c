@@ -73,14 +73,14 @@ static int capability_set(const char *);
 static void clear_capability(void);
 static int have_capability(void);
 static int send_imap_command(netsec_context *, int noflush, char **errstr,
-			     const char *fmt, ...);
+			     const char *fmt, ...) CHECK_PRINTF(4, 5);
 static int get_imap_response(netsec_context *, const char *token,
 			     char **tokenresp, char **status, int failerr,
 			     char **errstr);
 
 static void ts_report(const char *str, struct timeval *tv);
 
-static void add_msg(int queue, const char *fmt, ...);
+static void add_msg(int queue, const char *fmt, ...) CHECK_PRINTF(2, 3);
 
 static bool timestamp = false;
 
