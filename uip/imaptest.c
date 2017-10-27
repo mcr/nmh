@@ -597,6 +597,7 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
      */
 
     case NETSEC_SASL_FINISH:
+        line = NULL;
     	if (get_imap_response(nsc, NULL, NULL, &line, 1, errstr) != OK)
 	    return NOTOK;
 	/*
@@ -604,7 +605,7 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	 * parse it.
 	 */
 
-	if (has_prefix(line, "OK [CAPABILITY ")) {
+	if (line && has_prefix(line, "OK [CAPABILITY ")) {
 	    char *p = line + 15, *q;
 	    q = strchr(p, ']');
 
