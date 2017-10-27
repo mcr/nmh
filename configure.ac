@@ -340,7 +340,7 @@ NMH_CHECK_ICONV
 dnl Check for tputs() callback argument
 NMH_TPUTS_PUTC_ARG
 
-termcap_curses_order="termcap curses ncurses"
+termcap_curses_order="termcap tinfo curses ncurses"
 for lib in $termcap_curses_order; do
   AC_CHECK_LIB([${lib}], [setupterm], [TERMLIB="-l$lib"; break])
 done
