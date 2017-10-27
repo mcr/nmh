@@ -427,7 +427,6 @@ parse_capability(const char *cap, unsigned int len)
 	}
     }
 
-    free(caplist);
     free(str);
 }
 
