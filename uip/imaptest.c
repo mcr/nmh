@@ -417,7 +417,7 @@ parse_capability(const char *cap, unsigned int len)
     }
 
     for (i = 0; caplist[i] != NULL; i++) {
-	if (has_prefix(caplist[i], "AUTH=") && caplist[i] + 5 != '\0') {
+	if (has_prefix(caplist[i], "AUTH=") && *(caplist[i] + 5) != '\0') {
 	    if (saslmechs) {
 		saslmechs = add(" ", saslmechs);
 	    }
@@ -709,7 +709,7 @@ getline:
 	    if (has_prefix(line, cmdqueue->tag)) {
 		cmd = cmdqueue;
 		if (timestamp)
-		    ts_report("Command execution time:", &cmd->start);
+		    ts_report("Command execution time", &cmd->start);
 		cmdqueue = cmd->next;
 		free(cmd);
 	    } else {
