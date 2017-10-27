@@ -216,20 +216,20 @@ main (int argc, char **argv)
 
     if (initialtls || tls) {
 	if (netsec_set_tls(nsc, 1, 0, &errstr) != OK)
-	    adios(NULL, errstr);
+	    adios(NULL, "%s", errstr);
 
 	if (initialtls && netsec_negotiate_tls(nsc, &errstr) != OK)
-	    adios(NULL, errstr);
+	    adios(NULL, "%s", errstr);
     }
 
     if (sasl) {
 	if (netsec_set_sasl_params(nsc, "imap", saslmech, imap_sasl_callback,
 				   nsc, &errstr) != OK)
-	    adios(NULL, errstr);
+	    adios(NULL, "%s", errstr);
     }
 
     if ((cp = netsec_readline(nsc, &len, &errstr)) == NULL) {
-	adios(NULL, errstr);
+	adios(NULL, "%s", errstr);
     }
 
     if (has_prefix(cp, "* BYE")) {
@@ -295,7 +295,7 @@ main (int argc, char **argv)
 	    goto finish;
 	}
 	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
-	    adios(NULL, errstr);
+	    adios(NULL, "%s", errstr);
 	}
     }
 
