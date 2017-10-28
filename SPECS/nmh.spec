@@ -44,7 +44,7 @@ Name:          nmh
 Version:       %(sed "s/-/_/g" VERSION)
 %define        rawversion %(cat VERSION)
 Release:       1%{?dist}
-Summary:       A capable mail handling system with a command line interface
+Summary:       A capable MIME-email-handling system for the shell
 Group:         Applications/Internet
 License:       BSD
 URL:           http://savannah.nongnu.org/projects/nmh
@@ -56,15 +56,12 @@ Source1:       VERSION
 
 
 %description
-Nmh is an email system based on the MH email system and is intended to
-be a (mostly) compatible drop-in replacement for MH.  Nmh isn't a
-single comprehensive program.  Instead, it consists of a number of
-fairly simple single-purpose programs for sending, receiving, saving,
-retrieving and otherwise manipulating email messages.  You can freely
-intersperse nmh commands with other shell commands or write custom
-scripts which utilize nmh commands.  nmh only has a command line
-interface; if you want a more sophisticated user interface, you'll
-want to also install exmh.
+nmh is a collection of single-purpose programs that send, receive,
+show, search, and otherwise manipulate emails, including MIME.
+They combine well with other Unix programs, easing the development
+of custom shorthand commands as shell scripts.
+Optional GUI interfaces are provided by the external xmh and exmh
+projects.  nmh is a descendant of the RAND MH, Mail Handler, project.
 
 
 %prep
