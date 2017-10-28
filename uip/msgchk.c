@@ -61,17 +61,9 @@ DEFINE_SWITCH_ARRAY(MSGCHK, switches);
  */
 #define MAXVEC  51
 
-#define	NT_NONE	0x0
-#ifdef NT_NONE
-#endif /* Use NT_NONE to prevent warning from gcc -Wunused-macros. */
 #define	NT_MAIL	0x1
 #define	NT_NMAI	0x2
 #define	NT_ALL	(NT_MAIL | NT_NMAI)
-
-#define	NONEOK	0x0
-#define	MMDFOLD	0x4
-#define	MMDFNEW	0x8
-#define	MMDFOK	(MMDFOLD | MMDFNEW)
 
 
 /*
@@ -309,49 +301,39 @@ donote (char *cp, int ntflag)
 static int
 checkmail (char *user, char *home, int datesw, int notifysw, int personal)
 {
-    int mf, status;
     char buffer[BUFSIZ];
+    snprintf(buffer, sizeof buffer, "%s/%s", *mmdfldir ? mmdfldir : home,
+        *mmdflfil ? mmdflfil : user);
+
     struct stat st;
+    bool statok = stat(buffer, &st) != -1;
+    bool empty = !statok || st.st_size == 0;
 
-    snprintf (buffer, sizeof(buffer), "%s/%s", mmdfldir[0] ? mmdfldir : home, mmdflfil[0] ? mmdflfil : user);
-    if (datesw) {
-	st.st_size = 0;
-	st.st_atime = st.st_mtime = 0;
-    }
-    mf = (stat (buffer, &st) == NOTOK || st.st_size == 0) ? NONEOK
-	: st.st_atime <= st.st_mtime ? MMDFNEW : MMDFOLD;
-
-    if (mf & MMDFOK) {
-	if (notifysw & NT_MAIL) {
-	    if (personal)
-		printf ("You have ");
-	    else
-		printf ("%s has ", user);
-	    if (mf & MMDFOK)
-		printf ("%s", mf & MMDFOLD ? "old" : "new");
-	    printf (" mail waiting");
-	} else {
-	    notifysw = 0;
-	}
-	status = 0;
-    }
-    else {
-	if (notifysw & NT_NMAI)
-	    printf (personal ? "You don't %s%s" : "%s doesn't %s",
-		    personal ? "" : user, "have any mail waiting");
-	else
-	    notifysw = 0;
-
-	status = 1;
+    if ((empty && !(notifysw & NT_NMAI)) ||
+        (!empty && !(notifysw & NT_MAIL))) {
+        return empty;
     }
 
-    if (notifysw)
-	if (datesw && st.st_atime)
-	    printf ("; last read on %s", dtime (&st.st_atime, 1));
-    if (notifysw)
-	putchar('\n');
+    if (empty) {
+        if (personal) {
+            fputs("You don't have any mail waiting", stdout);
+        } else {
+            printf("%s doesn't have any mail waiting", user);
+        }
+    } else {
+        char *kind = st.st_mtime < st.st_atime ? "old" : "new";
+        if (personal) {
+            printf("You have %s mail waiting", kind);
+        } else {
+            printf("%s has %s mail waiting", user, kind);
+        }
+    }
 
-    return status;
+    if (datesw && statok && st.st_atime)
+        printf("; last read on %s", dtime(&st.st_atime, 1));
+    putchar('\n');
+
+    return empty;
 }
 
 
