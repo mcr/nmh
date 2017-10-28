@@ -44,7 +44,7 @@ Name:          nmh
 Version:       %(sed "s/-/_/g" VERSION)
 %define        rawversion %(cat VERSION)
 Release:       1%{?dist}
-Summary:       A capable MIME-email-handling system for the shell
+Summary:       A capable MIME-email-handling system with a command-line interface
 Group:         Applications/Internet
 License:       BSD
 URL:           http://savannah.nongnu.org/projects/nmh
