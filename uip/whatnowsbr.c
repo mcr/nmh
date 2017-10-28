@@ -123,7 +123,7 @@ WhatNow (int argc, char **argv)
     int isdf = 0, nedit = 0, use = 0, atfile = 1;
     char *cp, *dfolder = NULL, *dmsg = NULL;
     char *ed = NULL, *drft = NULL, *msgnam = NULL;
-    char buf[BUFSIZ], prompt[BUFSIZ];
+    char buf[BUFSIZ];
     char **argp, **arguments;
     struct stat st;
     char	cwd[PATH_MAX + 1];	/* current working directory */
@@ -224,12 +224,11 @@ WhatNow (int argc, char **argv)
     			    NULL, 1, atfile) < 0)
 	done (1);
 
-    snprintf (prompt, sizeof(prompt), myprompt, invo_name);
     for (;;) {
 #ifdef READLINE_SUPPORT
-	if (!(argp = read_switch_multiword_via_readline (prompt, aleqs))) {
+	if (!(argp = read_switch_multiword_via_readline(myprompt, aleqs))) {
 #else /* ! READLINE_SUPPORT */
-	if (!(argp = read_switch_multiword (prompt, aleqs))) {
+	if (!(argp = read_switch_multiword(myprompt, aleqs))) {
 #endif /* READLINE_SUPPORT */
 	    (void) m_unlink (LINK);
 	    done (1);
