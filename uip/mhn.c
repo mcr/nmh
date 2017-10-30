@@ -470,7 +470,7 @@ do_cache:
     if (!listsw && !showsw && !storesw && !cachesw)
 	showsw = true;
 
-    userrs = 1;
+    userrs = true;
     SIGNAL (SIGQUIT, quitser);
     SIGNAL (SIGPIPE, pipeser);
 

@@ -21,4 +21,4 @@ extern int ntype;
 extern char *parts[NPARTS + 1];
 extern char *types[NTYPES + 1];
 
-extern int userrs;
+extern bool userrs;

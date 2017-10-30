@@ -294,7 +294,7 @@ do_cache:
     if (!*cts)
 	done (1);
 
-    userrs = 1;
+    userrs = true;
     SIGNAL (SIGQUIT, quitser);
     SIGNAL (SIGPIPE, pipeser);
 

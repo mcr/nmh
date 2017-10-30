@@ -22,7 +22,7 @@ int ntype = 0;
 char *parts[NPARTS + 1];
 char *types[NTYPES + 1];
 
-int userrs = 0;
+bool userrs;
 
 static char *errs = NULL;
 
