@@ -90,13 +90,13 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 		continue;
 
 	    case BODY:
-		adios (NULL, "no blank lines are permitted in %s", file);
+		die("no blank lines are permitted in %s", file);
 
 	    case FILEEOF:
 		break;
 
 	    default:
-		adios (NULL, "%s is poorly formatted", file);
+		die("%s is poorly formatted", file);
 	}
 	break;
     }

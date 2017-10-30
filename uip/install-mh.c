@@ -55,7 +55,7 @@ main (int argc, char **argv)
 		    ambigsw (dp, switches);
 		    done (1);
 		case UNKWNSW:
-		    adios (NULL, "-%s unknown\n", dp);
+		    die("-%s unknown\n", dp);
 
 		case HELPSW:
 		    snprintf (buf, sizeof(buf), "%s [switches]", invo_name);
@@ -74,7 +74,7 @@ main (int argc, char **argv)
 		    continue;
 	    }
 	} else {
-	    adios (NULL, "%s is invalid argument", dp);
+	    die("%s is invalid argument", dp);
 	}
     }
 
@@ -85,7 +85,7 @@ main (int argc, char **argv)
 
     if ((mypath = getenv("HOME")) == NULL) {
 	if ((pw = getpwuid(getuid())) == NULL || *pw->pw_dir == '\0')
-	    adios(NULL, "cannot determine your home directory");
+	    die("cannot determine your home directory");
         mypath = pw->pw_dir;
     }
 
@@ -111,8 +111,8 @@ main (int argc, char **argv)
 	if (check)
 	    done(0);
 	if (autof)
-	    adios (NULL, "invocation error");
-        adios (NULL, "You already have an nmh profile, use an editor to modify it");
+	    die("invocation error");
+        die("You already have an nmh profile, use an editor to modify it");
     }
     if (check)
 	done(1);
@@ -168,7 +168,7 @@ query:
 	cp = concat ("\"", pathname, "\" doesn't exist; Create it? ", NULL);
 	if (autof || read_switch (cp, anoyes))
 	    if (makedir (pathname) == 0)
-		adios (NULL, "unable to create %s", pathname);
+		die("unable to create %s", pathname);
     } else {
 	puts("[Using existing directory]");
     }

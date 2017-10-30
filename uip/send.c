@@ -158,7 +158,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown\n", cp);
+		    die("-%s unknown\n", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [file] [switches]", invo_name);
@@ -174,15 +174,15 @@ main (int argc, char **argv)
 
 		case DFOLDSW: 
 		    if (dfolder)
-			adios (NULL, "only one draft folder at a time!");
+			die("only one draft folder at a time!");
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    dfolder = path (*cp == '+' || *cp == '@' ? cp + 1 : cp,
 			    *cp != '@' ? TFOLDER : TSUBCWF);
 		    continue;
 		case DMSGSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    msgs[msgp++] = cp;
 		    continue;
 		case NDFLDSW: 
@@ -199,7 +199,7 @@ main (int argc, char **argv)
 
 		case SPLITSW: 
 		    if (!(cp = *argp++) || sscanf (cp, "%d", &splitsw) != 1)
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case UNIQSW: 
@@ -264,7 +264,7 @@ main (int argc, char **argv)
 		case USERSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    vec[vecp++] = cp;
                     user = cp;
 		    continue;
@@ -272,15 +272,15 @@ main (int argc, char **argv)
 		case AUTHSERVICESW:
 #ifdef OAUTH_SUPPORT
 		    if (!(auth_svc = *argp++) || *auth_svc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 #else
-		    adios (NULL, "not built with OAuth support");
+		    die("not built with OAuth support");
 #endif
 		    continue;
 
 		case SASLMECHSW:
 		    if (!(saslmech = *argp) || *saslmech == '-')
-			adios (NULL, "missing argument to %s", argp[-1]);
+			die("missing argument to %s", argp[-1]);
 		    /* FALLTHRU */
 
 		case ALIASW: 
@@ -294,7 +294,7 @@ main (int argc, char **argv)
 		case MESSAGEIDSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    vec[vecp++] = cp;
 		    continue;
 	    }
@@ -354,11 +354,11 @@ main (int argc, char **argv)
 
 	/* read folder and create message structure */
 	if (!(mp = folder_read (dfolder, 1)))
-	    adios (NULL, "unable to read folder %s", dfolder);
+	    die("unable to read folder %s", dfolder);
 
 	/* check for empty folder */
 	if (mp->nummsg == 0)
-	    adios (NULL, "no messages in %s", dfolder);
+	    die("no messages in %s", dfolder);
 
 	/* parse all the message ranges/sequences and set SELECTED */
 	for (msgnum = 0; msgnum < msgp; msgnum++)
@@ -402,7 +402,7 @@ go_to_it:
 	    && altmsg) {
 	vec[vecp++] = "-dist";
 	if ((cp = m_mktemp2(altmsg, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file");
+	    die("unable to create temporary file");
 	}
 	distfile = mh_xstrdup(cp);
 	(void) m_unlink(distfile);
@@ -416,7 +416,7 @@ go_to_it:
 		adios (distfile, "unable to link %s to", altmsg);
 	    free (distfile);
 	    if ((cp = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-		adios(NULL, "unable to create temporary file in %s",
+		die("unable to create temporary file in %s",
 		      get_temp_dir());
 	    }
 	    distfile = mh_xstrdup(cp);
@@ -441,11 +441,11 @@ go_to_it:
 #ifdef OAUTH_SUPPORT
     if (auth_svc == NULL) {
         if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
-            adios (NULL, "must specify -authservice with -saslmech xoauth2");
+            die("must specify -authservice with -saslmech xoauth2");
         }
     } else {
         if (user == NULL) {
-            adios (NULL, "must specify -user with -saslmech xoauth2");
+            die("must specify -user with -saslmech xoauth2");
         }
     }
 #else

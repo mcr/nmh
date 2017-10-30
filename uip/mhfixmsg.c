@@ -159,7 +159,7 @@ main (int argc, char **argv) {
                 ambigsw (cp, switches);
                 done (1);
             case UNKWNSW:
-                adios (NULL, "-%s unknown", cp);
+                die("-%s unknown", cp);
 
             case HELPSW:
                 snprintf (buf, sizeof buf, "%s [+folder] [msgs] [switches]",
@@ -172,7 +172,7 @@ main (int argc, char **argv) {
 
             case DECODETEXTSW:
                 if (! (cp = *argp++)  ||  *cp == '-') {
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 if (! strcasecmp (cp, "8bit")) {
                     fx.decodetext = CE_8BIT;
@@ -181,7 +181,7 @@ main (int argc, char **argv) {
                 } else if (! strcasecmp (cp, "binary")) {
                     fx.decodetext = CE_BINARY;
                 } else {
-                    adios (NULL, "invalid argument to %s", argp[-2]);
+                    die("invalid argument to %s", argp[-2]);
                 }
                 continue;
             case NDECODETEXTSW:
@@ -189,7 +189,7 @@ main (int argc, char **argv) {
                 continue;
             case DECODETYPESW:
                 if (! (cp = *argp++)  ||  *cp == '-') {
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 fx.decodetypes = cp;
                 continue;
@@ -201,7 +201,7 @@ main (int argc, char **argv) {
                 continue;
             case TEXTCHARSETSW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 fx.textcharset = cp;
                 continue;
@@ -222,13 +222,13 @@ main (int argc, char **argv) {
                 continue;
             case FIXTYPESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 if (! strncasecmp (cp, "multipart/", 10)  ||
                     ! strncasecmp (cp, "message/", 8))
-                    adios (NULL, "-fixtype %s not allowed", cp);
+                    die("-fixtype %s not allowed", cp);
                 if (! strchr (cp, '/'))
-                    adios (NULL, "-fixtype requires type/subtype");
+                    die("-fixtype requires type/subtype");
                 if (fx.fixtypes == NULL) { fx.fixtypes = svector_create (10); }
                 svector_push_back (fx.fixtypes, cp);
                 continue;
@@ -246,19 +246,19 @@ main (int argc, char **argv) {
                 continue;
             case FILESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 file = *cp == '-'  ?  mh_xstrdup (cp)  :  path (cp, TFILE);
                 continue;
             case OUTFILESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 outfile = *cp == '-'  ?  mh_xstrdup (cp)  :  path (cp, TFILE);
                 continue;
             case RPROCSW:
                 if (!(rmmproc = *argp++) || *rmmproc == '-') {
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 continue;
             case NRPRCSW:
@@ -280,7 +280,7 @@ main (int argc, char **argv) {
         }
         if (*cp == '+' || *cp == '@') {
             if (folder)
-                adios (NULL, "only one folder at a time!");
+                die("only one folder at a time!");
             folder = pluspath (cp);
         } else {
             if (*cp == '/') {
@@ -311,7 +311,7 @@ main (int argc, char **argv) {
     }
 
     if (file && msgs.size) {
-        adios (NULL, "cannot specify msg and file at same time!");
+        die("cannot specify msg and file at same time!");
     }
 
     if (outfile) {
@@ -341,7 +341,7 @@ main (int argc, char **argv) {
             using_stdin = 1;
 
             if ((cp = m_mktemp2 (NULL, invo_name, &fd, NULL)) == NULL) {
-                adios (NULL, "unable to create temporary file in %s",
+                die("unable to create temporary file in %s",
                        get_temp_dir());
             } else {
                 free (file);
@@ -351,7 +351,7 @@ main (int argc, char **argv) {
 
             if (close (fd)) {
                 (void) m_unlink (file);
-                adios (NULL, "failed to write temporary file");
+                die("failed to write temporary file");
             }
         }
 
@@ -406,12 +406,12 @@ main (int argc, char **argv) {
 
         /* read folder and create message structure */
         if (! (mp = folder_read (folder, 1))) {
-            adios (NULL, "unable to read folder %s", folder);
+            die("unable to read folder %s", folder);
         }
 
         /* check for empty folder */
         if (mp->nummsg == 0) {
-            adios (NULL, "no messages in %s", folder);
+            die("no messages in %s", folder);
         }
 
         /* parse all the message ranges/sequences and set SELECTED */
@@ -542,12 +542,12 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
             /* outfp will be closed by the caller */
             if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, outfp)) ==
                 NULL) {
-                adios (NULL, "unable to create temporary file in %s",
+                die("unable to create temporary file in %s",
                        get_temp_dir());
             }
             outfile = mh_xstrdup (tempfile);
         } else {
-            adios (NULL, "missing both input and output filenames\n");
+            die("missing both input and output filenames\n");
         }
     } /* else *outfp was defined by caller */
 
@@ -1606,7 +1606,7 @@ decode_part (CT ct) {
     char *tempfile;
 
     if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, &file)) == NULL) {
-        adios (NULL, "unable to create temporary file in %s", get_temp_dir());
+        die("unable to create temporary file in %s", get_temp_dir());
     }
     tmp_decoded = mh_xstrdup (tempfile);
     /* The following call will load ct->c_cefile.ce_file with the tmp
@@ -2254,7 +2254,7 @@ strip_crs (CT ct, int *message_mods) {
                 char *tempfile = m_mktemp2 (NULL, invo_name, &fd, NULL);
 
                 if (tempfile == NULL) {
-                    adios (NULL, "unable to create temporary file in %s",
+                    die("unable to create temporary file in %s",
                            get_temp_dir());
                 }
                 stripped_content_file = mh_xstrdup (tempfile);

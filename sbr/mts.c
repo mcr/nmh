@@ -117,7 +117,7 @@ save_mts_method (const char *value) {
         mts_method = "sendmail/pipe";
         sm_mts = MTS_SENDMAIL_PIPE;
     } else {
-        adios (NULL, "unsupported mts selection \"%s\"", value);
+        die("unsupported mts selection \"%s\"", value);
     }
 }
 

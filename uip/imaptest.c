@@ -109,7 +109,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW:
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [switches] +folder command "
@@ -122,15 +122,15 @@ main (int argc, char **argv)
 
 	    case HOSTSW:
 		if (!(host = *argp++) || *host == '-')
-		    adios(NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case PORTSW:
 		if (!(port = *argp++) || *port == '-')
-		    adios(NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case USERSW:
 		if (!(user = *argp++) || *user == '-')
-		    adios(NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case SNOOPSW:
@@ -147,11 +147,11 @@ main (int argc, char **argv)
 		continue;
 	    case SASLMECHSW:
 		if (!(saslmech = *argp++) || *saslmech == '-')
-		    adios(NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case AUTHSERVICESW:
 	    	if (!(oauth_svc = *argp++) || *oauth_svc == '-')
-		    adios(NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case TLSSW:
 		tls = true;
@@ -174,7 +174,7 @@ main (int argc, char **argv)
 	    }
 	} else if (*cp == '+') {
 	    if (*(cp + 1) == '\0')
-		adios(NULL, "Invalid null folder name");
+		die("Invalid null folder name");
 	    add_msg(0, "SELECT \"%s\"", cp + 1);
 	} else {
 	    add_msg(0, "%s", cp);
@@ -182,7 +182,7 @@ main (int argc, char **argv)
     }
 
     if (! host)
-	adios(NULL, "A hostname must be given with -host");
+	die("A hostname must be given with -host");
 
     nsc = netsec_init();
 
@@ -196,7 +196,7 @@ main (int argc, char **argv)
 
     if (oauth_svc) {
 	if (netsec_set_oauth_service(nsc, oauth_svc) != OK) {
-	    adios(NULL, "OAuth2 not supported");
+	    die("OAuth2 not supported");
 	}
     }
 
@@ -204,7 +204,7 @@ main (int argc, char **argv)
 	gettimeofday(&tv_start, NULL);
 
     if ((fd = client(host, port, buf, sizeof(buf), snoop)) == NOTOK)
-	adios(NULL, "Connect failed: %s", buf);
+	die("Connect failed: %s", buf);
 
     if (timestamp) {
 	ts_report("Connect time", &tv_start);
@@ -216,20 +216,20 @@ main (int argc, char **argv)
 
     if (initialtls || tls) {
 	if (netsec_set_tls(nsc, 1, 0, &errstr) != OK)
-	    adios(NULL, "%s", errstr);
+	    die("%s", errstr);
 
 	if (initialtls && netsec_negotiate_tls(nsc, &errstr) != OK)
-	    adios(NULL, "%s", errstr);
+	    die("%s", errstr);
     }
 
     if (sasl) {
 	if (netsec_set_sasl_params(nsc, "imap", saslmech, imap_sasl_callback,
 				   nsc, &errstr) != OK)
-	    adios(NULL, "%s", errstr);
+	    die("%s", errstr);
     }
 
     if ((cp = netsec_readline(nsc, &len, &errstr)) == NULL) {
-	adios(NULL, "%s", errstr);
+	die("%s", errstr);
     }
 
     if (has_prefix(cp, "* BYE")) {
@@ -295,7 +295,7 @@ main (int argc, char **argv)
 	    goto finish;
 	}
 	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
-	    adios(NULL, "%s", errstr);
+	    die("%s", errstr);
 	}
     }
 

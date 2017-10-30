@@ -176,14 +176,14 @@ get_msgnums(char *folder, char *sequences[])
                 continue;
 
             case BODY:
-                adios (NULL, "no blank lines are permitted in %s", seqfile);
+                die("no blank lines are permitted in %s", seqfile);
                 break;
 
             case FILEEOF:
                 break;
 
             default:
-                adios (NULL, "%s is poorly formatted", seqfile);
+                die("%s is poorly formatted", seqfile);
         }
         break;  /* break from for loop */
     }
@@ -274,7 +274,7 @@ check_folders(struct node **first, struct node **last,
     } else {
 	fp = fopen(folders, "r");
 	if (fp  == NULL) {
-	    adios(NULL, "failed to read %s", folders);
+	    die("failed to read %s", folders);
 	}
 	while (vfgets(fp, &line) == OK) {
 	    len = strlen(line) - 1;
@@ -459,7 +459,7 @@ main(int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW:
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW:
 		snprintf (help, sizeof(help), "%s [switches] [sequences]",
@@ -472,11 +472,11 @@ main(int argc, char **argv)
 
 	    case FOLDERSSW:
 		if (!(folders = *argp++) || *folders == '-')
-		    adios(NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case MODESW:
 		if (!(invo_name = *argp++) || *invo_name == '-')
-		    adios(NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		invo_name = r1bindex(invo_name, '/');
 		continue;
 	    }
@@ -508,7 +508,7 @@ main(int argc, char **argv)
 	/* no sequence arguments; use unseen */
 	unseen = context_find(usequence);
 	if (unseen == NULL || unseen[0] == '\0') {
-	    adios(NULL, "must specify sequences or set %s", usequence);
+	    die("must specify sequences or set %s", usequence);
 	}
 	for (ap = brkstring(unseen, " ", "\n"); *ap; ap++) {
 	    svector_push_back (sequences, *ap);

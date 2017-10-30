@@ -25,14 +25,14 @@ folder_realloc (struct msgs *mp, int lo, int hi)
 
     /* sanity checks */
     if (lo < 1)
-	adios (NULL, "BUG: called folder_realloc with lo (%d) < 1", lo);
+	die("BUG: called folder_realloc with lo (%d) < 1", lo);
     if (hi < 1)
-	adios (NULL, "BUG: called folder_realloc with hi (%d) < 1", hi);
+	die("BUG: called folder_realloc with hi (%d) < 1", hi);
     if (mp->nummsg > 0 && lo > mp->lowmsg)
-	adios (NULL, "BUG: called folder_realloc with lo (%d) > mp->lowmsg (%d)",
+	die("BUG: called folder_realloc with lo (%d) > mp->lowmsg (%d)",
 	       lo, mp->lowmsg);
     if (mp->nummsg > 0 && hi < mp->hghmsg)
-	adios (NULL, "BUG: called folder_realloc with hi (%d) < mp->hghmsg (%d)",
+	die("BUG: called folder_realloc with hi (%d) < mp->hghmsg (%d)",
 	       hi, mp->hghmsg);
 
     /* Check if we really need to reallocate anything */

@@ -497,7 +497,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    if (str) charstring_push_back_chars (scanlp, str, strlen (str), 0);
 	    break;
 	case FT_STRFW:
-	    adios (NULL, "internal error (FT_STRFW)");
+	    die("internal error (FT_STRFW)");
 
 	case FT_NUM: {
 	    int num = value;
@@ -1029,7 +1029,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    indent = strlen (sp);
 	    wid -= indent;
 	    if (wid <= 0) {
-	    	adios(NULL, "putaddr -- num register (%d) must be greater "
+	    	die("putaddr -- num register (%d) must be greater "
 			    "than label width (%d)", value, indent);
 	    }
 	    while ((c = *sp++) && charstring_chars (scanlp) < max) {

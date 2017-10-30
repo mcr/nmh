@@ -958,7 +958,7 @@ TWSaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 		return 0;
 
 	    default: 
-		adios (NULL, "internal error -- you lose");
+		die("internal error -- you lose");
 	}
 	break;
     }

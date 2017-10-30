@@ -353,7 +353,7 @@ m_getfld_track_filepos (m_getfld_state_t *gstate, FILE *iob) {
 void m_getfld_track_filepos2(m_getfld_state_t *gstate)
 {
     if (!*gstate)
-	adios(NULL, "m_getfld_track_filepos2 without gstate");
+	die("m_getfld_track_filepos2 without gstate");
 
     m_getfld_track_filepos(gstate, (*gstate)->iob);
 }
@@ -547,7 +547,7 @@ static void
 Ungetc(m_getfld_state_t s)
 {
     if (s->readpos == s->msg_buf)
-        adios(NULL, "Ungetc() at start of message buffer.");
+        die("Ungetc() at start of message buffer.");
 
     s->readpos--;
     s->bytes_read--;
@@ -833,7 +833,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
         }
 
 	default:
-	    adios (NULL, "m_getfld() called with bogus state of %d", s->state);
+	    die("m_getfld() called with bogus state of %d", s->state);
     }
 
     *cp = 0;
@@ -847,7 +847,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 int m_getfld2(m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz)
 {
     if (!*gstate)
-	adios(NULL, "m_getfld2 without gstate");
+	die("m_getfld2 without gstate");
 
     return m_getfld(gstate, name, buf, bufsz, (*gstate)->iob);
 }
@@ -918,7 +918,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
     s->edelimlen = c - 1;
     s->delimend = s->msg_delim + s->edelimlen;
     if (s->edelimlen <= 1)
-	adios (NULL, "maildrop delimiter must be at least 2 bytes");
+	die("maildrop delimiter must be at least 2 bytes");
 
     /*
      * build a Boyer-Moore end-position map for the matcher in m_getfld.
@@ -947,7 +947,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
 void m_unknown2(m_getfld_state_t *gstate)
 {
     if (!*gstate)
-	adios(NULL, "m_unknown2 without gstate");
+	die("m_unknown2 without gstate");
 
     m_unknown(gstate, (*gstate)->iob);
 }

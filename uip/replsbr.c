@@ -149,7 +149,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 		goto finished;
 
 	    default:
-		adios (NULL, "m_getfld2() returned %d", state);
+		die("m_getfld2() returned %d", state);
 	}
     }
 

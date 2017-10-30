@@ -34,7 +34,7 @@ vfgets (FILE *in, char **bp)
 	if ((dp = cp + strlen (cp) - 2) < cp || *dp != QUOTE) {
 wrong_guess:
 	    if (cp > ++dp)
-		adios (NULL, "vfgets() botch -- you lose big");
+		die("vfgets() botch -- you lose big");
 	    if (*dp == '\n') {
 		*bp = pp;
 		return 0;

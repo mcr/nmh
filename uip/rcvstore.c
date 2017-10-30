@@ -73,7 +73,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW: 
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW: 
 		snprintf (buf, sizeof(buf), "%s [+folder] [switches]",
@@ -86,7 +86,7 @@ main (int argc, char **argv)
 
 	    case SEQSW: 
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument name to %s", argp[-2]);
+		    die("missing argument name to %s", argp[-2]);
 
 		svector_push_back (seqs, cp);
 		seqp++;
@@ -123,10 +123,10 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else {
-	    adios (NULL, "usage: %s [+folder] [switches]", invo_name);
+	    die("usage: %s [+folder] [switches]", invo_name);
 	}
     }
 
@@ -143,9 +143,9 @@ main (int argc, char **argv)
 	if (errno != ENOENT)
 	    adios (maildir, "error on folder");
 	if (!create)
-	    adios (NULL, "folder %s doesn't exist", maildir);
+	    die("folder %s doesn't exist", maildir);
 	if (!makedir (maildir))
-	    adios (NULL, "unable to create folder %s", maildir);
+	    die("unable to create folder %s", maildir);
     }
 
     if (chdir (maildir) == NOTOK)
@@ -160,7 +160,7 @@ main (int argc, char **argv)
     /* create a temporary file */
     tmpfilenam = m_mktemp (invo_name, &fd, NULL);
     if (tmpfilenam == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	die("unable to create temporary file in %s", get_temp_dir());
     }
     chmod (tmpfilenam, m_gmprot());
 
@@ -185,7 +185,7 @@ main (int argc, char **argv)
      * read folder and create message structure
      */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /*
      * Link message into folder, and possibly add

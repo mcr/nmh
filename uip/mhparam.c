@@ -157,7 +157,7 @@ main(int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [profile-components] [switches]",

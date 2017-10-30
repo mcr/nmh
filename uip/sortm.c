@@ -93,7 +93,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW:
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW:
 		snprintf(buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -106,16 +106,16 @@ main (int argc, char **argv)
 
 	    case DATESW:
 		if (datesw)
-		    adios (NULL, "only one date field at a time");
+		    die("only one date field at a time");
 		if (!(datesw = *argp++) || *datesw == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case TEXTSW:
 		if (subjsort)
-		    adios (NULL, "only one text field at a time");
+		    die("only one text field at a time");
 		if (!(subjsort = *argp++) || *subjsort == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case SUBJSW:
@@ -127,7 +127,7 @@ main (int argc, char **argv)
 
 	    case LIMSW:
 		if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		while (*cp == '0')
 		    cp++;		/* skip any leading zeros */
 		if (!*cp) {		/* hit end of string */
@@ -135,7 +135,7 @@ main (int argc, char **argv)
 		    continue;
 		}
 		if (!isdigit((unsigned char) *cp) || !(datelimit = atoi(cp)))
-		    adios (NULL, "impossible limit %s", cp);
+		    die("impossible limit %s", cp);
 		datelimit *= 60*60*24;
 		continue;
 	    case NLIMSW:
@@ -167,7 +167,7 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
             app_msgarg(&msgs, cp);
@@ -179,7 +179,7 @@ main (int argc, char **argv)
 	if (allmsgs) {
 	    app_msgarg(&msgs, "all");
         } else {
-	    adios (NULL, "must specify messages to sort with -noall");
+	    die("must specify messages to sort with -noall");
         }
     }
     if (!datesw)
@@ -193,11 +193,11 @@ main (int argc, char **argv)
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /* check for empty folder */
     if (mp->nummsg == 0)
-	adios (NULL, "no messages in %s", folder);
+	die("no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
     for (msgnum = 0; msgnum < msgs.size; msgnum++)
@@ -206,10 +206,10 @@ main (int argc, char **argv)
     seq_setprev (mp);	/* set the previous sequence */
 
     if ((nmsgs = read_hdrs (mp, datesw)) <= 0)
-	adios (NULL, "no messages to sort");
+	die("no messages to sort");
 
     if (checksw  &&  check_failed) {
-	adios (NULL, "errors found, no messages sorted");
+	die("errors found, no messages sorted");
     }
 
     /*
@@ -397,7 +397,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	    return 0;
 
 	default:
-	    adios (NULL, "internal error -- you lose");
+	    die("internal error -- you lose");
 	}
 	break;
     }

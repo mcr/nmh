@@ -100,7 +100,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] [users ...]",
@@ -120,30 +120,30 @@ main (int argc, char **argv)
 
 		case NOTESW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    notifysw |= donote (cp, 1);
 		    continue;
 		case NNOTESW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    notifysw &= ~donote (cp, 0);
 		    continue;
 
 		case HOSTSW: 
 		    if (!(host = *argp++) || *host == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case PORTSW:
 		    if (!(port = *argp++) || *port == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		continue;
 
 		case USERSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if (vecp >= MAXVEC-1)
-			adios (NULL, "you can only check %d users at a time", MAXVEC-1);
+			die("you can only check %d users at a time", MAXVEC-1);
                     user = vec[vecp++] = cp;
 		    continue;
 
@@ -161,7 +161,7 @@ main (int argc, char **argv)
 
 		case SASLMECHSW:
 		    if (!(saslmech = *argp++) || *saslmech == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case INITTLSSW:
@@ -183,20 +183,20 @@ main (int argc, char **argv)
 		case AUTHSERVICESW:
 #ifdef OAUTH_SUPPORT
 		    if (!(auth_svc = *argp++) || *auth_svc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 #else
-		    adios (NULL, "not built with OAuth support");
+		    die("not built with OAuth support");
 #endif
 		    continue;
 
 		case PROXYSW:
 		    if (!(proxy = *argp++) || *proxy == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 	    }
 	}
 	if (vecp >= MAXVEC-1)
-	    adios (NULL, "you can only check %d users at a time", MAXVEC-1);
+	    die("you can only check %d users at a time", MAXVEC-1);
         vec[vecp++] = cp;
     }
 
@@ -243,7 +243,7 @@ main (int argc, char **argv)
 	    if (!geteuid() || NULL == (home = getenv("HOME"))) {
 		pw = getpwnam (user);
 		if (pw == NULL)
-		    adios (NULL, "unable to get information about user");
+		    die("unable to get information about user");
 		home = pw->pw_dir;
 	    }
 	    status = checkmail (user, home, datesw, notifysw, 1);
@@ -284,7 +284,7 @@ donote (char *cp, int ntflag)
 	    ambigsw (cp, ntswitches);
 	    done (1);
 	case UNKWNSW: 
-	    adios (NULL, "-%snotify %s unknown", ntflag ? "" : "no", cp);
+	    die("-%snotify %s unknown", ntflag ? "" : "no", cp);
 
 	case NALLSW: 
 	    return NT_ALL;
@@ -348,11 +348,11 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 
     if (auth_svc == NULL) {
 	if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
-	    adios (NULL, "must specify -authservice with -saslmech xoauth2");
+	    die("must specify -authservice with -saslmech xoauth2");
 	}
     } else {
 	if (user == NULL) {
-	    adios (NULL, "must specify -user with -saslmech xoauth2");
+	    die("must specify -user with -saslmech xoauth2");
 	}
     }
 

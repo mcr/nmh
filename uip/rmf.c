@@ -52,7 +52,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [+folder] [switches]",
@@ -73,10 +73,10 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else {
-	    adios (NULL, "usage: %s [+folder] [switches]", invo_name);
+	    die("usage: %s [+folder] [switches]", invo_name);
 	}
     }
 
@@ -88,7 +88,7 @@ main (int argc, char **argv)
     }
     fp = m_mailpath(folder);
     if (!strcmp(fp, pwd()))
-	adios (NULL, "sorry, you can't remove the current working directory");
+	die("sorry, you can't remove the current working directory");
     free(fp);
 
     if (interactive == -1)
@@ -154,7 +154,7 @@ rmf (char *folder)
     }
 
     if ((dd = opendir (".")) == NULL)
-	adios (NULL, "unable to read folder +%s", folder);
+	die("unable to read folder +%s", folder);
     others = 0;
 
     /*

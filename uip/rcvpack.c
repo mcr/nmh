@@ -54,7 +54,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] file", invo_name);
@@ -73,12 +73,12 @@ main (int argc, char **argv)
 	    }
 	}
 	if (file)
-	    adios (NULL, "only one file at a time!");
+	    die("only one file at a time!");
         file = cp;
     }
 
     if (!file)
-	adios (NULL, "%s [switches] file", invo_name);
+	die("%s [switches] file", invo_name);
 
     rewind (stdin);
 

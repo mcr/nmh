@@ -90,7 +90,7 @@ main (int argc, char **argv)
 		listsw = 0;	/* HACK */
 		done (1);
 	    case UNKWNSW: 
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW: 
 		snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -119,11 +119,11 @@ main (int argc, char **argv)
 		vec[vecp++] = --cp;
 	    pattern:
 		if (!(cp = *argp++))/* allow -xyz arguments */
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		vec[vecp++] = cp;
 		continue;
 	    case OTHRSW: 
-		adios (NULL, "internal error!");
+		die("internal error!");
 
 	    case ANDSW:
 	    case ORSW:
@@ -135,7 +135,7 @@ main (int argc, char **argv)
 
 	    case SEQSW: 
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 
                 if (!seq_nameok (cp))
                   done (1);
@@ -173,7 +173,7 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
 		app_msgarg(&msgs, cp);
@@ -199,11 +199,11 @@ main (int argc, char **argv)
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 0)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /* check for empty folder */
     if (mp->nummsg == 0)
-	adios (NULL, "no messages in %s", folder);
+	die("no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
     for (msgnum = 0; msgnum < msgs.size; msgnum++)
@@ -218,7 +218,7 @@ main (int argc, char **argv)
 	listsw = !seqp;
 
     if (publicsw == 1 && is_readonly(mp))
-	adios (NULL, "folder %s is read-only, so -public not allowed", folder);
+	die("folder %s is read-only, so -public not allowed", folder);
 
     if (!pcompile (vec, NULL))
 	done (1);
@@ -258,7 +258,7 @@ main (int argc, char **argv)
     }
 
     if (nums.size >= mp->numsel)
-	adios (NULL, "no messages match specification");
+	die("no messages match specification");
 
     /*
      * So, what's happening here?
@@ -271,7 +271,7 @@ main (int argc, char **argv)
      */
 
     if (!(mp2 = folder_read (folder, 1)))
-	adios (NULL, "unable to reread folder %s", folder);
+	die("unable to reread folder %s", folder);
 
     for (msgnum = 0; msgnum < msgs.size; msgnum++)
 	if (!m_convert (mp2, msgs.msgs[msgnum]))

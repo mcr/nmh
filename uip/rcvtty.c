@@ -108,18 +108,18 @@ main (int argc, char **argv)
 
 		case FORMSW:
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    format = NULL;
 		    continue;
 		case FMTSW:
 		    if (!(format = *argp++) || *format == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    form = NULL;
 		    continue;
 
 		case WIDTHSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios(NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    width = atoi(cp);
 		    continue;
                 case NLSW:

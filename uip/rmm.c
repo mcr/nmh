@@ -50,7 +50,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW:
-		adios (NULL, "-%s unknown\n", cp);
+		die("-%s unknown\n", cp);
 
 	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -70,7 +70,7 @@ main (int argc, char **argv)
 
             case RPROCSW:
                 if (!(rmmproc = *argp++) || *rmmproc == '-')
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 continue;
             case NRPRCSW:
                 rmmproc = NULL;
@@ -79,7 +79,7 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
             app_msgarg(&msgs, cp);
@@ -98,11 +98,11 @@ main (int argc, char **argv)
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /* check for empty folder */
     if (mp->nummsg == 0)
-	adios (NULL, "no messages in %s", folder);
+	die("no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
     for (msgnum = 0; msgnum < msgs.size; msgnum++)

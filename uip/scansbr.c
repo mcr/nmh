@@ -284,7 +284,7 @@ body:;
 		goto finished;
 
 	    default: 
-		adios (NULL, "getfld() returned %d", state);
+		die("getfld() returned %d", state);
 	}
     }
 

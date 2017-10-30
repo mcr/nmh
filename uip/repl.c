@@ -146,7 +146,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s: [+folder] [msg] [switches]",
@@ -173,18 +173,18 @@ main (int argc, char **argv)
 
 		case CCSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    docc (cp, 1);
 		    continue;
 		case NCCSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    docc (cp, 0);
 		    continue;
 
 		case EDITRSW: 
 		    if (!(ed = *argp++) || *ed == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    nedit = 0;
 		    continue;
 		case NEDITSW:
@@ -196,10 +196,10 @@ main (int argc, char **argv)
                     size_t i;
 
 		    if (!(type = *argp++)) {
-			adios (NULL, "missing type argument to %s", argp[-2]);
+			die("missing type argument to %s", argp[-2]);
                     }
 		    if (!(cp = *argp++)) {
-			adios (NULL, "missing argstring argument to %s",
+			die("missing argstring argument to %s",
 			       argp[-3]);
                     }
 
@@ -221,7 +221,7 @@ main (int argc, char **argv)
 
 		case WHATSW: 
 		    if (!(whatnowproc = *argp++) || *whatnowproc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    nwhat = 0;
 		    continue;
 		case BILDSW: 
@@ -233,7 +233,7 @@ main (int argc, char **argv)
 
 		case FCCSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    dp = NULL;
 		    if (*cp == '@')
 			cp = dp = path (cp + 1, TSUBCWF);
@@ -245,20 +245,20 @@ main (int argc, char **argv)
 
 		case FILESW: 
 		    if (file)
-			adios (NULL, "only one file at a time!");
+			die("only one file at a time!");
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    file = path (cp, TFILE);
 		    continue;
 		case FILTSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    filter = mh_xstrdup(etcpath(cp));
 		    mime = 0;
 		    continue;
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case FRMTSW: 
@@ -293,24 +293,24 @@ main (int argc, char **argv)
 
 		case WIDTHSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if ((outputlinelen = atoi (cp)) < 10)
-			adios (NULL, "impossible width %d", outputlinelen);
+			die("impossible width %d", outputlinelen);
 		    continue;
 
 		case DFOLDSW: 
 		    if (dfolder)
-			adios (NULL, "only one draft folder at a time!");
+			die("only one draft folder at a time!");
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    dfolder = path (*cp == '+' || *cp == '@' ? cp + 1 : cp,
 				    *cp != '@' ? TFOLDER : TSUBCWF);
 		    continue;
 		case DMSGSW:
 		    if (dmsg)
-			adios (NULL, "only one draft message at a time!");
+			die("only one draft message at a time!");
 		    if (!(dmsg = *argp++) || *dmsg == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case NDFLDSW: 
 		    dfolder = NULL;
@@ -326,7 +326,7 @@ main (int argc, char **argv)
 
 		case FMTPROCSW:
 		    if (!(formatproc = *argp++) || *formatproc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    fmtproc = 1;
 		    continue;
 		case NFMTPROCSW:
@@ -336,11 +336,11 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else {
 	    if (msg)
-		adios (NULL, "only one message at a time!");
+		die("only one message at a time!");
             msg = cp;
 	}
     }
@@ -357,7 +357,7 @@ main (int argc, char **argv)
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
     if (file && (msg || folder))
-	adios (NULL, "can't mix files and folders/msgs");
+	die("can't mix files and folders/msgs");
 
 try_it_again:
 
@@ -413,11 +413,11 @@ try_it_again:
 
 	/* read folder and create message structure */
 	if (!(mp = folder_read (folder, 1)))
-	    adios (NULL, "unable to read folder %s", folder);
+	    die("unable to read folder %s", folder);
 
 	/* check for empty folder */
 	if (mp->nummsg == 0)
-	    adios (NULL, "no messages in %s", folder);
+	    die("no messages in %s", folder);
 
 	/* parse the message range/sequence/name and set SELECTED */
 	if (!m_convert (mp, msg))
@@ -425,7 +425,7 @@ try_it_again:
 	seq_setprev (mp);	/* set the previous-sequence */
 
 	if (mp->numsel > 1)
-	    adios (NULL, "only one message at a time!");
+	    die("only one message at a time!");
 
 	context_replace (pfolder, folder);	/* update current folder   */
 	seq_setcur (mp, mp->lowsel);	/* update current message  */
@@ -483,7 +483,7 @@ docc (char *cp, int ccflag)
 	    ambigsw (cp, ccswitches);
 	    done (1);
 	case UNKWNSW: 
-	    adios (NULL, "-%scc %s unknown", ccflag ? "" : "no", cp);
+	    die("-%scc %s unknown", ccflag ? "" : "no", cp);
 
 	case CTOSW: 
 	    ccto = ccflag;

@@ -60,7 +60,7 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 	for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	    if (is_selected (mp, msgnum) &&
 		!(vec[vecp++] = strdup (m_name (msgnum))))
-		adios (NULL, "strdup failed");
+		die("strdup failed");
 	}
 	vec[vecp] = NULL;
 
@@ -132,7 +132,7 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 
     /* Sanity check */
     if (mp->numsel != 0)
-	adios (NULL, "oops, mp->numsel should be 0");
+	die("oops, mp->numsel should be 0");
 
     /* Mark that the sequence information has changed */
     mp->msgflags |= SEQMOD;

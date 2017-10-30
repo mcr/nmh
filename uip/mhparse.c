@@ -361,10 +361,10 @@ get_content (FILE *in, char *file, int toplevel)
 
 	case LENERR:
 	case FMTERR:
-	    adios (NULL, "message format error in component #%d", compnum);
+	    die("message format error in component #%d", compnum);
 
 	default:
-	    adios (NULL, "getfld() returned %d", state);
+	    die("getfld() returned %d", state);
 	}
 
 	/* break out of the loop */
@@ -1511,7 +1511,7 @@ invalid_param:
 			        adios ("failed", "fread");
 
 			    case OK:
-				adios (NULL, "unexpected EOF from fread");
+				die("unexpected EOF from fread");
 
 			    default:
 				bp += cc, size -= cc;
@@ -1780,7 +1780,7 @@ openBase64 (CT ct, char **file)
 	if (ce->ce_unlink) {
 	    /* Create temporary file with filename extension. */
 	    if ((ce->ce_file = m_mktemps(invo_name, cp, NULL, NULL)) == NULL) {
-		adios(NULL, "unable to create temporary file in %s",
+		die("unable to create temporary file in %s",
 		      get_temp_dir());
 	    }
 	} else {
@@ -1789,7 +1789,7 @@ openBase64 (CT ct, char **file)
     } else if (*file == NULL) {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
 		  get_temp_dir());
 	}
 	ce->ce_file = mh_xstrdup(tempfile);
@@ -1801,7 +1801,7 @@ openBase64 (CT ct, char **file)
     }
 
     if ((len = ct->c_end - ct->c_begin) < 0)
-	adios (NULL, "internal error(1)");
+	die("internal error(1)");
 
     buffer = mh_xmalloc (len + 1);
 
@@ -1965,7 +1965,7 @@ openQuoted (CT ct, char **file)
 	if (ce->ce_unlink) {
 	    /* Create temporary file with filename extension. */
 	    if ((ce->ce_file = m_mktemps(invo_name, cp, NULL, NULL)) == NULL) {
-		adios(NULL, "unable to create temporary file in %s",
+		die("unable to create temporary file in %s",
 		      get_temp_dir());
 	    }
 	} else {
@@ -1974,7 +1974,7 @@ openQuoted (CT ct, char **file)
     } else if (*file == NULL) {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
 		  get_temp_dir());
 	}
 	ce->ce_file = mh_xstrdup(tempfile);
@@ -1986,7 +1986,7 @@ openQuoted (CT ct, char **file)
     }
 
     if ((len = ct->c_end - ct->c_begin) < 0)
-	adios (NULL, "internal error(2)");
+	die("internal error(2)");
 
     if (! ct->c_fp) {
 	if ((ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
@@ -2181,7 +2181,7 @@ open7Bit (CT ct, char **file)
 	if (ce->ce_unlink) {
 	    /* Create temporary file with filename extension. */
 	    if ((ce->ce_file = m_mktemps(invo_name, cp, NULL, NULL)) == NULL) {
-		adios(NULL, "unable to create temporary file in %s",
+		die("unable to create temporary file in %s",
 		      get_temp_dir());
 	    }
 	} else {
@@ -2190,7 +2190,7 @@ open7Bit (CT ct, char **file)
     } else if (*file == NULL) {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
 		  get_temp_dir());
 	}
 	ce->ce_file = mh_xstrdup(tempfile);
@@ -2239,7 +2239,7 @@ open7Bit (CT ct, char **file)
     }
 
     if ((len = ct->c_end - ct->c_begin) < 0)
-	adios (NULL, "internal error(3)");
+	die("internal error(3)");
 
     if (! ct->c_fp) {
 	if ((ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
@@ -2540,7 +2540,7 @@ openFTP (CT ct, char **file)
     else {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
 		  get_temp_dir());
 	}
 	ce->ce_file = mh_xstrdup(tempfile);
@@ -2725,7 +2725,7 @@ openMail (CT ct, char **file)
     if (*file == NULL) {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
 		  get_temp_dir());
 	}
 	ce->ce_file = mh_xstrdup(tempfile);
@@ -2816,7 +2816,7 @@ openURL (CT ct, char **file)
     else {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
 		  get_temp_dir());
 	}
 	ce->ce_file = mh_xstrdup(tempfile);
@@ -3867,7 +3867,7 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
 	if (! pm->pm_charset) {
 	    pm->pm_charset = mh_xstrdup(write_charset_8bit());
 	    if (strcasecmp(pm->pm_charset, "US-ASCII") == 0)
-		adios(NULL, "8-bit characters in parameter \"%s\", but "
+		die("8-bit characters in parameter \"%s\", but "
 		      "local character set is US-ASCII", pm->pm_name);
 	}
 	if (! pm->pm_lang)

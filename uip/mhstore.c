@@ -94,7 +94,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW:
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -119,13 +119,13 @@ main (int argc, char **argv)
 		icachesw = &wcachesw;
 do_cache:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		switch (*icachesw = smatch (cp, cache_policy)) {
 		case AMBIGSW:
 		    ambigsw (cp, cache_policy);
 		    done (1);
 		case UNKWNSW:
-		    adios (NULL, "%s unknown", cp);
+		    die("%s unknown", cp);
 		default:
 		    break;
 		}
@@ -140,27 +140,27 @@ do_cache:
 
 	    case PARTSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		if (npart >= NPARTS)
-		    adios (NULL, "too many parts (starting with %s), %d max",
+		    die("too many parts (starting with %s), %d max",
 			   cp, NPARTS);
 		parts[npart++] = cp;
 		continue;
 
 	    case TYPESW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		if (ntype >= NTYPES)
-		    adios (NULL, "too many types (starting with %s), %d max",
+		    die("too many types (starting with %s), %d max",
 			   cp, NTYPES);
 		types[ntype++] = cp;
 		continue;
 
 	    case PREFERSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		if (npreferred >= NPREFS)
-		    adios (NULL, "too many preferred types (starting with %s), %d max",
+		    die("too many preferred types (starting with %s), %d max",
 			   cp, NPREFS);
 		mime_preference[npreferred].type = cp;
 		cp = strchr(cp, '/');
@@ -174,13 +174,13 @@ do_cache:
 
 	    case FILESW:
 		if (!(cp = *argp++) || (*cp == '-' && cp[1]))
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		file = *cp == '-' ? cp : path (cp, TFILE);
 		continue;
 
 	    case OUTFILESW:
 		if (!(cp = *argp++) || (*cp == '-' && cp[1]))
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		outfile = *cp == '-' ? cp : path (cp, TFILE);
 		continue;
 
@@ -192,7 +192,7 @@ do_cache:
 		continue;
             case CLOBBERSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		clobbersw = cp;
 		continue;
 	    case DEBUGSW:
@@ -202,7 +202,7 @@ do_cache:
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
 		app_msgarg(&msgs, cp);
@@ -250,7 +250,7 @@ do_cache:
 	free (path ("./", TFOLDER));
 
     if (file && msgs.size)
-	adios (NULL, "cannot specify msg and file at same time!");
+	die("cannot specify msg and file at same time!");
 
     /*
      * check if message is coming from file
@@ -280,11 +280,11 @@ do_cache:
 
 	/* read folder and create message structure */
 	if (!(mp = folder_read (folder, 1)))
-	    adios (NULL, "unable to read folder %s", folder);
+	    die("unable to read folder %s", folder);
 
 	/* check for empty folder */
 	if (mp->nummsg == 0)
-	    adios (NULL, "no messages in %s", folder);
+	    die("no messages in %s", folder);
 
 	/* parse all the message ranges/sequences and set SELECTED */
 	for (msgnum = 0; msgnum < msgs.size; msgnum++)

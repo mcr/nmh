@@ -85,7 +85,7 @@ main (int argc, char **argv)
 
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 	    }
 	}
@@ -93,13 +93,13 @@ main (int argc, char **argv)
     }
 
     if (addrs == NULL)
-	adios (NULL, "usage: %s [switches] [switches for postproc] address ...",
+	die("usage: %s [switches] [switches for postproc] address ...",
 	    invo_name);
 
     umask (~m_gmprot ());
 
     if ((tfile = m_mktemp2(NULL, invo_name, NULL, &fp)) == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	die("unable to create temporary file in %s", get_temp_dir());
     }
     strncpy (tmpfil, tfile, sizeof(tmpfil));
 
@@ -107,7 +107,7 @@ main (int argc, char **argv)
     fseek (fp, 0L, SEEK_SET);
 
     if ((tfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	die("unable to create temporary file in %s", get_temp_dir());
     }
     strncpy (drft, tfile, sizeof(tmpfil));
 
@@ -227,7 +227,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 		goto finished;
 
 	    default: 
-		adios (NULL, "m_getfld2() returned %d", state);
+		die("m_getfld2() returned %d", state);
 	}
     }
 finished: ;

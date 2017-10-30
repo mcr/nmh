@@ -84,7 +84,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW:
-		adios (NULL, "-%s unknown\n", cp);
+		die("-%s unknown\n", cp);
 
 	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [msgs] [switches] +folder ...",
@@ -125,29 +125,29 @@ main (int argc, char **argv)
 
 	    case SRCSW:
 		if (folder)
-		    adios (NULL, "only one source folder at a time!");
+		    die("only one source folder at a time!");
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		folder = path (*cp == '+' || *cp == '@' ? cp + 1 : cp,
 			       *cp != '@' ? TFOLDER : TSUBCWF);
 		continue;
 	    case DRAFTSW:
 		if (filep > NFOLDERS)
-		    adios (NULL, "only %d files allowed!", NFOLDERS);
+		    die("only %d files allowed!", NFOLDERS);
 		isdf = 0;
 		files[filep++] = mh_xstrdup(m_draft(NULL, NULL, 1, &isdf));
 		continue;
 	    case FILESW:
 		if (filep > NFOLDERS)
-		    adios (NULL, "only %d files allowed!", NFOLDERS);
+		    die("only %d files allowed!", NFOLDERS);
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		files[filep++] = path (cp, TFILE);
 		continue;
 
 	    case RPROCSW:
 		if (!(rmmproc = *argp++) || *rmmproc == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case NRPRCSW:
 		rmmproc = NULL;
@@ -156,7 +156,7 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (foldp > NFOLDERS)
-		adios (NULL, "only %d folders allowed!", NFOLDERS);
+		die("only %d folders allowed!", NFOLDERS);
 	    folders[foldp++].f_name =
 		pluspath (cp);
 	} else
@@ -166,14 +166,14 @@ main (int argc, char **argv)
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
     if (foldp == 0)
-	adios (NULL, "no folder specified");
+	die("no folder specified");
 
     /*
      * We are refiling a file to the folders
      */
     if (filep > 0) {
 	if (folder || msgs.size)
-	    adios (NULL, "use -file or some messages, not both");
+	    die("use -file or some messages, not both");
 	opnfolds (NULL, folders, foldp);
 	for (i = 0; i < filep; i++)
 	    if (m_file (0, files[i], 0, folders, foldp, preserve, 0))
@@ -195,11 +195,11 @@ main (int argc, char **argv)
 
     /* read source folder and create message structure */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /* check for empty folder */
     if (mp->nummsg == 0)
-	adios (NULL, "no messages in %s", folder);
+	die("no messages in %s", folder);
 
     /* parse the message range/sequence/name and set SELECTED */
     for (msgnum = 0; msgnum < msgs.size; msgnum++)
@@ -296,7 +296,7 @@ opnfolds (struct msgs *src_folder, struct st_fold *folders, int nfolders)
 	    if (chdir (nmaildir) == NOTOK)
 		adios (nmaildir, "unable to change directory to");
 	    if (!(mp = folder_read (fp->f_name, 1)))
-		adios (NULL, "unable to read folder %s", fp->f_name);
+		die("unable to read folder %s", fp->f_name);
 	    mp->curmsg = 0;
 
 	    fp->f_mp = mp;

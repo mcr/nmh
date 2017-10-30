@@ -41,7 +41,7 @@ m_draft (char *folder, char *msg, int use, int *isdf)
 	adios (buffer, "unable to change directory to");
 
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /*
      * Make sure we have enough message status space for all
@@ -51,10 +51,10 @@ m_draft (char *folder, char *msg, int use, int *isdf)
      */
     if (mp->hghmsg >= mp->hghoff) {
 	if (!(mp = folder_realloc (mp, 1, mp->hghmsg + 10)))
-	    adios (NULL, "unable to allocate folder storage");
+	    die("unable to allocate folder storage");
     } else if (mp->lowoff > 1) {
 	if (!(mp = folder_realloc (mp, 1, mp->hghoff)))
-	    adios (NULL, "unable to allocate folder storage");
+	    die("unable to allocate folder storage");
     }
 
     mp->msgflags |= ALLOW_NEW;	/* allow the "new" sequence */
@@ -69,7 +69,7 @@ m_draft (char *folder, char *msg, int use, int *isdf)
     seq_setprev (mp);
 
     if (mp->numsel > 1)
-	adios (NULL, "only one message draft at a time!");
+	die("only one message draft at a time!");
 
     snprintf (buffer, sizeof(buffer), "%s/%s", mp->foldpath, m_name (mp->lowsel));
     cp = buffer;

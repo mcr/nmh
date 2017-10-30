@@ -69,7 +69,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -89,12 +89,12 @@ main (int argc, char **argv)
 
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    format = NULL;
 		    continue;
 		case FMTSW: 
 		    if (!(format = *argp++) || *format == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    form = NULL;
 		    continue;
 
@@ -107,7 +107,7 @@ main (int argc, char **argv)
 
 		case WIDTHSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    width = atoi (cp);
 		    continue;
 		case REVSW:
@@ -119,7 +119,7 @@ main (int argc, char **argv)
 
 		case FILESW:
 		    if (!(cp = *argp++) || (cp[0] == '-' && cp[1]))
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if (strcmp (file = cp, "-"))
 			file = path (cp, TFILE);
 		    continue;
@@ -127,7 +127,7 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
             app_msgarg(&msgs, cp);
@@ -146,9 +146,9 @@ main (int argc, char **argv)
      */
     if (file) {
 	if (msgs.size)
-	    adios (NULL, "\"msgs\" not allowed with -file");
+	    die("\"msgs\" not allowed with -file");
 	if (folder)
-	    adios (NULL, "\"+folder\" not allowed with -file");
+	    die("\"+folder\" not allowed with -file");
 
 	/* check if "file" is really stdin */
 	if (strcmp (file, "-") == 0) {
@@ -193,11 +193,11 @@ main (int argc, char **argv)
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /* check for empty folder */
     if (mp->nummsg == 0)
-	adios (NULL, "no messages in %s", folder);
+	die("no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
     for (msgnum = 0; msgnum < msgs.size; msgnum++)
@@ -263,7 +263,7 @@ main (int argc, char **argv)
 		    break;
 
 		default: 
-		    adios (NULL, "scan() botch (%d)", state);
+		    die("scan() botch (%d)", state);
 
 		case SCNEOF: 
 		    inform("message %d: empty", msgnum);

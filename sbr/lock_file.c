@@ -314,7 +314,7 @@ lkopen (const char *file, int access, mode_t mode, enum locktype ltype,
 #endif /* HAVE_FLOCK */
 
     default:
-    	adios(NULL, "Internal locking error: unsupported lock type used!");
+    	die("Internal locking error: unsupported lock type used!");
     }
 
     return -1;
@@ -750,20 +750,20 @@ init_locktype(const char *lockname)
 #ifdef HAVE_LOCKF
 	return LOCKF_LOCKING;
 #else /* ! HAVE_LOCKF */
-	adios(NULL, "lockf not supported on this system");
+	die("lockf not supported on this system");
 #endif /* HAVE_LOCKF */
     }
     if (strcasecmp(lockname, "flock") == 0) {
 #ifdef HAVE_FLOCK
 	return FLOCK_LOCKING;
 #else /* ! HAVE_FLOCK */
-	adios(NULL, "flock not supported on this system");
+	die("flock not supported on this system");
 #endif /* HAVE_FLOCK */
     }
     if (strcasecmp(lockname, "dot") == 0) {
     	return DOT_LOCKING;
     }
-    adios(NULL, "Unknown lock type: \"%s\"", lockname);
+    die("Unknown lock type: \"%s\"", lockname);
     /* NOTREACHED */
     return 0;
 }

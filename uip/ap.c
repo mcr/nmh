@@ -66,7 +66,7 @@ main (int argc, char **argv)
 		    done (1);
 
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] addrs ...",
@@ -79,30 +79,30 @@ main (int argc, char **argv)
 
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    format = NULL;
 		    continue;
 		case FMTSW: 
 		    if (!(format = *argp++) || *format == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    form = NULL;
 		    continue;
 
 		case WIDTHSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    width = atoi (cp);
 		    continue;
 	    }
 	}
 	if (addrp == NADDRS)
-	    adios (NULL, "more than %d addresses", NADDRS);
+	    die("more than %d addresses", NADDRS);
         addrs[addrp++] = cp;
     }
     addrs[addrp] = NULL;
 
     if (addrp == 0)
-	adios (NULL, "usage: %s [switches] addrs ...", invo_name);
+	die("usage: %s [switches] addrs ...", invo_name);
 
     /* get new format string */
     nfs = new_fs (form, format, FORMAT);

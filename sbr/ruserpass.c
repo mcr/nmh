@@ -110,7 +110,7 @@ ruserpass(const char *host, char **aname, char **apass, int flags)
 			       user to correct it. */
                             inform("group or other permissions, %#o, "
                                 "forbidden: %s", stb.st_mode, credentials_file);
-			    adios(NULL, "Remove password or correct file "
+			    die("Remove password or correct file "
 				  "permissions.");
 			}
 			if (token(tokval) && *apass == 0)
@@ -210,7 +210,7 @@ token(char *tokval)
 
         *cp++ = c;
         if (cp - tokval > MAX_TOKVAL_SIZE-1) {
-            adios(NULL, "credential tokens restricted to length %d",
+            die("credential tokens restricted to length %d",
                   MAX_TOKVAL_SIZE - 1);
         }
     }

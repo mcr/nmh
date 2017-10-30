@@ -339,7 +339,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] file", invo_name);
@@ -351,7 +351,7 @@ main (int argc, char **argv)
 
 		case LIBSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    /* create a minimal context */
 		    if (context_foil (cp) == -1)
 			done (1);
@@ -359,9 +359,9 @@ main (int argc, char **argv)
 
 		case ALIASW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if ((state = alias (cp)) != AK_OK)
-			adios (NULL, "aliasing error in %s - %s",
+			die("aliasing error in %s - %s",
 				cp, akerror (state));
 		    continue;
 
@@ -382,7 +382,7 @@ main (int argc, char **argv)
 
 		case FILTSW:
 		    if (!(filter = *argp++) || *filter == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    mime = 0;
 		    continue;
 		case NFILTSW:
@@ -438,25 +438,25 @@ main (int argc, char **argv)
 
 		case WIDTHSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if ((outputlinelen = atoi (cp)) < 10)
-			adios (NULL, "impossible width %d", outputlinelen);
+			die("impossible width %d", outputlinelen);
 		    continue;
 
 		case ANNOSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if ((pfd = atoi (cp)) <= 2)
-			adios (NULL, "bad argument %s %s", argp[-2], cp);
+			die("bad argument %s %s", argp[-2], cp);
 		    continue;
 
 		case CLIESW:
 		    if (!(clientsw = *argp++) || *clientsw == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case SERVSW:
 		    if (!(serversw = *argp++) || *serversw == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case SNOOPSW:
 		    snoop++;
@@ -464,7 +464,7 @@ main (int argc, char **argv)
 
 		case PARTSW:
 		    if (!(partno = *argp++) || *partno == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case SASLSW:
@@ -477,12 +477,12 @@ main (int argc, char **argv)
 
 		case SASLMECHSW:
 		    if (!(saslmech = *argp++) || *saslmech == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case AUTHSERVICESW:
 		    if (!(auth_svc = *argp++) || *auth_svc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    oauth_flag++;
 		    continue;
 
@@ -497,7 +497,7 @@ main (int argc, char **argv)
 		    int i;
 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 
 		    for (i = 0; oauthswitches[i].profname != NULL; i++) {
 			if (oauthswitches[i].switchnum == swnum) {
@@ -507,7 +507,7 @@ main (int argc, char **argv)
 		    }
 
 		    if (oauthswitches[i].profname == NULL)
-			adios (NULL, "internal error: cannot map switch %s "
+			die("internal error: cannot map switch %s "
 			       "to profile entry", argp[-2]);
 
 		    oauth_flag++;
@@ -516,12 +516,12 @@ main (int argc, char **argv)
 
 		case USERSW:
 		    if (!(user = *argp++) || *user == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case PORTSW:
 		    if (!(port = *argp++) || *port == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case TLSSW:
@@ -546,55 +546,55 @@ main (int argc, char **argv)
 
 		case FILEPROCSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    fileproc = cp;
 		    continue;
 
 		case MHLPROCSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    mhlproc = cp;
 		    continue;
 
 		case MTSSM:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
                     sendmail = cp;
 		    continue;
 
 		case MTSSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
                     save_mts_method (cp);
 		    continue;
 
 		case CREDENTIALSSW: {
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    add_profile_entry ("credentials", cp);
 		    continue;
 		}
 
 		case MESSAGEIDSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
                     if (save_message_id_style (cp) != 0)
-			adios (NULL, "unsupported messageid \"%s\"", cp);
+			die("unsupported messageid \"%s\"", cp);
 		    continue;
 	    }
 	}
 	if (msg)
-	    adios (NULL, "only one message at a time!");
+	    die("only one message at a time!");
         msg = cp;
     }
 
     alias (AliasFile);
 
     if (!msg)
-	adios (NULL, "usage: %s [switches] file", invo_name);
+	die("usage: %s [switches] file", invo_name);
 
     if (outputlinelen < 10)
-	adios (NULL, "impossible width %d", outputlinelen);
+	die("impossible width %d", outputlinelen);
 
     if ((in = fopen (msg, "r")) == NULL)
 	adios (msg, "unable to open");
@@ -610,7 +610,7 @@ main (int argc, char **argv)
 	} else {
 	    char *cp = m_mktemp2(NULL, invo_name, NULL, &out);
 	    if (cp == NULL) {
-		adios(NULL, "unable to create temporary file in %s",
+		die("unable to create temporary file in %s",
 		      get_temp_dir());
 	    }
             strncpy(tmpfil, cp, sizeof(tmpfil));
@@ -654,10 +654,10 @@ main (int argc, char **argv)
 
 	    case LENERR: 
 	    case FMTERR: 
-		adios (NULL, "message format error in component #%d", compnum);
+		die("message format error in component #%d", compnum);
 
 	    default: 
-		adios (NULL, "getfld() returned %d", state);
+		die("getfld() returned %d", state);
 	}
 	break;
     }
@@ -727,7 +727,7 @@ main (int argc, char **argv)
 	char sbuf[128];
 
 	if (auth_svc == NULL) {
-	    adios(NULL, "No authentication service given with -authservice");
+	    die("No authentication service given with -authservice");
 	}
 
 	for (i = 0; oauthswitches[i].profname != NULL; i++) {
@@ -1000,8 +1000,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 			   aliases and put them in Bcc:, but then
 			   they'd have the Blind-Carbon-Copy
 			   indication. */
-			adios (NULL,
-			       "blind lists not compatible with"
+			die(			       "blind lists not compatible with"
 			       " sendmail/pipe");
 		    }
 
@@ -1211,9 +1210,9 @@ finish_headers (FILE *out)
     }
 
     if (badmsg)
-	adios (NULL, "re-format message and try again");
+	die("re-format message and try again");
     if (!recipients)
-	adios (NULL, "no addressees");
+	die("no addressees");
 }
 
 
@@ -1447,7 +1446,7 @@ insert_fcc (struct headers *hdr, char *pp)
 	return;
 
     if (fccind >= FCCS)
-	adios (NULL, "too many %ss", hdr->value);
+	die("too many %ss", hdr->value);
     fccfold[fccind++] = mh_xstrdup(cp);
 }
 
@@ -1465,7 +1464,7 @@ make_bcc_file (int dashstuff)
     char *tfile = NULL, *program;
 
     if ((tfile = m_mktemp2(NULL, "bccs", NULL, &out)) == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	die("unable to create temporary file in %s", get_temp_dir());
     }
     strncpy (bccfil, tfile, sizeof(bccfil));
 
@@ -1490,12 +1489,12 @@ make_bcc_file (int dashstuff)
 	 * prefix and check again.
 	 */
 	if ((cp = strchr(prefix, 'a')) == NULL)
-	    adios (NULL, "lost prefix start");
+	    die("lost prefix start");
 	while (find_prefix () == NOTOK) {
 	    if (*cp < 'z')
 		(*cp)++;
 	    else if (*++cp == 0)
-                adios (NULL, "can't find a unique delimiter string");
+                die("can't find a unique delimiter string");
             else
                 (*cp)++;
 	}

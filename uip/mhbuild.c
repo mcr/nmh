@@ -110,7 +110,7 @@ main (int argc, char **argv)
     while ((cp = *argp++)) {
 	if (cp[0] == '-' && cp[1] == '\0') {
 	    if (compfile)
-		adios (NULL, "cannot specify both standard input and a file");
+		die("cannot specify both standard input and a file");
             compfile = cp;
 	    listsw = 0;		/* turn off -list if using standard in/out */
 	    verbosw = 0;	/* turn off -verbose listings */
@@ -122,7 +122,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW: 
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW: 
 		snprintf (buf, sizeof(buf), "%s [switches] file", invo_name);
@@ -153,13 +153,13 @@ main (int argc, char **argv)
 		icachesw = &wcachesw;
 	    do_cache: ;
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		switch (*icachesw = smatch (cp, cache_policy)) {
 		case AMBIGSW:
 		    ambigsw (cp, cache_policy);
 		    done (1);
 		case UNKWNSW:
-		    adios (NULL, "%s unknown", cp);
+		    die("%s unknown", cp);
 		default:
 		    break;
 		}
@@ -218,13 +218,13 @@ main (int argc, char **argv)
 	    	int encoding;
 
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		switch (encoding = smatch (cp, encodingswitches)) {
 		case AMBIGSW:
 		    ambigsw (cp, encodingswitches);
 		    done (1);
 		case UNKWNSW:
-		    adios (NULL, "%s unknown encoding algorithm", cp);
+		    die("%s unknown encoding algorithm", cp);
 		case BASE64SW:
 		    header_encoding = CE_BASE64;
 		    break;
@@ -235,7 +235,7 @@ main (int argc, char **argv)
 		    header_encoding = CE_8BIT;
 		    break;
 		default:
-		    adios (NULL, "Internal error: algorithm %s", cp);
+		    die("Internal error: algorithm %s", cp);
 		}
 		continue;
 	    }
@@ -246,11 +246,11 @@ main (int argc, char **argv)
 
 	    case MAXUNENCSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		if ((maxunencoded = atoi(cp)) < 1)
-		    adios (NULL, "Invalid argument for %s: %s", argp[-2], cp);
+		    die("Invalid argument for %s: %s", argp[-2], cp);
 		if (maxunencoded > 998)
-		    adios (NULL, "limit of -maxunencoded is 998");
+		    die("limit of -maxunencoded is 998");
 		continue;
 
 	    case VERBSW: 
@@ -274,7 +274,7 @@ main (int argc, char **argv)
 	    }
 	}
 	if (compfile)
-	    adios (NULL, "only one composition file allowed");
+	    die("only one composition file allowed");
         compfile = cp;
     }
 
@@ -312,14 +312,14 @@ main (int argc, char **argv)
 
     /* Check if we have a file to process */
     if (!compfile)
-	adios (NULL, "need to specify a %s composition file", invo_name);
+	die("need to specify a %s composition file", invo_name);
 
     /*
      * Process the composition file from standard input.
      */
     if (compfile[0] == '-' && compfile[1] == '\0') {
 	if ((cp = m_mktemp2(NULL, invo_name, NULL, &fp)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
 		  get_temp_dir());
 	}
 	strncpy (infile, cp, sizeof(infile));
@@ -327,7 +327,7 @@ main (int argc, char **argv)
 	/* copy standard input to temporary file */
 	while ((n = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
 	    if (fwrite(buffer, 1, n, fp) != n) {
-		adios (NULL, "error copying to temporary file");
+		die("error copying to temporary file");
 	    }
 	}
 	fclose (fp);
@@ -343,11 +343,11 @@ main (int argc, char **argv)
 
 	if (!ct) {
 	    if (! (fp = fopen(infile, "r"))) {
-		adios(NULL, "Unable to open %s for reading", infile);
+		die("Unable to open %s for reading", infile);
 	    }
 	    while ((n = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
 		if (fwrite(buffer, 1, n, stdout) != n) {
-		    adios(NULL, "error copying %s to stdout", infile);
+		    die("error copying %s to stdout", infile);
 		}
 	    }
 	} else {
@@ -380,7 +380,7 @@ main (int argc, char **argv)
 
     /* output MIME message to this temporary file */
     if ((cp = m_mktemp2(compfile, invo_name, NULL, &fp_out)) == NULL) {
-	adios(NULL, "unable to create temporary file");
+	die("unable to create temporary file");
     }
     strncpy(outfile, cp, sizeof(outfile));
 

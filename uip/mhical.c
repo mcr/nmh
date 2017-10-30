@@ -92,7 +92,7 @@ main (int argc, char *argv[]) {
                 ambigsw (cp, switches);
                 done (1);
             case UNKWNSW:
-                adios (NULL, "-%s unknown", cp);
+                die("-%s unknown", cp);
 
             case HELPSW: {
                 char buf[128];
@@ -109,7 +109,7 @@ main (int argc, char *argv[]) {
 
             case REPLYSW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 if (! strcasecmp (cp, "accept")) {
                     action = ACT_ACCEPT;
                 } else if (! strcasecmp (cp, "decline")) {
@@ -119,7 +119,7 @@ main (int argc, char *argv[]) {
                 } else if (! strcasecmp (cp, "delegate")) {
                     action = ACT_DELEGATE;
                 } else {
-                    adios (NULL, "Unknown action: %s", cp);
+                    die("Unknown action: %s", cp);
                 }
                 continue;
 
@@ -129,23 +129,23 @@ main (int argc, char *argv[]) {
 
             case FORMSW:
                 if (! (form = *argp++) || *form == '-')
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 format = NULL;
                 continue;
             case FMTSW:
                 if (! (format = *argp++) || *format == '-')
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 form = NULL;
                 continue;
 
             case INFILESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 infile = *cp == '-'  ?  mh_xstrdup(cp)  :  path (cp, TFILE);
                 continue;
             case OUTFILESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 outfile = *cp == '-'  ?  mh_xstrdup(cp)  :  path (cp, TFILE);
                 continue;
 
@@ -426,7 +426,7 @@ convert_common (contentline *clines, act action) {
             insert = "Tentative: ";
             break;
         case ACT_DELEGATE:
-            adios (NULL, "Delegate replies are not supported");
+            die("Delegate replies are not supported");
             break;
         case ACT_CANCEL:
             insert = "Cancelled:";
@@ -445,7 +445,7 @@ convert_common (contentline *clines, act action) {
             node->value = tmp;
         } else {
             /* Should never get here. */
-            adios (NULL, "Unknown action: %d", action);
+            die("Unknown action: %d", action);
         }
     }
 

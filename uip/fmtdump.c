@@ -63,7 +63,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches]", invo_name);
@@ -75,19 +75,19 @@ main (int argc, char **argv)
 
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    format = NULL;
 		    continue;
 		case FMTSW: 
 		    if (!(format = *argp++) || *format == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    form = NULL;
 		    continue;
 
 	    }
 	}
 	if (form)
-	    adios (NULL, "only one form at a time!");
+	    die("only one form at a time!");
         form = cp;
     }
 

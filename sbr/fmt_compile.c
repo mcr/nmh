@@ -376,7 +376,7 @@ compile_error(char *str, char *cp)
 
     inform("\"%s\": format compile error - %s",
 	   &usr_fstring[errpos-errctx], str);
-    adios (NULL, "%*s", errctx+1, "^");
+    die("%*s", errctx+1, "^");
 }
 
 /*

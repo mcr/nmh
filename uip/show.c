@@ -123,28 +123,27 @@ non_mhl_switches:
 
 		case DRFTSW:
 		    if (file)
-			adios (NULL, "only one file at a time!");
+			die("only one file at a time!");
 		    draftsw++;
 		    if (mode == SHOW)
 			continue;
 usage:
-		    adios (NULL,
-			    "usage: %s [+folder] [switches] [switches for showproc]",
+		    die(			    "usage: %s [+folder] [switches] [switches for showproc]",
 			    invo_name);
 		case FILESW:
 		    if (mode != SHOW)
 			goto usage;
 		    if (draftsw || file)
-			adios (NULL, "only one file at a time!");
+			die("only one file at a time!");
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    file = path (cp, TFILE);
 		    continue;
 
 		case FORMSW:
 		    app_msgarg(&vec, --cp);
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    app_msgarg(&vec, mh_xstrdup(etcpath(cp)));
 		    continue;
 
@@ -160,13 +159,13 @@ usage:
 		case WCACHESW:
 		    app_msgarg(&vec, --cp);
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    app_msgarg(&vec, cp);
 		    continue;
 
 		case SHOWSW:
 		    if (!(showproc = *argp++) || *showproc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    nshow = 0;
 		    continue;
 		case NSHOWSW:
@@ -175,7 +174,7 @@ usage:
 
 		case SHOWMIMESW:
 		    if (!(showmimeproc = *argp++) || *showmimeproc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    nshow = 0;
 		    continue;
 		case CHECKMIMESW:
@@ -188,7 +187,7 @@ usage:
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else {
 	    if (mode != SHOW)
@@ -202,7 +201,7 @@ usage:
 
     if (draftsw || file) {
 	if (msgs.size)
-	    adios (NULL, "only one file at a time!");
+	    die("only one file at a time!");
 	if (draftsw)
 	    app_msgarg(&vec, mh_xstrdup(m_draft(folder, NULL, 1, &isdf)));
 	else
@@ -234,11 +233,11 @@ usage:
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /* check for empty folder */
     if (mp->nummsg == 0)
-	adios (NULL, "no messages in %s", folder);
+	die("no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
     for (msgnum = 0; msgnum < msgs.size; msgnum++)

@@ -75,12 +75,12 @@ argsplit(char *command, char **file, int *argp)
 	p = mh_xstrdup(command);
 	split = brkstring(p, " \t", NULL);
 	if (split[0] == NULL) {
-	    adios(NULL, "Invalid blank command found");
+	    die("Invalid blank command found");
 	}
 	argvarray[0] = mh_xstrdup(r1bindex(split[0], '/'));
 	for (i = 1; split[i] != NULL; i++) {
 	    if (i > MAXARGS) {
-		adios(NULL, "Command exceeded argument limit");
+		die("Command exceeded argument limit");
 	    }
 	    argvarray[i] = mh_xstrdup(split[i]);
 	}

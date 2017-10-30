@@ -154,7 +154,7 @@ WhatNow (int argc, char **argv)
 		ambigsw (cp, whatnowswitches);
 		done (1);
 	    case UNKWNSW:
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [switches] [file]", invo_name);
@@ -166,17 +166,17 @@ WhatNow (int argc, char **argv)
 
 	    case DFOLDSW:
 		if (dfolder)
-		    adios (NULL, "only one draft folder at a time!");
+		    die("only one draft folder at a time!");
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		dfolder = path (*cp == '+' || *cp == '@' ? cp + 1 : cp,
 				*cp != '@' ? TFOLDER : TSUBCWF);
 		continue;
 	    case DMSGSW:
 		if (dmsg)
-		    adios (NULL, "only one draft message at a time!");
+		    die("only one draft message at a time!");
 		if (!(dmsg = *argp++) || *dmsg == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case NDFLDSW:
 		dfolder = NULL;
@@ -185,7 +185,7 @@ WhatNow (int argc, char **argv)
 
 	    case EDITRSW:
 		if (!(ed = *argp++) || *ed == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		nedit = 0;
 		continue;
 	    case NEDITSW:
@@ -194,12 +194,12 @@ WhatNow (int argc, char **argv)
 
 	    case PRMPTSW:
 		if (!(myprompt = *argp++) || *myprompt == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    }
 	}
 	if (drft)
-	    adios (NULL, "only one draft at a time!");
+	    die("only one draft at a time!");
         drft = cp;
     }
 
@@ -551,7 +551,7 @@ writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
      */
     int trailln = strlen(trailcmd) + 4;
     if (ln < 0 || ln + trailln > bufsz)
-	adios(NULL, "arguments too long");
+	die("arguments too long");
 
     cp = buf + ln;
 
@@ -559,7 +559,7 @@ writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
 	ln = strlen(*argp);
 	/* +1 for leading space */
 	if (ln + trailln + 1 > bufsz - (cp-buf))
-	    adios(NULL, "arguments too long");
+	    die("arguments too long");
 	*cp++ = ' ';
 	memcpy(cp, *argp, ln+1);
 	cp += ln;
@@ -1132,11 +1132,11 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case AUTHSERVICESW:
 #ifdef OAUTH_SUPPORT
 		    if (!(auth_svc = *argp++) || *auth_svc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 #else
                     NMH_UNUSED (user);
                     NMH_UNUSED (auth_svc);
-		    adios (NULL, "not built with OAuth support");
+		    die("not built with OAuth support");
 #endif
 		    continue;
 
@@ -1205,7 +1205,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 	    && altmsg) {
 	vec[vecp++] = "-dist";
 	if ((cp = m_mktemp2(altmsg, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file");
+	    die("unable to create temporary file");
 	}
 	distfile = mh_xstrdup(cp);
 	(void) m_unlink(distfile);
@@ -1218,11 +1218,11 @@ sendit (char *sp, char **arg, char *file, int pushed)
 #ifdef OAUTH_SUPPORT
     if (auth_svc == NULL) {
         if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
-            adios (NULL, "must specify -authservice with -saslmech xoauth2");
+            die("must specify -authservice with -saslmech xoauth2");
         }
     } else {
         if (user == NULL) {
-            adios (NULL, "must specify -user with -saslmech xoauth2");
+            die("must specify -user with -saslmech xoauth2");
         }
     }
 #else

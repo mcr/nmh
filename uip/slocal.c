@@ -203,7 +203,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches]", invo_name);
@@ -215,38 +215,38 @@ main (int argc, char **argv)
 
 		case ADDRSW: 
 		    if (!(addr = *argp++))/* allow -xyz arguments */
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case INFOSW: 
 		    if (!(info = *argp++))/* allow -xyz arguments */
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case USERSW: 
 		    if (!(user = *argp++))/* allow -xyz arguments */
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case FILESW: 
 		    if (!(file = *argp++) || *file == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case SENDERSW: 
 		    if (!(sender = *argp++))/* allow -xyz arguments */
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case MAILBOXSW: 
 		    if (!(mbox = *argp++) || *mbox == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case HOMESW: 
 		    if (!(home = *argp++) || *home == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case MAILSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if (mdlvr)
-			adios (NULL, "only one maildelivery file at a time!");
+			die("only one maildelivery file at a time!");
 		    mdlvr = cp;
 		    continue;
 
@@ -268,7 +268,7 @@ main (int argc, char **argv)
 		    continue;
 	    }
 	} else {
-		adios (NULL, "only switch arguments are supported");
+		die("only switch arguments are supported");
 	}
     }
 
@@ -278,7 +278,7 @@ main (int argc, char **argv)
 	user = getusername ();
     }
     if ((pw = getpwnam (user)) == NULL)
-	adios (NULL, "no such local user as %s", user);
+	die("no such local user as %s", user);
 
     if (chdir (pw->pw_dir) == -1)
 	if (chdir ("/") < 0) {
@@ -303,7 +303,7 @@ main (int argc, char **argv)
 
     /* Record the delivery time */
     if ((now = dlocaltimenow ()) == NULL)
-	adios (NULL, "unable to ascertain local time");
+	die("unable to ascertain local time");
     snprintf (ddate, sizeof(ddate), "Delivery-Date: %s\n", dtimenow (0));
 
     /*
@@ -318,7 +318,7 @@ main (int argc, char **argv)
 	if (debug)
 	    debug_printf ("retrieving message from file \"%s\"\n", file);
 	if ((fd = copy_message (tempfd, tmpfil, 1)) == -1)
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
                   get_temp_dir());
 	close (tempfd);
     } else {
@@ -326,7 +326,7 @@ main (int argc, char **argv)
 	if (debug)
 	    debug_printf ("retrieving message from stdin\n");
 	if ((fd = copy_message (fileno (stdin), tmpfil, 1)) == -1)
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
                   get_temp_dir());
     }
 
@@ -347,7 +347,7 @@ main (int argc, char **argv)
     (void) m_unlink (tmpfil);
 
     if (!(fp = fdopen (fd, "r+")))
-	adios (NULL, "unable to access temporary file");
+	die("unable to access temporary file");
 
     /*
      * If no sender given, extract it

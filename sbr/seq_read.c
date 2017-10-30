@@ -103,7 +103,7 @@ seq_public (struct msgs *mp, int lockflag, int *failed_to_lock)
 
 	    case BODY:
 	    	lkfclosedata (fp, seqfile);
-		adios (NULL, "no blank lines are permitted in %s", seqfile);
+		die("no blank lines are permitted in %s", seqfile);
 		break;
 
 	    case FILEEOF:
@@ -111,7 +111,7 @@ seq_public (struct msgs *mp, int lockflag, int *failed_to_lock)
 
 	    default: 
 	    	lkfclosedata (fp, seqfile);
-		adios (NULL, "%s is poorly formatted", seqfile);
+		die("%s is poorly formatted", seqfile);
 	}
 	break;	/* break from for loop */
     }

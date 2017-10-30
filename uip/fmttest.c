@@ -136,11 +136,11 @@ main (int argc, char **argv)
 	     */
 	    if (*++cp == '-') {
 	    	if (*++cp == '\0')
-		    adios(NULL, "missing component name after --");
+		    die("missing component name after --");
 		app_msgarg(&compargs, cp);
 		/* Grab next argument for component text */
 		if (!(cp = *argp++))
-		    adios(NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		app_msgarg(&compargs, cp);
 		continue;
 	    }
@@ -149,7 +149,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches]", invo_name);
@@ -159,12 +159,12 @@ main (int argc, char **argv)
 		    print_version(invo_name);
 		    done (0);
 		case OTHERSW:
-		    adios(NULL, "internal argument error!");
+		    die("internal argument error!");
 		    continue;
 
 		case OUTSIZESW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    	die("missing argument to %s", argp[-2]);
 		    if (strcmp(cp, "max") == 0)
 			outputsize = INT_MAX;
 		    else if (strcmp(cp, "width") == 0)
@@ -175,12 +175,12 @@ main (int argc, char **argv)
 
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    format = NULL;
 		    continue;
 		case FMTSW: 
 		    if (!(format = *argp++) || *format == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    form = NULL;
 		    continue;
 
@@ -231,27 +231,27 @@ main (int argc, char **argv)
 
 		case WIDTHSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    	die("missing argument to %s", argp[-2]);
 		    colwidth = atoi(cp);
 		    continue;
 		case MSGNUMSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    	die("missing argument to %s", argp[-2]);
 		    msgnum = atoi(cp);
 		    continue;
 		case MSGCURSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    	die("missing argument to %s", argp[-2]);
 		    msgcur = atoi(cp);
 		    continue;
 		case MSGSIZESW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    	die("missing argument to %s", argp[-2]);
 		    msgsize = atoi(cp);
 		    continue;
 		case UNSEENSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    	die("missing argument to %s", argp[-2]);
 		    msgunseen = atoi(cp);
 		    continue;
 
@@ -271,7 +271,7 @@ main (int argc, char **argv)
 
 	if (mode == MESSAGE && !files && (*cp == '+' || *cp == '@')) {
 	    if (folder)
-	    	adios (NULL, "only one folder at a time!");
+	    	die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
 	    app_msgarg(&msgs, cp);
@@ -288,7 +288,7 @@ main (int argc, char **argv)
      */
 
    if (!dump && compargs.size == 0 && msgs.size == 0) {
-        adios(NULL, "usage: [switches] [+folder] msgs | strings...");
+        die("usage: [switches] [+folder] msgs | strings...");
    }
 
    /*
@@ -297,7 +297,7 @@ main (int argc, char **argv)
     */
 
    if (mode == RAW && form == NULL && format == NULL) {
-   	adios (NULL, "You must specify a format with -form or -format when "
+   	die("You must specify a format with -form or -format when "
 	       "using -raw");
    }
 
@@ -501,10 +501,10 @@ process_messages(struct format *fmt, struct msgs_array *comps,
     	adios(maildir, "unable to change directory to");
 
     if (!(mp = folder_read(folder, 1)))
-    	adios(NULL, "unable to read folder %s", folder);
+    	die("unable to read folder %s", folder);
 
     if (mp->nummsg == 0)
-    	adios(NULL, "no messages in %s", folder);
+    	die("no messages in %s", folder);
 
     for (i = 0; i < msgs->size; i++)
     	if (!m_convert(mp, msgs->msgs[i]))

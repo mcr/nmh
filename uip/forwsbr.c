@@ -121,7 +121,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 	    	goto finished;
 
 	    default:
-	    	adios(NULL, "m_getfld2() returned %d", state);
+	    	die("m_getfld2() returned %d", state);
 	}
     }
 
@@ -176,7 +176,7 @@ finished:
 
     cp = m_mktemp2(NULL, invo_name, NULL, &tmp);
     if (cp == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	die("unable to create temporary file in %s", get_temp_dir());
     }
     strncpy (tmpfil, cp, sizeof(tmpfil));
     (void) m_unlink (tmpfil);

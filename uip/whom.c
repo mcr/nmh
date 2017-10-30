@@ -92,7 +92,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] [file]", invo_name);
@@ -118,17 +118,17 @@ main (int argc, char **argv)
 
 		case DFOLDSW: 
 		    if (dfolder)
-			adios (NULL, "only one draft folder at a time!");
+			die("only one draft folder at a time!");
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    dfolder = path (*cp == '+' || *cp == '@' ? cp + 1 : cp,
 			    *cp != '@' ? TFOLDER : TSUBCWF);
 		    continue;
 		case DMSGSW: 
 		    if (dmsg)
-			adios (NULL, "only one draft message at a time!");
+			die("only one draft message at a time!");
 		    if (!(dmsg = *argp++) || *dmsg == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case NDFLDSW: 
 		    dfolder = NULL;
@@ -144,13 +144,13 @@ main (int argc, char **argv)
 		case MTSSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    vec[vecp++] = cp;
 		    continue;
 	    }
 	}
 	if (msg)
-	    adios (NULL, "only one draft at a time!");
+	    die("only one draft at a time!");
         vec[vecp++] = msg = cp;
     }
 

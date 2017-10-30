@@ -79,7 +79,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buffer, sizeof(buffer), "%s [switches] file",
@@ -92,11 +92,11 @@ main (int argc, char **argv)
 
 		case ERASESW: 
 		    if (!(erasep = *argp++) || *erasep == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case KILLSW: 
 		    if (!(killp = *argp++) || *killp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case PREPSW: 
@@ -133,12 +133,12 @@ main (int argc, char **argv)
 	}
 
     if (!drft)
-	adios (NULL, "usage: %s [switches] file", invo_name);
+	die("usage: %s [switches] file", invo_name);
     if ((in = fopen (drft, "r")) == NULL)
 	adios (drft, "unable to open");
 
     if ((tmpfil = m_mktemp2(NULL, invo_name, NULL, &out)) == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	die("unable to create temporary file in %s", get_temp_dir());
     }
 
     /*
@@ -280,7 +280,7 @@ abort:
 		break;
 
 	    default: 
-		adios (NULL, "skeleton is poorly formatted");
+		die("skeleton is poorly formatted");
 	}
 	break;
     }

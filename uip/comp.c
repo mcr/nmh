@@ -95,7 +95,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [+folder] [msg] [switches]",
@@ -108,7 +108,7 @@ main (int argc, char **argv)
 
 		case EDITRSW: 
 		    if (!(ed = *argp++) || *ed == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    nedit = 0;
 		    continue;
 		case NEDITSW: 
@@ -117,7 +117,7 @@ main (int argc, char **argv)
 
 		case WHATSW: 
 		    if (!(whatnowproc = *argp++) || *whatnowproc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    nwhat = 0;
 		    continue;
 
@@ -130,7 +130,7 @@ main (int argc, char **argv)
 
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case USESW: 
@@ -142,25 +142,25 @@ main (int argc, char **argv)
 
 		case FILESW: 	/* compatibility */
 		    if (file)
-			adios (NULL, "only one file at a time!");
+			die("only one file at a time!");
 		    if (!(file = *argp++) || *file == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    isdf = NOTOK;
 		    continue;
 
 		case DFOLDSW: 
 		    if (dfolder)
-			adios (NULL, "only one draft folder at a time!");
+			die("only one draft folder at a time!");
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    dfolder = path (*cp == '+' || *cp == '@' ? cp + 1 : cp,
 			    *cp != '@' ? TFOLDER : TSUBCWF);
 		    continue;
 		case DMSGSW: 
 		    if (file)
-			adios (NULL, "only one draft message at a time!");
+			die("only one draft message at a time!");
 		    if (!(file = *argp++) || *file == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 		case NDFLDSW: 
 		    dfolder = NULL;
@@ -169,25 +169,25 @@ main (int argc, char **argv)
 
 		case TOSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    to = addlist(to, cp);
 		    continue;
 
 		case CCSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    cc = addlist(cc, cp);
 		    continue;
 
 		case FROMSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    from = addlist(from, cp);
 		    continue;
 
 		case FCCSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    dp = NULL;
 		    if (*cp == '@')
 			cp = dp = path(cp + 1, TSUBCWF);
@@ -197,25 +197,25 @@ main (int argc, char **argv)
 
 		case WIDTHSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if ((outputlinelen = atoi(cp)) < 10)
-			adios (NULL, "impossible width %d", outputlinelen);
+			die("impossible width %d", outputlinelen);
 		    continue;
 
 		case SUBJECTSW:
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    subject = cp;
 		    continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else {
 	    if (msg)
-		adios (NULL, "only one message at a time!");
+		die("only one message at a time!");
             msg = cp;
 	}
     }
@@ -234,7 +234,7 @@ main (int argc, char **argv)
 	msg = NULL;
     }
     if (form && (folder || msg))
-	    adios (NULL, "can't mix forms and folders/msgs");
+	    die("can't mix forms and folders/msgs");
 
     cp = NULL;
 
@@ -253,11 +253,11 @@ main (int argc, char **argv)
 
 	/* read folder and create message structure */
 	if (!(mp = folder_read (folder, 1)))
-	    adios (NULL, "unable to read folder %s", folder);
+	    die("unable to read folder %s", folder);
 
 	/* check for empty folder */
 	if (mp->nummsg == 0)
-	    adios (NULL, "no messages in %s", folder);
+	    die("no messages in %s", folder);
 
 	/* parse the message range/sequence/name and set SELECTED */
 	if (!m_convert (mp, msg))
@@ -266,7 +266,7 @@ main (int argc, char **argv)
 	seq_save (mp);
 
 	if (mp->numsel > 1)
-	    adios (NULL, "only one message at a time!");
+	    die("only one message at a time!");
 
 	if ((in = open (form = mh_xstrdup(m_name (mp->lowsel)), O_RDONLY)) == NOTOK)
 	    adios (form, "unable to open message");

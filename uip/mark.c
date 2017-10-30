@@ -67,7 +67,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW: 
-		adios (NULL, "-%s unknown\n", cp);
+		die("-%s unknown\n", cp);
 
 	    case HELPSW: 
 		snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -93,7 +93,7 @@ main (int argc, char **argv)
 
 	    case SEQSW: 
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 
 		svector_push_back (seqs, cp);
 		seqp++;
@@ -120,7 +120,7 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
             app_msgarg(&msgs, cp);
@@ -151,7 +151,7 @@ main (int argc, char **argv)
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /* print some general debugging info */
     if (debugsw)
@@ -159,7 +159,7 @@ main (int argc, char **argv)
 
     /* check for empty folder */
     if (mp->nummsg == 0)
-	adios (NULL, "no messages in %s", folder);
+	die("no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
     for (msgnum = 0; msgnum < msgs.size; msgnum++)
@@ -167,14 +167,14 @@ main (int argc, char **argv)
 	    done (1);
 
     if (publicsw == 1 && is_readonly(mp))
-	adios (NULL, "folder %s is read-only, so -public not allowed", folder);
+	die("folder %s is read-only, so -public not allowed", folder);
 
     /*
      * Make sure at least one sequence has been
      * specified if we are adding or deleting.
      */
     if (seqp == 0 && (addsw || deletesw))
-	adios (NULL, "-%s requires at least one -sequence argument",
+	die("-%s requires at least one -sequence argument",
 	       addsw ? "add" : "delete");
 
     /* Adding messages to sequences */

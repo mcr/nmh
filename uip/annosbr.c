@@ -186,7 +186,7 @@ annosbr (int fd, char *file, char *comp, char *text, bool inplace, bool datesw, 
     mode = fstat (fd, &st) != NOTOK ? (int) (st.st_mode & 0777) : m_gmprot ();
 
     if ((cp = m_mktemp2(file, "annotate", NULL, &tmp)) == NULL) {
-	adios(NULL, "unable to create temporary file");
+	die("unable to create temporary file");
     }
     strncpy (tmpfil, cp, sizeof(tmpfil));
     chmod (tmpfil, mode);
@@ -201,7 +201,7 @@ annosbr (int fd, char *file, char *comp, char *text, bool inplace, bool datesw, 
 
     if (delete >= -1 || append) {
 	if ((fp = fdopen(fd, "r")) == NULL)
-	    adios(NULL, "unable to fdopen file.");
+	    die("unable to fdopen file.");
 
 	field = mh_xmalloc(field_size = 256);
     }
@@ -324,7 +324,7 @@ annosbr (int fd, char *file, char *comp, char *text, bool inplace, bool datesw, 
 	     */
 
 	    if ((n = fputs(field, tmp)) == EOF || (c == '\n' && fputc('\n', tmp) == EOF))
-		adios(NULL, "unable to write temporary file.");
+		die("unable to write temporary file.");
 
 	} while (*field != '\0' && *field != '-');
 
@@ -393,7 +393,7 @@ annosbr (int fd, char *file, char *comp, char *text, bool inplace, bool datesw, 
      */
 
     if (fp && lseek(fd, (off_t)ftell(fp), SEEK_SET) == (off_t)-1)
-        adios(NULL, "can't seek.");
+        die("can't seek.");
 
     cpydata (fd, fileno (tmp), file, tmpfil);
     fclose (tmp);

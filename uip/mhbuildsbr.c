@@ -177,7 +177,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 		    free (ct);
 		    return NULL;
 		}
-                adios (NULL, "draft shouldn't contain %s: field", name);
+                die("draft shouldn't contain %s: field", name);
 	    }
 
 	    /* ignore any Content-Type fields in the header */
@@ -259,7 +259,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
                 if (convert) {
                     if (convert->filename  &&
                         strcasecmp (convert->filename, filename)) {
-                        adios (NULL, "Multiple %s headers with different files"
+                        die("Multiple %s headers with different files"
                                " not allowed", type);
                     } else {
                         convert->filename = mh_xstrdup(filename);
@@ -299,7 +299,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
                 if (convert) {
                     if (convert->argstring  &&
                         strcasecmp (convert->argstring, argstring)) {
-                        adios (NULL, "Multiple %s headers with different "
+                        die("Multiple %s headers with different "
                                "argstrings not allowed", type);
                     } else {
                         convert->argstring = mh_xstrdup(argstring);
@@ -335,10 +335,10 @@ finish_field:
 
 	case LENERR:
 	case FMTERR:
-	    adios (NULL, "message format error in component #%d", compnum);
+	    die("message format error in component #%d", compnum);
 
 	default:
-	    adios (NULL, "getfld() returned %d", state);
+	    die("getfld() returned %d", state);
 	}
 	break;
     }
@@ -352,7 +352,7 @@ finish_field:
 
         for (hp = ct->c_first_hf; hp != NULL; hp = hp->next) {
             if (encode_rfc2047(hp->name, &hp->value, header_encoding, NULL)) {
-                adios(NULL, "Unable to encode header \"%s\"", hp->name);
+                die("Unable to encode header \"%s\"", hp->name);
             }
         }
     }
@@ -455,7 +455,7 @@ finish_field:
         /* Extract the type part (as a CT) from filename. */
         cts = mh_xcalloc(2, sizeof *cts);
         if (! (cts[0] = parse_mime (convert_head->filename))) {
-            adios (NULL, "failed to parse %s", convert_head->filename);
+            die("failed to parse %s", convert_head->filename);
         }
 
         expand_pseudoheaders (cts[0], m, infile, convert_head);
@@ -543,7 +543,7 @@ finish_field:
     compose_content (ct, verbose);
 
     if ((cp = strchr(prefix, 'a')) == NULL)
-	adios (NULL, "internal error(4)");
+	die("internal error(4)");
 
     /*
      * If using EAI, force 8-bit charset.
@@ -562,7 +562,7 @@ finish_field:
 	    (*cp)++;
         } else {
 	    if (*++cp == 0)
-		adios (NULL, "giving up trying to find a unique delimiter string");
+		die("giving up trying to find a unique delimiter string");
             (*cp)++;
 	}
     }
@@ -713,7 +713,7 @@ user_content (FILE *in, char *buf, CT *ctp, const char *infilename)
 again_descr:
 		ct->c_descr = add (buffer + i + 1, ct->c_descr);
 		if (!fgetstr (buffer, sizeof(buffer) - 1, in))
-		    adios (NULL, "end-of-file after %s: field in plaintext", DESCR_FIELD);
+		    die("end-of-file after %s: field in plaintext", DESCR_FIELD);
 		switch (buffer[0]) {
 		case ' ':
 		case '\t':
@@ -721,7 +721,7 @@ again_descr:
 		    goto again_descr;
 
 		case '#':
-		    adios (NULL, "#-directive after %s: field in plaintext", DESCR_FIELD);
+		    die("#-directive after %s: field in plaintext", DESCR_FIELD);
 		    /* NOTREACHED */
 
 		default:
@@ -736,7 +736,7 @@ again_descr:
 again_dispo:
 		ct->c_dispo = add (buffer + i + 1, ct->c_dispo);
 		if (!fgetstr (buffer, sizeof(buffer) - 1, in))
-		    adios (NULL, "end-of-file after %s: field in plaintext", DISPO_FIELD);
+		    die("end-of-file after %s: field in plaintext", DISPO_FIELD);
 		switch (buffer[0]) {
 		case ' ':
 		case '\t':
@@ -744,7 +744,7 @@ again_dispo:
 		    goto again_dispo;
 
 		case '#':
-		    adios (NULL, "#-directive after %s: field in plaintext", DISPO_FIELD);
+		    die("#-directive after %s: field in plaintext", DISPO_FIELD);
 		    /* NOTREACHED */
 
 		default:
@@ -796,7 +796,7 @@ rock_and_roll:
 	    }
 	    /* FALLTHRU */
 	case CT_MULTIPART:
-	    adios (NULL, "it doesn't make sense to define an in-line %s content",
+	    die("it doesn't make sense to define an in-line %s content",
 		   ct->c_type == CT_MESSAGE ? "message" : "multipart");
 	    /* NOTREACHED */
 
@@ -838,24 +838,23 @@ call_init:
      */
     if (s2i->si_key) {
 	if (!ci->ci_subtype)
-	    adios (NULL, "missing subtype in \"#%s\"", ci->ci_type);
+	    die("missing subtype in \"#%s\"", ci->ci_type);
 
 	switch (ct->c_type = s2i->si_val) {
 	case CT_MULTIPART:
-	    adios (NULL, "use \"#begin ... #end\" instead of \"#%s/%s\"",
+	    die("use \"#begin ... #end\" instead of \"#%s/%s\"",
 		   ci->ci_type, ci->ci_subtype);
 	    /* NOTREACHED */
 
 	case CT_MESSAGE:
 	    if (!strcasecmp (ci->ci_subtype, "partial"))
-		adios (NULL, "sorry, \"#%s/%s\" isn't supported",
+		die("sorry, \"#%s/%s\" isn't supported",
 		       ci->ci_type, ci->ci_subtype);
 	    if (!strcasecmp (ci->ci_subtype, "external-body"))
-		adios (NULL, "use \"#@type/subtype ... [] ...\" instead of \"#%s/%s\"",
+		die("use \"#@type/subtype ... [] ...\" instead of \"#%s/%s\"",
 		       ci->ci_type, ci->ci_subtype);
 use_forw:
-	    adios (NULL,
-		   "use \"#forw [+folder] [msgs]\" instead of \"#%s/%s\"",
+	    die(		   "use \"#forw [+folder] [msgs]\" instead of \"#%s/%s\"",
 		   ci->ci_type, ci->ci_subtype);
 	    /* NOTREACHED */
 
@@ -873,7 +872,7 @@ use_forw:
 	    CT p;
 
 	    if (!ci->ci_magic)
-		adios (NULL, "need external information for \"#@%s/%s\"",
+		die("need external information for \"#@%s/%s\"",
 		       ci->ci_type, ci->ci_subtype);
 	    p = ct;
 
@@ -915,7 +914,7 @@ use_forw:
 		for (cp = ci->ci_magic + 1; isspace ((unsigned char) *cp); cp++)
 		    continue;
 		if (!*cp)
-		    adios (NULL, "empty pipe command for #%s directive", ci->ci_type);
+		    die("empty pipe command for #%s directive", ci->ci_type);
 		cp = mh_xstrdup(cp);
 		free (ci->ci_magic);
 		ci->ci_magic = cp;
@@ -945,7 +944,7 @@ use_forw:
     }
 
     if (extrnal)
-	adios (NULL, "external definition not allowed for \"#%s\"", ci->ci_type);
+	die("external definition not allowed for \"#%s\"", ci->ci_type);
 
     /*
      * Message directive
@@ -970,7 +969,7 @@ use_forw:
 	    cp = *ap;
 	    if (*cp == '+' || *cp == '@') {
 		if (folder)
-		    adios (NULL, "only one folder per #forw directive");
+		    die("only one folder per #forw directive");
                 folder = pluspath (cp);
 	    }
 	}
@@ -980,7 +979,7 @@ use_forw:
 	    folder = mh_xstrdup(getfolder(1));
 
 	if (!(mp = folder_read (folder, 0)))
-	    adios (NULL, "unable to read folder %s", folder);
+	    die("unable to read folder %s", folder);
 	for (ap = arguments; *ap; ap++) {
 	    cp = *ap;
 	    if (*cp != '+' && *cp != '@')
@@ -1096,7 +1095,7 @@ use_forw:
 
 	    if (user_content (in, buffer, &p, infilename) == DONE) {
 		if (!m->mp_parts)
-		    adios (NULL, "empty \"#begin ... #end\" sequence");
+		    die("empty \"#begin ... #end\" sequence");
 		return OK;
 	    }
 	    if (!p)
@@ -1114,7 +1113,7 @@ use_forw:
     /*
      * Unknown directive
      */
-    adios (NULL, "unknown directive \"#%s\"", ci->ci_type);
+    die("unknown directive \"#%s\"", ci->ci_type);
     return NOTOK;	/* NOT REACHED */
 }
 
@@ -1230,7 +1229,7 @@ compose_content (CT ct, int verbose)
             char *tfile = NULL;
 
 	    if (!(cp = ci->ci_magic))
-		adios (NULL, "internal error(5)");
+		die("internal error(5)");
 
 	    if ((tfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
 		adios("mhbuildsbr", "unable to create temporary file in %s",
@@ -1537,7 +1536,7 @@ scan_content (CT ct, size_t maxunencoded)
 
 	    if (checkllinelen && !linelen &&
 					(gotlen > MAXLONGLINE + 1)) {
-		adios(NULL, "Line in content exceeds maximum line limit (%d)",
+		die("Line in content exceeds maximum line limit (%d)",
 		      MAXLONGLINE);
 	    }
 
@@ -1681,7 +1680,7 @@ build_headers (CT ct, int header_encoding)
 	char *s = output_params(len, ci->ci_first_pm, &len, mailbody);
 
 	if (!s)
-	    adios(NULL, "Internal error: failed outputting Content-Type "
+	    die("Internal error: failed outputting Content-Type "
 		"parameters");
 
 	vp = add (s, vp);
@@ -1725,7 +1724,7 @@ build_headers (CT ct, int header_encoding)
 	vp = concat (" ", ct->c_descr, NULL);
 	if (header_encoding != CE_8BIT) {
 	    if (encode_rfc2047(DESCR_FIELD, &vp, header_encoding, NULL)) {
-		adios(NULL, "Unable to encode %s header", DESCR_FIELD);
+		die("Unable to encode %s header", DESCR_FIELD);
 	    }
 	}
 	add_header (ct, np, vp);
@@ -1788,7 +1787,7 @@ skip_headers:
 
     case CE_QUOTED:
 	if (ct->c_type == CT_MESSAGE || ct->c_type == CT_MULTIPART)
-	    adios (NULL, "internal error, invalid encoding");
+	    die("internal error, invalid encoding");
 
 	np = mh_xstrdup(ENCODING_FIELD);
 	vp = concat (" ", "quoted-printable", "\n", NULL);
@@ -1797,7 +1796,7 @@ skip_headers:
 
     case CE_BASE64:
 	if (ct->c_type == CT_MESSAGE || ct->c_type == CT_MULTIPART)
-	    adios (NULL, "internal error, invalid encoding");
+	    die("internal error, invalid encoding");
 
 	np = mh_xstrdup(ENCODING_FIELD);
 	vp = concat (" ", "base64", "\n", NULL);
@@ -1806,7 +1805,7 @@ skip_headers:
 
     case CE_BINARY:
 	if (ct->c_type == CT_MESSAGE)
-	    adios (NULL, "internal error, invalid encoding");
+	    die("internal error, invalid encoding");
 
 	np = mh_xstrdup(ENCODING_FIELD);
 	vp = concat (" ", "binary", "\n", NULL);
@@ -1814,7 +1813,7 @@ skip_headers:
 	break;
 
     default:
-	adios (NULL, "unknown transfer encoding in content");
+	die("unknown transfer encoding in content");
 	break;
     }
 
@@ -1963,7 +1962,7 @@ setup_attach_content(CT ct, char *filename)
     PM pm;
 
     if (! (type = mime_type(filename))) {
-	adios(NULL, "Unable to determine MIME type of \"%s\"", filename);
+	die("Unable to determine MIME type of \"%s\"", filename);
     }
 
     /*
@@ -1990,15 +1989,15 @@ setup_attach_content(CT ct, char *filename)
 
     switch (ct->c_type = s2i->si_val) {
     case CT_MULTIPART:
-	adios (NULL, "multipart types must be specified by mhbuild directives");
+	die("multipart types must be specified by mhbuild directives");
 	/* NOTREACHED */
 
     case CT_MESSAGE:
 	if (strcasecmp(ct->c_ctinfo.ci_subtype, "partial") == 0)
-	    adios(NULL, "Sorry, %s/%s isn't supported", ct->c_ctinfo.ci_type,
+	    die("Sorry, %s/%s isn't supported", ct->c_ctinfo.ci_type,
 		ct->c_ctinfo.ci_subtype);
 	if (strcasecmp(ct->c_ctinfo.ci_subtype, "external-body") == 0)
-	    adios(NULL, "external-body messages must be specified "
+	    die("external-body messages must be specified "
 		"by mhbuild directives");
 	/* FALLTHRU */
 
@@ -2094,7 +2093,7 @@ set_charset (CT ct, int contains8bit) {
 
             if (contains8bit == 1  &&
                 strcasecmp (eightbitcharset, "US-ASCII") == 0) {
-                adios (NULL, "Text content contains 8 bit characters, but "
+                die("Text content contains 8 bit characters, but "
                        "character set is US-ASCII");
             }
 
@@ -2430,7 +2429,7 @@ extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
         ct->c_subtype = TEXT_PLAIN;
         if (get_ctinfo ("text/plain", ct, 0) == NOTOK) {
             /* This never should fail, but just in case. */
-            adios (NULL, "unable to get content info for reply");
+            die("unable to get content info for reply");
         }
     }
 

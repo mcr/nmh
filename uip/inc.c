@@ -236,7 +236,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW:
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [+folder] [switches]", invo_name);
@@ -248,7 +248,7 @@ main (int argc, char **argv)
 
 	    case AUDSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		audfile = mh_xstrdup(m_maildir(cp));
 		continue;
 	    case NAUDSW:
@@ -278,7 +278,7 @@ main (int argc, char **argv)
 
 	    case FILESW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		from = path (cp, TFILE);
 
 		/*
@@ -298,34 +298,34 @@ main (int argc, char **argv)
 
 	    case FORMSW:
 		if (!(form = *argp++) || *form == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		format = NULL;
 		continue;
 	    case FMTSW:
 		if (!(format = *argp++) || *format == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		form = NULL;
 		continue;
 
 	    case WIDTHSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		width = atoi (cp);
 		continue;
 
 	    case HOSTSW:
 		if (!(host = *argp++) || *host == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case PORTSW:
 		if (!(port = *argp++) || *port == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case USERSW:
 		if (!(user = *argp++) || *user == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case SNOOPSW:
@@ -341,7 +341,7 @@ main (int argc, char **argv)
 	
 	    case SASLMECHSW:
 		if (!(saslmech = *argp++) || *saslmech == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case INITTLSSW:
@@ -363,24 +363,24 @@ main (int argc, char **argv)
 	    case AUTHSERVICESW:
 #ifdef OAUTH_SUPPORT
                 if (!(auth_svc = *argp++) || *auth_svc == '-')
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
 #else
-                adios (NULL, "not built with OAuth support");
+                die("not built with OAuth support");
 #endif
                 continue;
 
 	    case PROXYSW:
 		if (!(proxy = *argp++) || *proxy == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else {
-	    adios (NULL, "usage: %s [+folder] [switches]", invo_name);
+	    die("usage: %s [+folder] [switches]", invo_name);
 	}
     }
 
@@ -402,11 +402,11 @@ main (int argc, char **argv)
 
 	if (auth_svc == NULL) {
 	    if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
-		adios (NULL, "must specify -authservice with -saslmech xoauth2");
+		die("must specify -authservice with -saslmech xoauth2");
 	    }
 	} else {
 	    if (user == NULL) {
-		adios (NULL, "must specify -user with -saslmech xoauth2");
+		die("must specify -user with -saslmech xoauth2");
 	    }
 	}
 
@@ -421,15 +421,15 @@ main (int argc, char **argv)
 	 */
 	if (pop_init (host, port, user, proxy, snoop, sasl, saslmech,
 		      tlsflag, auth_svc) == NOTOK)
-	    adios (NULL, "%s", response);
+	    die("%s", response);
 
 	/* Check if there are any messages */
 	if (pop_stat (&nmsgs, &nbytes) == NOTOK)
-	    adios (NULL, "%s", response);
+	    die("%s", response);
 
 	if (nmsgs == 0) {
 	    pop_quit();
-	    adios (NULL, "no mail to incorporate");
+	    die("no mail to incorporate");
 	}
 
     } else if (inc_type == INC_FILE) {
@@ -444,7 +444,7 @@ main (int argc, char **argv)
 	    newmail = concat (MAILDIR, "/", MAILFIL, NULL);
 	}
 	if (stat (newmail, &s1) == NOTOK || s1.st_size == 0)
-	    adios (NULL, "no mail to incorporate");
+	    die("no mail to incorporate");
  	if (s1.st_mode & S_IFDIR) {
  	    DIR *md;
  	    struct dirent *de;
@@ -453,13 +453,13 @@ main (int argc, char **argv)
  	    i = 0;
  	    cp = concat (newmail, "/new", NULL);
  	    if ((md = opendir(cp)) == NULL)
- 		adios (NULL, "unable to open %s", cp);
+ 		die("unable to open %s", cp);
  	    while ((de = readdir (md)) != NULL) {
  		if (de->d_name[0] == '.')
  		    continue;
  		if (i >= num_maildir_entries) {
  		    if ((Maildir = realloc(Maildir, sizeof(*Maildir) * (2*i+16))) == NULL)
- 			adios(NULL, "not enough memory for %d messages", 2*i+16);
+ 			die("not enough memory for %d messages", 2*i+16);
  		    num_maildir_entries = 2*i+16;
  		}
  		Maildir[i].filename = concat (cp, "/", de->d_name, NULL);
@@ -472,13 +472,13 @@ main (int argc, char **argv)
  	    closedir (md);
  	    cp = concat (newmail, "/cur", NULL);
  	    if ((md = opendir(cp)) == NULL)
- 		adios (NULL, "unable to open %s", cp);
+ 		die("unable to open %s", cp);
  	    while ((de = readdir (md)) != NULL) {
  		if (de->d_name[0] == '.')
  		    continue;
  		if (i >= num_maildir_entries) {
  		    if ((Maildir = realloc(Maildir, sizeof(*Maildir) * (2*i+16))) == NULL)
- 			adios(NULL, "not enough memory for %d messages", 2*i+16);
+ 			die("not enough memory for %d messages", 2*i+16);
  		    num_maildir_entries = 2*i+16;
  		}
  		Maildir[i].filename = concat (cp, "/", de->d_name, NULL);
@@ -490,7 +490,7 @@ main (int argc, char **argv)
  	    free (cp);
  	    closedir (md);
  	    if (i == 0)
- 	        adios (NULL, "no mail to incorporate");
+ 	        die("no mail to incorporate");
  	    num_maildir_entries = i;
  	    qsort (Maildir, num_maildir_entries, sizeof(*Maildir), maildir_srt);
  	}
@@ -521,7 +521,7 @@ main (int argc, char **argv)
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 0)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     if (inc_type == INC_FILE && Maildir == NULL) {
         /* Mail from a spool file. */
@@ -539,7 +539,7 @@ main (int argc, char **argv)
             in = lkfopenspool (newmail, "r");
             DROPGROUPPRIVS();
             if (in == NULL)
-		adios (NULL, "unable to lock and fopen %s", newmail);
+		die("unable to lock and fopen %s", newmail);
 	    fstat (fileno(in), &s1);
 	} else {
 	    trnflag = 0;
@@ -601,7 +601,7 @@ main (int argc, char **argv)
             pc.written = 0;
             pc.mailout = pf;
             if (pop_retr(i, pop_action, &pc) == NOTOK)
-                adios (NULL, "%s", response);
+                die("%s", response);
 
             if (fflush (pf))
                 adios (cp, "write error on");
@@ -644,13 +644,13 @@ main (int argc, char **argv)
             free (cp);
 
 	    if (trnflag && pop_dele (i) == NOTOK)
-		adios (NULL, "%s", response);
+		die("%s", response);
 
 	    scan_finished();
 	}
 
 	if (pop_quit () == NOTOK)
-	    adios (NULL, "%s", response);
+	    die("%s", response);
 
     } else if (inc_type == INC_FILE && Maildir == NULL) {
         /* Mail from a spool file. */
@@ -810,7 +810,7 @@ main (int argc, char **argv)
 	} else {
 	    fclose (in); in = NULL;
 	}
-	adios (NULL, "failed");
+	die("failed");
     }
 
     if (aud)

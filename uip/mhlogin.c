@@ -57,15 +57,15 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
     const char *url;
 
     if (svc == NULL) {
-        adios(NULL, "missing -authservice switch");
+        die("missing -authservice switch");
     }
 
     if (user == NULL) {
-        adios(NULL, "missing -user switch");
+        die("missing -user switch");
     }
 
     if (!mh_oauth_new(&ctx, svc)) {
-        adios(NULL, "%s", mh_oauth_get_err_string(ctx));
+        die("%s", mh_oauth_get_err_string(ctx));
     }
 
     if (snoop) {
@@ -75,7 +75,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
     fn = mh_oauth_cred_fn(svc);
 
     if ((url = mh_oauth_get_authorize_url(ctx)) == NULL) {
-      adios(NULL, "%s", mh_oauth_get_err_string(ctx));
+      die("%s", mh_oauth_get_err_string(ctx));
     }
 
     if (browser) {
@@ -111,7 +111,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
     }
     if (cred == NULL) {
       inform("error exchanging code for OAuth2 token");
-      adios(NULL, "%s", mh_oauth_get_err_string(ctx));
+      die("%s", mh_oauth_get_err_string(ctx));
     }
 
     cred_file = lkfopendata(fn, "r+", &failed_to_lock);
@@ -122,7 +122,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
       adios(fn, "oops");
     }
     if (!mh_oauth_cred_save(cred_file, cred, user)) {
-      adios(NULL, "%s", mh_oauth_get_err_string(ctx));
+      die("%s", mh_oauth_get_err_string(ctx));
     }
     if (lkfclosedata(cred_file, fn) != 0) {
       adios (fn, "oops");
@@ -156,7 +156,7 @@ main(int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW:
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW:
 		snprintf(help, sizeof(help), "%s [switches]",
@@ -169,22 +169,22 @@ main(int argc, char **argv)
 
 	    case USERSW:
 		if (!(user = *argp++) || *user == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case SASLMECHSW:
 		if (!(saslmech = *argp++) || *saslmech == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case AUTHSERVICESW:
                 if (!(svc = *argp++) || *svc == '-')
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 continue;
 
 	    case BROWSERSW:
                 if (!(browser = *argp++) || *browser == '-')
-                    adios (NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 continue;
 
             case SNOOPSW:
@@ -192,12 +192,12 @@ main(int argc, char **argv)
                 continue;
 	    }
 	}
-        adios(NULL, "extraneous arguments");
+        die("extraneous arguments");
     }
 
     if (saslmech  &&  strcasecmp(saslmech, "xoauth2")) {
         /* xoauth is assumed */
-        adios(NULL, "only -saslmech xoauth2 is supported");
+        die("only -saslmech xoauth2 is supported");
     }
     free(arguments);
 
@@ -207,7 +207,7 @@ main(int argc, char **argv)
     NMH_UNUSED(svc);
     NMH_UNUSED(browser);
     NMH_UNUSED(snoop);
-    adios(NULL, "not built with OAuth support");
+    die("not built with OAuth support");
     return 1;
 #endif
 }

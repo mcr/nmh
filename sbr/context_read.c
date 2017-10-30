@@ -53,7 +53,7 @@ context_read (void)
 
     if ((mypath = getenv("HOME")) == NULL) {
 	if ((pw = getpwuid(getuid())) == NULL || *pw->pw_dir == '\0')
-	    adios(NULL, "cannot determine your home directory");
+	    die("cannot determine your home directory");
         mypath = pw->pw_dir;
     }
 
@@ -70,16 +70,16 @@ context_read (void)
         /* defpath is an absolute path; make sure that always MH is, too. */
 	setenv("MH", defpath, 1);
 	if (stat(defpath, &st) != -1 && (st.st_mode & S_IFREG) == 0)
-		adios(NULL, "`%s' specified by your MH environment variable is not a normal file", cp);
+		die("`%s' specified by your MH environment variable is not a normal file", cp);
 
 	if ((ib = fopen(defpath, "r")) == NULL)
-	    adios(NULL, "unable to read the `%s' profile specified by your MH environment variable", defpath);
+	    die("unable to read the `%s' profile specified by your MH environment variable", defpath);
     }
     else {
 	defpath = concat(mypath, "/", mh_profile, NULL);
 
 	if ((ib = fopen(defpath, "r")) == NULL)
-	    adios(NULL, "Doesn't look like nmh is installed.  Run install-mh to do so.");
+	    die("Doesn't look like nmh is installed.  Run install-mh to do so.");
 
 	cp = mh_profile;
     }
@@ -93,10 +93,10 @@ context_read (void)
      */
 
     if ((cp = context_find ("path")) == NULL)
-	adios(NULL, "Your %s file does not contain a path entry.", defpath);
+	die("Your %s file does not contain a path entry.", defpath);
 
     if (*cp == '\0')
-	adios(NULL, "Your `%s' profile file does not contain a valid path entry.", defpath);
+	die("Your `%s' profile file does not contain a valid path entry.", defpath);
 
     if (*cp != '/')
 	(void)snprintf (nd = buf, sizeof(buf), "%s/%s", mypath, cp);
@@ -110,16 +110,16 @@ context_read (void)
 	cp = concat ("Your MH-directory \"", nd, "\" doesn't exist; Create it? ", NULL);
 
 	if (!read_yes_or_no_if_tty(cp))
-	    adios (NULL, "unable to access MH-directory \"%s\"", nd);
+	    die("unable to access MH-directory \"%s\"", nd);
 
 	free (cp);
 
 	if (!makedir (nd))
-	    adios (NULL, "unable to create %s", nd);
+	    die("unable to create %s", nd);
     }
 
     else if ((st.st_mode & S_IFDIR) == 0)
-	adios (NULL, "`%s' is not a directory", nd);
+	die("`%s' is not a directory", nd);
 
     /*
      *	Open and read user's context file.  The name of the context file comes from the

@@ -141,7 +141,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
     char *client_res;
 
     if (!mh_oauth_new (&ctx, svc))
-        adios(NULL, "%s", mh_oauth_get_err_string(ctx));
+        die("%s", mh_oauth_get_err_string(ctx));
 
     if (log != NULL) mh_oauth_log_to(stderr, ctx);
 
@@ -149,7 +149,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
     fp = lkfopendata(fn, "r+", &failed_to_lock);
     if (fp == NULL) {
         if (errno == ENOENT) {
-            adios(NULL, "no credentials -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
+            die("no credentials -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
         }
         adios(fn, "failed to open");
     }
@@ -158,24 +158,24 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
     }
 
     if ((cred = mh_oauth_cred_load(fp, ctx, user)) == NULL) {
-        adios(NULL, "%s", mh_oauth_get_err_string(ctx));
+        die("%s", mh_oauth_get_err_string(ctx));
     }
 
     if (!mh_oauth_access_token_valid(time(NULL), cred)) {
         if (!mh_oauth_refresh(cred)) {
             if (mh_oauth_get_err_code(ctx) == MH_OAUTH_NO_REFRESH) {
-                adios(NULL, "no valid credentials -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
+                die("no valid credentials -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
             }
             if (mh_oauth_get_err_code(ctx) == MH_OAUTH_BAD_GRANT) {
-                adios(NULL, "credentials rejected -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
+                die("credentials rejected -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
             }
             inform("error refreshing OAuth2 token");
-            adios(NULL, "%s", mh_oauth_get_err_string(ctx));
+            die("%s", mh_oauth_get_err_string(ctx));
         }
 
         fseek(fp, 0, SEEK_SET);
         if (!mh_oauth_cred_save(fp, cred, user)) {
-            adios(NULL, "%s", mh_oauth_get_err_string(ctx));
+            die("%s", mh_oauth_get_err_string(ctx));
         }
     }
 

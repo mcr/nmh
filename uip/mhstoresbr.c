@@ -566,7 +566,7 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 
 	    /* Store content in temporary file for now */
 	    if ((tmpfilenam = m_mktemp(invo_name, NULL, NULL)) == NULL) {
-		adios(NULL, "unable to create temporary file in %s",
+		die("unable to create temporary file in %s",
 		      get_temp_dir());
 	    }
 	    ct->c_storage = mh_xstrdup(tmpfilenam);
@@ -1139,7 +1139,7 @@ clobber_policy (const char *value) {
     return NMH_CLOBBER_NEVER;
   }
 
-  adios (NULL, "invalid argument, %s, to clobber", value);
+  die("invalid argument, %s, to clobber", value);
 }
 
 

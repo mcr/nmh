@@ -61,7 +61,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] dates ...",
@@ -74,30 +74,30 @@ main (int argc, char **argv)
 
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    format = NULL;
 		    continue;
 		case FMTSW: 
 		    if (!(format = *argp++) || *format == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    form = NULL;
 		    continue;
 
 		case WIDTHSW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    width = atoi (cp);
 		    continue;
 	    }
 	}
 	if (datep == NDATES)
-	    adios (NULL, "more than %d dates", NDATES);
+	    die("more than %d dates", NDATES);
         dates[datep++] = cp;
     }
     dates[datep] = NULL;
 
     if (datep == 0)
-	adios (NULL, "usage: %s [switches] dates ...", invo_name);
+	die("usage: %s [switches] dates ...", invo_name);
 
     /* get new format string */
     nfs = new_fs (form, format, FORMAT);

@@ -1084,7 +1084,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
         }
 
         if ((tempfile = m_mktemp2 (NULL, invo_name, &fd, NULL)) == NULL) {
-            adios (NULL, "unable to create temporary file in %s",
+            die("unable to create temporary file in %s",
                    get_temp_dir());
         }
         dest = mh_xstrdup(tempfile);

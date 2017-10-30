@@ -108,7 +108,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW:
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW:
 		    snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -121,9 +121,9 @@ main (int argc, char **argv)
 
 		case COMPSW:
 		    if (comp)
-			adios (NULL, "only one component at a time!");
+			die("only one component at a time!");
 		    if (!(comp = *argp++) || *comp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case DATESW:
@@ -142,9 +142,9 @@ main (int argc, char **argv)
 
 		case TEXTSW:
 		    if (text)
-			adios (NULL, "only one body at a time!");
+			die("only one body at a time!");
 		    if (!(text = *argp++) || *text == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case DELETESW:		/* delete annotations */
@@ -161,7 +161,7 @@ main (int argc, char **argv)
 
 		case NUMBERSW:		/* number listing or delete by number */
 		    if (number != 0)
-			adios (NULL, "only one number at a time!");
+			die("only one number at a time!");
 
 		    if (argp - arguments == argc - 1 || **argp == '-')
 			number = 1;
@@ -171,7 +171,7 @@ main (int argc, char **argv)
 		    	    number = -1;
 
 		    	else if (!(number = atoi(*argp)))
-			    adios (NULL, "missing argument to %s", argp[-1]);
+			    die("missing argument to %s", argp[-1]);
 
 			argp++;
 		    }
@@ -194,7 +194,7 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
 		app_msgarg(&msgs, cp);
@@ -208,7 +208,7 @@ main (int argc, char **argv)
 
     if (draft != NULL) {
 	if (msgs.size != 0)
-	    adios(NULL, "can only have message numbers or -draft.");
+	    die("can only have message numbers or -draft.");
 
 	draft = mh_xstrdup(m_draft(folder, NULL, 1, &isdf));
 
@@ -236,11 +236,11 @@ main (int argc, char **argv)
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /* check for empty folder */
     if (mp->nummsg == 0)
-	adios (NULL, "no messages in %s", folder);
+	die("no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
     for (msgnum = 0; msgnum < msgs.size; msgnum++)
@@ -285,13 +285,13 @@ make_comp (char **ap)
     if ((cp = *ap + strlen (*ap) - 1) > *ap && *cp == ':')
 	*cp = 0;
     if (!**ap)
-	adios (NULL, "null component name");
+	die("null component name");
     if (**ap == '-')
-	adios (NULL, "invalid component name %s", *ap);
+	die("invalid component name %s", *ap);
     if (strlen (*ap) >= NAMESZ)
-	adios (NULL, "too large component name %s", *ap);
+	die("too large component name %s", *ap);
 
     for (cp = *ap; *cp; cp++)
 	if (!isalnum ((unsigned char) *cp) && *cp != '-')
-	    adios (NULL, "invalid component name %s", *ap);
+	    die("invalid component name %s", *ap);
 }

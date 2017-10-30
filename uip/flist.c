@@ -140,7 +140,7 @@ main(int argc, char **argv)
 		ambigsw(cp, switches);
 		done(1);
 	    case UNKWNSW:
-		adios(NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW:
 		snprintf(buf, sizeof(buf), "%s [+folder1 [+folder2 ...]][switches]",
@@ -153,7 +153,7 @@ main(int argc, char **argv)
 
 	    case SEQSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 
 		svector_push_back (sequencesToDo, cp);
 		break;
@@ -237,7 +237,7 @@ main(int argc, char **argv)
 	    for (; ap && *ap; ap++)
 		svector_push_back (sequencesToDo, *ap);
 	} else {
-	    adios (NULL, "no sequence specified or %s profile entry found", usequence);
+	    die("no sequence specified or %s profile entry found", usequence);
 	}
     }
 

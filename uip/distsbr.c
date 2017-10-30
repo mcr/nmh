@@ -93,7 +93,7 @@ distout (char *drft, char *msgnam, char *backup)
 		return NOTOK;
 
 	    default: 
-		adios (NULL, "getfld() returned %d", state);
+		die("getfld() returned %d", state);
 	}
     }
 process: ;
@@ -145,12 +145,12 @@ ready_msg (char *msgnam)
 
     cp = m_mktemp2(NULL, "dist", &hdrfd, NULL);
     if (cp == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	die("unable to create temporary file in %s", get_temp_dir());
     }
     strncpy(tmpfil, cp, sizeof(tmpfil));
     if ((out = dup (hdrfd)) == NOTOK
 	    || (ofp = fdopen (out, "w")) == NULL)
-	adios (NULL, "no file descriptors -- you lose big");
+	die("no file descriptors -- you lose big");
     (void) m_unlink (tmpfil);
 
     gstate = m_getfld_state_init(ifp);
@@ -174,14 +174,14 @@ ready_msg (char *msgnam)
 
                 cp = m_mktemp2(NULL, "dist", &txtfd, NULL);
                 if (cp == NULL) {
-		    adios(NULL, "unable to create temporary file in %s",
+		    die("unable to create temporary file in %s",
 			  get_temp_dir());
                 }
                 fchmod(txtfd, 0600);
 		strncpy (tmpfil, cp, sizeof(tmpfil));
 		if ((out = dup (txtfd)) == NOTOK
 			|| (ofp = fdopen (out, "w")) == NULL)
-		    adios (NULL, "no file descriptors -- you lose big");
+		    die("no file descriptors -- you lose big");
 		(void) m_unlink (tmpfil);
 		fprintf (ofp, "\n%s", buffer);
 		while (state == BODY) {
@@ -194,10 +194,10 @@ ready_msg (char *msgnam)
 
 	    case LENERR: 
 	    case FMTERR: 
-		adios (NULL, "format error in message %s", msgnam);
+		die("format error in message %s", msgnam);
 
 	    default: 
-		adios (NULL, "getfld() returned %d", state);
+		die("getfld() returned %d", state);
 	}
     }
 process: ;

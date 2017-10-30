@@ -1742,11 +1742,11 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
      */
 
     if (pipe(fdinput) < 0) {
-	adios(NULL, "Unable to create input pipe");
+	die("Unable to create input pipe");
     }
 
     if (pipe(fdoutput) < 0) {
-    	adios(NULL, "Unable to create output pipe");
+    	die("Unable to create output pipe");
     }
 
     /*
@@ -1801,7 +1801,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
 	 */
 	_exit(0);
     case -1:
-    	adios(NULL, "Unable to fork for filter writer process");
+    	die("Unable to fork for filter writer process");
 	break;
     }
 
@@ -1876,7 +1876,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
 	break;
 
     case -1:
-    	adios(NULL, "Unable to fork format program");
+    	die("Unable to fork format program");
     }
 
     /*
@@ -1899,7 +1899,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
     }
 
     if (cc < 0) {
-    	adios(NULL, "reading from formatproc");
+    	die("reading from formatproc");
     }
 
     /*

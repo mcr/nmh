@@ -127,7 +127,7 @@ folder_read (char *name, int lockflag)
      */
 
     if (mp->hghoff < mp->lowoff) {
-	adios(NULL, "Internal failure: high message limit < low message "
+	die("Internal failure: high message limit < low message "
 	      "limit; possible overflow?");
     }
 

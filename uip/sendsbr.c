@@ -120,7 +120,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	if (pushsw && unique) {
 	    char *cp = m_mktemp2(drft, invo_name, NULL, NULL);
 	    if (cp == NULL) {
-		adios(NULL, "unable to create temporary file");
+		die("unable to create temporary file");
 	    }
 	    if (rename (drft, strncpy(file, cp, sizeof(file))) == NOTOK)
 		adios (file, "unable to rename %s to", drft);
@@ -135,10 +135,10 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 #ifdef OAUTH_SUPPORT
 		const char *errmsg;
 		if (setup_oauth_params(vec, nvecsp, auth_svc, &errmsg) != OK) {
-                        adios(NULL, "%s", errmsg);
+                        die("%s", errmsg);
 		}
 #else
-                adios(NULL, "send built without OAUTH_SUPPORT, "
+                die("send built without OAUTH_SUPPORT, "
                       "so auth_svc %s is not supported", auth_svc);
 #endif /* OAUTH_SUPPORT */
 	}
@@ -276,17 +276,17 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 
 	   case LENERR:
 	   case FMTERR:
-		adios (NULL, "message format error in component #%d", compnum);
+		die("message format error in component #%d", compnum);
 
 	   default:
-		adios (NULL, "getfld () returned %d", state);
+		die("getfld () returned %d", state);
 	}
 
 	break;
     }
     m_getfld_state_destroy (&gstate);
     if (cp == NULL)
-	adios (NULL, "headers missing from draft");
+	die("headers missing from draft");
 
     nparts = 1;
     pos = start;
@@ -329,7 +329,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 
 	char *cp = m_mktemp2(drft, invo_name, NULL, &out);
         if (cp == NULL) {
-	    adios(NULL, "unable to create temporary file");
+	    die("unable to create temporary file");
         }
 	strncpy(tmpdrf, cp, sizeof(tmpdrf));
 
@@ -362,7 +362,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 	    if (!fgets (buffer, sizeof buffer, in)) {
 		if (partno == nparts)
 		    break;
-		adios (NULL, "premature eof");
+		die("premature eof");
 	    }
 
 	    if ((pos += (len = strlen (buffer))) > CPERMSG) {
@@ -763,12 +763,12 @@ handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc) {
             if (strcmp(*vp, "xoauth2") == 0) {
 #ifdef OAUTH_SUPPORT
                 if (setup_oauth_params(vec, vecp, auth_svc, &message) != OK) {
-                    adios(NULL, "%s", message);
+                    die("%s", message);
                 }
                 break;
 #else
                 NMH_UNUSED(auth_svc);
-                adios(NULL, "send built without OAUTH_SUPPORT, "
+                die("send built without OAUTH_SUPPORT, "
                       "so -saslmech xoauth2 is not supported");
 #endif /* OAUTH_SUPPORT */
             }
@@ -816,7 +816,7 @@ setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
         if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
 	    if (! mh_oauth_get_service_info(auth_svc, &svc, errbuf,
 	    				    sizeof(errbuf)))
-		adios(NULL, "Unable to retrieve oauth profile entries: %s",
+		die("Unable to retrieve oauth profile entries: %s",
 		      errbuf);
 
 	    vec[(*vecp)++] = mh_xstrdup("-authservice");

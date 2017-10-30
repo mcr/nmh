@@ -70,7 +70,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW: 
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW: 
 		snprintf (buf, sizeof(buf), "%s [switches]", invo_name);
@@ -82,27 +82,27 @@ main (int argc, char **argv)
     
 	    case TOSW:
 		if (!(f1 = *argp++))
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case SUBJECTSW:
 		if (!(f2 = *argp++))
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case PARAMSW:
 		if (!(f3 = *argp++))
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case DESCRIPTSW:
 		if (!(f4 = *argp++))
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case COMMENTSW:
 		if (!(f5 = *argp++))
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case DELAYSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 
 		/*
 		 * If there is an error, just reset the delay parameter
@@ -113,7 +113,7 @@ main (int argc, char **argv)
 		continue;
 	    case FROMSW:
 		if (!(f7 = *argp++))
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    case VERBSW: 
@@ -131,7 +131,7 @@ main (int argc, char **argv)
     }
 
     if (!f1)
-	adios (NULL, "missing -viamail \"mailpath\" switch");
+	die("missing -viamail \"mailpath\" switch");
 
     via_mail (f1, f2, f3, f4, f5, delay, f7);
     return 0;  /* dead code to satisfy the compiler */
@@ -157,7 +157,7 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     umask (~m_gmprot ());
 
     if ((tfile = m_mktemp2(NULL, invo_name, NULL, &fp)) == NULL) {
-	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+	die("unable to create temporary file in %s", get_temp_dir());
     }
     strncpy (tmpfil, tfile, sizeof(tmpfil));
 

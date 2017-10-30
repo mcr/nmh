@@ -181,7 +181,7 @@ process_args(int argc, char **argv, const char **directory,
             case DIRECTORYSW:
                 /* Allow the directory to start with '-'. */
                 if ((cp = *argp++) == NULL) {
-                    adios(NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 *directory = cp;
                 continue;
@@ -189,7 +189,7 @@ process_args(int argc, char **argv, const char **directory,
             case PREFIXSW:
                 /* Allow the prefix to start with '-'. */
                 if ((cp = *argp++) == NULL) {
-                    adios(NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 *prefix = cp;
                 continue;
@@ -198,7 +198,7 @@ process_args(int argc, char **argv, const char **directory,
             case SUFFIXSW:
                 /* Allow the suffix to start with '-'. */
                 if ((cp = *argp++) == NULL) {
-                    adios(NULL, "missing argument to %s", argp[-2]);
+                    die("missing argument to %s", argp[-2]);
                 }
                 *suffix = cp;
                 continue;

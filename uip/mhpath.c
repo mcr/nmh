@@ -47,7 +47,7 @@ main(int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -61,7 +61,7 @@ main(int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
 		app_msgarg(&msgs, cp);
@@ -85,7 +85,7 @@ main(int argc, char **argv)
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /*
      * We need to make sure there is message status space
@@ -95,10 +95,10 @@ main(int argc, char **argv)
      */
     if (mp->hghmsg >= mp->hghoff) {
 	if (!(mp = folder_realloc (mp, 1, mp->hghmsg + 10)))
-	    adios (NULL, "unable to allocate folder storage");
+	    die("unable to allocate folder storage");
     } else if (mp->lowoff > 1) {
 	if (!(mp = folder_realloc (mp, 1, mp->hghoff)))
-	    adios (NULL, "unable to allocate folder storage");
+	    die("unable to allocate folder storage");
     }
 
     mp->msgflags |= ALLOW_NEW;	/* allow the "new" sequence */

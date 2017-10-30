@@ -100,7 +100,7 @@ static
 void
 nonexistent_folder (int status) {
     NMH_UNUSED (status);
-    adios (NULL, "folder %s does not exist", folder);
+    die("folder %s does not exist", folder);
 }
 
 
@@ -130,7 +130,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [+folder] [msg] [switches]",
@@ -226,11 +226,11 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (argfolder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             argfolder = pluspath (cp);
 	} else {
 	    if (msg)
-		adios (NULL, "only one (current) message at a time!");
+		die("only one (current) message at a time!");
             msg = cp;
 	}
     }
@@ -256,7 +256,7 @@ main (int argc, char **argv)
 		ap = brkstring (dp, " ", "\n");
 		argfolder = getcpy(*ap++);
 	    } else {
-		adios (NULL, "no other folder");
+		die("no other folder");
 	    }
 	    for (cp = mh_xstrdup(getfolder(1)); *ap; ap++)
 		cp = add (*ap, add (" ", cp));
@@ -274,13 +274,13 @@ main (int argc, char **argv)
     /* Popping a folder off of the folder stack */
     if (popsw) {
 	if (argfolder)
-	    adios (NULL, "sorry, no folders allowed with -pop");
+	    die("sorry, no folders allowed with -pop");
 	if ((cp = context_find (stack))) {
 	    dp = mh_xstrdup(cp);
 	    ap = brkstring (dp, " ", "\n");
 	    argfolder = getcpy(*ap++);
 	} else {
-	    adios (NULL, "folder stack empty");
+	    die("folder stack empty");
 	}
 	if (*ap) {
 	    /* if there's anything left in the stack */

@@ -66,7 +66,7 @@ main (int argc, char **argv)
 		    ambigsw (cp, switches);
 		    done (1);
 		case UNKWNSW: 
-		    adios (NULL, "-%s unknown", cp);
+		    die("-%s unknown", cp);
 
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf), "%s [switches] aliases ...",
@@ -79,9 +79,9 @@ main (int argc, char **argv)
 
 		case ALIASW: 
 		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if ((i = alias (cp)) != AK_OK)
-			adios (NULL, "aliasing error in %s - %s", cp, akerror (i));
+			die("aliasing error in %s - %s", cp, akerror (i));
 		    continue;
 		case NALIASW: 
 		    noalias = true;
@@ -108,7 +108,7 @@ main (int argc, char **argv)
 	} else {
 	    /* Should never happen, but try to protect against code changes
 	       that could allow it. */
-	    adios (NULL, "too many arguments");
+	    die("too many arguments");
 	}
     }
 
@@ -119,7 +119,7 @@ main (int argc, char **argv)
 
 	    for (ap = brkstring(dp = mh_xstrdup(cp), " ", "\n"); ap && *ap; ap++)
 		if ((i = alias (*ap)) != AK_OK)
-		    adios (NULL, "aliasing error in %s - %s", *ap, akerror (i));
+		    die("aliasing error in %s - %s", *ap, akerror (i));
             free(dp);
 	}
 	alias (AliasFile);
@@ -130,7 +130,7 @@ main (int argc, char **argv)
      */
     if (inverted) {
 	if (vecp == 0)
-	    adios (NULL, "usage: %s -user addresses ...  (you forgot the addresses)",
+	    die("usage: %s -user addresses ...  (you forgot the addresses)",
 		   invo_name);
 
 	for (i = 0; i < vecp; i++)
@@ -207,9 +207,9 @@ print_usr (char *s, bool list)
     struct mailname *mp, *np;
 
     if ((pp = getname (s)) == NULL)
-	adios (NULL, "no address in \"%s\"", s);
+	die("no address in \"%s\"", s);
     if ((mp = getm (pp, NULL, 0, NULL, 0)) == NULL)
-	adios (NULL, "bad address \"%s\"", s);
+	die("bad address \"%s\"", s);
     while (getname (""))
 	continue;
 

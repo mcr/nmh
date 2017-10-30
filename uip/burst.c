@@ -88,7 +88,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW: 
-		adios (NULL, "-%s unknown\n", cp);
+		die("-%s unknown\n", cp);
 
 	    case HELPSW: 
 		snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -133,7 +133,7 @@ main (int argc, char **argv)
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else {
 	    app_msgarg(&msgs, cp);
@@ -153,11 +153,11 @@ main (int argc, char **argv)
 
     /* read folder and create message structure */
     if (!(mp = folder_read (folder, 1)))
-	adios (NULL, "unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     /* check for empty folder */
     if (mp->nummsg == 0)
-	adios (NULL, "no messages in %s", folder);
+	die("no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
     for (msgnum = 0; msgnum < msgs.size; msgnum++)
@@ -185,7 +185,7 @@ main (int argc, char **argv)
 				  msgnum);
 		}  /* this pair of braces was missing before 1999-07-15 */
 		else
-		    adios (NULL, "burst() botch -- you lose big");
+		    die("burst() botch -- you lose big");
 	    }
 	}
     }
@@ -384,7 +384,7 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
      */
     if ((mp->hghmsg + numburst > mp->hghoff) &&
 	!(mp = folder_realloc (mp, mp->lowoff, mp->hghmsg + numburst)))
-	adios (NULL, "unable to allocate folder storage");
+	die("unable to allocate folder storage");
     *mpp = mp;
 
     j = mp->hghmsg;		/* old value */
@@ -455,7 +455,7 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
         char *tempfile;
 
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, &out)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
+	    die("unable to create temporary file in %s",
 		  get_temp_dir());
 	}
 	strncpy (f2, tempfile, sizeof(f2));

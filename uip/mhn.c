@@ -134,7 +134,7 @@ main (int argc, char **argv)
 		ambigsw (cp, switches);
 		done (1);
 	    case UNKWNSW: 
-		adios (NULL, "-%s unknown", cp);
+		die("-%s unknown", cp);
 
 	    case HELPSW: 
 		snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
@@ -166,13 +166,13 @@ main (int argc, char **argv)
 		icachesw = &wcachesw;
 do_cache:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		switch (*icachesw = smatch (cp, cache_policy)) {
 		case AMBIGSW:
 		    ambigsw (cp, cache_policy);
 		    done (1);
 		case UNKWNSW:
-		    adios (NULL, "%s unknown", cp);
+		    die("%s unknown", cp);
 		default:
 		    break;
 		}
@@ -222,31 +222,31 @@ do_cache:
 
 	    case PARTSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		if (npart >= NPARTS)
-		    adios (NULL, "too many parts (starting with %s), %d max",
+		    die("too many parts (starting with %s), %d max",
 			   cp, NPARTS);
 		parts[npart++] = cp;
 		continue;
 
 	    case TYPESW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		if (ntype >= NTYPES)
-		    adios (NULL, "too many types (starting with %s), %d max",
+		    die("too many types (starting with %s), %d max",
 			   cp, NTYPES);
 		types[ntype++] = cp;
 		continue;
 
 	    case FILESW:
 		if (!(cp = *argp++) || (*cp == '-' && cp[1]))
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		file = *cp == '-' ? cp : path (cp, TFILE);
 		continue;
 
 	    case FORMSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
                 free(formsw);
 		formsw = mh_xstrdup(etcpath(cp));
 		continue;
@@ -256,7 +256,7 @@ do_cache:
 	     */
 	    case PROGSW:
 		if (!(progsw = *argp++) || *progsw == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case NPROGSW:
 		nomore++;
@@ -265,7 +265,7 @@ do_cache:
 	    case LENSW:
 	    case WIDTHSW:
 		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-2]);
 		continue;
 
 	    /*
@@ -297,7 +297,7 @@ do_cache:
 	}
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
-		adios (NULL, "only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
 		app_msgarg(&msgs, cp);
@@ -352,11 +352,11 @@ do_cache:
 	int vecp;
 
 	if (showsw || storesw || cachesw)
-	    adios (NULL, "cannot use -build with -show, -store, -cache");
+	    die("cannot use -build with -show, -store, -cache");
 	if (msgs.size < 1)
-	    adios (NULL, "need to specify a %s composition file", invo_name);
+	    die("need to specify a %s composition file", invo_name);
 	if (msgs.size > 1)
-	    adios (NULL, "only one %s composition file at a time", invo_name);
+	    die("only one %s composition file at a time", invo_name);
 
 	vecp = 0;
 	vec[vecp++] = "mhbuild";
@@ -402,7 +402,7 @@ do_cache:
     }
 
     if (file && msgs.size)
-	adios (NULL, "cannot specify msg and file at same time!");
+	die("cannot specify msg and file at same time!");
 
     /*
      * check if message is coming from file
@@ -428,11 +428,11 @@ do_cache:
 
 	/* read folder and create message structure */
 	if (!(mp = folder_read (folder, 1)))
-	    adios (NULL, "unable to read folder %s", folder);
+	    die("unable to read folder %s", folder);
 
 	/* check for empty folder */
 	if (mp->nummsg == 0)
-	    adios (NULL, "no messages in %s", folder);
+	    die("no messages in %s", folder);
 
 	/* parse all the message ranges/sequences and set SELECTED */
 	for (msgnum = 0; msgnum < msgs.size; msgnum++)
@@ -462,7 +462,7 @@ do_cache:
      * at a time.
      */
     if (showsw + listsw + storesw + cachesw > 1)
-	adios (NULL, "can only use one of -show, -list, -store, -cache at same time");
+	die("can only use one of -show, -list, -store, -cache at same time");
 
     /* If no action is specified, assume -show */
     if (!listsw && !showsw && !storesw && !cachesw)

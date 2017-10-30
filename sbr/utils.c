@@ -36,7 +36,7 @@ void *mh_xmalloc(size_t size)
         size = 1; /* Some mallocs don't like 0. */
     p = malloc(size);
     if (!p)
-        adios(NULL, "malloc failed, size wanted: %zu", size);
+        die("malloc failed, size wanted: %zu", size);
 
     return p;
 }
@@ -56,7 +56,7 @@ void *mh_xrealloc(void *ptr, size_t size)
 
     new = realloc(ptr, size);
     if (!new)
-        adios(NULL, "realloc failed, size wanted: %zu", size);
+        die("realloc failed, size wanted: %zu", size);
 
     return new;
 }
@@ -71,7 +71,7 @@ void *mh_xcalloc(size_t nelem, size_t elsize)
 
     p = calloc(nelem, elsize);
     if (!p)
-        adios(NULL, "calloc failed, size wanted: %zu * %zu", nelem, elsize);
+        die("calloc failed, size wanted: %zu * %zu", nelem, elsize);
 
     return p;
 }
@@ -205,7 +205,7 @@ void create_folder(char *folder, int autocreate, void (*done_callback)(int))
             done_callback (1);
         }
         if (!makedir (folder))
-            adios (NULL, "unable to create folder %s", folder);
+            die("unable to create folder %s", folder);
     }
 }
 
@@ -220,7 +220,7 @@ num_digits (int n)
 
     /* Sanity check */
     if (n < 0)
-        adios (NULL, "oops, num_digits called with negative value");
+        die("oops, num_digits called with negative value");
 
     if (n == 0)
         return 1;
