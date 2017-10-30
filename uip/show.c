@@ -66,8 +66,10 @@ static int is_nontext(char *);
 int
 main (int argc, char **argv)
 {
-    int draftsw = 0, headersw = 1;
-    int nshow = 0, checkmime = 1, mime = 0;
+    int draftsw = 0;
+    bool headersw = true;
+    int nshow = 0, checkmime = 1;
+    bool mime = false;
     int isdf = 0, mode = SHOW, msgnum;
     char *cp, *maildir, *file = NULL, *folder = NULL, *proc, *program;
     char buf[BUFSIZ], **argp, **arguments;
@@ -93,10 +95,10 @@ main (int argc, char **argv)
 		    done (1);
 
 		case HEADSW:
-		    headersw = 1;
+		    headersw = true;
 		    goto non_mhl_switches;
 		case NHEADSW:
-		    headersw = 0;
+		    headersw = false;
 		    /* FALLTHRU */
 		case CONCATSW:
 		case NCONCATSW:
@@ -206,7 +208,7 @@ usage:
 	    app_msgarg(&vec, mh_xstrdup(m_draft(folder, NULL, 1, &isdf)));
 	else
 	    app_msgarg(&vec, file);
-	headersw = 0;
+	headersw = false;
 	goto go_to_it;
     }
 
@@ -279,13 +281,13 @@ go_to_it: ;
 		/* loop through selected messages and check for MIME */
 		for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)
 		    if (is_selected (mp, msgnum) && is_nontext (m_name (msgnum))) {
-			mime = 1;
+			mime = true;
 			break;
 		    }
 	    } else {
 		/* check the file or draft for MIME */
 		if (is_nontext (vec.msgs[vec.size - 1]))
-		    mime = 1;
+		    mime = true;
 	    }
 	}
 

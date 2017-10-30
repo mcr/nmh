@@ -386,7 +386,7 @@ WhatNow (int argc, char **argv)
 	     *	Attach files to current draft.
 	     */
 
-            int verbose = 0;
+            bool verbose = false;
             char **ap;
 
 	    if (checkmimeheader(drft))
@@ -395,7 +395,7 @@ WhatNow (int argc, char **argv)
 	    for (ap = argp+1; *ap; ++ap) {
 		if (strcmp(*ap, "-v") == 0) {
 		    ++argp;
-		    verbose = 1;
+		    verbose = true;
 		} else if (*ap[0] != '-') {
 		    break;
 		}
@@ -647,7 +647,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
     char *cp, *prog, **vec;
     struct stat st;
 
-    int	slinked = 0;
+    bool slinked = false;
 
     /* Was there a previous edit session? */
     if (reedit && (*ed || edsave)) {
@@ -683,9 +683,9 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 		if (symlink (altpath, linkpath) < 0) {
 		    adios (linkpath, "symlink");
 		}
-		slinked = 1;
+		slinked = true;
 	    } else {
-		slinked = 0;
+		slinked = false;
 	    }
 	}
     }
@@ -1305,7 +1305,8 @@ checkmimeheader (char *drft)
     FILE *f;
     m_getfld_state_t gstate;
     char buf[NMH_BUFSIZ], name[NAMESZ];
-    int state, retval = 0;
+    int state;
+    bool retval = false;
 
     if ((f = fopen(drft, "r")) == NULL) {
 	admonish(drft, "unable to read draft");
@@ -1321,7 +1322,7 @@ checkmimeheader (char *drft)
 	    if (strcasecmp(name, VRSN_FIELD) == 0) {
 		inform("Cannot use attach commands with already-"
 		       "formatted MIME message \"%s\"", drft);
-		retval = 1;
+		retval = true;
 		break;
 	    }
 	    continue;

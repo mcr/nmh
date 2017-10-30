@@ -89,8 +89,12 @@ static char outfile[BUFSIZ];
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1, directives = 1, autobuild = 0, dist = 0;
-    int verbosw = 0, dispo = 0;
+    int sizesw = 1, headsw = 1;
+    bool directives = true;
+    bool autobuild = false;
+    bool dist = false;
+    int verbosw = 0;
+    bool dispo = false;
     size_t maxunencoded = MAXTEXTPERLN;
     int *icachesw;
     char *cp, buf[BUFSIZ];
@@ -134,16 +138,16 @@ main (int argc, char **argv)
 
 	    case AUTOSW:
 	    	/* -auto implies -nodirectives */
-		autobuild = 1;
-		directives = 0;
+		autobuild = true;
+		directives = false;
 		continue;
 	    case NAUTOSW:
 	    	/*
 		 * We're turning directives back on since this is likely here
 		 * to override a profile entry
 		 */
-		autobuild = 0;
-		directives = 1;
+		autobuild = false;
+		directives = true;
 		continue;
 
 	    case RCACHESW:
@@ -180,10 +184,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case DIRECTIVES:
-		directives = 1;
+		directives = true;
 		continue;
 	    case NDIRECTIVES:
-		directives = 0;
+		directives = false;
 		continue;
 
 	    case LISTSW:
@@ -260,16 +264,16 @@ main (int argc, char **argv)
 		verbosw = 0;
 		continue;
 	    case DISPOSW:
-		dispo = 1;
+		dispo = true;
 		continue;
 	    case NDISPOSW:
-		dispo = 0;
+		dispo = false;
 		continue;
 	    case DEBUGSW:
 		debugsw = 1;
 		continue;
 	    case DISTSW:
-		dist = 1;
+		dist = true;
 		continue;
 	    }
 	}

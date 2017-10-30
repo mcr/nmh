@@ -69,7 +69,11 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1, chgflag = 1, verbosw = 0, dispo = 0;
+    bool sizesw = true;
+    bool headsw = true;
+    int chgflag = 1;
+    bool verbosw = false;
+    bool dispo = false;
     int msgnum, *icachesw;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
@@ -133,17 +137,17 @@ do_cache:
 		continue;
 
 	    case HEADSW:
-		headsw = 1;
+		headsw = true;
 		continue;
 	    case NHEADSW:
-		headsw = 0;
+		headsw = false;
 		continue;
 
 	    case SIZESW:
-		sizesw = 1;
+		sizesw = true;
 		continue;
 	    case NSIZESW:
-		sizesw = 0;
+		sizesw = false;
 		continue;
 
 	    case PARTSW:
@@ -194,16 +198,16 @@ do_cache:
 		continue;
 
 	    case VERBSW: 
-		verbosw = 1;
+		verbosw = true;
 		continue;
 	    case NVERBSW: 
-		verbosw = 0;
+		verbosw = false;
 		continue;
 	    case DISPOSW:
-		dispo = 1;
+		dispo = true;
 		continue;
 	    case NDISPOSW:
-		dispo = 0;
+		dispo = false;
 		continue;
 	    case DEBUGSW:
 		debugsw = 1;

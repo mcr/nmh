@@ -68,7 +68,7 @@ main (int argc, char **argv)
     struct msgs *mp, *mp2;
     FILE *fp;
     int debug = 0;
-    int reverse = 0;
+    bool reverse = false;
     int start, end, inc;
 
     if (nmh_init(argv[0], true, true)) { return 1; }
@@ -104,7 +104,7 @@ main (int argc, char **argv)
 		done (0);
 
             case REVSW:
-                reverse = 1;
+                reverse = true;
                 continue;
 
 	    case CCSW: 

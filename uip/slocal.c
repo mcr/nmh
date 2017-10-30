@@ -421,7 +421,10 @@ localmail (int fd, char *mdlvr)
 static int
 usr_delivery (int fd, char *delivery, int su)
 {
-    int i, accept, status=1, won, vecp, next;
+    int i;
+    bool accept;
+    int status=1, won, vecp;
+    bool next;
     char *field, *pattern, *action, *result, *string;
     char buffer[BUFSIZ], tmpbuf[BUFSIZ];
     char *vec[NVEC];
@@ -445,7 +448,7 @@ usr_delivery (int fd, char *delivery, int su)
     }
 
     won = 0;
-    next = 1;
+    next = true;
 
     /* read and process delivery file */
     while (fgets (buffer, sizeof(buffer), fp)) {
@@ -503,7 +506,7 @@ usr_delivery (int fd, char *delivery, int su)
 		 * Take action, and consider delivered if
 		 * action is successful.
 		 */
-		accept = 1;
+		accept = true;
 		break;
 
 	    case 'R': 
@@ -513,7 +516,7 @@ usr_delivery (int fd, char *delivery, int su)
 		 * Take action, but don't consider delivered, even
 		 * if action is successful
 		 */
-		accept = 0;
+		accept = false;
 		break;
 	}
 
@@ -556,9 +559,9 @@ usr_delivery (int fd, char *delivery, int su)
 		 */
 		if ((p = lookup (hdrs, field)) && (p->p_value != NULL)
 			&& matches (p->p_value, pattern)) {
-		    next = 1;
+		    next = true;
 		} else {
-		    next = 0;
+		    next = false;
 		    continue;
 		}
 		break;
@@ -630,7 +633,7 @@ usr_delivery (int fd, char *delivery, int su)
 		break;
 	}
 
-	if (status) next = 0;	/* action failed, mark for 'N' result */
+	if (status) next = false; /* action failed, mark for 'N' result */
 
 	if (accept && status == 0)
 	    won++;

@@ -132,8 +132,8 @@ main (int argc, char **argv) {
     struct msgs *mp = NULL;
     CT *ctp;
     FILE *fp, *infp = NULL, *outfp = NULL;
-    int using_stdin = 0;
-    int chgflag = 1;
+    bool using_stdin = false;
+    bool chgflag = true;
     int status = OK;
     fix_transformations fx;
     fx.reformat = fx.fixcompositecte = fx.fixboundary = 1;
@@ -265,10 +265,10 @@ main (int argc, char **argv) {
                 rmmproc = NULL;
                 continue;
             case CHGSW:
-                chgflag = 1;
+                chgflag = true;
                 continue;
             case NCHGSW:
-                chgflag = 0;
+                chgflag = false;
                 continue;
             case VERBSW:
                 verbosw = 1;
@@ -338,7 +338,7 @@ main (int argc, char **argv) {
             int fd;
             char *cp;
 
-            using_stdin = 1;
+            using_stdin = true;
 
             if ((cp = m_mktemp2 (NULL, invo_name, &fd, NULL)) == NULL) {
                 die("unable to create temporary file in %s",
@@ -523,7 +523,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
     char *input_filename = maildir
         ?  concat (maildir, "/", (*ctp)->c_file, NULL)
         :  mh_xstrdup ((*ctp)->c_file);
-    int modify_inplace = 0;
+    bool modify_inplace = false;
     int message_mods = 0;
     int status = OK;
 
@@ -535,7 +535,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
     }
 
     if (outfile == NULL) {
-        modify_inplace = 1;
+        modify_inplace = true;
 
         if ((*ctp)->c_file) {
             char *tempfile;
@@ -1183,7 +1183,7 @@ set_ce (CT ct, int encoding) {
 
     if (ctinit) {
         char *cte = concat (" ", ce, "\n", NULL);
-        int found_cte = 0;
+        bool found_cte = false;
         HF hf;
         /* Decoded contents might be in ct->c_cefile.ce_file, if the
            caller is decode_text_parts ().  Save because we'll
@@ -1210,7 +1210,7 @@ set_ce (CT ct, int encoding) {
         /* Update/add Content-Transfer-Encoding header field. */
         for (hf = ct->c_first_hf; hf; hf = hf->next) {
             if (! strcasecmp (ENCODING_FIELD, hf->name)) {
-                found_cte = 1;
+                found_cte = true;
                 free (hf->value);
                 hf->value = cte;
             }
@@ -1398,7 +1398,7 @@ find_textplain_sibling (CT parent, int replacetextplain,
                         int *new_subpart_number) {
     struct multipart *mp = (struct multipart *) parent->c_ctparams;
     struct part *part, *prev;
-    int has_text_plain = 0;
+    bool has_text_plain = false;
 
     for (prev = part = mp->mp_parts; part; part = part->mp_next) {
         ++*new_subpart_number;
@@ -1421,7 +1421,7 @@ find_textplain_sibling (CT parent, int replacetextplain,
                 free_content (old_part->mp_part);
                 free (old_part);
             } else {
-                has_text_plain = 1;
+                has_text_plain = true;
             }
             break;
         }
@@ -1834,7 +1834,7 @@ static int
 boundary_in_content (FILE **fp, char *file, const char *boundary) {
     char buffer[NMH_BUFSIZ];
     size_t bytes_read;
-    int found_boundary = 0;
+    bool found_boundary = false;
 
     /* free_content() will close *fp if we fopen it here. */
     if (! *fp  &&  (*fp = fopen (file, "r")) == NULL) {
@@ -1845,7 +1845,7 @@ boundary_in_content (FILE **fp, char *file, const char *boundary) {
     fseeko (*fp, 0L, SEEK_SET);
     while ((bytes_read = fread (buffer, 1, sizeof buffer, *fp)) > 0) {
         if (find_str (buffer, bytes_read, boundary)) {
-            found_boundary = 1;
+            found_boundary = true;
             break;
         }
     }
@@ -1909,7 +1909,7 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
     char *type_subtypename = concat (" ", typename, "/", subtypename, NULL);
     /* E.g, " text/plain\n" */
     char *name_plus_nl = concat (type_subtypename, "\n", NULL);
-    int found_content_type = 0;
+    bool found_content_type = false;
     HF hf;
     const char *cp = NULL;
     char *ctline;
@@ -1918,7 +1918,7 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
     /* Update/add Content-Type header field. */
     for (hf = ct->c_first_hf; hf; hf = hf->next) {
         if (! strcasecmp (TYPE_FIELD, hf->name)) {
-            found_content_type = 1;
+            found_content_type = true;
             free (hf->value);
             hf->value = (cp = strchr (ct->c_ctline, ';'))
                 ?  concat (type_subtypename, cp, "\n", NULL)
@@ -2088,18 +2088,18 @@ should_decode(const char *decodetypes, const char *type, const char *subtype) {
        decodetypes with commas, then search for ,type, and ,type/subtype, in
        it. */
 
-    int found_match = 0;
+    bool found_match = false;
     char *delimited_decodetypes = concat(",", decodetypes, ",", NULL);
     char *delimited_type = concat(",", type, ",", NULL);
 
     if (nmh_strcasestr(delimited_decodetypes, delimited_type)) {
-        found_match = 1;
+        found_match = true;
     } else if (subtype != NULL) {
         char *delimited_type_subtype =
             concat(",", type, "/", subtype, ",", NULL);
 
         if (nmh_strcasestr(delimited_decodetypes, delimited_type_subtype)) {
-            found_match = 1;
+            found_match = true;
         }
         free(delimited_type_subtype);
     }
@@ -2194,8 +2194,8 @@ strip_crs (CT ct, int *message_mods) {
         FILE **fp = NULL;
         size_t begin;
         size_t end;
-        int has_crs = 0;
-        int opened_input_file = 0;
+        bool has_crs = false;
+        bool opened_input_file = false;
 
         if (ct->c_cefile.ce_file) {
             file = &ct->c_cefile.ce_file;
@@ -2214,7 +2214,7 @@ strip_crs (CT ct, int *message_mods) {
                     advise (*file, "unable to open for reading");
                     status = NOTOK;
                 } else {
-                    opened_input_file = 1;
+                    opened_input_file = true;
                 }
             }
         }
@@ -2234,13 +2234,13 @@ strip_crs (CT ct, int *message_mods) {
                    modify the content. */
                 char *cp;
                 size_t i;
-                int last_char_was_cr = 0;
+                bool last_char_was_cr = false;
 
                 if (end > 0) { bytes_to_read -= bytes_read; }
 
                 for (i = 0, cp = buffer; i < bytes_read; ++i, ++cp) {
                     if (*cp == '\n'  &&  last_char_was_cr) {
-                        has_crs = 1;
+                        has_crs = true;
                         break;
                     }
 
@@ -2265,11 +2265,11 @@ strip_crs (CT ct, int *message_mods) {
                        0) {
                     char *cp;
                     size_t i;
-                    int last_char_was_cr = 0;
+                    bool last_char_was_cr = false;
 
                     for (i = 0, cp = buffer; i < bytes_read; ++i, ++cp) {
                         if (*cp == '\r') {
-                            last_char_was_cr = 1;
+                            last_char_was_cr = true;
                         } else if (last_char_was_cr) {
                             if (*cp != '\n') {
                                 if (write (fd, "\r", 1) < 0) {
@@ -2279,12 +2279,12 @@ strip_crs (CT ct, int *message_mods) {
                             if (write (fd, cp, 1) < 0) {
                                 advise (tempfile, "write");
                             }
-                            last_char_was_cr = 0;
+                            last_char_was_cr = false;
                         } else {
                             if (write (fd, cp, 1) < 0) {
                                 advise (tempfile, "write");
                             }
-                            last_char_was_cr = 0;
+                            last_char_was_cr = false;
                         }
                     }
                 }
@@ -2338,12 +2338,12 @@ update_cte (CT ct) {
         least_restrictive_enc != CE_7BIT) {
         char *cte = concat (" ", ce_str (least_restrictive_enc), "\n", NULL);
         HF hf;
-        int found_cte = 0;
+        bool found_cte = false;
 
         /* Update/add Content-Transfer-Encoding header field. */
         for (hf = ct->c_first_hf; hf; hf = hf->next) {
             if (! strcasecmp (ENCODING_FIELD, hf->name)) {
-                found_cte = 1;
+                found_cte = true;
                 free (hf->value);
                 hf->value = cte;
             }
@@ -2575,7 +2575,7 @@ fix_always (CT ct, int *message_mods) {
  */
 static int
 fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm) {
-    int fixed = 0;
+    bool fixed = false;
 
     if (has_prefix(value, "=?") && has_suffix(value, "?=")) {
         /* Looks like an RFC 2047 encoded parameter. */
@@ -2584,7 +2584,7 @@ fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm) {
         if (decode_rfc2047 (value, decoded, sizeof decoded)) {
             /* Encode using RFC 2231. */
             replace_param (first_pm, last_pm, name, decoded, 0);
-            fixed = 1;
+            fixed = true;
         } else {
             inform("failed to decode %s parameter %s", name, value);
         }

@@ -228,12 +228,14 @@ store_application (CT ct, mhstoreinfo_t info)
      * attribute/value pairs which specify if this a tar file.
      */
     if (!ct->c_storeproc && ct->c_subtype == APPLICATION_OCTETS) {
-	int tarP = 0, zP = 0, gzP = 0;
+	bool tarP = false;
+        bool zP = false;
+        bool gzP = false;
 	char *cp;
 
 	if ((cp = get_param(ci->ci_first_pm, "type", ' ', 1))) {
 	    if (strcasecmp (cp, "tar") == 0)
-		tarP = 1;
+		tarP = true;
 	}
 
 	/* check for "conversions=compress" attribute */
@@ -241,11 +243,11 @@ store_application (CT ct, mhstoreinfo_t info)
 	    (cp = get_param(ci->ci_first_pm, "x-conversions", ' ', 1))) {
 	    if (strcasecmp (cp, "compress") == 0 ||
 		    strcasecmp (cp, "x-compress") == 0) {
-		zP = 1;
+		zP = true;
 	    }
 	    if (strcasecmp (cp, "gzip") == 0 ||
 		    strcasecmp (cp, "x-gzip") == 0) {
-		gzP = 1;
+		gzP = true;
 	    }
 	}
 
@@ -488,9 +490,11 @@ ct_compar (CT *a, CT *b)
 static int
 store_content (CT ct, CT p, mhstoreinfo_t info)
 {
-    int appending = 0, msgnum = 0;
-    int is_partial = 0, first_partial = 0;
-    int last_partial = 0;
+    bool appending = false;
+    int msgnum = 0;
+    bool is_partial = false;
+    bool first_partial = false;
+    bool last_partial = false;
     char *cp, buffer[BUFSIZ];
 
     /*
@@ -510,13 +514,13 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 	struct partial *pm = (struct partial *) ct->c_ctparams;
 
 	/* Yep, it's a message/partial */
-	is_partial = 1;
+	is_partial = true;
 
 	/* But is it the first and/or last in the collection? */
 	if (pm->pm_partno == 1)
-	    first_partial = 1;
+	    first_partial = true;
 	if (pm->pm_maxno && pm->pm_partno == pm->pm_maxno)
-	    last_partial = 1;
+	    last_partial = true;
 
 	/*
 	 * If "p" is a valid pointer, then it points to the
@@ -525,7 +529,7 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 	 * from the previous iteration of this function.
 	 */
 	if (p) {
-	    appending = 1;
+	    appending = true;
             if (! ct->c_storage) {
 		ct->c_storage = mh_xstrdup(FENDNULL(p->c_storage));
 
@@ -1217,7 +1221,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
 
   char *file;
   char *cwd = NULL;
-  int check_again;
+  bool check_again;
 
   if (! strcmp (original_file, "-")) {
       return original_file;
@@ -1244,7 +1248,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
     struct stat st;
 
     file = original_file;
-    check_again = 0;
+    check_again = false;
 
     switch (info->clobber_policy) {
       case NMH_CLOBBER_ALWAYS:
@@ -1310,7 +1314,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
                 file = cwd  ?  concat (cwd, "/", buf, NULL)  :  mh_xstrdup(buf);
               }
 
-              check_again = 1;
+              check_again = true;
               break;
             }
           }

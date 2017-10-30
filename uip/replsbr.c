@@ -23,7 +23,7 @@ static char *badaddrs = NULL;
 static char *dfhost = NULL;
 
 static struct mailname mq;
-static int nodupcheck = 0;		/* If set, no check for duplicates */
+static bool nodupcheck;		/* If set, no check for duplicates */
 
 static char *addrcomps[] = {
     "from",
@@ -367,9 +367,9 @@ replconcataddr(char *orig, char *str)
 {
     char *cp;
 
-    nodupcheck = 1;
+    nodupcheck = true;
     cp = replformataddr(orig, str);
-    nodupcheck = 0;
+    nodupcheck = false;
     return cp;
 }
 
@@ -487,7 +487,7 @@ static
 char *
 fix_addresses (char *str) {
     char *fixed_str = NULL;
-    int fixed_address = 0;
+    bool fixed_address = false;
 
     if (str) {
         /*
@@ -564,7 +564,7 @@ fix_addresses (char *str) {
                 adr = getname (new_adr);
                 if (adr != NULL  &&
                     (mp = getm (adr, dfhost, dftype, NULL, 0)) != NULL) {
-                    fixed_address = 1;
+                    fixed_address = true;
                     mnfree (mp);
                 }
                 free (angle_addr);

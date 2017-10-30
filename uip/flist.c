@@ -443,7 +443,8 @@ static int
 AddFolder(char *name, int force)
 {
     unsigned int i;
-    int msgnum, nonzero;
+    int msgnum;
+    bool nonzero;
     ivector_t seqnum = ivector_create (0), nSeq = ivector_create (0);
     struct Folder *f;
     struct msgs *mp;
@@ -478,10 +479,10 @@ AddFolder(char *name, int force)
     }
 
     /* Check if any of the sequence checks were nonzero */
-    nonzero = 0;
+    nonzero = false;
     for (i = 0; i < svector_size (sequencesToDo); i++) {
 	if (ivector_at (nSeq, i) > 0) {
-	    nonzero = 1;
+	    nonzero = true;
 	    break;
 	}
     }
@@ -521,7 +522,8 @@ static void
 PrintFolders(void)
 {
     char tmpname[BUFSIZ];
-    unsigned int i, j, len, has_private = 0;
+    unsigned int i, j, len;
+    bool has_private = false;
     unsigned int maxfolderlen = 0, maxseqlen = 0;
     int maxnum = 0, maxseq = 0;
 
@@ -561,7 +563,7 @@ PrintFolders(void)
 
 	    /* check if this sequence is private in any of the folders */
 	    if (ivector_at (folders[i].private, j))
-		has_private = 1;
+		has_private = true;
 	}
     }
 

@@ -52,9 +52,9 @@ DEFINE_SWITCH_ARRAY(RCVTTY, switches);
 #undef X
 
 static jmp_buf myctx;
-static int bell = 1;
-static int newline = 1;
-static int biff = 0;
+static bool bell = true;
+static bool newline = true;
+static bool biff;
 static int width = -1;
 static char *form = NULL;
 static char *format = NULL;
@@ -103,7 +103,7 @@ main (int argc, char **argv)
 		    done (0);
 
 		case BIFFSW:
-		    biff = 1;
+		    biff = true;
 		    continue;
 
 		case FORMSW:
@@ -123,16 +123,16 @@ main (int argc, char **argv)
 		    width = atoi(cp);
 		    continue;
                 case NLSW:
-                    newline = 1;
+                    newline = true;
                     continue;
                 case NNLSW:
-                    newline = 0;
+                    newline = false;
                     continue;
                 case BELSW:
-                    bell = 1;
+                    bell = true;
                     continue;
                 case NBELSW:
-                    bell = 0;
+                    bell = false;
                     continue;
 
 	    }

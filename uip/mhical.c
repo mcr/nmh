@@ -70,7 +70,8 @@ main (int argc, char *argv[]) {
     act action = ACT_NONE;
     char *infile = NULL, *outfile = NULL;
     FILE *inputfile = NULL, *outputfile = NULL;
-    int contenttype = 0, unfold = 0;
+    bool contenttype = false;
+    bool unfold = false;
     vevent *v, *nextvevent;
     char *form = "mhical.24hour", *format = NULL;
     char **argp, **arguments, *cp;
@@ -150,14 +151,14 @@ main (int argc, char *argv[]) {
                 continue;
 
             case CONTENTTYPESW:
-                contenttype = 1;
+                contenttype = true;
                 continue;
             case NCONTENTTYPESW:
-                contenttype = 0;
+                contenttype = false;
                 continue;
 
             case UNFOLDSW:
-                unfold = 1;
+                unfold = true;
                 continue;
             }
         }
@@ -258,7 +259,7 @@ main (int argc, char *argv[]) {
 static void
 convert_to_reply (contentline *clines, act action) {
     char *partstat = NULL;
-    int found_my_attendee_line = 0;
+    bool found_my_attendee_line = false;
     contentline *node;
 
     convert_common (clines, action);
@@ -302,7 +303,7 @@ convert_to_reply (contentline *clines, act action) {
             while (getname ("")) { continue; }
 
             if (ismymbox (mn)) {
-                found_my_attendee_line = 1;
+                found_my_attendee_line = true;
                 for (p = node->params; p && p->param_name; p = p->next) {
                     value_list *v;
 
@@ -386,7 +387,7 @@ convert_to_cancellation (contentline *clines) {
 static void
 convert_common (contentline *clines, act action) {
     contentline *node;
-    int in_valarm;
+    bool in_valarm;
 
     if ((node = find_contentline (clines, "METHOD", 0))) {
         free (node->value);
@@ -470,7 +471,7 @@ convert_common (contentline *clines, act action) {
     }
 
     /* Excise X- lines and VALARM section(s). */
-    in_valarm = 0;
+    in_valarm = false;
     for (node = clines; node; node = node->next) {
         /* node->name will be NULL if the line was deleted. */
         if (! node->name) { continue; }
@@ -478,13 +479,13 @@ convert_common (contentline *clines, act action) {
         if (in_valarm) {
             if (! strcasecmp ("END", node->name)  &&
                 ! strcasecmp ("VALARM", node->value)) {
-                in_valarm = 0;
+                in_valarm = false;
             }
             remove_contentline (node);
         } else {
             if (! strcasecmp ("BEGIN", node->name)  &&
                 ! strcasecmp ("VALARM", node->value)) {
-                in_valarm = 1;
+                in_valarm = true;
                 remove_contentline (node);
             } else if (! strncasecmp ("X-", node->name, 2)) {
                 remove_contentline (node);
@@ -559,8 +560,8 @@ output (FILE *file, contentline *clines, int contenttype) {
 static void
 display (FILE *file, contentline *clines, char *nfs) {
     tzdesc_t timezones = load_timezones (clines);
-    int in_vtimezone;
-    int in_valarm;
+    bool in_vtimezone;
+    bool in_valarm;
     contentline *node;
     struct format *fmt;
     int dat[5] = { 0, 0, 0, INT_MAX, 0 };
@@ -595,7 +596,7 @@ display (FILE *file, contentline *clines, char *nfs) {
     }
 
     /* Only display DESCRIPTION lines that are outside VALARM section(s). */
-    in_valarm = 0;
+    in_valarm = false;
     if ((c = fmt_findcomp ("description"))) {
         for (node = clines; node; node = node->next) {
             /* node->name will be NULL if the line was deleted. */
@@ -606,12 +607,12 @@ display (FILE *file, contentline *clines, char *nfs) {
             } else if (in_valarm) {
                 if (! strcasecmp ("END", node->name)  &&
                     ! strcasecmp ("VALARM", node->value)) {
-                    in_valarm = 0;
+                    in_valarm = false;
                 }
             } else {
                 if (! strcasecmp ("BEGIN", node->name)  &&
                     ! strcasecmp ("VALARM", node->value)) {
-                    in_valarm = 1;
+                    in_valarm = true;
                 }
             }
         }
@@ -626,7 +627,7 @@ display (FILE *file, contentline *clines, char *nfs) {
 
     if ((c = fmt_findcomp ("dtstart"))) {
         /* Find DTSTART outsize of a VTIMEZONE section. */
-        in_vtimezone = 0;
+        in_vtimezone = false;
         for (node = clines; node; node = node->next) {
             /* node->name will be NULL if the line was deleted. */
             if (! node->name) { continue; }
@@ -634,12 +635,12 @@ display (FILE *file, contentline *clines, char *nfs) {
             if (in_vtimezone) {
                 if (! strcasecmp ("END", node->name)  &&
                     ! strcasecmp ("VTIMEZONE", node->value)) {
-                    in_vtimezone = 0;
+                    in_vtimezone = false;
                 }
             } else {
                 if (! strcasecmp ("BEGIN", node->name)  &&
                     ! strcasecmp ("VTIMEZONE", node->value)) {
-                    in_vtimezone = 1;
+                    in_vtimezone = true;
                 } else if (! strcasecmp ("DTSTART", node->name)) {
                     /* Got it:  DTSTART outside of a VTIMEZONE section. */
                     char *datetime = format_datetime (timezones, node);

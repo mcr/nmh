@@ -117,7 +117,8 @@ int
 main (int argc, char **argv)
 {
     int	i, isdf = 0;
-    int anot = 0, inplace = 1;
+    int anot = 0;
+    bool inplace = true;
     int nedit = 0, nwhat = 0;
     int atfile = 0;
     int fmtproc = -1;
@@ -270,10 +271,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case INPLSW: 
-		    inplace++;
+		    inplace = true;
 		    continue;
 		case NINPLSW: 
-		    inplace = 0;
+		    inplace = false;
 		    continue;
 
 		case MIMESW:

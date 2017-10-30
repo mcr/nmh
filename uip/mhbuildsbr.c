@@ -677,7 +677,7 @@ user_content (FILE *in, char *buf, CT *ctp, const char *infilename)
      */
     if (!do_direct() || buf[0] != '#' || buf[1] == '#' || buf[1] == '<') {
 	int headers;
-	int inlineD;
+	bool inlineD;
 	long pos;
 	char content[BUFSIZ];
 	FILE *out;
@@ -694,10 +694,10 @@ user_content (FILE *in, char *buf, CT *ctp, const char *infilename)
 
 	if (do_direct() && (buf[0] == '#' && buf[1] == '<')) {
 	    strncpy (content, buf + 2, sizeof(content));
-	    inlineD = 1;
+	    inlineD = true;
 	    goto rock_and_roll;
 	}
-        inlineD = 0;
+        inlineD = false;
 
 	/* the directive is implicit */
 	strncpy (content, "text/plain", sizeof(content));
@@ -1181,13 +1181,13 @@ compose_content (CT ct, int verbose)
 	 * subparts with the rfc934 compatibility mode flag.
 	 */
 	if (rfc934sw && ct->c_subtype == MULTI_DIGEST) {
-	    int	is934 = 1;
+	    bool is934 = true;
 
 	    for (part = m->mp_parts; part; part = part->mp_next) {
 		CT p = part->mp_part;
 
 		if (p->c_subtype != MESSAGE_RFC822) {
-		    is934 = 0;
+		    is934 = false;
 		    break;
 		}
 	    }
@@ -1221,7 +1221,8 @@ compose_content (CT ct, int verbose)
     default:
 	if (!ce->ce_file) {
 	    pid_t child_id;
-	    int xstdout, len, buflen;
+	    bool xstdout;
+            int len, buflen;
 	    char *bp, *cp;
 	    char *vec[4], buffer[BUFSIZ];
 	    FILE *out;
@@ -1238,7 +1239,7 @@ compose_content (CT ct, int verbose)
 	    ce->ce_file = mh_xstrdup(tfile);
 	    ce->ce_unlink = 1;
 
-	    xstdout = 0;
+	    xstdout = false;
 
 	    /* Get buffer ready to go */
 	    bp = buffer;
@@ -1270,7 +1271,7 @@ compose_content (CT ct, int verbose)
 
 		    case 'F':
 			/* %f, and stdout is not-redirected */
-			xstdout = 1;
+			xstdout = true;
 			/* FALLTHRU */
 
 		    case 'f':
@@ -1376,12 +1377,12 @@ static int
 scan_content (CT ct, size_t maxunencoded)
 {
     int prefix_len;
-    int check8bit = 0, contains8bit = 0;  /* check if contains 8bit data */
-    int checknul = 0, containsnul = 0;  /* check if contains NULs */
-    int checklinelen = 0, linelen = 0;  /* check for long lines */
-    int checkllinelen = 0; /* check for extra-long lines */
-    int checkboundary = 0, boundaryclash = 0; /* check if clashes with multipart boundary   */
-    int checklinespace = 0, linespace = 0;  /* check if any line ends with space          */
+    bool check8bit = false, contains8bit = false;  /* check if contains 8bit data */
+    bool checknul = false, containsnul = false;  /* check if contains NULs */
+    bool checklinelen = false, linelen = false;  /* check for long lines */
+    bool checkllinelen = false; /* check for extra-long lines */
+    bool checkboundary = false, boundaryclash = false; /* check if clashes with multipart boundary   */
+    bool checklinespace = false, linespace = false;  /* check if any line ends with space          */
     char *cp = NULL;
     char *bufp = NULL;
     size_t buflen;
@@ -1429,18 +1430,18 @@ scan_content (CT ct, size_t maxunencoded)
     if (ct->c_type == CT_TEXT) {
 	t = (struct text *) ct->c_ctparams;
 	if (t->tx_charset == CHARSET_UNSPECIFIED) {
-	    checknul = 1;
+	    checknul = true;
 	}
-	check8bit = 1;
+	check8bit = true;
     }
 
     switch (ct->c_reqencoding) {
     case CE_8BIT:
-	checkllinelen = 1;
-	checkboundary = 1;
+	checkllinelen = true;
+	checkboundary = true;
 	break;
     case CE_QUOTED:
-	checkboundary = 1;
+	checkboundary = true;
 	break;
     case CE_BASE64:
 	break;
@@ -1448,34 +1449,34 @@ scan_content (CT ct, size_t maxunencoded)
 	/* Use the default rules based on content-type */
 	switch (ct->c_type) {
 	case CT_TEXT:
-	    checkboundary = 1;
-	    checklinelen = 1;
+	    checkboundary = true;
+	    checklinelen = true;
 	    if (ct->c_subtype == TEXT_PLAIN) {
-		checklinespace = 0;
+		checklinespace = false;
 	    } else {
-		checklinespace = 1;
+		checklinespace = true;
 	    }
 	break;
 
 	case CT_APPLICATION:
-	    check8bit = 1;
-	    checknul = 1;
-	    checklinelen = 1;
-	    checklinespace = 1;
-	    checkboundary = 1;
+	    check8bit = true;
+	    checknul = true;
+	    checklinelen = true;
+	    checklinespace = true;
+	    checkboundary = true;
 	break;
 
 	case CT_MESSAGE:
-	    checklinelen = 0;
-	    checklinespace = 0;
+	    checklinelen = false;
+	    checklinespace = false;
 
 	    /* don't check anything for message/external */
 	    if (ct->c_subtype == MESSAGE_EXTERNAL) {
-		checkboundary = 0;
-		check8bit = 0;
+		checkboundary = false;
+		check8bit = false;
 	    } else {
-		checkboundary = 1;
-		check8bit = 1;
+		checkboundary = true;
+		check8bit = true;
 	    }
 	    break;
 
@@ -1487,10 +1488,10 @@ scan_content (CT ct, size_t maxunencoded)
 	     * since we are forcing use of base64, unless
 	     * the content-type was specified by a mhbuild directive.
 	     */
-	    check8bit = 0;
-	    checklinelen = 0;
-	    checklinespace = 0;
-	    checkboundary = 0;
+	    check8bit = false;
+	    checklinelen = false;
+	    checklinespace = false;
+	    checkboundary = false;
 	    break;
 	}
     }
@@ -1511,12 +1512,12 @@ scan_content (CT ct, size_t maxunencoded)
 	    for (cp = bufp; (check8bit || checknul) &&
 					cp < bufp + gotlen; cp++) {
 		if (!isascii ((unsigned char) *cp)) {
-		    contains8bit = 1;
-		    check8bit = 0;	/* no need to keep checking */
+		    contains8bit = true;
+		    check8bit = false;	/* no need to keep checking */
 		}
 		if (!*cp) {
-		    containsnul = 1;
-		    checknul = 0;	/* no need to keep checking */
+		    containsnul = true;
+		    checknul = false;	/* no need to keep checking */
 		}
 	    }
 
@@ -1524,8 +1525,8 @@ scan_content (CT ct, size_t maxunencoded)
 	     * Check line length.
 	     */
 	    if (checklinelen && ((size_t)gotlen > maxunencoded + 1)) {
-		linelen = 1;
-		checklinelen = 0;	/* no need to keep checking */
+		linelen = true;
+		checklinelen = false;	/* no need to keep checking */
 	    }
 
 	    /*
@@ -1545,8 +1546,8 @@ scan_content (CT ct, size_t maxunencoded)
 	     */
 	    if (checklinespace && (cp = bufp + gotlen - 2) > bufp &&
 			isspace ((unsigned char) *cp)) {
-		linespace = 1;
-		checklinespace = 0;	/* no need to keep checking */
+		linespace = true;
+		checklinespace = false;	/* no need to keep checking */
 	    }
 
 	    /*
@@ -1560,8 +1561,8 @@ scan_content (CT ct, size_t maxunencoded)
 		*++cp = '\0';
 		if (!strncmp(bufp + 2, prefix, prefix_len) &&
 			    isdigit((unsigned char) bufp[2 + prefix_len])) {
-		    boundaryclash = 1;
-		    checkboundary = 0;	/* no need to keep checking */
+		    boundaryclash = true;
+		    checkboundary = false;	/* no need to keep checking */
 		}
 	    }
 	}
@@ -2125,7 +2126,7 @@ expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
         struct part *part;
 
         if (ct->c_subtype == MULTI_ALTERNATE) {
-            int matched = 0;
+            bool matched = false;
 
             /* The parts are in descending priority order (defined by
                RFC 2046 Sec. 5.1.4) because they were reversed by
@@ -2148,7 +2149,7 @@ expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
                             expand_pseudoheader (part->mp_part, &text_plain_ct,
                                                  m, infile,
                                                  c->type, c->argstring);
-                            matched = 1;
+                            matched = true;
                             break;
                         }
                     }
@@ -2340,7 +2341,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
 int
 extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
     char *buffer = NULL, *cp, *end_of_header;
-    int found_header = 0;
+    bool found_header = false;
     struct stat statbuf;
 
     /* Read the convert reply from the file to memory. */
@@ -2364,10 +2365,10 @@ extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
         buffer[LEN(TYPE_FIELD)] == ':') {
         if ((end_of_header = strstr (buffer, "\r\n\r\n"))) {
             end_of_header += 2;
-            found_header = 1;
+            found_header = true;
         } else if ((end_of_header = strstr (buffer, "\n\n"))) {
             ++end_of_header;
-            found_header = 1;
+            found_header = true;
         }
     }
 

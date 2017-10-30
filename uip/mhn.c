@@ -83,16 +83,16 @@ int verbosw = 0;
 /*
  * variables for mhbuild (mhn -build)
  */
-static int buildsw  = 0;
+static bool buildsw;
 static int rfc934sw = 0;
 
 /*
  * what action to take?
  */
 static int cachesw = 0;
-static int listsw  = 0;
-static int showsw  = 0;
-static int storesw = 0;
+static bool listsw;
+static bool showsw;
+static bool storesw;
 
 #define	quitser	pipeser
 
@@ -105,7 +105,9 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1, autosw = 0;
+    bool sizesw = true;
+    bool headsw = true;
+    int autosw = 0;
     int msgnum, *icachesw;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
@@ -186,38 +188,38 @@ do_cache:
 		continue;
 
 	    case HEADSW:
-		headsw = 1;
+		headsw = true;
 		continue;
 	    case NHEADSW:
-		headsw = 0;
+		headsw = false;
 		continue;
 
 	    case LISTSW:
-		listsw = 1;
+		listsw = true;
 		continue;
 	    case NLISTSW:
-		listsw = 0;
+		listsw = false;
 		continue;
 
 	    case SHOWSW:
-		showsw = 1;
+		showsw = true;
 		continue;
 	    case NSHOWSW:
-		showsw = 0;
+		showsw = false;
 		continue;
 
 	    case SIZESW:
-		sizesw = 1;
+		sizesw = true;
 		continue;
 	    case NSIZESW:
-		sizesw = 0;
+		sizesw = false;
 		continue;
 
 	    case STORESW:
-		storesw = 1;
+		storesw = true;
 		continue;
 	    case NSTORESW:
-		storesw = 0;
+		storesw = false;
 		continue;
 
 	    case PARTSW:
@@ -272,10 +274,10 @@ do_cache:
 	     * Switches for mhbuild
 	     */
 	    case BUILDSW:
-		buildsw = 1;
+		buildsw = true;
 		continue;
 	    case NBUILDSW:
-		buildsw = 0;
+		buildsw = false;
 		continue;
 	    case RFC934SW:
 		rfc934sw = 1;
@@ -466,7 +468,7 @@ do_cache:
 
     /* If no action is specified, assume -show */
     if (!listsw && !showsw && !storesw && !cachesw)
-	showsw = 1;
+	showsw = true;
 
     userrs = 1;
     SIGNAL (SIGQUIT, quitser);

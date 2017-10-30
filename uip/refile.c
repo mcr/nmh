@@ -58,7 +58,9 @@ static void copy_seqs (struct msgs *, int, struct msgs *, int);
 int
 main (int argc, char **argv)
 {
-    int linkf = 0, preserve = 0, retainseqs = 0, filep = 0;
+    int linkf = 0, preserve = 0;
+    bool retainseqs = false;
+    int filep = 0;
     int foldp = 0, isdf = 0, unlink_msgs = 0;
     int i, msgnum;
     char *cp, *folder = NULL, buf[BUFSIZ];
@@ -110,10 +112,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case RETAINSEQSSW:
-		retainseqs = 1;
+		retainseqs = true;
 		continue;
 	    case NRETAINSEQSSW:
-		retainseqs = 0;
+		retainseqs = false;
 		continue;
 
 	    case UNLINKSW:

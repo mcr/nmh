@@ -582,9 +582,9 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     int	alternating, nowalternate, result;
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
-    int request_matched;
-    int display_success;
-    int mult_alt_done;
+    bool request_matched;
+    bool display_success;
+    bool mult_alt_done;
     int ret;
     CT p;
 
@@ -602,9 +602,9 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
      */
 
     result = NOTOK;
-    request_matched = 0;
-    display_success = 0;
-    mult_alt_done = 0;
+    request_matched = false;
+    display_success = false;
+    mult_alt_done = false;
 
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
@@ -625,7 +625,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 				      inlineonly, fmt);
 	    switch (inneresult) {
 		case NOTOK:  /* hard display error */
-		    request_matched = 1;
+		    request_matched = true;
 		    if (alternate && !alternating) {
 			result = NOTOK;
 			goto out;
@@ -636,8 +636,8 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 		    continue;
 
 		case OK:  /* display successful */
-		    request_matched = 1;
-		    display_success = 1;
+		    request_matched = true;
+		    display_success = true;
 		    result = OK;
 
 		    /* if we got success on a sub-part of
@@ -645,7 +645,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 		     * there's a chance an explicit part should be
 		     * matched later in the alternatives.  */
 		    if (alternating) {
-			mult_alt_done = 1;
+			mult_alt_done = true;
 		    } else if (alternate) {
 			alternate = nowalternate = 0;
 		    }
@@ -792,7 +792,8 @@ static int
 parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
                       char *file, char *buffer, size_t buflen,
                       int multipart) {
-    int len, quoted = 0;
+    int len;
+    bool quoted = false;
     char *bp = buffer, *pp;
     CI ci = &ct->c_ctinfo;
 
@@ -963,7 +964,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
 		    *pp++ = '\'';
 		    buflen--;
 		    bp++;
-		    quoted = 1;
+		    quoted = true;
 		}
 		/* Escape existing quotes */
 		while ((pp = strchr (pp, '\'')) && buflen > 3) {
@@ -978,7 +979,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
 			*pp++ = '\'';
 			buflen -= 2;
 			bp += 2;
-			quoted = 0;
+			quoted = false;
 		    } else {
 			/* Not quoted.  This should not be reached with
 			   the current code, but handle the condition
@@ -1017,7 +1018,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
 		    if (! found_quote) {
 			*bp++ = '\'';
 			buflen--;
-			quoted = 0;
+			quoted = false;
 		    }
 		}
 	    }
@@ -1068,7 +1069,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
         FILE **fp = NULL;
         size_t begin;
         size_t end;
-        int opened_input_file = 0;
+        bool opened_input_file = false;
         char src_buffer[BUFSIZ];
 	size_t dest_buffer_size = BUFSIZ;
 	char *dest_buffer = mh_xmalloc(dest_buffer_size);
@@ -1106,7 +1107,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
                     advise (*file, "unable to open for reading");
                     status = NOTOK;
                 } else {
-                    opened_input_file = 1;
+                    opened_input_file = true;
                 }
             }
         }

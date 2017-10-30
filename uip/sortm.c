@@ -76,7 +76,7 @@ main (int argc, char **argv)
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
     struct smsg **dlist;
-    int checksw = 0;
+    bool checksw = false;
 
     if (nmh_init(argv[0], true, true)) { return 1; }
 
@@ -158,10 +158,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case CHECKSW:
-		checksw = 1;
+		checksw = true;
 		continue;
 	    case NCHECKSW:
-		checksw = 0;
+		checksw = false;
 		continue;
 	    }
 	}

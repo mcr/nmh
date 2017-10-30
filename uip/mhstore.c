@@ -63,8 +63,9 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
+    int msgnum, *icachesw, autosw = 0;
     /* verbosw defaults to 1 for backward compatibility. */
-    int msgnum, *icachesw, autosw = 0, verbosw = 1;
+    bool verbosw = true;
     const char *clobbersw = "always";
     char *cp, *file = NULL, *outfile = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
@@ -185,10 +186,10 @@ do_cache:
 		continue;
 
 	    case VERBSW:
-		verbosw = 1;
+		verbosw = true;
 		continue;
 	    case NVERBSW:
-		verbosw = 0;
+		verbosw = false;
 		continue;
             case CLOBBERSW:
 		if (!(cp = *argp++) || *cp == '-')

@@ -102,7 +102,7 @@ static char *test_concataddr(char *, char *);
 static int insert(struct mailname *);
 static void mlistfree(void);
 
-static int nodupcheck = 0;	/* If set, no check for duplicates */
+static bool nodupcheck; 	/* If set, no check for duplicates */
 static int ccme = 0;		/* Should I cc myself? */
 static struct mailname mq;	/* Mail addresses to check for duplicates */
 static char *dummy = "dummy";
@@ -1283,9 +1283,9 @@ test_concataddr(char *orig, char *str)
 {
     char *cp;
 
-    nodupcheck = 1;
+    nodupcheck = true;
     cp = test_formataddr(orig, str);
-    nodupcheck = 0;
+    nodupcheck = false;
     return cp;
 }
 

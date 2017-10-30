@@ -344,7 +344,8 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 	    int personal, int snoop, int sasl, char *saslmech, int tls,
 	    const char *auth_svc)
 {
-    int nmsgs, nbytes, status;
+    int nmsgs, nbytes;
+    bool status;
 
     if (auth_svc == NULL) {
 	if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
@@ -378,14 +379,14 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 	else
 	    notifysw = 0;
 
-	status = 0;
+	status = false;
     } else {
 	if (notifysw & NT_NMAI)
 	    printf (personal ? "You don't %s%s" : "%s doesn't %s",
 		    personal ? "" : user, "have any mail waiting");
 	else
 	    notifysw = 0;
-	status = 1;
+	status = true;
     }
     if (notifysw)
 	printf (" on %s\n", host);

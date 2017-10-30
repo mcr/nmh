@@ -38,7 +38,7 @@ static char *sbackup = BACKUP_PREFIX;
 
 static char *datalocking = "fcntl";
 static char *localmbox = "";
-static int localmbox_primed = 0;
+static bool localmbox_primed;
 
 extern char *spoollocking;
 
@@ -140,7 +140,8 @@ main(int argc, char **argv)
 {
     int i, compp = 0;
     bool missed;
-    int all = 0, debug = 0;
+    bool all = false;
+    bool debug = false;
     int components = -1;
     char *cp, buf[BUFSIZ], **argp;
     char **arguments, *comps[MAXARGS];
@@ -176,18 +177,18 @@ main(int argc, char **argv)
 		    break;
 
 		case ALLSW:
-		    all = 1;
+		    all = true;
 		    break;
 
 		case DEBUGSW:
-		    debug = 1;
+		    debug = true;
 		    break;
 	    }
 	} else {
 	    comps[compp++] = cp;
 	    if (strcmp("localmbox", cp) == 0 && ! localmbox_primed) {
 		localmbox = getlocalmbox();
-		localmbox_primed = 1;
+		localmbox_primed = true;
 	    }
 	}
     }
@@ -221,7 +222,7 @@ main(int argc, char **argv)
 	/* Also set localmbox here */
 	if (! localmbox_primed) {
 	    localmbox = getlocalmbox();
-	    localmbox_primed = 1;
+	    localmbox_primed = true;
 	}
 
 	/*

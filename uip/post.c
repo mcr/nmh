@@ -230,7 +230,7 @@ static int unkadr = 0;		/* how many of those were unknown        */
 static int badadr = 0;		/* number of bad addrs                   */
 static int badmsg = 0;		/* message has bad semantics             */
 static int verbose = 0;		/* spell it out                          */
-static int format = 1;		/* format addresses                      */
+static bool format = true;	/* format addresses                      */
 static int mime = 0;		/* use MIME-style encapsulations for Bcc */
 static int msgid = 0;		/* add msgid                             */
 static int debug = 0;		/* debugging post                        */
@@ -390,10 +390,10 @@ main (int argc, char **argv)
 		    continue;
 		
 		case FRMTSW: 
-		    format++;
+		    format = true;
 		    continue;
 		case NFRMTSW: 
-		    format = 0;
+		    format = false;
 		    continue;
 
 		case BITSTUFFSW:
@@ -1234,7 +1234,8 @@ static int
 putadr (char *name, char *aka, struct mailname *mp, FILE *out,
 	unsigned int flags, char *savehdr, unsigned int savehdrsize)
 {
-    int len, saveappend = 0;
+    int len;
+    bool saveappend = false;
     unsigned int shlen;
     char *cp;
     char buffer[BUFSIZ];
@@ -1252,7 +1253,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out,
 
     if (savehdr) {
 	shlen = strlen(savehdr);
-	saveappend = 1;
+	saveappend = true;
     }
 
     if (*aka && mp->m_type != UUCPHOST && !mp->m_pers)
@@ -1274,7 +1275,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out,
 	    fprintf (out, ",\n%*s", linepos = nameoutput, "");
 	    if (saveappend) {
 		if (shlen + 2 + nameoutput + len >= savehdrsize) {
-		    saveappend = 0;
+		    saveappend = false;
 		} else {
 		    snprintf(savehdr + shlen, savehdrsize - shlen, ",\n%*s",
 			     linepos, "");
@@ -1285,7 +1286,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out,
 	    linepos += 2;
 	    if (saveappend) {
 		if (shlen + 2 + len >= savehdrsize) {
-		    saveappend = 0;
+		    saveappend = false;
 		} else {
 		    strncat(savehdr, ", ", savehdrsize - shlen);
 		}

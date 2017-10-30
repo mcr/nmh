@@ -48,7 +48,8 @@ int
 main (int argc, char **argv)
 {
     int publicsw = -1, zerosw = 0;
-    int create = 1, unseensw = 1;
+    int create = 1;
+    bool unseensw = true;
     int fd, msgnum;
     size_t seqp = 0;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
@@ -93,10 +94,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case UNSEENSW:
-		unseensw = 1;
+		unseensw = true;
 		continue;
 	    case NUNSEENSW:
-		unseensw = 0;
+		unseensw = false;
 		continue;
 
 	    case PUBSW: 

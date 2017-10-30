@@ -270,14 +270,15 @@ static int
 find_cache_aux (int writing, char *directory, char *id,
 	char *buffer, int buflen)
 {
-    int	mask, usemap;
+    int	mask;
+    bool usemap;
     char mapfile[BUFSIZ], mapname[BUFSIZ];
     FILE *fp;
     int failed_to_lock = 0;
     static int partno, pid;
     static time_t clock = 0;
 
-    usemap = 1;
+    usemap = true;
 
     if (debugsw)
 	fprintf (stderr, "find_cache_aux %s usemap=%d\n", directory, usemap);

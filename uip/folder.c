@@ -54,7 +54,7 @@ static int fverb    = 0;	/* print actions taken while packing folder */
 static int fheader  = 0;	/* should we output a header?               */
 static int frecurse = 0;	/* recurse through subfolders               */
 static int ftotal   = 0;	/* should we output the totals?             */
-static int all      = 0;	/* should we output all folders             */
+static bool all;        	/* should we output all folders             */
 
 static int total_folders = 0;	/* total number of folders                  */
 
@@ -107,8 +107,10 @@ nonexistent_folder (int status) {
 int
 main (int argc, char **argv)
 {
-    int printsw = 0, listsw = 0;
-    int pushsw = 0, popsw = 0;
+    bool printsw = false;
+    bool listsw = false;
+    bool pushsw = false;
+    bool popsw = false;
     char *cp, *dp, *msg = NULL, *argfolder = NULL;
     char **ap, **argp, buf[BUFSIZ], **arguments;
 
@@ -142,11 +144,11 @@ main (int argc, char **argv)
 		    done (0);
 
 		case ALLSW: 
-		    all = 1;
+		    all = true;
 		    continue;
 
 		case NALLSW:
-		    all = 0;
+		    all = false;
 		    continue;
 
 		case CREATSW: 
@@ -199,28 +201,28 @@ main (int argc, char **argv)
 		    continue;
 
 		case PRNTSW: 
-		    printsw = 1;
+		    printsw = true;
 		    continue;
 		case NPRNTSW: 
-		    printsw = 0;
+		    printsw = false;
 		    continue;
 
 		case LISTSW: 
-		    listsw = 1;
+		    listsw = true;
 		    continue;
 		case NLISTSW: 
-		    listsw = 0;
+		    listsw = false;
 		    continue;
 
 		case PUSHSW: 
-		    pushsw = 1;
-		    listsw = 1;
-		    popsw  = 0;
+		    pushsw = true;
+		    listsw = true;
+		    popsw  = false;
 		    continue;
 		case POPSW: 
-		    popsw  = 1;
-		    listsw = 1;
-		    pushsw = 0;
+		    popsw  = true;
+		    listsw = true;
+		    pushsw = false;
 		    continue;
 	    }
 	}
@@ -243,8 +245,8 @@ main (int argc, char **argv)
      * If we aren't working with the folder stack
      * (-push, -pop, -list) then the default is to print.
      */
-    if (pushsw == 0 && popsw == 0 && listsw == 0)
-	printsw++;
+    if (!pushsw && !popsw && !listsw)
+	printsw = true;
 
     /* Pushing a folder onto the folder stack */
     if (pushsw) {
@@ -474,7 +476,9 @@ get_folder_info (char *fold, char *msg)
 static void
 print_folders (void)
 {
-    int i, len, hasempty = 0, curprinted;
+    int i, len;
+    bool hasempty = false;
+    bool curprinted;
     int maxlen = 0, maxnummsg = 0, maxlowmsg = 0;
     int maxhghmsg = 0, maxcurmsg = 0, total_msgs = 0;
     int nummsgdigits, lowmsgdigits;
@@ -518,7 +522,7 @@ print_folders (void)
 
 	/* check for empty folders */
 	if (fi[i].nummsg == 0)
-	    hasempty = 1;
+	    hasempty = true;
     }
     nummsgdigits = num_digits (maxnummsg);
     lowmsgdigits = num_digits (maxlowmsg);
@@ -562,7 +566,7 @@ print_folders (void)
 
 	    printf ("%-*s ", maxlen+1, tmpname);
 
-	    curprinted = 0; /* remember if we print cur */
+	    curprinted = false; /* remember if we print cur */
 	    if (fi[i].nummsg == 0) {
 		printf ("has %*s messages%*s",
 			nummsgdigits, "no",
@@ -574,7 +578,7 @@ print_folders (void)
 			lowmsgdigits, fi[i].lowmsg,
 			hghmsgdigits, fi[i].hghmsg);
 		if (fi[i].curmsg >= fi[i].lowmsg && fi[i].curmsg <= fi[i].hghmsg) {
-		    curprinted = 1;
+		    curprinted = true;
 		    printf ("; cur=%*d", curmsgdigits, fi[i].curmsg);
 		}
 	    }

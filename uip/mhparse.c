@@ -1082,7 +1082,7 @@ InitText (CT ct)
 static int
 InitMultiPart (CT ct)
 {
-    int	inout;
+    bool inout;
     long last, pos;
     char *cp, *dp;
     PM pm;
@@ -1175,7 +1175,7 @@ InitMultiPart (CT ct)
     last = ct->c_end;
     next = &m->mp_parts;
     part = NULL;
-    inout = 1;
+    inout = true;
 
     while ((gotlen = getline(&bufp, &buflen, fp)) != -1) {
 	if (pos > last)
@@ -1202,10 +1202,10 @@ next_part:
 	    part->mp_part = p;
 	    pos = p->c_begin;
 	    fseek (fp, pos, SEEK_SET);
-	    inout = 0;
+	    inout = false;
 	} else {
 	    if (strcmp (bufp + 2, m->mp_start) == 0) {
-		inout = 1;
+		inout = true;
 end_part:
 		p = part->mp_part;
 		p->c_end = ftell(fp) - (gotlen + 1);
@@ -1745,7 +1745,8 @@ static int
 openBase64 (CT ct, char **file)
 {
     ssize_t cc, len;
-    int fd, own_ct_fp = 0;
+    int fd;
+    bool own_ct_fp = false;
     char *cp, *buffer = NULL;
     /* sbeck -- handle suffixes */
     CI ci;
@@ -1810,7 +1811,7 @@ openBase64 (CT ct, char **file)
 	    content_error (ct->c_file, ct, "unable to open for reading");
 	    return NOTOK;
 	}
-	own_ct_fp = 1;
+	own_ct_fp = true;
     }
 
     lseek (fd = fileno (ct->c_fp), (off_t) ct->c_begin, SEEK_SET);
@@ -1928,7 +1929,8 @@ InitQuoted (CT ct)
 static int
 openQuoted (CT ct, char **file)
 {
-    int	cc, digested, len, quoted, own_ct_fp = 0;
+    int	cc, digested, len, quoted;
+    bool own_ct_fp = false;
     char *cp, *ep;
     char *bufp = NULL;
     size_t buflen;
@@ -1993,7 +1995,7 @@ openQuoted (CT ct, char **file)
 	    content_error (ct->c_file, ct, "unable to open for reading");
 	    return NOTOK;
 	}
-	own_ct_fp = 1;
+	own_ct_fp = true;
     }
 
     if ((digested = ct->c_digested))
@@ -2148,7 +2150,8 @@ Init7Bit (CT ct)
 int
 open7Bit (CT ct, char **file)
 {
-    int	cc, fd, len, own_ct_fp = 0;
+    int	cc, fd, len;
+    bool own_ct_fp = false;
     char buffer[BUFSIZ];
     /* sbeck -- handle suffixes */
     char *cp;
@@ -2246,7 +2249,7 @@ open7Bit (CT ct, char **file)
 	    content_error (ct->c_file, ct, "unable to open for reading");
 	    return NOTOK;
 	}
-	own_ct_fp = 1;
+	own_ct_fp = true;
     }
 
     lseek (fd = fileno (ct->c_fp), (off_t) ct->c_begin, SEEK_SET);
@@ -2437,7 +2440,9 @@ InitFTP (CT ct)
 static int
 openFTP (CT ct, char **file)
 {
-    int	cachetype, caching, fd;
+    int	cachetype;
+    bool caching;
+    int fd;
     int len, buflen;
     char *bp, *ftp, *user, *pass;
     char buffer[BUFSIZ], cachefile[BUFSIZ];
@@ -2522,14 +2527,14 @@ openFTP (CT ct, char **file)
     }
 
     ce->ce_unlink = (*file == NULL);
-    caching = 0;
+    caching = false;
     cachefile[0] = '\0';
     if ((!e->eb_permission || strcasecmp (e->eb_permission, "read-write"))
 	    && find_cache (NULL, wcachesw, &cachetype, e->eb_content->c_id,
 		cachefile, sizeof(cachefile)) != NOTOK) {
 	if (*file == NULL) {
 	    ce->ce_unlink = 0;
-	    caching = 1;
+	    caching = true;
 	}
     }
 
@@ -2769,7 +2774,9 @@ openURL (CT ct, char **file)
     CE ce = &ct->c_cefile;
     char *urlprog, *program;
     char buffer[BUFSIZ], cachefile[BUFSIZ];
-    int fd, caching, cachetype;
+    int fd;
+    bool caching;
+    int cachetype;
     struct msgs_array args = { 0, 0, NULL};
     pid_t child_id;
 
@@ -2798,14 +2805,14 @@ openURL (CT ct, char **file)
     }
 
     ce->ce_unlink = (*file == NULL);
-    caching = 0;
+    caching = false;
     cachefile[0] = '\0';
 
     if (find_cache(NULL, wcachesw, &cachetype, e->eb_content->c_id,
     		   cachefile, sizeof(cachefile)) != NOTOK) {
 	if (*file == NULL) {
 	    ce->ce_unlink = 0;
-	    caching = 1;
+	    caching = true;
 	}
     }
 
@@ -2936,7 +2943,7 @@ get_leftover_mp_content (CT ct, int before /* or after */)
 {
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     char *boundary;
-    int found_boundary = 0;
+    bool found_boundary = false;
     int max = BUFSIZ;
     char *bufp = NULL;
     size_t buflen;
@@ -2981,11 +2988,11 @@ get_leftover_mp_content (CT ct, int before /* or after */)
 
         if (before) {
             if (! strcmp (bufp, boundary)) {
-                found_boundary = 1;
+                found_boundary = true;
             }
         } else {
             if (! found_boundary  &&  ! strcmp (bufp, boundary)) {
-                found_boundary = 1;
+                found_boundary = true;
                 continue;
             }
         }
@@ -3266,7 +3273,9 @@ parse_header_attrs (const char *filename, const char *fieldname,
 
     while (*cp == ';') {
 	char *dp, *vp, *up, *nameptr, *valptr, *charset = NULL, *lang = NULL;
-	int encoded = 0, partial = 0, len = 0, index = 0;
+	bool encoded = false;
+        bool partial = false;
+        int len = 0, index = 0;
 
 	cp++;
 	while (isspace ((unsigned char) *cp))
@@ -3316,11 +3325,11 @@ parse_header_attrs (const char *filename, const char *fieldname,
 
 	for (vp = cp; vp < up; vp++) {
 	    if (*vp == '*' && vp < up - 1) {
-		partial = 1;
+		partial = true;
 		continue;
 	    }
             if (*vp == '*' && vp == up - 1) {
-	    	encoded = 1;
+	    	encoded = true;
 	    } else if (partial) {
 		if (isdigit((unsigned char) *vp))
 		    index = *vp - '0' + index * 10;

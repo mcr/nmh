@@ -41,7 +41,7 @@ DEFINE_SWITCH_ARRAY(PROMPTER, switches);
 
 static struct termios tio;
 
-static int wtuser = 0;
+static bool wtuser;
 static int sigint = 0;
 static jmp_buf sigenv;
 
@@ -318,21 +318,21 @@ getln (char *buffer, int n)
 {
     int c;
     char *cp;
-    static int quoting = 0;
+    static bool quoting;
 
     *buffer = 0;
 
     switch (setjmp (sigenv)) {
 	case OK: 
-	    wtuser = 1;
+	    wtuser = true;
 	    break;
 
 	case DONE: 
-	    wtuser = 0;
+	    wtuser = false;
 	    return 0;
 
 	default: 
-	    wtuser = 0;
+	    wtuser = false;
 	    return NOTOK;
     }
 
@@ -342,27 +342,27 @@ getln (char *buffer, int n)
     for (;;) {
 	switch (c = getchar ()) {
 	    case EOF: 
-		quoting = 0;
+		quoting = false;
 		clearerr (stdin);
 		longjmp (sigenv, DONE);
 
 	    case '\n': 
 		if (quoting) {
 		    *(cp - 1) = c;
-		    quoting = 0;
-		    wtuser = 0;
+		    quoting = false;
+		    wtuser = false;
 		    return 1;
 		}
 		*cp++ = c;
 		*cp = 0;
-		wtuser = 0;
+		wtuser = false;
 		return 0;
 
 	    default: 
 		if (c == QUOTE) {
-		    quoting = 1;
+		    quoting = true;
 		} else {
-		    quoting = 0;
+		    quoting = false;
 		}
 		if (cp < buffer + n)
 		    *cp++ = c;

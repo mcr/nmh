@@ -39,14 +39,14 @@ main (int argc, char **argv)
     struct passwd *pw;
     struct stat st;
     FILE *in, *out;
-    int		check;
+    bool check;
 
     if (nmh_init(argv[0], false, false)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 0);
     argp = arguments;
 
-    check = 0;
+    check = false;
 
     while ((dp = *argp++)) {
 	if (*dp == '-') {
@@ -70,7 +70,7 @@ main (int argc, char **argv)
 		    continue;
 
 		case CHECKSW:
-		    check = 1;
+		    check = true;
 		    continue;
 	    }
 	} else {

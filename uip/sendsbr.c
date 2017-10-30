@@ -906,7 +906,7 @@ get_message_header_info(FILE *in, char *format) {
     int dat[5];
     struct format *fmt;
     struct stat st;
-    int parsing_header;
+    bool parsing_header;
     m_getfld_state_t gstate;
     charstring_t buffer = charstring_create(0);
     char *retval;
@@ -922,7 +922,7 @@ get_message_header_info(FILE *in, char *format) {
      * Read in the message and process the header.
      */
     rewind (in);
-    parsing_header = 1;
+    parsing_header = true;
     gstate = m_getfld_state_init(in);
     do {
         char name[NAMESZ], rbuf[NMH_BUFSIZ];
@@ -949,7 +949,7 @@ get_message_header_info(FILE *in, char *format) {
             break;
         }
         default:
-            parsing_header = 0;
+            parsing_header = false;
         }
     } while (parsing_header);
     m_getfld_state_destroy(&gstate);

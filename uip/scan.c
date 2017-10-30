@@ -45,7 +45,8 @@ main (int argc, char **argv)
     int width = -1, revflag = 0;
     int i, state, msgnum;
     ivector_t seqnum = ivector_create (0);
-    int unseen, num_unseen_seq = 0;
+    bool unseen;
+    int num_unseen_seq = 0;
     char *cp, *maildir, *file = NULL, *folder = NULL;
     char *form = NULL, *format = NULL, buf[BUFSIZ];
     char **argp, *nfs, **arguments;
@@ -246,10 +247,10 @@ main (int argc, char **argv)
 	     * Check if message is in any sequence given
 	     * by Unseen-Sequence profile entry.
 	     */
-	    unseen = 0;
+	    unseen = false;
 	    for (i = 0; i < num_unseen_seq; i++) {
 		if (in_sequence(mp, ivector_at (seqnum, i), msgnum)) {
-		    unseen = 1;
+		    unseen = true;
 		    break;
 		}
 	    }

@@ -260,7 +260,7 @@ static char *addrcomps[] = {
 static int bellflg   = 0;
 static int clearflg  = 0;
 static int dashstuff = 0;
-static int dobody    = 1;
+static bool dobody = true;
 static int forwflg   = 0;
 static int forwall   = 0;
 
@@ -462,7 +462,7 @@ mhl (int argc, char **argv)
 		    continue;
 
 		case NBODYSW: 
-		    dobody = 0;
+		    dobody = false;
 		    continue;
 	    }
 	}
