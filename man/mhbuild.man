@@ -346,7 +346,7 @@ directives, without causing errors:
 .nf
 #off
 #include <stdio.h>
-printf("Hello, World!");
+puts("hello, world!");
 #pop
 .fi
 .RE
