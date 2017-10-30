@@ -57,7 +57,7 @@ main (int argc, char **argv)
     struct msgs *mp;
     struct stat st;
 
-    if (nmh_init(argv[0], 2)) { return 1; }
+    if (nmh_init(argv[0], true, false)) { return 1; }
 
     set_done(unlink_done);
 

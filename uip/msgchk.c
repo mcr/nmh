@@ -86,7 +86,7 @@ main (int argc, char **argv)
     char **argp, **arguments, *vec[MAXVEC];
     struct passwd *pw;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     mts_init ();
 

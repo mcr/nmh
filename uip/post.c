@@ -326,7 +326,7 @@ main (int argc, char **argv)
     FILE *in, *out;
     m_getfld_state_t gstate;
 
-    if (nmh_init(argv[0], 0 /* use context_foil() */)) { return 1; }
+    if (nmh_init(argv[0], false, false)) { return 1; }
 
     mts_init ();
     arguments = getarguments (invo_name, argc, argv, 0);

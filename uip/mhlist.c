@@ -78,7 +78,7 @@ main (int argc, char **argv)
     struct msgs *mp = NULL;
     CT ct, *ctp;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     set_done(freects_done);
 

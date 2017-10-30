@@ -51,7 +51,7 @@ main (int argc, char **argv)
     char buf[BUFSIZ], **argp;
     char *dates[NDATES + 1]; /* Includes terminating NULL. */
 
-    if (nmh_init(argv[0], 2)) { return 1; }
+    if (nmh_init(argv[0], true, false)) { return 1; }
 
     argp = getarguments (invo_name, argc, argv, 1);
     while ((cp = *argp++)) {

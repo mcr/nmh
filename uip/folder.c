@@ -112,7 +112,7 @@ main (int argc, char **argv)
     char *cp, *dp, *msg = NULL, *argfolder = NULL;
     char **ap, **argp, buf[BUFSIZ], **arguments;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     /*
      * If program was invoked with name ending

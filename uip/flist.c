@@ -113,7 +113,7 @@ main(int argc, char **argv)
     char **arguments;
     char buf[BUFSIZ];
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     /*
      * If program was invoked with name ending

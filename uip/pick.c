@@ -71,7 +71,7 @@ main (int argc, char **argv)
     int reverse = 0;
     int start, end, inc;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     set_done(putzero_done);
 

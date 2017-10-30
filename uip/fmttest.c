@@ -123,7 +123,7 @@ main (int argc, char **argv)
     int dat[5];
     struct fmt_callbacks cb, *cbp = NULL;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

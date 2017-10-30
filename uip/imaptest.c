@@ -97,7 +97,7 @@ main (int argc, char **argv)
     size_t len;
     struct timeval tv_start, tv_connect, tv_auth;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

@@ -83,7 +83,7 @@ main (int argc, char **argv)
     struct format *fmt;
     struct stat st;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

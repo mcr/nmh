@@ -205,7 +205,7 @@ main (int argc, char **argv)
     SAVEGROUPPRIVS();
     TRYDROPGROUPPRIVS();
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     mts_init ();
     arguments = getarguments (invo_name, argc, argv, 1);

@@ -41,7 +41,7 @@ main (int argc, char **argv)
     FILE *in, *out;
     int		check;
 
-    if (nmh_init(argv[0], 0 /* use context_foil() */ )) { return 1; }
+    if (nmh_init(argv[0], false, false)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 0);
     argp = arguments;

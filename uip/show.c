@@ -75,7 +75,7 @@ main (int argc, char **argv)
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs_array vec = { 0, 0, NULL }, non_mhl_vec = { 0, 0, NULL };
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     if (!strcasecmp (invo_name, "next")) {
 	mode = NEXT;

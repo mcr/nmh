@@ -77,7 +77,7 @@ main (int argc, char **argv)
     int files_not_clobbered;
     mhstoreinfo_t info;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     set_done(freects_done);
 

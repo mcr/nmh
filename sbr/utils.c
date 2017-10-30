@@ -417,8 +417,8 @@ void to_upper(char *s)
 }
 
 
-int
-nmh_init(const char *argv0, int read_context) {
+int nmh_init(const char *argv0, bool read_context, bool check_version)
+{
     int status = OK;
     char *locale;
 
@@ -441,7 +441,7 @@ nmh_init(const char *argv0, int read_context) {
 
         context_read();
 
-        if (read_context != 1  ||
+        if (!check_version ||
             ((cp = context_find ("Welcome")) && strcasecmp (cp, "disable") == 0)) {
             allow_version_check = 0;
         } else if ((cp = getenv ("MHCONTEXT")) != NULL && *cp != '\0') {
@@ -453,7 +453,7 @@ nmh_init(const char *argv0, int read_context) {
 
         /* Check to see if the user is running a different (or older, if
            specified) version of nmh than they had run before, and notify them
-           if so.  But only if read_context was set to a value to enable. */
+           if so. */
         if (allow_version_check  &&  isatty (fileno (stdin))  &&
             isatty (fileno (stdout))  &&  isatty (fileno (stderr))) {
             if (nmh_version_changed (check_older_version)) {

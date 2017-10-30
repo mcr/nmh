@@ -76,7 +76,7 @@ main (int argc, char **argv)
     struct smsg *smsgs;
     struct msgs *mp;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

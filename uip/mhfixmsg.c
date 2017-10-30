@@ -144,7 +144,7 @@ main (int argc, char **argv) {
     fx.lf_line_endings = 0;
     fx.textcharset = NULL;
 
-    if (nmh_init(argv[0], 2)) { return 1; }
+    if (nmh_init(argv[0], true, false)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

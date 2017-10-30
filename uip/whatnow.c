@@ -12,7 +12,7 @@
 int
 main (int argc, char **argv)
 {
-    if (nmh_init(argv[0], 2)) { return 1; }
+    if (nmh_init(argv[0], true, false)) { return 1; }
 
     return WhatNow (argc, argv);
 }

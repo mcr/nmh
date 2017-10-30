@@ -112,12 +112,10 @@ char *m_strn(int value, unsigned int width);
  * program initialization
  *
  * argv0        - argv[0], presumably the program name
- * read_context - 0: don't read context
- *              - 1: read context, check nmh version, and issue warning message
- *                   if non-existent or old
- *              - 2: read context, don't check nmh version
+ * read_context - whether to read the context
+ * check_version - if read_context, whether to check the version, and issue warning message if non-existent or old
  */
-int nmh_init(const char *argv0, int read_context);
+int nmh_init(const char *argv0, bool read_context, bool check_version);
 
 /*
  * Compares prior version of nmh with current version.  Returns 1

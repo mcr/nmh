@@ -92,7 +92,7 @@ main (int argc, char **argv)
     CT ct, *ctp;
     FILE *fp;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], true, true)) { return 1; }
 
     set_done(freects_done);
 

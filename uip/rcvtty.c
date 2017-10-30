@@ -78,7 +78,7 @@ main (int argc, char **argv)
     char **argp, **arguments, *vec[MAXARGS];
     struct utmpx *utp;
 
-    if (nmh_init(argv[0], 2)) { return 1; }
+    if (nmh_init(argv[0], true, false)) { return 1; }
 
     mts_init ();
     arguments = getarguments (invo_name, argc, argv, 1);
