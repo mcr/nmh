@@ -29,8 +29,8 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
 {
     unsigned int cc, n;
     unsigned char inbuf[3];
-    int skipnl = 0;
 
+    bool skipnl = false;
     n = BPERLIN;
     while ((cc = fread (inbuf, sizeof(*inbuf), sizeof(inbuf), in)) > 0) {
 	unsigned long bits;
@@ -69,7 +69,7 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
 			    inbuf[cc++] = '\n';
 			else
 			    ungetc('\n', in);
-			skipnl = 1;
+			skipnl = true;
 		    } else {
 		    	/* This only works as long as sizeof(inbuf) == 3 */
 			ungetc(inbuf[cc - 1], in);
@@ -78,7 +78,7 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
 			inbuf[++i] = '\n';
 		    }
 		} else {
-		    skipnl = 0;
+		    skipnl = false;
 		}
 	    }
 	}
@@ -250,7 +250,6 @@ int
 decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
 	      int skip_crs, unsigned char *digest) {
     const char *cp = encoded;
-    int self_delimiting = 0;
     int bitno, skip;
     uint32_t bits;
     /* Size the decoded string very conservatively. */
@@ -264,6 +263,7 @@ decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
     bits = 0L;
     skip = 0;
 
+    bool self_delimiting = false;
     for (; *cp; ++cp) {
         switch (*cp) {
             unsigned char value;
@@ -318,7 +318,7 @@ test_end:
             case '=':
                 if (++skip <= 3)
                     goto test_end;
-                self_delimiting = 1;
+                self_delimiting = true;
                 break;
         }
     }

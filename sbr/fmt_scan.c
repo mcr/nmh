@@ -132,7 +132,6 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
     char *altstr = NULL;
 #endif
     char *sp;          /* current position in source string */
-    int prevCtrl = 1;
 
     /* get alignment */
     rjust = 0;
@@ -144,6 +143,7 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
 
     trimmed = rjust ? charstring_create(remaining) : dest;
 
+    bool prevCtrl = true;
     if ((sp = str)) {
 #ifdef MULTIBYTE_SUPPORT
 	if (mbtowc(NULL, NULL, 0)) {} /* reset shift state */
@@ -193,10 +193,10 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
 		    remaining--;
 		}
 
-		prevCtrl = 1;
+		prevCtrl = true;
 		continue;
 	    }
-	    prevCtrl = 0;
+	    prevCtrl = false;
 
 #ifdef MULTIBYTE_SUPPORT
 	    if (w >= 0 && remaining >= w) {

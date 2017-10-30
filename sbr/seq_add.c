@@ -24,7 +24,7 @@ int
 seq_addsel (struct msgs *mp, char *cp, int public, int zero)
 {
     unsigned int i;
-    int msgnum, new_seq = 1;
+    int msgnum;
 
     if (!seq_nameok (cp))
 	return 0;
@@ -39,9 +39,10 @@ seq_addsel (struct msgs *mp, char *cp, int public, int zero)
     /*
      * Get the number for this sequence
      */
+    bool new_seq = true;
     for (i = 0; i < svector_size (mp->msgattrs); i++) {
 	if (!strcmp (svector_at (mp->msgattrs, i), cp)) {
-	    new_seq = 0;
+	    new_seq = false;
 	    break;
 	}
     }
@@ -112,7 +113,7 @@ int
 seq_addmsg (struct msgs *mp, char *cp, int msgnum, int public, int zero)
 {
     unsigned int i;
-    int j, new_seq = 1;
+    int j;
 
     if (!seq_nameok (cp))
 	return 0;
@@ -126,9 +127,10 @@ seq_addmsg (struct msgs *mp, char *cp, int msgnum, int public, int zero)
     /*
      * Get the number for this sequence
      */
+    bool new_seq = true;
     for (i = 0; i < svector_size (mp->msgattrs); i++) {
 	if (!strcmp (svector_at (mp->msgattrs, i), cp)) {
-	    new_seq = 0;
+	    new_seq = false;
 	    break;
 	}
     }

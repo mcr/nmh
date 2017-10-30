@@ -435,20 +435,20 @@ int nmh_init(const char *argv0, bool read_context, bool check_version)
 
     /* Read context, if supposed to. */
     if (read_context) {
-        int allow_version_check = 1;
-        int check_older_version = 0;
         char *cp;
 
         context_read();
 
+        bool allow_version_check = true;
+        bool check_older_version = false;
         if (!check_version ||
             ((cp = context_find ("Welcome")) && strcasecmp (cp, "disable") == 0)) {
-            allow_version_check = 0;
+            allow_version_check = false;
         } else if ((cp = getenv ("MHCONTEXT")) != NULL && *cp != '\0') {
             /* Context file comes from $MHCONTEXT, so only print the message
                if the context file has an older version.  If it does, or if it
                doesn't have a version at all, update the version. */
-            check_older_version = 1;
+            check_older_version = true;
         }
 
         /* Check to see if the user is running a different (or older, if

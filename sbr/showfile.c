@@ -12,7 +12,7 @@ int
 showfile (char **arg, char *file)
 {
     pid_t pid;
-    int isdraft, vecp;
+    int vecp;
     char **vec, *program;
     int retval = 1;
 
@@ -36,11 +36,11 @@ showfile (char **arg, char *file)
     case 0:
 	/* child */
 	vec = argsplit(lproc, &program, &vecp);
-	isdraft = 1;
+	bool isdraft = true;
 	if (arg) {
 	    while (*arg) {
 		if (**arg != '-')
-		    isdraft = 0;
+		    isdraft = false;
 		vec[vecp++] = *arg++;
 	    }
 	}

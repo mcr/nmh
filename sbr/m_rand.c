@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>  /* for abs(), srand(), rand(), arc4random() */
+#include <stdbool.h>
 #include <stdio.h>   /* for fopen(), fread(), fclose() */
 #include <unistd.h>  /* for getpid() */
 #include <time.h>    /* for time() */
@@ -14,7 +15,7 @@
 #include "m_rand.h"
 
 #if !HAVE_ARC4RANDOM
-static int seeded = 0;
+static bool seeded = false;
 #endif
 
 
@@ -26,7 +27,8 @@ m_rand (unsigned char *buf, size_t n) {
     unsigned int seed;
 
     if ((devurandom = fopen ("/dev/urandom", "r"))) {
-      if (fread (&seed, sizeof (seed), 1, devurandom) == 1) seeded = 1;
+      if (fread (&seed, sizeof (seed), 1, devurandom) == 1)
+          seeded = true;
       fclose (devurandom);
     }
 
@@ -36,7 +38,7 @@ m_rand (unsigned char *buf, size_t n) {
          arXiv:1005.4117v1 [physics.comp-ph], 22 May 2010, p. 19.
          time() and getpid() shouldn't fail on POSIX platforms. */
       seed = abs ((int) ((time (0) * 181 * ((getpid ()-83) * 359)) % 104729));
-      seeded = 1;
+      seeded = true;
     }
 
     srand (seed);

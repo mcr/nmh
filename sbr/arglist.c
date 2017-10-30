@@ -39,13 +39,15 @@ char **
 argsplit(char *command, char **file, int *argp)
 {
     char **argvarray, *p;
-    int space = 0, metachar = 0, i;
+    int i;
 
+    bool space = false;
+    bool metachar = false;
     for (p = command; *p; p++) {
     	if (*p == ' ' || *p == '\t') {
-		space = 1;
+		space = true;
 	} else if (strchr(METACHARS, *p)) {
-		metachar = 1;
+		metachar = true;
 		break;
 	}
     }

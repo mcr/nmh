@@ -37,7 +37,7 @@ static int attr (struct msgs *, char *);
 int
 m_convert (struct msgs *mp, char *name)
 {
-    int first, last, found, count, is_range, err;
+    int first, last, found, count, err;
     char *bp, *cp;
 
     /* check if user defined sequence */
@@ -54,7 +54,6 @@ m_convert (struct msgs *mp, char *name)
      */
 
     found = 0;
-    is_range = 1;
 
     /*
      * Check for special "new" sequence, which
@@ -129,9 +128,7 @@ rangerr:
 
     } else if (*cp == ':' || *cp == '=') {
 
-	if (*cp == '=')
-	    is_range = 0;
-
+        bool is_range = *cp == ':';
 	cp++;
 
 	if (*cp == '-') {
@@ -349,9 +346,7 @@ attr (struct msgs *mp, char *cp)
     char op;
     int i, j;
     int found,
-	inverted = 0,
 	count = 0,		/* range given?  else use entire sequence */
-	just_one = 0,		/* want entire sequence or range */
 	first = 0,
 	start = 0;
 
@@ -364,8 +359,9 @@ attr (struct msgs *mp, char *cp)
     }
 
     /* Check for sequence negation */
+    bool inverted = false;
     if ((dp = context_find (nsequence)) && *dp != '\0' && ssequal (dp, cp)) {
-	inverted = 1;
+	inverted = true;
 	cp += strlen (dp);
     }
 
@@ -373,6 +369,8 @@ attr (struct msgs *mp, char *cp)
 
     for (dp = cp; isalnum((unsigned char)*dp); dp++)
 	continue;
+
+    bool just_one = *dp == '='; /* want entire sequence or range */
 
     if (*dp == ':') {
 	bp = dp++;
@@ -453,8 +451,6 @@ attr (struct msgs *mp, char *cp)
 	count = strtol(dp,&ep,10);     /* 0 illegal */
 	if (count == 0 || *ep)
 	    return BADLST;
-
-	just_one = 1;
 
 	op = *bp;
 	*bp = '\0';	/* temporarily terminate sequence name */

@@ -51,7 +51,6 @@ m_mktemp (
 {
     static char tmpfil[BUFSIZ];
     int fd = -1;
-    int keep_open = 0;
     mode_t oldmode = umask(077);
 
     if (pfx_in == NULL) {
@@ -69,9 +68,10 @@ m_mktemp (
 
     register_for_removal(tmpfil);
 
+    bool keep_open = false;
     if (fd_ret != NULL) {
         *fd_ret = fd;
-        keep_open = 1;
+        keep_open = true;
     }
     if (fp_ret != NULL) {
         FILE *fp = fdopen(fd, "w+");
@@ -84,7 +84,7 @@ m_mktemp (
             return NULL;
         }
         *fp_ret = fp;
-        keep_open = 1;
+        keep_open = true;
     }
     if (!keep_open) {
         close(fd);
@@ -151,7 +151,6 @@ m_mktemps(
 {
     char *tmpfil;
     int fd = -1;
-    int keep_open = 0;
     mode_t oldmode = umask(077);
 
     if (suffix == NULL) {
@@ -202,9 +201,10 @@ m_mktemps(
 
     register_for_removal(tmpfil);
 
+    bool keep_open = false;
     if (fd_ret != NULL) {
         *fd_ret = fd;
-        keep_open = 1;
+        keep_open = true;
     }
     if (fp_ret != NULL) {
         FILE *fp = fdopen(fd, "w+");
@@ -218,7 +218,7 @@ m_mktemps(
             return NULL;
         }
         *fp_ret = fp;
-        keep_open = 1;
+        keep_open = true;
     }
     if (!keep_open) {
         close(fd);

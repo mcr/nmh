@@ -23,7 +23,6 @@ char *
 mime_type(const char *file_name) {
     char *content_type = NULL;  /* mime content type */
     char *p;
-    static int loaded_defaults = 0;
 
 #ifdef MIMETYPEPROC
     char *mimetype;
@@ -55,9 +54,10 @@ mime_type(const char *file_name) {
 	struct node *np;		/* Content scan node pointer */
 	FILE *fp;			/* File pointer for mhn.defaults */
 
+        static bool loaded_defaults;
 	if (! loaded_defaults &&
 			(fp = fopen(p = etcpath("mhn.defaults"), "r"))) {
-	    loaded_defaults = 1;
+	    loaded_defaults = true;
 	    readconfig(NULL, fp, p, 0);
 	    fclose(fp);
 	}
@@ -80,16 +80,17 @@ mime_type(const char *file_name) {
 
 	if (content_type == NULL) {
 	    FILE *fp;
-	    int binary = 0, c;
+            int c;
 
 	    if (!(fp = fopen(file_name, "r"))) {
 		inform("unable to access file \"%s\"", file_name);
 		return NULL;
 	    }
 
+	    bool binary = false;
 	    while ((c = getc(fp)) != EOF) {
 		if (! isascii(c)  ||  c == 0) {
-		    binary = 1;
+		    binary = true;
 		    break;
 		}
 	    }

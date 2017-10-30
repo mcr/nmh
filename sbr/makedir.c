@@ -18,7 +18,6 @@ makedir (const char *dir)
 {
     char            path[PATH_MAX];
     char*           folder_perms_ASCII;
-    int             had_an_error = 0;
     mode_t          folder_perms, saved_umask;
     char*  c;
 
@@ -43,17 +42,18 @@ makedir (const char *dir)
 
     c = strncpy(path, dir, sizeof(path));
 
+    bool had_an_error = false;
     while (!had_an_error && (c = strchr((c + 1), '/')) != NULL) {
         *c = '\0';
         if (access(path, X_OK)) {
             if (errno != ENOENT){
                 advise (dir, "unable to create directory");
-                had_an_error = 1;
+                had_an_error = true;
             }
             /* Create an outer directory. */
             if (mkdir(path, folder_perms)) {
                 advise (dir, "unable to create directory");
-                had_an_error = 1;
+                had_an_error = true;
             }
         }
         *c = '/';
@@ -64,7 +64,7 @@ makedir (const char *dir)
            asked to create. */
         if (mkdir (dir, folder_perms) == -1) {
             advise (dir, "unable to create directory");
-            had_an_error = 1;
+            had_an_error = true;
         }
     }
 

@@ -73,11 +73,8 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
     char *startofmime, *endofmime, *endofcharset;
     int c, quoted_printable;
     int encoding_found = 0;	/* did we decode anything?                */
-    int between_encodings = 0;	/* are we between two encodings?          */
-    int equals_pending = 0;	/* is there a '=' pending?                */
     int whitespace = 0;		/* how much whitespace between encodings? */
 #ifdef HAVE_ICONV
-    int use_iconv = 0;          /* are we converting encoding with iconv? */
     iconv_t cd = NULL;
     int fromutf8 = 0;
     char *saveq, *convbuf = NULL;
@@ -94,13 +91,16 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
     if (!strchr (str, '='))
 	return 0;
 
+    bool use_iconv = false; /* are we converting encoding with iconv? */
+    bool between_encodings = false;
+    bool equals_pending = false;
     for (p = str, q = dst; *p; p++) {
 
         /* reset iconv */
 #ifdef HAVE_ICONV
         if (use_iconv) {
 	    iconv_close(cd);
-	    use_iconv = 0;
+	    use_iconv = false;
         }
 #endif
 	/*
@@ -109,8 +109,8 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	 */
 	if (equals_pending) {
 	    ADDCHR('=');
-	    equals_pending = 0;
-	    between_encodings = 0;	/* we have added non-whitespace text */
+	    equals_pending = false;
+	    between_encodings = false;	/* we have added non-whitespace text */
 	}
 
 	if (*p != '=') {
@@ -118,12 +118,12 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	    if (between_encodings && is_lws(*p))
 		whitespace++;
 	    else
-		between_encodings = 0;	/* we have added non-whitespace text */
+		between_encodings = false;	/* we have added non-whitespace text */
 	    ADDCHR(*p);
 	    continue;
 	}
 
-	equals_pending = 1;	/* we have a '=' pending */
+	equals_pending = true;
 
 	/* Check for initial =? */
 	if (*p == '=' && p[1] == '?' && p[2]) {
@@ -159,7 +159,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 		fromutf8 = !strcasecmp(startofmime, "UTF-8");
 		*pp = '?';
                 if (cd == (iconv_t)-1) continue;
-		use_iconv = 1;
+		use_iconv = true;
 #else
 		continue;
 #endif
@@ -203,7 +203,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	     * We've found an encoded word, so we can drop
 	     * the '=' that was pending
 	     */
-	    equals_pending = 0;
+	    equals_pending = false;
 
 	    /*
 	     * If we are between two encoded words separated only by
@@ -222,7 +222,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	     * malloc 0 bytes but skip on to the end
 	     */
 	    if (endofmime == startofmime && use_iconv) {
-		use_iconv = 0;
+		use_iconv = false;
 		iconv_close(cd);
             }
 
@@ -355,7 +355,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	    p = endofmime + 1;
 
 	    encoding_found = 1;		/* we found (at least 1) encoded word */
-	    between_encodings = 1;	/* we have just decoded something     */
+	    between_encodings = true;	/* we have just decoded something     */
 	    whitespace = 0;		/* re-initialize amount of whitespace */
 	}
     }

@@ -64,7 +64,7 @@ static int token(char *);
 void
 ruserpass(const char *host, char **aname, char **apass, int flags)
 {
-    int t, usedefault = 0;
+    int t;
     struct stat stb;
 
     init_credentials_file ();
@@ -77,10 +77,11 @@ ruserpass(const char *host, char **aname, char **apass, int flags)
         char tokval[MAX_TOKVAL_SIZE];
         tokval[0] = '\0';
 
+        bool usedefault = false;
 	while ((t = token(tokval))) {
 	    switch(t) {
 	    case DEFAULT:
-		usedefault = 1;
+		usedefault = true;
 		/* FALLTHRU */
 
 	    case MACH:

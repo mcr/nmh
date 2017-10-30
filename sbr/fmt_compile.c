@@ -390,14 +390,14 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
 {
     char *cp;
     size_t i;
-    static int comptable_initialized = 0;
+    static bool comptable_initialized;
 
     format_string = mh_xstrdup(fstring);
     usr_fstring = fstring;
 
     if (reset_comptable || !comptable_initialized) {
     	free_comptable();
-	comptable_initialized = 1;
+	comptable_initialized = true;
     }
 
     /* it takes at least 4 char to generate one format so we

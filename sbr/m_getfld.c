@@ -691,12 +691,10 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 	     * characters up to the end of this field (newline
 	     * followed by non-blank) or bufsz-1 characters.
 	     */
-	    int finished;
-
 	    cp = buf;
 	    max = *bufsz-1;
 	    n = 0;
-	    for (finished = 0; ! finished; ) {
+	    for (bool finished = false; !finished; ) {
 		while (c != '\n'  &&  c != EOF  &&  n++ < max) {
 		    if ((c = Getc (s)) != EOF)
                         *cp++ = c;
@@ -716,14 +714,14 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 			--s->bytes_read;
 		    }
 		    s->state = FLDPLUS;
-		    finished = 1;
+		    finished = true;
 		} else if (c != ' '  &&  c != '\t') {
 		    /* The next character is not folded whitespace, so
 		       prepare to move on to the next field.  It's OK
 		       if c is EOF, it will be handled on the next
 		       call to m_getfld (). */
 		    s->state = FLD;
-		    finished = 1;
+		    finished = true;
 		} else {
 		    /* Folded header field, continues on the next line. */
 		}

@@ -11,11 +11,11 @@
 int
 fdcompare (int fd1, int fd2)
 {
-    int i, n1, n2, resp;
+    int i, n1, n2;
     char *c1, *c2;
     char b1[BUFSIZ], b2[BUFSIZ];
 
-    resp = 1;
+    bool resp = true;
     while ((n1 = read (fd1, b1, sizeof(b1))) >= 0
 	    && (n2 = read (fd2, b2, sizeof(b2))) >= 0
 	    && n1 == n2) {
@@ -23,13 +23,13 @@ fdcompare (int fd1, int fd2)
 	c2 = b2;
 	for (i = n1 < (int) sizeof(b1) ? n1 : (int) sizeof(b1); i--;)
 	    if (*c1++ != *c2++) {
-		resp = 0;
+		resp = false;
 		goto leave;
 	    }
 	if (n1 < (int) sizeof(b1))
 	    goto leave;
     }
-    resp = 0;
+    resp = false;
 
 leave: ;
     lseek(fd1, 0, SEEK_SET);

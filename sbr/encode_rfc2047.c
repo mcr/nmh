@@ -160,7 +160,7 @@ static int
 field_encode_quoted(const char *name, char **value, const char *charset,
 		    int ascii, int encoded, int phraserules)
 {
-    int prefixlen = name ? strlen(name) + 2: 0, outlen = 0, column, newline = 1;
+    int prefixlen = name ? strlen(name) + 2: 0, outlen = 0, column;
     int charsetlen = strlen(charset), utf8;
     char *output = NULL, *p, *q = NULL;
 
@@ -175,6 +175,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 
     utf8 = strcasecmp(charset, "UTF-8") == 0;
 
+    bool newline = true;
     while (*p != '\0') {
     	/*
 	 * Start a new line, if it's time
@@ -225,7 +226,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	    tokenlen = snprintf(q, outlen - (q - output), "=?%s?Q?", charset);
 	    q += tokenlen;
 	    column = prefixlen + tokenlen;
-	    newline = 0;
+	    newline = false;
 	}
 
 	/*
@@ -266,7 +267,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	    continue;
 
 	if (column >= ENCODELINELIMIT - 2) {
-	    newline = 1;
+	    newline = true;
 	} else if (utf8) {
 	    /*
 	     * Okay, this is a bit weird, but to explain a bit more ...
@@ -282,7 +283,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	     * allow for the encoded output.
 	     */
 	    if (column + (utf8len(p) * 3) > ENCODELINELIMIT - 2) {
-		newline = 1;
+		newline = true;
 	    }
 	}
     }

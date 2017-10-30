@@ -18,7 +18,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
     int		vecp;			/* Vector index */
     char 	*program;		/* Name of program to execute */
 
-    static  int	did_message = 0;	/* set if we've already output a message */
+    static bool	did_message;            /* set if we've already output a message */
 
     if ((hook = context_find(hook_name)) == NULL)
 	return OK;
@@ -47,7 +47,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
     if (status == OK)
 	return OK;
 
-    if (did_message == 0) {
+    if (!did_message) {
         char *msghook;
         if ((msghook = context_find("msg-hook")) != NULL)
             inform("%s", msghook);
@@ -56,7 +56,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
             snprintf(errbuf, sizeof(errbuf), "external hook \"%s\"", hook);
             pidstatus(status, stderr, errbuf);
         }
-        did_message = 1;
+        did_message = true;
     }
 
     return NOTOK;
