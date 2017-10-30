@@ -785,7 +785,7 @@ smhear (void)
     char **ehlo = EHLOkeys, *buffer;
 
     if (doingEHLO) {
-	static int at_least_once = 0;
+	static bool at_least_once;
 
 	if (at_least_once) {
 	    char *ep;
@@ -795,7 +795,7 @@ smhear (void)
 		free (ep);
 	    }
 	} else {
-	    at_least_once = 1;
+	    at_least_once = true;
 	}
 
 	ehlo = EHLOkeys;
