@@ -368,7 +368,7 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
     if (nmsgs) {
 	if (notifysw & NT_MAIL) {
 	    if (personal)
-		printf ("You have ");
+		fputs("You have ", stdout);
 	    else
 		printf ("%s has ", user);
 

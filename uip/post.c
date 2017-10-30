@@ -1370,26 +1370,26 @@ pl (void)
     int i;
     struct mailname *mp;
 
-    printf ("-------\n\t-- Addresses --\nlocal:\t");
+    fputs("-------\n\t-- Addresses --\nlocal:\t", stdout);
     for (mp = localaddrs.m_next; mp; mp = mp->m_next)
 	printf ("%s%s%s", mp->m_mbox,
 		mp->m_bcc ? "[BCC]" : "",
 		mp->m_next ? ",\n\t" : "");
 
-    printf ("\nnet:\t");
+    fputs("\nnet:\t", stdout);
     for (mp = netaddrs.m_next; mp; mp = mp->m_next)
 	printf ("%s%s@%s%s%s", FENDNULL(mp->m_path),
 		mp->m_mbox, mp->m_host,
 		mp->m_bcc ? "[BCC]" : "",
 		mp->m_next ? ",\n\t" : "");
 
-    printf ("\nuucp:\t");
+    fputs("\nuucp:\t", stdout);
     for (mp = uuaddrs.m_next; mp; mp = mp->m_next)
 	printf ("%s!%s%s%s", mp->m_host, mp->m_mbox,
 		mp->m_bcc ? "[BCC]" : "",
 		mp->m_next ? ",\n\t" : "");
 
-    printf ("\n\t-- Folder Copies --\nfcc:\t");
+    fputs("\n\t-- Folder Copies --\nfcc:\t", stdout);
     for (i = 0; i < fccind; i++)
 	printf ("%s%s", fccfold[i], i + 1 < fccind ? ",\n\t" : "");
     putchar('\n');
@@ -1848,7 +1848,7 @@ do_an_address (struct mailname *lp, int talk)
 	return;
     }
     if (talk)
-	printf (": ");
+	fputs(": ", stdout);
     fflush (stdout);
 
     switch (retval = sm_wadr (mbox, host,

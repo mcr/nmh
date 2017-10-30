@@ -155,7 +155,7 @@ dumpone(struct format *fmt)
 	case FT_LS_COMP:
 	case FT_LV_COMPFLAG:
 	case FT_LV_COMP:
-		printf(", comp ");
+		fputs(", comp ", stdout);
 		litputs(fmt->f_comp->c_name);
 		if (fmt->f_comp->c_type)
 			printf(", c_type %s", c_typestr(fmt->f_comp->c_type));
@@ -187,7 +187,7 @@ dumpone(struct format *fmt)
 	case FT_LOCALDATE:
 	case FT_GMTDATE:
 	case FT_PARSEDATE:
-		printf(", c_name ");
+		fputs(", c_name ", stdout);
 		litputs(fmt->f_comp->c_name);
 		if (fmt->f_comp->c_type)
 			printf(", c_type %s", c_typestr(fmt->f_comp->c_type));
@@ -211,7 +211,7 @@ dumpone(struct format *fmt)
 	case FT_MYMBOX:
 	case FT_GETMYMBOX:
 	case FT_GETMYADDR:
-		printf(", c_name ");
+		fputs(", c_name ", stdout);
 		litputs(fmt->f_comp->c_name);
 		if (fmt->f_comp->c_type)
 			printf(", c_type %s", c_typestr(fmt->f_comp->c_type));
@@ -222,7 +222,7 @@ dumpone(struct format *fmt)
 	case FT_COMPF:
 		printf(", width %d, fill '", fmt->f_width);
 		litputc(fmt->f_fill);
-		printf("' name ");
+		fputs("' name ", stdout);
 		litputs(fmt->f_comp->c_name);
 		if (fmt->f_comp->c_type)
 			printf(", c_type %s", c_typestr(fmt->f_comp->c_type));
@@ -245,7 +245,7 @@ dumpone(struct format *fmt)
 	case FT_LITF:
 		printf(", width %d, fill '", fmt->f_width);
 		litputc(fmt->f_fill);
-		printf("' ");
+		fputs("' ", stdout);
 		litputs(fmt->f_text);
 		break;
 
@@ -261,7 +261,7 @@ dumpone(struct format *fmt)
 	case FT_IF_S_NULL:
 	case FT_IF_MATCH:
 	case FT_IF_AMATCH:
-		printf(" continue else goto");
+		fputs(" continue else goto", stdout);
 		/* FALLTHRU */
 	case FT_GOTO:
 		i = findlabel(fmt + fmt->f_skip);
@@ -288,17 +288,17 @@ dumpone(struct format *fmt)
 		break;
 
 	case FT_LS_LIT:
-		printf(" str ");
+		fputs(" str ", stdout);
 		litputs(fmt->f_text);
 		break;
 
 	case FT_LS_GETENV:
-		printf(" getenv ");
+		fputs(" getenv ", stdout);
 		litputs(fmt->f_text);
 		break;
 
 	case FT_LS_DECODECOMP:
-		printf(", comp ");
+		fputs(", comp ", stdout);
 		litputs(fmt->f_comp->c_name);
 		break;
 

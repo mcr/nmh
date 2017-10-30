@@ -1291,7 +1291,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
               break;
             case NMH_RENAME: {
               char buf[PATH_MAX];
-              printf ("Enter filename or full path of the new file: ");
+              fputs("Enter filename or full path of the new file: ", stdout);
               if (fgets (buf, sizeof buf, stdin) == NULL  ||
                   buf[0] == '\0') {
                 file = NULL;

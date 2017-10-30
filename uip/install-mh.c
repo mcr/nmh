@@ -153,7 +153,7 @@ query:
 		pathname = read_line ();
 		if (pathname == NULL) done (1);
 	    } else {
-		printf ("What is the whole path?  /");
+		fputs("What is the whole path?  /", stdout);
 		pathname = read_line ();
 		if (pathname == NULL) done (1);
 		pathname = concat ("/", pathname, NULL);

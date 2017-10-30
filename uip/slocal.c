@@ -1354,7 +1354,7 @@ adorn (char *what, char *fmt, ...)
     char *s;
 
     eindex = errno;	/* save the errno */
-    printf(", ");
+    fputs(", ", stdout);
 
     va_start(ap, fmt);
     vprintf(fmt, ap);

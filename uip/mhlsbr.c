@@ -933,7 +933,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 	if (digest)
 	    fputs(ofilen == 1 ? delim3 : delim4, stdout);
 	else {
-	    printf ("\n-------");
+	    fputs("\n-------", stdout);
 	    if (ofilen == 1)
 		printf (" Forwarded Message%s", PLURALS(ofilec));
 	    else

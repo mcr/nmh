@@ -98,7 +98,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
                " to access %s:\n\n%s\n\n",
                mh_oauth_svc_display_name(ctx), url);
     }
-    printf("Enter the authorization code: ");
+    fputs("Enter the authorization code: ", stdout);
     fflush(stdout);
     code = geta();
 

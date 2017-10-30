@@ -177,10 +177,10 @@ print_aka (char *p, bool list, int margin)
 			printf ("\n%*s", margin, "");
 		    else {
 			if (pos >= 68) {
-			    printf (",\n ");
+			    fputs(",\n ", stdout);
 			    pos = 2;
 			} else {
-			    printf (", ");
+			    fputs(", ", stdout);
 			    pos += 2;
 			}
 		    }

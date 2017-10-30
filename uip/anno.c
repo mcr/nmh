@@ -274,7 +274,7 @@ make_comp (char **ap)
     char *cp, buffer[BUFSIZ];
 
     if (*ap == NULL) {
-	printf ("Enter component name: ");
+	fputs("Enter component name: ", stdout);
 	fflush (stdout);
 
 	if (fgets (buffer, sizeof buffer, stdin) == NULL)
