@@ -103,7 +103,7 @@ static int insert(struct mailname *);
 static void mlistfree(void);
 
 static bool nodupcheck; 	/* If set, no check for duplicates */
-static int ccme = 0;		/* Should I cc myself? */
+static bool ccme;		/* Should I cc myself? */
 static struct mailname mq;	/* Mail addresses to check for duplicates */
 static char *dummy = "dummy";
 
@@ -116,8 +116,12 @@ main (int argc, char **argv)
     struct format *fmt;
     struct comp *cptr;
     struct msgs_array msgs = { 0, 0, NULL }, compargs = { 0, 0, NULL};
-    int dump = 0, i;
-    int outputsize = 0, dupaddrs = 1, trace = 0, files = 0;
+    bool dump = false;
+    int i;
+    int outputsize = 0;
+    bool dupaddrs = true;
+    bool trace = false;
+    int files = 0;
     int colwidth = -1, msgnum = -1, msgcur = -1, msgsize = -1, msgunseen = -1;
     enum mode_t mode = MESSAGE;
     int dat[5];
@@ -185,10 +189,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case TRACESW:
-		    trace++;
+		    trace = true;
 		    continue;
 		case NTRACESW:
-		    trace = 0;
+		    trace = false;
 		    continue;
 
 		case ADDRSW:
@@ -201,7 +205,7 @@ main (int argc, char **argv)
 		case MESSAGESW:
 		    mode = MESSAGE;
 		    defformat = FORMAT;
-		    dupaddrs = 0;
+		    dupaddrs = false;
 		    continue;
 		case DATESW:
 		    mode = DATE;
@@ -216,17 +220,17 @@ main (int argc, char **argv)
 		    continue;
 
 		case DUPADDRSW:
-		    dupaddrs++;
+		    dupaddrs = true;
 		    continue;
 		case NDUPADDRSW:
-		    dupaddrs = 0;
+		    dupaddrs = false;
 		    continue;
 
 		case CCMESW:
-		    ccme++;
+		    ccme = true;
 		    continue;
 		case NCCMESW:
-		    ccme = 0;
+		    ccme = false;
 		    continue;
 
 		case WIDTHSW:
@@ -256,10 +260,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case DUMPSW:
-		    dump++;
+		    dump = true;
 		    continue;
 		case NDUMPSW:
-		    dump = 0;
+		    dump = false;
 		    continue;
 
 	    }
@@ -336,11 +340,11 @@ main (int argc, char **argv)
      * callback, do that now.  Also, prime ismymbox if we use it.
      */
 
-    if (dupaddrs == 0 || trace) {
+    if (!dupaddrs || trace) {
     	ZERO(&cb);
 	cbp = &cb;
 
-	if (dupaddrs == 0) {
+	if (!dupaddrs) {
 	    cb.formataddr = test_formataddr;
 	    cb.concataddr = test_concataddr;
 	    if (!ccme)
@@ -721,19 +725,20 @@ test_trace(void *context, struct format *fmt, int num, char *str,
 	   const char *outbuf)
 {
     struct trace_context *ctx = (struct trace_context *) context;
-    int changed = 0;
+    bool changed = false;
 
     dumpone(fmt);
 
     if (num != ctx->num) {
     	printf("num=%d", num);
 	ctx->num = num;
-	changed++;
+	changed = true;
     }
 
     if (str != ctx->str) {
-    	if (changed++)
+    	if (changed)
             putchar(' ');
+        changed = true;
 	fputs("str=", stdout);
 	litputs(str);
 	ctx->str = str;
@@ -1210,7 +1215,7 @@ test_formataddr (char *orig, char *str)
 {
     int len;
     char error[BUFSIZ];
-    int isgroup;
+    bool isgroup;
     char *dst;
     char *cp;
     char *sp;
@@ -1239,14 +1244,14 @@ test_formataddr (char *orig, char *str)
     }
 
     /* concatenate all the new addresses onto 'buf' */
-    for (isgroup = 0; (cp = getname (str)); ) {
+    for (isgroup = false; (cp = getname (str)); ) {
 	if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
 	    fprintf(stderr, "bad address \"%s\" -- %s\n", cp, error);
 	    continue;
 	}
 	if (isgroup && (mp->m_gname || !mp->m_ingrp)) {
 	    *dst++ = ';';
-	    isgroup = 0;
+	    isgroup = false;
 	}
 	if (insert (mp)) {
 	    /* if we get here we're going to add an address */
@@ -1257,7 +1262,7 @@ test_formataddr (char *orig, char *str)
 	    if (mp->m_gname) {
 		CHECKMEM (mp->m_gname);
 		CPY (mp->m_gname);
-		isgroup++;
+		isgroup = true;
 	    }
 	    sp = adrformat (mp);
 	    CHECKMEM (sp);

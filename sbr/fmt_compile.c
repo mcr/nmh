@@ -488,13 +488,13 @@ do_spec(char *sp)
 {
     char *cp = sp;
     int c;
-    int ljust = 0;
+    bool ljust = false;
     int wid = 0;
     char fill = ' ';
 
     c = *cp++;
     if (c == '-') {
-	ljust++;
+	ljust = true;
 	c = *cp++;
     }
     if (c == '0') {
@@ -543,7 +543,7 @@ do_name(char *sp, int preprocess)
     char *cp = sp;
     int c;
     int i;
-    static int primed = 0;
+    static bool primed;
 
     while (isalnum(c = *cp++) || c == '-' || c == '_')
 	;
@@ -573,7 +573,7 @@ do_name(char *sp, int preprocess)
     case FT_GETMYADDR:
 	if (!primed) {
 	    ismymbox(NULL);
-	    primed++;
+	    primed = true;
 	}
 	/* FALLTHRU */
     case FT_PARSEADDR:
@@ -1044,13 +1044,15 @@ fmt_addcompentry(char *component)
 int
 fmt_addcomptext(char *component, char *text)
 {
-    int i, found = 0, bucket = CHASH(component);
+    int i;
+    bool found = false;
+    int bucket = CHASH(component);
     struct comp *cptr = wantcomp[bucket];
     char *cp;
 
     while (cptr) {
 	if (strcasecmp(component, FENDNULL(cptr->c_name)) == 0) {
-	    found++;
+	    found = true;
 	    if (! cptr->c_text) {
 		cptr->c_text = getcpy(text);
 	    } else {

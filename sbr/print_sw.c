@@ -11,7 +11,8 @@
 void
 print_sw (const char *substr, const struct swit *swp, char *prefix, FILE *fp)
 {
-    int len, optno;
+    int len;
+    bool optno;
     int i;
     char *cp, *cp1, *sp;
     char buf[128];
@@ -20,14 +21,14 @@ print_sw (const char *substr, const struct swit *swp, char *prefix, FILE *fp)
     for (; swp->sw; swp++) {
 	/* null matches all strings */
 	if (!*substr || (ssequal (substr, swp->sw) && len >= swp->minchars)) {
-	    optno = 0;
+	    optno = false;
 	    /* next switch */
 	    if ((sp = (&swp[1])->sw)) {
 		if (!*substr && sp[0] == 'n' && sp[1] == 'o' &&
 			strcmp (&sp[2], swp->sw) == 0 && (
 			((&swp[1])->minchars == 0 && swp->minchars == 0) ||
 			((&swp[1])->minchars == (swp->minchars) + 2)))
-		    optno++;
+		    optno = true;
 	    }
 
 	    if (swp->minchars > 0) {

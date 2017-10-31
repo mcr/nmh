@@ -70,7 +70,10 @@ static struct swit aqrul[] = {
 int
 main (int argc, char **argv)
 {
-    int use = NOUSE, nedit = 0, nwhat = 0, build = 0;
+    int use = NOUSE;
+    bool nedit = false;
+    bool nwhat = false;
+    bool build = false;
     int i, in = NOTOK, isdf = 0, out, dat[5], format_len = 0;
     int outputlinelen = OUTPUTLINELEN;
     char *cp, *cwd, *maildir, *dfolder = NULL;
@@ -109,23 +112,23 @@ main (int argc, char **argv)
 		case EDITRSW: 
 		    if (!(ed = *argp++) || *ed == '-')
 			die("missing argument to %s", argp[-2]);
-		    nedit = 0;
+		    nedit = false;
 		    continue;
 		case NEDITSW: 
-		    nedit++;
+		    nedit = true;
 		    continue;
 
 		case WHATSW: 
 		    if (!(whatnowproc = *argp++) || *whatnowproc == '-')
 			die("missing argument to %s", argp[-2]);
-		    nwhat = 0;
+		    nwhat = false;
 		    continue;
 
 		case BILDSW:
-		    build++;
+		    build = true;
 		    /* FALLTHRU */
 		case NWHATSW: 
-		    nwhat++;
+		    nwhat = true;
 		    continue;
 
 		case FORMSW: 

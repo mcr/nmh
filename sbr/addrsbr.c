@@ -270,7 +270,7 @@ auxformat (struct mailname *mp, int extras)
 bool
 ismymbox (struct mailname *np)
 {
-    int oops;
+    bool oops;
     int len, i;
     char *cp;
     char *pp;
@@ -278,7 +278,7 @@ ismymbox (struct mailname *np)
     struct mailname *mp;
     static char *am = NULL;
     static struct mailname mq;
-    static int localmailbox = 0;
+    static bool localmailbox;
 
     /*
      * If this is the first call, initialize
@@ -290,7 +290,7 @@ ismymbox (struct mailname *np)
 
 	if ((am = context_find ("local-mailbox"))) {
 
-	    localmailbox++;
+	    localmailbox = true;
 
 	    if ((cp = getname(am)) == NULL) {
 	        inform("Unable to find address in local-mailbox, continuing...");
@@ -312,11 +312,11 @@ ismymbox (struct mailname *np)
 	    am = getusername();
 	else {
 	    mp = mq.m_next ? mq.m_next : &mq;
-	    oops = 0;
+	    oops = false;
 	    while ((cp = getname (am))) {
 		if ((mp->m_next = getm (cp, NULL, 0, NULL, 0)) == NULL) {
 		    inform("illegal address: %s, continuing...", cp);
-		    oops++;
+		    oops = true;
 		} else {
 		    mp = mp->m_next;
 		    mp->m_type = W_NIL;

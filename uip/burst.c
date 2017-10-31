@@ -50,7 +50,7 @@ int debugsw = 0;
  */
 static int find_delim (int, struct smsg *, int *);
 static void find_mime_parts (CT, struct smsg *, int *);
-static void burst (struct msgs **, int, struct smsg *, int, int, int,
+static void burst(struct msgs **, int, struct smsg *, int, bool, bool,
 		   char *, int);
 static void cpybrst (FILE *, FILE *, char *, char *, int, int);
 
@@ -68,7 +68,10 @@ static void cpybrst (FILE *, FILE *, char *, char *, int, int);
 int
 main (int argc, char **argv)
 {
-    int inplace = 0, quietsw = 0, verbosw = 0, mimesw = 1;
+    bool inplace = false;
+    bool quietsw = false;
+    bool verbosw = false;
+    int mimesw = 1;
     int hi, msgnum, numburst;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
     char **argp, **arguments;
@@ -100,10 +103,10 @@ main (int argc, char **argv)
 		done (0);
 
 	    case INPLSW: 
-		inplace++;
+		inplace = true;
 		continue;
 	    case NINPLSW: 
-		inplace = 0;
+		inplace = false;
 		continue;
 
 	    case MIMESW:
@@ -117,17 +120,17 @@ main (int argc, char **argv)
 		continue;
 
 	    case QIETSW: 
-		quietsw++;
+		quietsw = true;
 		continue;
 	    case NQIETSW: 
-		quietsw = 0;
+		quietsw = false;
 		continue;
 
 	    case VERBSW: 
-		verbosw++;
+		verbosw = true;
 		continue;
 	    case NVERBSW: 
-		verbosw = 0;
+		verbosw = false;
 		continue;
 	    }
 	}
@@ -362,7 +365,7 @@ find_mime_parts (CT content, struct smsg *smsgs, int *msgp)
 
 static void
 burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
-	int inplace, int verbosw, char *maildir, int mimesw)
+    bool inplace, bool verbosw, char *maildir, int mimesw)
 {
     int i, j, mode;
     char *msgnam;

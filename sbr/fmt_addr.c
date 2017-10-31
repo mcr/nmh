@@ -50,7 +50,7 @@ char *
 formataddr (char *orig, char *str)
 {
     int len;
-    int isgroup;
+    bool isgroup;
     char *dst;
     char *cp;
     char *sp;
@@ -79,13 +79,13 @@ formataddr (char *orig, char *str)
     }
 
     /* concatenate all the new addresses onto 'buf' */
-    for (isgroup = 0; (cp = getname (str)); ) {
+    for (isgroup = false; (cp = getname (str)); ) {
 	if ((mp = getm (cp, NULL, 0, NULL, 0)) == NULL)
 	    continue;
 
 	if (isgroup && (mp->m_gname || !mp->m_ingrp)) {
 	    *dst++ = ';';
-	    isgroup = 0;
+	    isgroup = false;
 	}
 	/* if we get here we're going to add an address */
 	if (dst != buf) {
@@ -95,7 +95,7 @@ formataddr (char *orig, char *str)
 	if (mp->m_gname) {
 	    CHECKMEM (mp->m_gname);
 	    CPY (mp->m_gname);
-	    isgroup++;
+	    isgroup = true;
 	}
 	sp = adrformat (mp);
 	CHECKMEM (sp);

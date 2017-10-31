@@ -71,10 +71,14 @@ static struct swit aqrl[] = {
 int
 main (int argc, char **argv)
 {
-    int anot = 0, inplace = 1, nedit = 0;
-    int nwhat = 0, i, in, isdf = 0, out;
+    bool anot = false;
+    bool inplace = true;
+    bool nedit = false;
+    bool nwhat = false;
+    int i, in, isdf = 0, out;
     int outputlinelen = OUTPUTLINELEN;
-    int dat[5], atfile = 0;
+    int dat[5];
+    bool atfile = false;
     char *cp, *cwd, *maildir, *msgnam, *dfolder = NULL;
     char *dmsg = NULL, *ed = NULL, *file = NULL, *folder = NULL;
     char *form = NULL, *msg = NULL, buf[BUFSIZ], drft[BUFSIZ];
@@ -107,28 +111,28 @@ main (int argc, char **argv)
 		    done (0);
 
 		case ANNOSW: 
-		    anot++;
+		    anot = true;
 		    continue;
 		case NANNOSW: 
-		    anot = 0;
+		    anot = false;
 		    continue;
 
 		case EDITRSW: 
 		    if (!(ed = *argp++) || *ed == '-')
 			die("missing argument to %s", argp[-2]);
-		    nedit = 0;
+		    nedit = false;
 		    continue;
 		case NEDITSW:
-		    nedit++;
+		    nedit = true;
 		    continue;
 		    
 		case WHATSW: 
 		    if (!(whatnowproc = *argp++) || *whatnowproc == '-')
 			die("missing argument to %s", argp[-2]);
-		    nwhat = 0;
+		    nwhat = false;
 		    continue;
 		case NWHATSW: 
-		    nwhat++;
+		    nwhat = true;
 		    continue;
 
 		case FILESW: 
@@ -144,10 +148,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case INPLSW: 
-		    inplace++;
+		    inplace = true;
 		    continue;
 		case NINPLSW: 
-		    inplace = 0;
+		    inplace = false;
 		    continue;
 
 		case DFOLDSW: 
@@ -198,10 +202,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case ATFILESW:
-		    atfile++;
+		    atfile = true;
 		    continue;
 		case NOATFILESW:
-		    atfile = 0;
+		    atfile = false;
 		    continue;
 	    }
 	}
@@ -259,7 +263,7 @@ try_it_again:
 	/*
 	 * Dist a file
 	 */
-	anot = 0;	/* don't want to annotate a file */
+	anot = false;	/* don't want to annotate a file */
     } else {
 	/*
 	 * Dist a message
