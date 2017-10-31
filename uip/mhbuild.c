@@ -75,9 +75,9 @@ DEFINE_SWITCH_ARRAY(MIMEENCODING, encodingswitches);
 
 int debugsw = 0;
 
-int listsw   = 0;
-int rfc934sw = 0;
-int contentidsw = 1;
+bool listsw;
+bool rfc934sw;
+bool contentidsw = true;
 
 /*
  * Temporary files
@@ -116,7 +116,7 @@ main (int argc, char **argv)
 	    if (compfile)
 		die("cannot specify both standard input and a file");
             compfile = cp;
-	    listsw = 0;		/* turn off -list if using standard in/out */
+	    listsw = false;	/* turn off -list if using standard in/out */
 	    verbosw = 0;	/* turn off -verbose listings */
 	    break;
 	}
@@ -191,17 +191,17 @@ main (int argc, char **argv)
 		continue;
 
 	    case LISTSW:
-		listsw++;
+		listsw = true;
 		continue;
 	    case NLISTSW:
-		listsw = 0;
+		listsw = false;
 		continue;
 
 	    case RFC934SW:
-		rfc934sw++;
+		rfc934sw = true;
 		continue;
 	    case NRFC934SW:
-		rfc934sw = 0;
+		rfc934sw = false;
 		continue;
 
 	    case SIZESW:
@@ -212,10 +212,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case CONTENTIDSW:
-		contentidsw = 1;
+		contentidsw = true;
 		continue;
 	    case NCONTENTIDSW:
-		contentidsw = 0;
+		contentidsw = false;
 		continue;
 
 	    case HEADERENCSW: {

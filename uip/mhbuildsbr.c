@@ -39,9 +39,9 @@
 
 extern int debugsw;
 
-extern int listsw;
-extern int rfc934sw;
-extern int contentidsw;
+extern bool listsw;
+extern bool rfc934sw;
+extern bool contentidsw;
 
 static char prefix[] = "----- =_aaaaaaaaaa";
 
