@@ -56,6 +56,7 @@ struct imap_cmd;
 struct imap_cmd {
     char tag[16];		/* Command tag */
     struct timeval start;	/* Time command was sent */
+    char prefix[64];		/* Command prefix */
     struct imap_cmd *next;	/* Next pointer */
 };
 
@@ -78,7 +79,8 @@ static int get_imap_response(netsec_context *, const char *token,
 			     char **tokenresp, char **status, int failerr,
 			     char **errstr);
 
-static void ts_report(const char *str, struct timeval *tv);
+static void ts_report(struct timeval *tv, const char *fmt, ...)
+		      CHECK_PRINTF(2, 3);
 
 static void add_msg(int queue, const char *fmt, ...) CHECK_PRINTF(2, 3);
 
@@ -207,7 +209,7 @@ main (int argc, char **argv)
 	die("Connect failed: %s", buf);
 
     if (timestamp) {
-	ts_report("Connect time", &tv_start);
+	ts_report(&tv_start, "Connect time");
 	gettimeofday(&tv_connect, NULL);
     }
 
@@ -346,7 +348,7 @@ main (int argc, char **argv)
     }
 
     if (timestamp) {
-	ts_report("Authentication time", &tv_connect);
+	ts_report(&tv_connect, "Authentication time");
 	gettimeofday(&tv_auth, NULL);
     }
 
@@ -375,7 +377,7 @@ main (int argc, char **argv)
 	free(imsg);
     }
 
-    ts_report("Total command execution time", &tv_auth);
+    ts_report(&tv_auth, "Total command execution time");
 
     send_imap_command(nsc, 0, NULL, "LOGOUT");
     get_imap_response(nsc, NULL, NULL, NULL, 0, NULL);
@@ -383,7 +385,7 @@ main (int argc, char **argv)
 finish:
     netsec_shutdown(nsc);
 
-    ts_report("Total elapsed time", &tv_start);
+    ts_report(&tv_start, "Total elapsed time");
 
     exit(0);
 }
@@ -647,8 +649,19 @@ send_imap_command(netsec_context *nsc, int noflush, char **errstr,
 
     snprintf(cmd->tag, sizeof(cmd->tag), "A%u ", seq++);
 
-    if (timestamp)
+    if (timestamp) {
+	char *p;
+	va_start(ap, fmt);
+	vsnprintf(cmd->prefix, sizeof(cmd->prefix), fmt, ap);
+	va_end(ap);
+
+    	p = strchr(cmd->prefix, ' ');
+
+	if (p)
+	    *p = '\0';
+
 	gettimeofday(&cmd->start, NULL);
+    }
 
     if (netsec_write(nsc, cmd->tag, strlen(cmd->tag), errstr) != OK) {
 	free(cmd);
@@ -709,7 +722,8 @@ getline:
 	    if (has_prefix(line, cmdqueue->tag)) {
 		cmd = cmdqueue;
 		if (timestamp)
-		    ts_report("Command execution time", &cmd->start);
+		    ts_report(&cmd->start, "Command (%s) execution time",
+			      cmd->prefix);
 		cmdqueue = cmd->next;
 		free(cmd);
 	    } else {
@@ -779,15 +793,20 @@ add_msg(int queue, const char *fmt, ...)
  */
 
 static void
-ts_report(const char *str, struct timeval *tv)
+ts_report(struct timeval *tv, const char *fmt, ...)
 {
     struct timeval now;
     double delta;
+    va_list ap;
 
     gettimeofday(&now, NULL);
 
     delta = ((double) now.tv_sec) - ((double) tv->tv_sec) +
 	    (now.tv_usec / 1E6 - tv->tv_usec / 1E6);
 
-    printf("%s: %f sec\n", str, delta);
+    va_start(ap, fmt);
+    vfprintf(stdout, fmt, ap);
+    va_end(ap);
+
+    printf(": %f sec\n", delta);
 }
