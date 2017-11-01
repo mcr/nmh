@@ -43,8 +43,13 @@ static void seq_printdebug (struct msgs *);
 int
 main (int argc, char **argv)
 {
-    int addsw = 0, deletesw = 0, debugsw = 0;
-    int listsw = 0, publicsw = -1, zerosw = 0, msgnum;
+    bool addsw = false;
+    bool deletesw = false;
+    bool debugsw = false;
+    bool listsw = false;
+    int publicsw = -1;
+    bool zerosw = false;
+    int msgnum;
     unsigned int seqp = 0;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
     char **argp, **arguments;
@@ -79,16 +84,19 @@ main (int argc, char **argv)
 		done (0);
 
 	    case ADDSW: 
-		addsw++;
-		deletesw = listsw = 0;
+		addsw = true;
+		deletesw = false;
+                listsw = false;
 		continue;
 	    case DELSW: 
-		deletesw++;
-		addsw = listsw = 0;
+		deletesw = true;
+		addsw = false;
+                listsw = false;
 		continue;
 	    case LSTSW: 
-		listsw++;
-		addsw = deletesw = 0;
+		listsw = true;
+		addsw = false;
+                deletesw = false;
 		continue;
 
 	    case SEQSW: 
@@ -107,14 +115,14 @@ main (int argc, char **argv)
 		continue;
 
 	    case DEBUGSW: 
-		debugsw++;
+		debugsw = true;
 		continue;
 
 	    case ZEROSW: 
-		zerosw++;
+		zerosw = true;
 		continue;
 	    case NZEROSW: 
-		zerosw = 0;
+		zerosw = false;
 		continue;
 	    }
 	}
@@ -133,9 +141,9 @@ main (int argc, char **argv)
      */
     if (!addsw && !deletesw && !listsw) {
 	if (seqp)
-	    addsw++;
+	    addsw = true;
 	else
-	    listsw++;
+	    listsw = true;
     }
 
     if (!context_find ("path"))

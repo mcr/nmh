@@ -89,11 +89,12 @@ static char outfile[BUFSIZ];
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1;
+    bool sizesw = true;
+    bool headsw = true;
     bool directives = true;
     bool autobuild = false;
     bool dist = false;
-    int verbosw = 0;
+    bool verbosw = false;
     bool dispo = false;
     size_t maxunencoded = MAXTEXTPERLN;
     int *icachesw;
@@ -117,7 +118,7 @@ main (int argc, char **argv)
 		die("cannot specify both standard input and a file");
             compfile = cp;
 	    listsw = false;	/* turn off -list if using standard in/out */
-	    verbosw = 0;	/* turn off -verbose listings */
+	    verbosw = false;	/* turn off -verbose listings */
 	    break;
 	}
 	if (*cp == '-') {
@@ -177,10 +178,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case HEADSW:
-		headsw++;
+		headsw = true;
 		continue;
 	    case NHEADSW:
-		headsw = 0;
+		headsw = false;
 		continue;
 
 	    case DIRECTIVES:
@@ -205,10 +206,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case SIZESW:
-		sizesw++;
+		sizesw = true;
 		continue;
 	    case NSIZESW:
-		sizesw = 0;
+		sizesw = false;
 		continue;
 
 	    case CONTENTIDSW:
@@ -258,10 +259,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case VERBSW: 
-		verbosw++;
+		verbosw = true;
 		continue;
 	    case NVERBSW: 
-		verbosw = 0;
+		verbosw = false;
 		continue;
 	    case DISPOSW:
 		dispo = true;

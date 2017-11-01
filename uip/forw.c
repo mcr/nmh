@@ -102,9 +102,13 @@ static void copy_mime_draft (int);
 int
 main (int argc, char **argv)
 {
-    int anot = 0, inplace = 1, mime = 0;
+    bool anot = false;
+    bool inplace = true;
+    bool mime = false;
     int issue = 0, volume = 0, dashstuff = 0;
-    int nedit = 0, nwhat = 0, i, in;
+    bool nedit = false;
+    bool nwhat = false;
+    int i, in;
     int out, isdf = 0, msgnum = 0;
     int outputlinelen = OUTPUTLINELEN;
     int dat[5];
@@ -116,7 +120,7 @@ main (int argc, char **argv)
     char **argp, **arguments;
     struct stat st;
     struct msgs_array msgs = { 0, 0, NULL };
-    int buildsw = 0;
+    bool buildsw = false;
 
     if (nmh_init(argv[0], true, true)) { return 1; }
 
@@ -142,31 +146,31 @@ main (int argc, char **argv)
 		    done (0);
 
 		case ANNOSW: 
-		    anot++;
+		    anot = true;
 		    continue;
 		case NANNOSW: 
-		    anot = 0;
+		    anot = false;
 		    continue;
 
 		case EDITRSW: 
 		    if (!(ed = *argp++) || *ed == '-')
 			die("missing argument to %s", argp[-2]);
-		    nedit = 0;
+		    nedit = false;
 		    continue;
 		case NEDITSW:
-		    nedit++;
+		    nedit = true;
 		    continue;
 
 		case WHATSW: 
 		    if (!(whatnowproc = *argp++) || *whatnowproc == '-')
 			die("missing argument to %s", argp[-2]);
-		    nwhat = 0;
+		    nwhat = false;
 		    continue;
 		case BILDSW:
-		    buildsw++;
+		    buildsw = true;
 		    /* FALLTHRU */
 		case NWHATSW: 
-		    nwhat++;
+		    nwhat = true;
 		    continue;
 
 		case FILESW: 
@@ -180,7 +184,7 @@ main (int argc, char **argv)
 		    if (!(cp = *argp++) || *cp == '-')
 			die("missing argument to %s", argp[-2]);
 		    filter = mh_xstrdup(etcpath(cp));
-		    mime = 0;
+		    mime = false;
 		    continue;
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
@@ -195,25 +199,25 @@ main (int argc, char **argv)
 		    continue;
 
 		case INPLSW: 
-		    inplace++;
+		    inplace = true;
 		    continue;
 		case NINPLSW: 
-		    inplace = 0;
+		    inplace = false;
 		    continue;
 
 		case MIMESW:
-		    mime++;
+		    mime = true;
 		    filter = NULL;
 		    continue;
 		case NMIMESW: 
-		    mime = 0;
+		    mime = false;
 		    continue;
 
 		case DGSTSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			die("missing argument to %s", argp[-2]);
 		    digest = mh_xstrdup(cp);
-		    mime = 0;
+		    mime = false;
 		    continue;
 		case ISSUESW:
 		    if (!(cp = *argp++) || *cp == '-')
@@ -342,7 +346,7 @@ try_it_again:
 	/*
 	 * Forwarding a file.
          */
-	anot = 0;	/* don't want to annotate a file */
+	anot = false;	/* don't want to annotate a file */
     } else {
 	/*
 	 * Forwarding a message.

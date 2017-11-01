@@ -47,12 +47,12 @@ DEFINE_SWITCH_ENUM(FOLDER);
 DEFINE_SWITCH_ARRAY(FOLDER, switches);
 #undef X
 
-static int fshort   = 0;	/* output only folder names                 */
+static bool fshort;	        /* output only folder names                 */
 static int fcreat   = 0;	/* should we ask to create new folders?     */
-static int fpack    = 0;	/* are we packing the folder?               */
-static int fverb    = 0;	/* print actions taken while packing folder */
+static bool fpack;      	/* are we packing the folder?               */
+static bool fverb;      	/* print actions taken while packing folder */
 static int fheader  = 0;	/* should we output a header?               */
-static int frecurse = 0;	/* recurse through subfolders               */
+static bool frecurse;   	/* recurse through subfolders               */
 static int ftotal   = 0;	/* should we output the totals?             */
 static bool all;        	/* should we output all folders             */
 
@@ -159,10 +159,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case FASTSW: 
-		    fshort++;
+		    fshort = true;
 		    continue;
 		case NFASTSW: 
-		    fshort = 0;
+		    fshort = false;
 		    continue;
 
 		case HDRSW: 
@@ -173,24 +173,24 @@ main (int argc, char **argv)
 		    continue;
 
 		case PACKSW: 
-		    fpack++;
+		    fpack = true;
 		    continue;
 		case NPACKSW: 
-		    fpack = 0;
+		    fpack = false;
 		    continue;
 
 		case VERBSW:
-		    fverb++;
+		    fverb = true;
 		    continue;
 		case NVERBSW:
-		    fverb = 0;
+		    fverb = false;
 		    continue;
 
 		case RECURSW: 
-		    frecurse++;
+		    frecurse = true;
 		    continue;
 		case NRECRSW: 
-		    frecurse = 0;
+		    frecurse = false;
 		    continue;
 
 		case TOTALSW: 

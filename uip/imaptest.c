@@ -702,7 +702,7 @@ get_imap_response(netsec_context *nsc, const char *token, char **tokenresponse,
 {
     char *line;
     struct imap_cmd *cmd;
-    int numerrs = 0;
+    bool numerrs = false;
 
     if (tokenresponse)
 	*tokenresponse = NULL;
@@ -733,7 +733,7 @@ getline:
 			cmd->next = cmd->next->next;
 			if (failerr && strncmp(line + strlen(cmd2->tag),
 							"OK ", 3) != 0) {
-			    numerrs++;
+			    numerrs = true;
 			    netsec_err(errstr, "%s", line + strlen(cmd2->tag));
 			}
 			free(cmd2);
@@ -749,7 +749,7 @@ getline:
 	}
     }
 
-    return numerrs == 0 ? OK : NOTOK;
+    return numerrs ? NOTOK : OK;
 }
 
 /*

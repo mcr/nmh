@@ -99,7 +99,7 @@ static struct Maildir_entry {
 	time_t mtime;
 } *Maildir = NULL;
 static int num_maildir_entries = 0;
-static int snoop = 0;
+static bool snoop;
 
 typedef struct {
     FILE *mailout;
@@ -329,7 +329,7 @@ main (int argc, char **argv)
 		continue;
 
 	    case SNOOPSW:
-		snoop++;
+		snoop = true;
 		continue;
 	
 	    case SASLSW:
