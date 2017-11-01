@@ -26,6 +26,8 @@
     X("tls", 0, TLSSW) \
     X("notls", 0, NOTLSSW) \
     X("initialtls", 0, INITIALTLSSW) \
+    X("queue", 0, QUEUESW) \
+    X("noqueue", 0, NOQUEUESW) \
     X("append filename", 0, APPENDSW) \
     X("timestamp", 0, TIMESTAMPSW) \
     X("notimestamp", 0, NOTIMESTAMPSW) \
@@ -91,7 +93,7 @@ int
 main (int argc, char **argv)
 {
     bool sasl = false, tls = false, initialtls = false;
-    bool snoop = false;
+    bool snoop = false, queue = false;
     int fd;
     char *saslmech = NULL, *host = NULL, *port = "143", *user = NULL;
     char *cp, **argp, buf[BUFSIZ], *oauth_svc = NULL, *errstr, **arguments, *p;
@@ -168,6 +170,12 @@ main (int argc, char **argv)
 		tls = false;
 		initialtls = false;
 		continue;
+	    case QUEUESW:
+		queue = true;
+		continue;
+	    case NOQUEUESW:
+		queue = false;
+		continue;
 	    case TIMESTAMPSW:
 		timestamp = true;
 		continue;
@@ -180,7 +188,7 @@ main (int argc, char **argv)
 		die("Invalid null folder name");
 	    add_msg(0, "SELECT \"%s\"", cp + 1);
 	} else {
-	    add_msg(0, "%s", cp);
+	    add_msg(queue, "%s", cp);
 	}
     }
 
@@ -377,10 +385,25 @@ main (int argc, char **argv)
 	free(imsg);
     }
 
+    /*
+     * Flush out any pending network data and get any responses
+     */
+
+    if (netsec_flush(nsc, &errstr) != OK) {
+	fprintf(stderr, "Error performing final network flush: %s\n", errstr);
+	free(errstr);
+    }
+
+    while (cmdqueue)
+	if (get_imap_response(nsc, NULL, NULL, NULL, 0, &errstr) != OK) {
+	    fprintf(stderr, "Error fetching final command "
+		    "responses: %s\n", errstr);
+	}
+
     if (timestamp)
 	ts_report(&tv_auth, "Total command execution time");
 
-    send_imap_command(nsc, 0, NULL, "LOGOUT");
+    send_imap_command(nsc, false, NULL, "LOGOUT");
     get_imap_response(nsc, NULL, NULL, NULL, 0, NULL);
 
 finish:
@@ -743,9 +766,6 @@ getline:
 			    *status = getcpy(line);
 			goto getline;
 		    }
-		    netsec_err(errstr, "Non-matching response line: %s\n",
-			       line);
-		    return NOTOK;
 		}
 	    }
 	}
