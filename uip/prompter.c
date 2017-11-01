@@ -42,7 +42,7 @@ DEFINE_SWITCH_ARRAY(PROMPTER, switches);
 static struct termios tio;
 
 static bool wtuser;
-static int sigint = 0;
+static bool sigint;
 static jmp_buf sigenv;
 
 /*
@@ -57,8 +57,11 @@ static void intrser (int);
 int
 main (int argc, char **argv)
 {
-    int body = 1, prepend = 1, rapid = 0;
-    int doteof = 0, fdi, fdo, i, state;
+    bool body = true;
+    bool prepend = true;
+    bool rapid = false;
+    bool doteof = false;
+    int fdi, fdo, i, state;
     char *cp, *drft = NULL, *erasep = NULL;
     char *killp = NULL, name[NAMESZ], field[NMH_BUFSIZ];
     char buffer[BUFSIZ];
@@ -100,31 +103,31 @@ main (int argc, char **argv)
 		    continue;
 
 		case PREPSW: 
-		    prepend++;
+		    prepend = true;
 		    continue;
 		case NPREPSW: 
-		    prepend = 0;
+		    prepend = false;
 		    continue;
 
 		case RAPDSW: 
-		    rapid++;
+		    rapid = true;
 		    continue;
 		case NRAPDSW: 
-		    rapid = 0;
+		    rapid = false;
 		    continue;
 
 		case BODYSW: 
-		    body++;
+		    body = true;
 		    continue;
 		case NBODYSW: 
-		    body = 0;
+		    body = false;
 		    continue;
 
 		case DOTSW: 
-		    doteof++;
+		    doteof = true;
 		    continue;
 		case NDOTSW: 
-		    doteof = 0;
+		    doteof = false;
 		    continue;
 	    }
 	} else {
@@ -177,7 +180,7 @@ main (int argc, char **argv)
 	tio.c_cc[VERASE] = save_erase;
     }
 
-    sigint = 0;
+    sigint = false;
     SIGNAL2 (SIGINT, intrser);
 
     /*
@@ -379,7 +382,7 @@ intrser (int i)
 
     if (wtuser)
 	longjmp (sigenv, NOTOK);
-    sigint++;
+    sigint = true;
 }
 
 

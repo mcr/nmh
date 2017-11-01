@@ -35,7 +35,8 @@ static void rma (char *);
 int
 main (int argc, char **argv)
 {
-    int defolder = 0, interactive = -1;
+    bool defolder = false;
+    int interactive = -1;
     char *cp, *folder = NULL, newfolder[BUFSIZ];
     char buf[BUFSIZ], **argp, **arguments;
     char *fp;
@@ -84,7 +85,7 @@ main (int argc, char **argv)
 	free (path ("./", TFOLDER));
     if (!folder) {
 	folder = getfolder (1);
-	defolder++;
+	defolder = true;
     }
     fp = m_mailpath(folder);
     if (!strcmp(fp, pwd()))
@@ -127,7 +128,8 @@ main (int argc, char **argv)
 static int
 rmf (char *folder)
 {
-    int i, others;
+    int i;
+    bool others;
     char *fp;
     char *maildir;
     char cur[BUFSIZ];
@@ -155,7 +157,7 @@ rmf (char *folder)
 
     if ((dd = opendir (".")) == NULL)
 	die("unable to read folder +%s", folder);
-    others = 0;
+    others = false;
 
     /*
      *	Run the external delete hook program.
@@ -183,12 +185,12 @@ rmf (char *folder)
 
 		inform("file \"%s/%s\" not deleted, continuing...",
 			folder, dp->d_name);
-		others++;
+		others = true;
 		continue;
 	}
 	if (m_unlink (dp->d_name) == NOTOK) {
 	    admonish (dp->d_name, "unable to unlink %s:", folder);
-	    others++;
+	    others = true;
 	}
     }
 
@@ -203,7 +205,7 @@ rmf (char *folder)
     if (chdir ("..") < 0) {
 	advise ("..", "chdir");
     }
-    if (others == 0 && remdir (maildir))
+    if (!others && remdir (maildir))
 	return OK;
 
     inform("folder +%s not removed", folder);

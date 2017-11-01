@@ -41,7 +41,7 @@ DEFINE_SWITCH_ARRAY(VIAMAIL, switches);
 
 extern int debugsw;
 extern int splitsw;
-extern int verbsw;
+extern bool verbsw;
 
 /*
  * static prototypes
@@ -117,10 +117,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case VERBSW: 
-		verbsw = 1;
+		verbsw = true;
 		continue;
 	    case NVERBSW: 
-		verbsw = 0;
+		verbsw = false;
 		continue;
 
 	    case DEBUGSW:

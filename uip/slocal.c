@@ -83,10 +83,10 @@ DEFINE_SWITCH_ARRAY(SLOCAL, switches);
 static int globbed = 0;		/* have we built "vars" table yet?        */
 static int parsed = 0;		/* have we built header field table yet   */
 static int utmped = 0;		/* have we scanned umtp(x) file yet       */
-static int suppressdup = 0;	/* are we suppressing duplicate messages? */
+static bool suppressdup;	/* are we suppressing duplicate messages? */
 
-static int verbose = 0;
-static int debug = 0;
+static bool verbose;
+static bool debug;
 
 static char *addr = NULL;
 static char *user = NULL;
@@ -251,20 +251,20 @@ main (int argc, char **argv)
 		    continue;
 
 		case VERBSW: 
-		    verbose++;
+		    verbose = true;
 		    continue;
 		case NVERBSW: 
-		    verbose = 0;
+		    verbose = false;
 		    continue;
 
 		case SUPPRESSDUP:
-		    suppressdup++;
+		    suppressdup = true;
 		    continue;
 		case NSUPPRESSDUP:
-		    suppressdup = 0;
+		    suppressdup = false;
 		    continue;
 		case DEBUGSW: 
-		    debug++;
+		    debug = true;
 		    continue;
 	    }
 	} else {
@@ -423,7 +423,9 @@ usr_delivery (int fd, char *delivery, int su)
 {
     int i;
     bool accept;
-    int status=1, won, vecp;
+    int status=1;
+    bool won;
+    int vecp;
     bool next;
     char *field, *pattern, *action, *result, *string;
     char buffer[BUFSIZ], tmpbuf[BUFSIZ];
@@ -447,7 +449,7 @@ usr_delivery (int fd, char *delivery, int su)
 	return -1;
     }
 
-    won = 0;
+    won = false;
     next = true;
 
     /* read and process delivery file */
@@ -636,7 +638,7 @@ usr_delivery (int fd, char *delivery, int su)
 	if (status) next = false; /* action failed, mark for 'N' result */
 
 	if (accept && status == 0)
-	    won++;
+	    won = true;
     }
 
     fclose (fp);

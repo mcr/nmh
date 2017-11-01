@@ -39,7 +39,8 @@ static int pop_sasl_callback(enum sasl_message_type, unsigned const char *,
 static int
 check_mech(char *server_mechs, size_t server_mechs_size)
 {
-  int status, sasl_capability = 0;
+  int status;
+  bool sasl_capability = false;
 
     /*
      * First off, we're going to send the CAPA command to see if we can
@@ -62,7 +63,7 @@ check_mech(char *server_mechs, size_t server_mechs_size)
 
         if (strncasecmp(response, "SASL ", 5) == 0) {
             /* We've seen the SASL capability.  Grab the mech list. */
-            sasl_capability++;
+            sasl_capability = true;
             strncpy(server_mechs, response + 5, server_mechs_size);
         }
     }

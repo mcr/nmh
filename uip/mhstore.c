@@ -63,7 +63,8 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int msgnum, *icachesw, autosw = 0;
+    int msgnum, *icachesw;
+    bool autosw = false;
     /* verbosw defaults to 1 for backward compatibility. */
     bool verbosw = true;
     const char *clobbersw = "always";
@@ -107,10 +108,10 @@ main (int argc, char **argv)
 		done (0);
 
 	    case AUTOSW:
-		autosw++;
+		autosw = true;
 		continue;
 	    case NAUTOSW:
-		autosw = 0;
+		autosw = false;
 		continue;
 
 	    case RCACHESW:

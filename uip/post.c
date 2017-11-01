@@ -225,27 +225,27 @@ static short fccind = 0;	/* index into fccfold[] */
 static short outputlinelen = OUTPUTLINELEN;
 
 static int pfd = NOTOK;		/* fd to write annotation list to        */
-static int recipients = 0;	/* how many people will get a copy       */
+static bool recipients; 	/* how many people will get a copy       */
 static int unkadr = 0;		/* how many of those were unknown        */
 static int badadr = 0;		/* number of bad addrs                   */
-static int badmsg = 0;		/* message has bad semantics             */
-static int verbose = 0;		/* spell it out                          */
+static bool badmsg;		/* message has bad semantics             */
+static bool verbose;		/* spell it out                          */
 static bool format = true;	/* format addresses                      */
-static int mime = 0;		/* use MIME-style encapsulations for Bcc */
-static int msgid = 0;		/* add msgid                             */
-static int debug = 0;		/* debugging post                        */
-static int watch = 0;		/* watch the delivery process            */
-static int whomsw = 0;		/* we are whom not post                  */
-static int checksw = 0;		/* whom -check                           */
+static bool mime;		/* use MIME-style encapsulations for Bcc */
+static bool msgid;		/* add msgid                             */
+static bool debug;		/* debugging post                        */
+static bool watch;		/* watch the delivery process            */
+static bool whomsw;		/* we are whom not post                  */
+static bool checksw;		/* whom -check                           */
 static int linepos=0;		/* putadr()'s position on the line       */
 static int nameoutput=0;	/* putadr() has output header name       */
-static int sasl=0;		/* Use SASL auth for SMTP                */
+static bool sasl;		/* Use SASL auth for SMTP                */
 static char *saslmech=NULL;	/* Force use of particular SASL mech     */
 static char *user=NULL;		/* Authenticate as this user             */
 static char *port="submission";	/* Name of server port for SMTP submission */
 static int tlsflag=0;		/* Flags to control TLS settings	 */
 static int fromcount=0;		/* Count of addresses on From: header	 */
-static int seensender=0;	/* Have we seen a Sender: header?	 */
+static bool seensender; 	/* Have we seen a Sender: header?	 */
 
 static unsigned msgflags = 0;	/* what we've seen */
 
@@ -277,7 +277,7 @@ static struct mailname netaddrs;		/* network addrs   */
 static struct mailname uuaddrs;			/* uucp addrs      */
 static struct mailname tmpaddrs;		/* temporary queue */
 
-static int snoop      = 0;
+static bool snoop;
 static char *clientsw = NULL;
 static char *serversw = NULL;
 
@@ -318,8 +318,10 @@ static int find_prefix (void);
 int
 main (int argc, char **argv)
 {
-    int state, compnum, dashstuff = 0, swnum, oauth_flag = 0, tls = -1;
-    int noverify = 0;
+    int state, compnum, dashstuff = 0, swnum;
+    bool oauth_flag = false;
+    int tls = -1;
+    bool noverify = false;
     int eai = 0; /* use Email Address Internationalization (EAI) (SMTPUTF8) */
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
     char buf[NMH_BUFSIZ], name[NAMESZ], *auth_svc = NULL;
@@ -366,14 +368,14 @@ main (int argc, char **argv)
 		    continue;
 
 		case CHKSW: 
-		    checksw++;
+		    checksw = true;
 		    continue;
 		case NCHKSW: 
-		    checksw = 0;
+		    checksw = false;
 		    continue;
 
 		case DEBUGSW: 
-		    debug++;
+		    debug = true;
 		    continue;
 
 		case DISTSW:
@@ -383,7 +385,7 @@ main (int argc, char **argv)
 		case FILTSW:
 		    if (!(filter = *argp++) || *filter == '-')
 			die("missing argument to %s", argp[-2]);
-		    mime = 0;
+		    mime = false;
 		    continue;
 		case NFILTSW:
 		    filter = NULL;
@@ -404,36 +406,36 @@ main (int argc, char **argv)
 		    continue;
 
 		case MIMESW:
-		    mime++;
+		    mime = true;
 		    filter = NULL;
 		    continue;
 		case NMIMESW: 
-		    mime = 0;
+		    mime = false;
 		    continue;
 
 		case MSGDSW: 
-		    msgid++;
+		    msgid = true;
 		    continue;
 		case NMSGDSW: 
-		    msgid = 0;
+		    msgid = false;
 		    continue;
 
 		case VERBSW: 
-		    verbose++;
+		    verbose = true;
 		    continue;
 		case NVERBSW: 
-		    verbose = 0;
+		    verbose = false;
 		    continue;
 
 		case WATCSW: 
-		    watch++;
+		    watch = true;
 		    continue;
 		case NWATCSW: 
-		    watch = 0;
+		    watch = false;
 		    continue;
 
 		case WHOMSW: 
-		    whomsw++;
+		    whomsw = true;
 		    continue;
 
 		case WIDTHSW: 
@@ -459,7 +461,7 @@ main (int argc, char **argv)
 			die("missing argument to %s", argp[-2]);
 		    continue;
 		case SNOOPSW:
-		    snoop++;
+		    snoop = true;
 		    continue;
 
 		case PARTSW:
@@ -468,11 +470,11 @@ main (int argc, char **argv)
 		    continue;
 
 		case SASLSW:
-		    sasl++;
+		    sasl = true;
 		    continue;
 
 		case NOSASLSW:
-		    sasl = 0;
+		    sasl = false;
 		    continue;
 
 		case SASLMECHSW:
@@ -483,7 +485,7 @@ main (int argc, char **argv)
 		case AUTHSERVICESW:
 		    if (!(auth_svc = *argp++) || *auth_svc == '-')
 			die("missing argument to %s", argp[-2]);
-		    oauth_flag++;
+		    oauth_flag = true;
 		    continue;
 
 		case OAUTHCREDFILESW:
@@ -510,7 +512,7 @@ main (int argc, char **argv)
 			die("internal error: cannot map switch %s "
 			       "to profile entry", argp[-2]);
 
-		    oauth_flag++;
+		    oauth_flag = true;
 		    continue;
 		}
 
@@ -537,11 +539,11 @@ main (int argc, char **argv)
 		    continue;
 
 		case CERTVERSW:
-		    noverify = 0;
+		    noverify = false;
 		    continue;
 
 		case NOCERTVERSW:
-		    noverify++;
+		    noverify = true;
 		    continue;
 
 		case FILEPROCSW:
@@ -601,7 +603,7 @@ main (int argc, char **argv)
 
     start_headers ();
     if (debug) {
-	verbose++;
+	verbose = true;
 	out = stdout;
     } else {
 	if (whomsw) {
@@ -788,7 +790,9 @@ main (int argc, char **argv)
 static void
 putfmt (char *name, char *str, int *eai, FILE *out)
 {
-    int count, grp, i, keep;
+    int count;
+    bool grp;
+    int i, keep;
     char *cp, *pp, *qp;
     char namep[BUFSIZ], error[BUFSIZ];
     char *savehdr = NULL;
@@ -801,7 +805,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 
     if (msgstate == NORMAL && uprf (name, "resent")) {
 	inform("illegal header line -- %s:", name);
-	badmsg++;
+	badmsg = true;
 	return;
     }
 
@@ -845,7 +849,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
     }
     if (hdr->flags & HBAD) {
 	inform("illegal header line -- %s:", name);
-	badmsg++;
+	badmsg = true;
 	return;
     }
     msgflags |= (hdr->set & ~(MVIS | MINV));
@@ -904,7 +908,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	    if (hdr->flags & HTRY)
 		badadr++;
 	    else
-		badmsg++;
+		badmsg = true;
 	}
     }
 
@@ -918,11 +922,11 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	    if ((msgstate == RESENT) ? (hdr->set & MRSN)
 					: (hdr->set & MSND)) {
 		inform("%s: field requires one address", name);
-		badmsg++;
+		badmsg = true;
 	    }
 #ifdef notdef
 	    inform("%s: field requires at least one address", name);
-	    badmsg++;
+	    badmsg = true;
 #endif /* notdef */
 	}
 	return;
@@ -930,7 +934,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 
     if (count > 1 && (hdr->flags & HONE)) {
 	inform("%s: field only permits one address", name);
-	badmsg++;
+	badmsg = true;
 	return;
     }
 
@@ -938,7 +942,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
     snprintf (namep, sizeof(namep), "%s%s",
 		(hdr->flags & HMNG) ? "Original-" : "", name);
 
-    for (grp = 0, mp = tmpaddrs.m_next; mp; mp = np)
+    for (grp = false, mp = tmpaddrs.m_next; mp; mp = np)
 	if (mp->m_nohost) {	/* also used to test (hdr->flags & HTRY) */
 	    /* The address doesn't include a host, so it might be an alias. */
 	    pp = akvalue (mp->m_mbox);  /* do mh alias substitution */
@@ -973,7 +977,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 						: (hdr->set & MSND)) {
 		    strncpy(sender, auxformat(mp, 0), sizeof(sender) - 1);
 		    sender[sizeof(sender) - 1] = '\0';
-		    seensender++;
+		    seensender = true;
 		}
 
 		/*
@@ -1004,7 +1008,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 			       " sendmail/pipe");
 		    }
 
-		    grp++;
+		    grp = true;
 		}
 		if (putadr (namep, qp, mp, out, hdr->flags, savehdr,
 			    savehdrlen))
@@ -1038,7 +1042,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 					    : (hdr->set & MSND)) {
 	        strncpy(sender, auxformat(mp, 0), sizeof(sender) - 1);
 		sender[sizeof(sender) - 1] = '\0';
-		seensender++;
+		seensender = true;
 	    }
 
 	    /*
@@ -1055,7 +1059,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	    if (mp->m_gname)
 		putgrp (namep, mp->m_gname, out, hdr->flags);
 	    if (mp->m_ingrp)
-		grp++;
+		grp = true;
 	    keep = putadr (namep, "", mp, out, hdr->flags, savehdr, savehdrlen);
 	    np = mp->m_next;
 	    if (keep) {
@@ -1077,9 +1081,9 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	}
     }
 
-    if (grp > 0 && (hdr->flags & HNGR)) {
+    if (grp && (hdr->flags & HNGR)) {
 	inform("%s: field does not allow groups", name);
-	badmsg++;
+	badmsg = true;
     }
     if (linepos) {
 	putc ('\n', out);
@@ -1120,14 +1124,14 @@ finish_headers (FILE *out)
 		 */
 		inform("message has no From: header");
 		inform("See default components files for examples");
-		badmsg++;
+		badmsg = true;
 		break;
 	    }
 
-	    if (fromcount > 1 && (seensender == 0 && !(msgflags & MEFM))) {
+	    if (fromcount > 1 && (!seensender && !(msgflags & MEFM))) {
 		inform("A Sender: or Envelope-From: header is required "
 			"with multiple\nFrom: addresses");
-		badmsg++;
+		badmsg = true;
 		break;
 	    }
 
@@ -1143,12 +1147,12 @@ finish_headers (FILE *out)
 	     * from Envelope-From: (which in this case, cannot be blank)
 	     */
 
-	    if (fromcount > 1 && seensender == 0) {
+	    if (fromcount > 1 && !seensender) {
 	    	if (efrom[0] == '\0') {
 		    inform("Envelope-From cannot be blank when there "
 		    	    "is multiple From: addresses\nand no Sender: "
 			    "header");
-		    badmsg++;
+		    badmsg = true;
 		} else {
 		    fprintf (out, "Sender: %s\n", efrom);
 		}
@@ -1161,22 +1165,22 @@ finish_headers (FILE *out)
 	case RESENT: 
 	    if (!(msgflags & MDAT)) {
 		inform("message has no Date: header");
-		badmsg++;
+		badmsg = true;
 	    }
 	    if (!(msgflags & MFRM)) {
 		inform("message has no From: header");
-		badmsg++;
+		badmsg = true;
 	    }
 	    if (!(msgflags & MRFM)) {
 		inform("message has no Resent-From: header");
 		inform("See default components files for examples");
-		badmsg++;
+		badmsg = true;
 		break;
 	    }
-	    if (fromcount > 1 && (seensender == 0 && !(msgflags & MEFM))) {
+	    if (fromcount > 1 && (!seensender && !(msgflags & MEFM))) {
 		inform("A Resent-Sender: or Envelope-From: header is "
 			"required with multiple\nResent-From: addresses");
-		badmsg++;
+		badmsg = true;
 		break;
 	    }
 
@@ -1193,12 +1197,12 @@ finish_headers (FILE *out)
 	     * from Envelope-From (which in this case, cannot be blank)
 	     */
 
-	    if (fromcount > 1 && seensender == 0) {
+	    if (fromcount > 1 && !seensender) {
 	    	if (efrom[0] == '\0') {
 		    inform("Envelope-From cannot be blank when there "
 		    	    "is multiple Resent-From: addresses and no "
 			    "Resent-Sender: header");
-		    badmsg++;
+		    badmsg = true;
 		} else {
 		    fprintf (out, "Resent-Sender: %s\n", efrom);
 		}
@@ -1359,7 +1363,7 @@ insert (struct mailname *np)
 	    return 0;
 
     mp->m_next = np;
-    recipients++;
+    recipients = true;
     return 1;
 }
 

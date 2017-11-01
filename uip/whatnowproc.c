@@ -23,7 +23,8 @@ int
 what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
           struct msgs *mp, char *text, int inplace, char *cwd, int atfile)
 {
-    int found, k, msgnum, vecp;
+    bool found;
+    int k, msgnum, vecp;
     int len, buflen;
     char *bp;
     char buffer[BUFSIZ], *vec[MAXARGS];
@@ -68,7 +69,7 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
     unsetenv("mhinplace");
 
     if (text && mp && !is_readonly(mp)) {
-	found = 0;
+	found = false;
 	bp = buffer;
 	buflen = sizeof(buffer);
 	for (msgnum = mp->lowmsg; msgnum <= mp->hghmsg; msgnum++) {
@@ -86,7 +87,7 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
 		    buflen -= len;
 		}
 		msgnum = k + 1;
-		found++;
+		found = true;
 	    }
 	}
 	if (found) {

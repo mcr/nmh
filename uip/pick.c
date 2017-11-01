@@ -56,7 +56,9 @@ static void putzero_done (int) NORETURN;
 int
 main (int argc, char **argv)
 {
-    int publicsw = -1, zerosw = 1, vecp = 0;
+    int publicsw = -1;
+    bool zerosw = true;
+    int vecp = 0;
     size_t seqp = 0;
     int msgnum;
     char *maildir, *folder = NULL, buf[100];
@@ -153,10 +155,10 @@ main (int argc, char **argv)
 		publicsw = 0;
 		continue;
 	    case ZEROSW: 
-		zerosw++;
+		zerosw = true;
 		continue;
 	    case NZEROSW: 
-		zerosw = 0;
+		zerosw = false;
 		continue;
 
 	    case LISTSW: 

@@ -98,12 +98,12 @@ DEFINE_SWITCH_ARRAY(USE, anyl);
 #undef X
 
 extern int debugsw;		/* from sendsbr.c */
-extern int forwsw;
+extern bool forwsw;
 extern int inplace;
-extern int pushsw;
+extern bool pushsw;
 extern int splitsw;
-extern int unique;
-extern int verbsw;
+extern bool unique;
+extern bool verbsw;
 
 extern char *altmsg;		/*  .. */
 extern char *annotext;
@@ -190,10 +190,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case PUSHSW: 
-		    pushsw++;
+		    pushsw = true;
 		    continue;
 		case NPUSHSW: 
-		    pushsw = 0;
+		    pushsw = false;
 		    continue;
 
 		case SPLITSW: 
@@ -202,25 +202,25 @@ main (int argc, char **argv)
 		    continue;
 
 		case UNIQSW: 
-		    unique++;
+		    unique = true;
 		    continue;
 		case NUNIQSW: 
-		    unique = 0;
+		    unique = false;
 		    continue;
 
 		case FORWSW:
-		    forwsw++;
+		    forwsw = true;
 		    continue;
 		case NFORWSW:
-		    forwsw = 0;
+		    forwsw = false;
 		    continue;
 
 		case VERBSW: 
-		    verbsw++;
+		    verbsw = true;
 		    vec[vecp++] = --cp;
 		    continue;
 		case NVERBSW:
-		    verbsw = 0;
+		    verbsw = false;
 		    vec[vecp++] = --cp;
 		    continue;
 

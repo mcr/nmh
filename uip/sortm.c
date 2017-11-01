@@ -46,8 +46,8 @@ int nmsgs;
 
 char *subjsort;                 /* sort on subject if != 0 */
 time_t datelimit = 0;
-int submajor = 0;		/* if true, sort on subject-major */
-int verbose;
+bool submajor;  		/* if true, sort on subject-major */
+bool verbose;
 int allmsgs = 1;
 int check_failed = 0;
 
@@ -131,7 +131,7 @@ main (int argc, char **argv)
 		while (*cp == '0')
 		    cp++;		/* skip any leading zeros */
 		if (!*cp) {		/* hit end of string */
-		    submajor++;		/* sort subject-major */
+		    submajor = true;	/* sort subject-major */
 		    continue;
 		}
 		if (!isdigit((unsigned char) *cp) || !(datelimit = atoi(cp)))
@@ -139,15 +139,15 @@ main (int argc, char **argv)
 		datelimit *= 60*60*24;
 		continue;
 	    case NLIMSW:
-		submajor = 0;	/* use date-major, but */
-		datelimit = 0;	/* use no limit */
+		submajor = false;	/* use date-major, but */
+		datelimit = 0;	        /* use no limit */
 		continue;
 
 	    case VERBSW:
-		verbose++;
+		verbose = true;
 		continue;
 	    case NVERBSW:
-		verbose = 0;
+		verbose = false;
 		continue;
 
 	    case ALLMSGS:

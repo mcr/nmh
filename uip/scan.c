@@ -41,8 +41,11 @@ DEFINE_SWITCH_ARRAY(SCAN, switches);
 int
 main (int argc, char **argv)
 {
-    int clearflag = 0, hdrflag = 0, ontty;
-    int width = -1, revflag = 0;
+    bool clearflag = false;
+    bool hdrflag = false;
+    int ontty;
+    int width = -1;
+    bool revflag = false;
     int i, state, msgnum;
     ivector_t seqnum = ivector_create (0);
     bool unseen;
@@ -82,10 +85,10 @@ main (int argc, char **argv)
 		    done (0);
 
 		case CLRSW: 
-		    clearflag++;
+		    clearflag = true;
 		    continue;
 		case NCLRSW: 
-		    clearflag = 0;
+		    clearflag = false;
 		    continue;
 
 		case FORMSW: 
@@ -100,10 +103,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case HEADSW: 
-		    hdrflag++;
+		    hdrflag = true;
 		    continue;
 		case NHEADSW: 
-		    hdrflag = 0;
+		    hdrflag = false;
 		    continue;
 
 		case WIDTHSW: 
@@ -112,10 +115,10 @@ main (int argc, char **argv)
 		    width = atoi (cp);
 		    continue;
 		case REVSW:
-		    revflag++;
+		    revflag = true;
 		    continue;
 		case NREVSW:
-		    revflag = 0;
+		    revflag = false;
 		    continue;
 
 		case FILESW:
@@ -272,7 +275,7 @@ main (int argc, char **argv)
 	    }
 	    charstring_free (scanl);
 	    scan_finished ();
-	    hdrflag = 0;
+	    hdrflag = false;
 	    fclose (in);
 	    if (ontty)
 		fflush (stdout);

@@ -78,9 +78,14 @@ static int remotemail (char *, char *, char *, char *, int, int, int, int,
 int
 main (int argc, char **argv)
 {
-    int datesw = 1, notifysw = NT_ALL;
-    int status = 0, sasl = 0, tls = 0, noverify = 0;
-    int snoop = 0, vecp = 0;
+    bool datesw = true;
+    int notifysw = NT_ALL;
+    int status = 0;
+    bool sasl = false;
+    bool tls = false;
+    bool noverify = false;
+    bool snoop = false;
+    int vecp = 0;
     char *cp, *host = NULL, *port = NULL, *user = NULL, *proxy = NULL;
     char buf[BUFSIZ], *saslmech = NULL, *auth_svc = NULL;
     char **argp, **arguments, *vec[MAXVEC];
@@ -112,10 +117,10 @@ main (int argc, char **argv)
 		    done (0);
 
 		case DATESW:
-		    datesw++;
+		    datesw = true;
 		    continue;
 		case NDATESW:
-		    datesw = 0;
+		    datesw = false;
 		    continue;
 
 		case NOTESW:
@@ -148,15 +153,15 @@ main (int argc, char **argv)
 		    continue;
 
 		case SNOOPSW:
-		    snoop++;
+		    snoop = true;
 		    continue;
 
 		case SASLSW:
-		    sasl++;
+		    sasl = true;
 		    continue;
 		
 		case NOSASLSW:
-		    sasl = 0;
+		    sasl = false;
 		    continue;
 
 		case SASLMECHSW:
@@ -165,19 +170,19 @@ main (int argc, char **argv)
 		    continue;
 
 		case INITTLSSW:
-		    tls++;
+		    tls = true;
 		    continue;
 
 		case NOTLSSW:
-		    tls = 0;
+		    tls = false;
 		    continue;
 
 		case CERTVERSW:
-		    noverify = 0;
+		    noverify = false;
 		    continue;
 
 		case NOCERTVERSW:
-		    noverify++;
+		    noverify = true;
 		    continue;
 
 		case AUTHSERVICESW:

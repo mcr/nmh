@@ -30,7 +30,8 @@ DEFINE_SWITCH_ARRAY(RMM, switches);
 int
 main (int argc, char **argv)
 {
-    int msgnum, unlink_msgs = 0;
+    int msgnum;
+    bool unlink_msgs = false;
     char *cp, *maildir, *folder = NULL;
     char buf[BUFSIZ], **argp;
     char **arguments;
@@ -62,10 +63,10 @@ main (int argc, char **argv)
 		done (0);
 
 	    case UNLINKSW:
-		unlink_msgs++;
+		unlink_msgs = true;
 		continue;
 	    case NUNLINKSW:
-		unlink_msgs = 0;
+		unlink_msgs = false;
 		continue;
 
             case RPROCSW:

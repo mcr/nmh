@@ -66,9 +66,10 @@ static int is_nontext(char *);
 int
 main (int argc, char **argv)
 {
-    int draftsw = 0;
+    bool draftsw = false;
     bool headersw = true;
-    int nshow = 0, checkmime = 1;
+    bool nshow = false;
+    bool checkmime = true;
     bool mime = false;
     int isdf = 0, mode = SHOW, msgnum;
     char *cp, *maildir, *file = NULL, *folder = NULL, *proc, *program;
@@ -126,7 +127,7 @@ non_mhl_switches:
 		case DRFTSW:
 		    if (file)
 			die("only one file at a time!");
-		    draftsw++;
+		    draftsw = true;
 		    if (mode == SHOW)
 			continue;
 usage:
@@ -168,22 +169,22 @@ usage:
 		case SHOWSW:
 		    if (!(showproc = *argp++) || *showproc == '-')
 			die("missing argument to %s", argp[-2]);
-		    nshow = 0;
+		    nshow = false;
 		    continue;
 		case NSHOWSW:
-		    nshow++;
+		    nshow = true;
 		    continue;
 
 		case SHOWMIMESW:
 		    if (!(showmimeproc = *argp++) || *showmimeproc == '-')
 			die("missing argument to %s", argp[-2]);
-		    nshow = 0;
+		    nshow = false;
 		    continue;
 		case CHECKMIMESW:
-		    checkmime++;
+		    checkmime = true;
 		    continue;
 		case NOCHECKMIMESW:
-		    checkmime = 0;
+		    checkmime = false;
 		    continue;
 	    }
 	}

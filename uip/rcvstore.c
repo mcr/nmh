@@ -47,8 +47,9 @@ static void unlink_done(int) NORETURN;
 int
 main (int argc, char **argv)
 {
-    int publicsw = -1, zerosw = 0;
-    int create = 1;
+    int publicsw = -1;
+    bool zerosw = false;
+    bool create = true;
     bool unseensw = true;
     int fd, msgnum;
     size_t seqp = 0;
@@ -108,17 +109,17 @@ main (int argc, char **argv)
 		continue;
 
 	    case ZEROSW: 
-		zerosw++;
+		zerosw = true;
 		continue;
 	    case NZEROSW: 
-		zerosw = 0;
+		zerosw = false;
 		continue;
 
 	    case CRETSW: 
-		create++;
+		create = true;
 		continue;
 	    case NCRETSW: 
-		create = 0;
+		create = false;
 		continue;
 	    }
 	}

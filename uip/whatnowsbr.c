@@ -120,7 +120,9 @@ static int copyf (char *, char *);
 int
 WhatNow (int argc, char **argv)
 {
-    int isdf = 0, nedit = 0, use = 0, atfile = 1;
+    int isdf = 0;
+    bool nedit = false;
+    int use = 0, atfile = 1;
     char *cp, *dfolder = NULL, *dmsg = NULL;
     char *ed = NULL, *drft = NULL, *msgnam = NULL;
     char buf[BUFSIZ];
@@ -186,10 +188,10 @@ WhatNow (int argc, char **argv)
 	    case EDITRSW:
 		if (!(ed = *argp++) || *ed == '-')
 		    die("missing argument to %s", argp[-2]);
-		nedit = 0;
+		nedit = false;
 		continue;
 	    case NEDITSW:
-		nedit++;
+		nedit = true;
 		continue;
 
 	    case PRMPTSW:
@@ -216,7 +218,7 @@ WhatNow (int argc, char **argv)
 
     if (ed == NULL && ((ed = getenv ("mheditor")) == NULL || *ed == 0)) {
 	ed = NULL;
-	nedit++;
+	nedit = true;
     }
 
     /* start editing the draft, unless -noedit was given */
@@ -634,7 +636,7 @@ popen_in_dir(const char *dir, const char *cmd, const char *type)
  * EDIT
  */
 
-static int  reedit = 0;		/* have we been here before?     */
+static bool reedit;    		/* have we been here before?     */
 static char *edsave = NULL;	/* the editor we used previously */
 
 
@@ -739,7 +741,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 		break;
 	    }
 
-	    reedit++;
+	    reedit = true;
 	    if (altmsg
 		    && mp
 		    && !is_readonly(mp)
@@ -956,12 +958,12 @@ DEFINE_SWITCH_ARRAY(SEND, sendswitches);
 
 
 extern int debugsw;		/* from sendsbr.c */
-extern int forwsw;
+extern bool forwsw;
 extern int inplace;
-extern int pushsw;
+extern bool pushsw;
 extern int splitsw;
-extern int unique;
-extern int verbsw;
+extern bool unique;
+extern bool verbsw;
 
 extern char *altmsg;		/*  .. */
 extern char *annotext;
@@ -1012,9 +1014,9 @@ sendit (char *sp, char **arg, char *file, int pushed)
     argp = arguments;
 
     debugsw = 0;
-    forwsw = 1;
+    forwsw = true;
     inplace = 1;
-    unique = 0;
+    unique = false;
 
     altmsg = NULL;
     annotext = NULL;
@@ -1078,24 +1080,24 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    continue;
 
 		case UNIQSW:
-		    unique++;
+		    unique = true;
 		    continue;
 		case NUNIQSW:
-		    unique = 0;
+		    unique = false;
 		    continue;
 		case FORWSW:
-		    forwsw++;
+		    forwsw = true;
 		    continue;
 		case NFORWSW:
-		    forwsw = 0;
+		    forwsw = false;
 		    continue;
 
 		case VERBSW:
-		    verbsw++;
+		    verbsw = true;
 		    vec[vecp++] = --cp;
 		    continue;
 		case NVERBSW:
-		    verbsw = 0;
+		    verbsw = false;
 		    vec[vecp++] = --cp;
 		    continue;
 

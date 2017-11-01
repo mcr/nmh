@@ -282,7 +282,7 @@ replformataddr (char *orig, char *str)
 {
     int len;
     char baddr[BUFSIZ], error[BUFSIZ];
-    int isgroup;
+    bool isgroup;
     char *dst;
     char *cp;
     char *sp;
@@ -312,7 +312,7 @@ replformataddr (char *orig, char *str)
     }
 
     /* concatenate all the new addresses onto 'buf' */
-    for (isgroup = 0; (cp = getname (fixed_str)); ) {
+    for (isgroup = false; (cp = getname (fixed_str)); ) {
 	if ((mp = getm (cp, dfhost, dftype, error, sizeof(error))) == NULL) {
 	    snprintf (baddr, sizeof(baddr), "\t%s -- %s\n", cp, error);
 	    badaddrs = add (baddr, badaddrs);
@@ -320,7 +320,7 @@ replformataddr (char *orig, char *str)
 	}
 	if (isgroup && (mp->m_gname || !mp->m_ingrp)) {
 	    *dst++ = ';';
-	    isgroup = 0;
+	    isgroup = false;
 	}
 	if (insert (mp)) {
 	    /* if we get here we're going to add an address */
@@ -331,7 +331,7 @@ replformataddr (char *orig, char *str)
 	    if (mp->m_gname) {
 		CHECKMEM (mp->m_gname);
 		CPY (mp->m_gname);
-		isgroup++;
+		isgroup = true;
 	    }
 	    sp = adrformat (mp);
 	    CHECKMEM (sp);

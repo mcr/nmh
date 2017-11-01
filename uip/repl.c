@@ -98,9 +98,9 @@ short ccme = -1;
 short querysw = 0;
 
 static short outputlinelen = OUTPUTLINELEN;
-static short groupreply = 0;		/* Is this a group reply?        */
+static bool groupreply;			/* Is this a group reply?        */
 
-static int mime = 0;			/* include original as MIME part */
+static bool mime;			/* include original as MIME part */
 static char *form   = NULL;		/* form (components) file        */
 static char *filter = NULL;		/* message filter file           */
 static char *fcc    = NULL;		/* folders to add to Fcc: header */
@@ -117,10 +117,11 @@ int
 main (int argc, char **argv)
 {
     int	i, isdf = 0;
-    int anot = 0;
+    bool anot = false;
     bool inplace = true;
-    int nedit = 0, nwhat = 0;
-    int atfile = 0;
+    bool nedit = false;
+    bool nwhat = false;
+    bool atfile = false;
     int fmtproc = -1;
     char *cp, *cwd, *dp, *maildir, *file = NULL;
     char *folder = NULL, *msg = NULL, *dfolder = NULL;
@@ -132,8 +133,7 @@ main (int argc, char **argv)
     struct msgs *mp = NULL;
     struct stat st;
     FILE *in;
-
-    int buildsw = 0;
+    bool buildsw = false;
 
     if (nmh_init(argv[0], true, true)) { return 1; }
 
@@ -159,17 +159,17 @@ main (int argc, char **argv)
 		    done (0);
 
 		case GROUPSW:
-		    groupreply++;
+		    groupreply = true;
 		    continue;
 		case NGROUPSW:
-		    groupreply = 0;
+		    groupreply = false;
 		    continue;
 
 		case ANNOSW: 
-		    anot++;
+		    anot = true;
 		    continue;
 		case NANNOSW: 
-		    anot = 0;
+		    anot = false;
 		    continue;
 
 		case CCSW: 
@@ -186,10 +186,10 @@ main (int argc, char **argv)
 		case EDITRSW: 
 		    if (!(ed = *argp++) || *ed == '-')
 			die("missing argument to %s", argp[-2]);
-		    nedit = 0;
+		    nedit = false;
 		    continue;
 		case NEDITSW:
-		    nedit++;
+		    nedit = true;
 		    continue;
 		    
 		case CONVERTARGSW: {
@@ -223,13 +223,13 @@ main (int argc, char **argv)
 		case WHATSW: 
 		    if (!(whatnowproc = *argp++) || *whatnowproc == '-')
 			die("missing argument to %s", argp[-2]);
-		    nwhat = 0;
+		    nwhat = false;
 		    continue;
 		case BILDSW: 
-		    buildsw++;
+		    buildsw = true;
 		    /* FALLTHRU */
 		case NWHATSW: 
-		    nwhat++;
+		    nwhat = true;
 		    continue;
 
 		case FCCSW: 
@@ -255,7 +255,7 @@ main (int argc, char **argv)
 		    if (!(cp = *argp++) || *cp == '-')
 			die("missing argument to %s", argp[-2]);
 		    filter = mh_xstrdup(etcpath(cp));
-		    mime = 0;
+		    mime = false;
 		    continue;
 		case FORMSW: 
 		    if (!(form = *argp++) || *form == '-')
@@ -264,7 +264,7 @@ main (int argc, char **argv)
 
 		case FRMTSW: 
 		    filter = mh_xstrdup(etcpath(mhlreply));
-		    mime = 0;
+		    mime = false;
 		    continue;
 		case NFRMTSW: 
 		    filter = NULL;
@@ -278,11 +278,11 @@ main (int argc, char **argv)
 		    continue;
 
 		case MIMESW:
-		    mime++;
+		    mime = true;
 		    filter = NULL;
 		    continue;
 		case NMIMESW:
-		    mime = 0;
+		    mime = false;
 		    continue;
 
 		case QURYSW: 
@@ -319,10 +319,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case ATFILESW:
-		    atfile++;
+		    atfile = true;
 		    continue;
 		case NOATFILESW:
-		    atfile = 0;
+		    atfile = false;
 		    continue;
 
 		case FMTPROCSW:
@@ -398,7 +398,7 @@ try_it_again:
 	/*
 	 * We are replying to a file.
 	 */
-	anot = 0;	/* we don't want to annotate a file */
+	anot = false;	/* we don't want to annotate a file */
     } else {
 	/*
 	 * We are replying to a message.

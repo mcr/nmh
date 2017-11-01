@@ -34,12 +34,12 @@ static int setup_oauth_params(char *[], int *, const char *, const char **);
 #endif /* OAUTH_SUPPORT */
 
 int debugsw = 0;		/* global */
-int forwsw  = 1;
+bool forwsw = true;
 int inplace = 1;
-int pushsw  = 0;
+bool pushsw;
 int splitsw = -1;
-int unique  = 0;
-int verbsw  = 0;
+bool unique;
+bool verbsw;
 
 char *altmsg   = NULL;		/*  .. */
 char *annotext = NULL;

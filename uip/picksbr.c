@@ -644,21 +644,23 @@ cerror: ;
 static int
 GREPaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 {
-    int c, body, lf;
+    int c;
+    bool body;
+    bool lf;
     long pos = start;
     char *p1, *p2, *ebp, *cbp;
     char ibuf[BUFSIZ];
     NMH_UNUSED (msgnum);
 
     fseek (fp, start, SEEK_SET);
-    body = 0;
+    body = false;
     ebp = cbp = ibuf;
     for (;;) {
 	if (body && n->n_header)
 	    return 0;
 	p1 = linebuf;
 	p2 = cbp;
-	lf = 0;
+	lf = false;
 	for (;;) {
 	    if (p2 >= ebp) {
 		if (fgets (ibuf, sizeof ibuf, fp) == NULL
@@ -677,16 +679,16 @@ GREPaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 		    --p2;
 		    break;
 		}
-                lf = 0;
+                lf = false;
 	    }
 	    if (c == '\n') {
 		if (body)
 		    break;
                 if (lf) {
-                    body++;
+                    body = true;
                     break;
                 }
-                lf++;
+                lf = true;
                 /* Unfold by skipping the newline. */
                 c = 0;
 	    }
@@ -701,7 +703,7 @@ GREPaction(struct nexus *n, FILE *fp, int msgnum, long start, long stop)
 
 	/* Attempt to decode as a MIME header.	If it's the last header,
 	   body will be 1 and lf will be at least 1. */
-	if ((body == 0 || lf > 0)  &&
+	if ((!body || lf)  &&
 	    decode_rfc2047 (linebuf, decoded_linebuf, sizeof decoded_linebuf)) {
 	    p1 = decoded_linebuf;
 	}
