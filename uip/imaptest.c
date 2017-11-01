@@ -44,7 +44,7 @@ struct imap_msg;
 
 struct imap_msg {
     char *command;		/* Command to send */
-    int queue;			/* If true, queue for later delivery */
+    bool queue;			/* If true, queue for later delivery */
     struct imap_msg *next;	/* Next pointer */
 };
 
@@ -73,7 +73,7 @@ static void parse_capability(const char *, unsigned int len);
 static int capability_set(const char *);
 static void clear_capability(void);
 static int have_capability(void);
-static int send_imap_command(netsec_context *, int noflush, char **errstr,
+static int send_imap_command(netsec_context *, bool noflush, char **errstr,
 			     const char *fmt, ...) CHECK_PRINTF(4, 5);
 static int get_imap_response(netsec_context *, const char *token,
 			     char **tokenresp, char **status, int failerr,
@@ -82,7 +82,7 @@ static int get_imap_response(netsec_context *, const char *token,
 static void ts_report(struct timeval *tv, const char *fmt, ...)
 		      CHECK_PRINTF(2, 3);
 
-static void add_msg(int queue, const char *fmt, ...) CHECK_PRINTF(2, 3);
+static void add_msg(bool queue, const char *fmt, ...) CHECK_PRINTF(2, 3);
 
 static bool timestamp = false;
 
@@ -261,7 +261,7 @@ main (int argc, char **argv)
     } else {
         char *capstring;
 
-	if (send_imap_command(nsc, 0, &errstr, "CAPABILITY") != OK) {
+	if (send_imap_command(nsc, false, &errstr, "CAPABILITY") != OK) {
 	    fprintf(stderr, "Unable to send CAPABILITY command: %s\n", errstr);
 	    goto finish;
 	}
@@ -287,7 +287,7 @@ main (int argc, char **argv)
 		    "has no support for STARTTLS\n");
 	    goto finish;
 	}
-	if (send_imap_command(nsc, 0, &errstr, "STARTTLS") != OK) {
+	if (send_imap_command(nsc, false, &errstr, "STARTTLS") != OK) {
 	    fprintf(stderr, "Unable to issue STARTTLS: %s\n", errstr);
 	    goto finish;
 	}
@@ -327,7 +327,7 @@ main (int argc, char **argv)
     if (!have_capability()) {
         char *capstring;
 
-	if (send_imap_command(nsc, 0, &errstr, "CAPABILITY") != OK) {
+	if (send_imap_command(nsc, false, &errstr, "CAPABILITY") != OK) {
 	    fprintf(stderr, "Unable to send CAPABILITY command: %s\n", errstr);
 	    goto finish;
 	}
@@ -377,7 +377,8 @@ main (int argc, char **argv)
 	free(imsg);
     }
 
-    ts_report(&tv_auth, "Total command execution time");
+    if (timestamp)
+	ts_report(&tv_auth, "Total command execution time");
 
     send_imap_command(nsc, 0, NULL, "LOGOUT");
     get_imap_response(nsc, NULL, NULL, NULL, 0, NULL);
@@ -385,7 +386,8 @@ main (int argc, char **argv)
 finish:
     netsec_shutdown(nsc);
 
-    ts_report(&tv_start, "Total elapsed time");
+    if (timestamp)
+	ts_report(&tv_start, "Total elapsed time");
 
     exit(0);
 }
@@ -637,7 +639,7 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
  */
 
 static int
-send_imap_command(netsec_context *nsc, int noflush, char **errstr,
+send_imap_command(netsec_context *nsc, bool noflush, char **errstr,
 		  const char *fmt, ...)
 {
     static unsigned int seq = 0;	/* Tag sequence number */
@@ -757,7 +759,7 @@ getline:
  */
 
 static void
-add_msg(int queue, const char *fmt, ...)
+add_msg(bool queue, const char *fmt, ...)
 {
     struct imap_msg *imsg;
     va_list ap;
