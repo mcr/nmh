@@ -31,7 +31,7 @@ DEFINE_SWITCH_ARRAY(INSTALLMH, switches);
 int
 main (int argc, char **argv)
 {
-    int autof = 0;
+    bool autof = false;
     char *cp, buf[BUFSIZ];
     const char *pathname;
     char *dp, **arguments, **argp;
@@ -66,7 +66,7 @@ main (int argc, char **argv)
 		    done (0);
 
 		case AUTOSW:
-		    autof++;
+		    autof = true;
 		    continue;
 
 		case CHECKSW:

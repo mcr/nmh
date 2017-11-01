@@ -89,7 +89,7 @@ static int rfc934sw = 0;
 /*
  * what action to take?
  */
-static int cachesw = 0;
+static bool cachesw;
 static bool listsw;
 static bool showsw;
 static bool storesw;
@@ -107,7 +107,7 @@ main (int argc, char **argv)
 {
     bool sizesw = true;
     bool headsw = true;
-    int autosw = 0;
+    bool autosw = false;
     int msgnum, *icachesw;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
@@ -148,17 +148,17 @@ main (int argc, char **argv)
 		done (0);
 
 	    case AUTOSW:
-		autosw++;
+		autosw = true;
 		continue;
 	    case NAUTOSW:
-		autosw = 0;
+		autosw = false;
 		continue;
 
 	    case CACHESW:
-		cachesw++;
+		cachesw = true;
 		continue;
 	    case NCACHESW:
-		cachesw = 0;
+		cachesw = false;
 		continue;
 
 	    case RCACHESW:

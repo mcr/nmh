@@ -122,7 +122,7 @@ cpnumber(charstring_t dest, int num, int wid, char fill, size_t max) {
 void
 cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
     int remaining;     /* remaining output width available */
-    int rjust;
+    bool rjust;
     struct charstring *trimmed;
     size_t end;        /* number of input bytes remaining in str */
 #ifdef MULTIBYTE_SUPPORT
@@ -134,10 +134,10 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
     char *sp;          /* current position in source string */
 
     /* get alignment */
-    rjust = 0;
+    rjust = false;
     if ((remaining = wid) < 0) {
 	remaining = -remaining;
-	rjust++;
+	rjust = true;
     }
     if (remaining > (int) max) { remaining = max; }
 
@@ -396,7 +396,8 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
     char *sp;
     char *savestr, *str;
     char buffer[NMH_BUFSIZ], buffer2[NMH_BUFSIZ];
-    int i, c, rjust;
+    int i, c;
+    bool rjust;
     int value;
     time_t t;
     size_t max;
@@ -464,11 +465,11 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    break;
 	case FT_LITF:
 	    sp = fmt->f_text;
-	    rjust = 0;
+	    rjust = false;
 	    i = fmt->f_width;
 	    if (i < 0) {
 		i = -i;
-		rjust++;		/* XXX should do something with this */
+		rjust = true;		/* XXX should do something with this */
 	    }
 	    while ((c = *sp++) && --i >= 0 && charstring_chars (scanlp) < max) {
 		charstring_push_back (scanlp, c);
@@ -723,10 +724,10 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		    str = buffer;
 		    while (isspace((unsigned char) *str))
 			    str++;
-		    rjust = 0;
+		    rjust = false;
 		    if ((i = fmt->f_width) < 0) {
 			    i = -i;
-			    rjust++;
+			    rjust = true;
 		    }
 
 		    if (!rjust && i > 0 && (int) strlen(str) > i)

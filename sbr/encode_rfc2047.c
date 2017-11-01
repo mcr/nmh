@@ -552,7 +552,11 @@ field_encode_address(const char *name, char **value, int encoding,
 		     const char *charset)
 {
     int prefixlen = strlen(name) + 2, column = prefixlen, groupflag;
-    int asciichars, specialchars, eightbitchars, reformat = 0, errflag = 0;
+    int asciichars;
+    int specialchars;
+    int eightbitchars;
+    bool reformat = false;
+    bool errflag = false;
     size_t len;
     char *mp, *cp = NULL, *output = NULL;
     char *tmpbuf = NULL;
@@ -577,11 +581,11 @@ field_encode_address(const char *name, char **value, int encoding,
     for (groupflag = 0; (mp = getname(*value)); ) {
     	if ((mn = getm(mp, NULL, 0, errbuf, sizeof(errbuf))) == NULL) {
 	    inform("%s: %s", errbuf, mp);
-	    errflag++;
+	    errflag = true;
 	    continue;
 	}
 
-	reformat = 0;
+	reformat = false;
 
 	/*
 	 * We only care if the phrase (m_pers) or any trailing comment
@@ -620,7 +624,7 @@ field_encode_address(const char *name, char **value, int encoding,
 
 	    case CE_BASE64:
 	    	if (field_encode_base64(NULL, &mn->m_pers, charset)) {
-		    errflag++;
+		    errflag = true;
 		    goto out;
 		}
 		break;
@@ -628,18 +632,18 @@ field_encode_address(const char *name, char **value, int encoding,
 	    case CE_QUOTED:
 	    	if (field_encode_quoted(NULL, &mn->m_pers, charset, asciichars,
 					eightbitchars + specialchars, 1)) {
-		    errflag++;
+		    errflag = true;
 		    goto out;
 		}
 		break;
 
 	    default:
 		inform("Internal error: unknown RFC-2047 encoding type");
-		errflag++;
+		errflag = true;
 		goto out;
 	    }
 
-	    reformat++;
+	    reformat = true;
 	}
 
 	check_note:
@@ -662,7 +666,7 @@ field_encode_address(const char *name, char **value, int encoding,
 	if (mn->m_note[0] != '(' || mn->m_note[len - 1] != ')') {
 	    inform("Internal error: Invalid note field \"%s\"",
 	    	   mn->m_note);
-	    errflag++;
+	    errflag = true;
 	    goto out;
 	}
 
@@ -683,7 +687,7 @@ field_encode_address(const char *name, char **value, int encoding,
 
 	    case CE_BASE64:
 	    	if (field_encode_base64(NULL, &tmpbuf, charset)) {
-		    errflag++;
+		    errflag = true;
 		    goto out;
 		}
 		break;
@@ -691,18 +695,18 @@ field_encode_address(const char *name, char **value, int encoding,
 	    case CE_QUOTED:
 	    	if (field_encode_quoted(NULL, &tmpbuf, charset, asciichars,
 					eightbitchars + specialchars, 1)) {
-		    errflag++;
+		    errflag = true;
 		    goto out;
 		}
 		break;
 
 	    default:
 		inform("Internal error: unknown RFC-2047 encoding type");
-		errflag++;
+		errflag = true;
 		goto out;
 	    }
 
-	    reformat++;
+	    reformat = true;
 
 	    /*
 	     * Make sure the size of tmpbuf is correct (it always gets
@@ -803,7 +807,7 @@ out:
     free(tmpbuf);
     free(output);
 
-    return errflag > 0;
+    return errflag;
 }
 
 /*

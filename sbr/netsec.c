@@ -30,7 +30,7 @@ static int netsec_get_user(void *context, int id, const char **result,
 static int netsec_get_password(sasl_conn_t *conn, void *context, int id,
 			       sasl_secret_t **psecret);
 
-static int sasl_initialized = 0;
+static bool sasl_initialized;
 
 #define SASL_MAXRECVBUF 65536
 #endif /* CYRUS_SASL */
@@ -39,7 +39,7 @@ static int sasl_initialized = 0;
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-static int tls_initialized = 0;
+static bool tls_initialized;
 static SSL_CTX *sslctx = NULL;		/* SSL Context */
 
 #endif /* TLS_SUPPORT */
@@ -1032,7 +1032,7 @@ netsec_set_sasl_params(netsec_context *nsc, const char *service,
 		       sasl_errstring(retval, NULL, NULL));
 	    return NOTOK;
 	}
-	sasl_initialized++;
+	sasl_initialized = true;
     }
 
     /*
@@ -1550,7 +1550,7 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 		return NOTOK;
 	    }
 
-	    tls_initialized++;
+	    tls_initialized = true;
 	}
 
 	if (nsc->ns_readfd == -1 || nsc->ns_writefd == -1) {

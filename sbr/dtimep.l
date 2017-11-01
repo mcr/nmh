@@ -156,10 +156,6 @@ static int day_map[] = {
                        --cp; }
 #define SKIPTOA()    { while ( !isalpha((unsigned char) *cp++) ) ; \
                        --cp; }
-#define SKIPSP()     { while ( isspace((unsigned char) *cp++) ) ; \
-                       --cp; }
-#define SKIPTOSP()   { while ( !isspace((unsigned char) *cp++) ) ; \
-                       --cp; }
 
 # ifdef HAVE_SYS_TIME_H
 #  include <sys/time.h>

@@ -71,7 +71,7 @@ main (int argc, char **argv)
 {
     bool sizesw = true;
     bool headsw = true;
-    int chgflag = 1;
+    bool chgflag = true;
     bool verbosw = false;
     bool dispo = false;
     int msgnum, *icachesw;
@@ -191,10 +191,10 @@ do_cache:
 		continue;
 
 	    case CHGSW:
-	    	chgflag++;
+	    	chgflag = true;
 		continue;
 	    case NCHGSW:
-	    	chgflag = 0;
+	    	chgflag = false;
 		continue;
 
 	    case VERBSW: 

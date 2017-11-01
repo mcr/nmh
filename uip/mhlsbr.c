@@ -261,8 +261,8 @@ static int bellflg   = 0;
 static int clearflg  = 0;
 static int dashstuff = 0;
 static bool dobody = true;
-static int forwflg   = 0;
-static int forwall   = 0;
+static bool forwflg;
+static bool forwall;
 
 static int sleepsw = NOTOK;
 
@@ -271,7 +271,7 @@ static int volume = 0;
 static int issue = 0;
 
 static int exitstat = 0;
-static int mhldebug = 0;
+static bool mhldebug;
 
 static int filesize = 0;
 
@@ -338,7 +338,8 @@ static void compile_filterargs (void);
 int
 mhl (int argc, char **argv)
 {
-    int length = 0, nomore = 0;
+    int length = 0;
+    bool nomore = false;
     unsigned int i, vecp = 0;
     int width = 0;
     char *cp, *folder = NULL, *form = NULL;
@@ -352,7 +353,7 @@ mhl (int argc, char **argv)
     argp = arguments;
 
     if ((cp = getenv ("MHLDEBUG")) && *cp)
-	mhldebug++;
+	mhldebug = true;
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -405,7 +406,7 @@ mhl (int argc, char **argv)
 			mhladios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 		case NPROGSW:
-		    nomore++;
+		    nomore = true;
 		    continue;
 
 		case FMTPROCSW:
@@ -447,10 +448,10 @@ mhl (int argc, char **argv)
 		    continue;
 
 		case FORW2SW: 
-		    forwall++;
+		    forwall = true;
 		    /* FALLTHRU */
 		case FORW1SW: 
-		    forwflg++;
+		    forwflg = true;
 		    clearflg = -1;/* XXX */
 		    continue;
 
@@ -1267,7 +1268,8 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 {
     char *text; /* c1's text, or the name as a fallback. */
     char *trimmed_prefix;
-    int count, cchdr;
+    int count;
+    bool cchdr;
     char *cp;
     const int utf8 = strcasecmp(get_charset(), "UTF-8") == 0;
 
@@ -1282,7 +1284,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
      * blank lines. */
     trimmed_prefix = rtrim(mh_xstrdup(FENDNULL(text)));
 
-    cchdr = 0;
+    cchdr = false;
     lm = 0;
     llim = c1->c_length ? c1->c_length : -1;
     wid = c1->c_width ? c1->c_width : global.c_width;
@@ -1325,7 +1327,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	    if (!(c1->c_flags & SPLIT))
 		c1->c_flags |= HDROUTPUT;
 
-	cchdr++;
+	cchdr = true;
 	if ((count = c1->c_cwidth - strlen(text) - 2) > 0)
 	    while (count--)
 		putstr (" ", c1->c_flags);
@@ -1344,7 +1346,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	if (!(c1->c_flags & SPLIT))
 	    c2->c_flags |= HDROUTPUT;
 
-	cchdr++;
+	cchdr = true;
 	if ((count = c1->c_cwidth - strlen (c2->c_name) - 2) > 0)
 	    while (count--)
 		putstr (" ", c1->c_flags);
@@ -1397,7 +1399,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 static char *
 oneline (char *stuff, unsigned long flags)
 {
-    int spc;
+    bool spc;
     char *cp, *ret;
 
     if (onelp == NULL)
@@ -1408,7 +1410,7 @@ oneline (char *stuff, unsigned long flags)
     ret = onelp;
     term = 0;
     if (flags & COMPRESS) {
-	for (spc = 1, cp = ret; *onelp; onelp++)
+	for (spc = true, cp = ret; *onelp; onelp++)
 	    if (isspace ((unsigned char) *onelp)) {
 		if (*onelp == '\n' && (!onelp[1] || (flags & ADDRFMT))) {
 		    term = '\n';
@@ -1417,12 +1419,12 @@ oneline (char *stuff, unsigned long flags)
 		}
                 if (!spc) {
                     *cp++ = ' ';
-                    spc++;
+                    spc = true;
                 }
 	    }
 	    else {
 		*cp++ = *onelp;
-		spc = 0;
+		spc = false;
 	    }
 
 	*cp = 0;
