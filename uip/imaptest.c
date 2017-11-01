@@ -81,6 +81,7 @@ static int get_imap_response(netsec_context *, const char *token,
 
 static void ts_report(struct timeval *tv, const char *fmt, ...)
 		      CHECK_PRINTF(2, 3);
+static void imap_negotiate_tls(netsec_context *);
 
 static void add_msg(bool queue, const char *fmt, ...) CHECK_PRINTF(2, 3);
 
@@ -220,8 +221,8 @@ main (int argc, char **argv)
 	if (netsec_set_tls(nsc, 1, 0, &errstr) != OK)
 	    die("%s", errstr);
 
-	if (initialtls && netsec_negotiate_tls(nsc, &errstr) != OK)
-	    die("%s", errstr);
+	if (initialtls)
+	    imap_negotiate_tls(nsc);
     }
 
     if (sasl) {
@@ -296,9 +297,8 @@ main (int argc, char **argv)
 	    fprintf(stderr, "STARTTLS failed: %s\n", errstr);
 	    goto finish;
 	}
-	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
-	    die("%s", errstr);
-	}
+
+	imap_negotiate_tls(nsc);
     }
 
     if (sasl) {
@@ -788,6 +788,26 @@ add_msg(bool queue, const char *fmt, ...)
 	msgqueue_tail->next = imsg;
 	msgqueue_tail = imsg;
     }
+}
+
+/*
+ * Negotiate TLS connection, with optional timestamp
+ */
+
+static void
+imap_negotiate_tls(netsec_context *nsc)
+{
+    char *errstr;
+    struct timeval tv;
+
+    if (timestamp)
+	gettimeofday(&tv, NULL);
+
+    if (netsec_negotiate_tls(nsc, &errstr) != OK)
+	    die("%s", errstr);
+
+    if (timestamp)
+	ts_report(&tv, "TLS negotation time");
 }
 
 /*
