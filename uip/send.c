@@ -114,7 +114,7 @@ int
 main (int argc, char **argv)
 {
     int msgp = 0, vecp;
-    int isdf = 0, mime = 0;
+    int isdf = 0;
     int msgnum, status;
     char *cp, *dfolder = NULL, *maildir = NULL;
     char buf[BUFSIZ], **ap, **argp, **arguments, *program;
@@ -122,7 +122,6 @@ main (int argc, char **argv)
     const char *user = NULL, *saslmech = NULL;
     struct msgs *mp;
     struct stat st;
-    int snoop = 0;
     char *auth_svc = NULL;
 
     if (nmh_init(argv[0], true, true)) { return 1; }
@@ -226,16 +225,13 @@ main (int argc, char **argv)
 		    continue;
 
 		case MIMESW:
-		    mime++;
 		    vec[vecp++] = --cp;
 		    continue;
 		case NMIMESW:
-		    mime = 0;
 		    vec[vecp++] = --cp;
 		    continue;
 
 		case SNOOPSW:
-                    snoop++;
 		    vec[vecp++] = --cp;
 		    continue;
 

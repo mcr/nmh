@@ -976,7 +976,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
     char **arguments, *savearg[MAXARGS], **vec;
     const char *user = NULL, *saslmech = NULL;
     char *auth_svc = NULL;
-    int snoop = 0;
     struct stat st;
 
     /*
@@ -1125,7 +1124,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    continue;
 
 		case SNOOPSW:
-                    snoop++;
 		    vec[vecp++] = --cp;
 		    continue;
 
