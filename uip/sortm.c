@@ -5,11 +5,11 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/tws.h>
+#include "h/tws.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "sbr/m_maildir.h"
 
 #define SORTM_SWITCHES \

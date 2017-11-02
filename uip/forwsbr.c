@@ -5,12 +5,12 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
 #include <fcntl.h>
-#include <h/fmt_scan.h>
-#include <h/tws.h>
-#include <h/utils.h>
+#include "h/fmt_scan.h"
+#include "h/tws.h"
+#include "h/utils.h"
 #include "sbr/m_mktemp.h"
 #include "forwsbr.h"
 

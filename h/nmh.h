@@ -2,7 +2,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 #include <unistd.h>
@@ -10,7 +10,7 @@
 #include <ctype.h>
 #ifndef NDEBUG
   /* See etc/gen-ctype-checked.c. */
-# include <sbr/ctype-checked.h>
+#include "sbr/ctype-checked.h"
 #endif
 #include <assert.h>
 

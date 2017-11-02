@@ -5,13 +5,13 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/addrsbr.h>
-#include <h/fmt_scan.h>
-#include <h/mts.h>
+#include "h/addrsbr.h"
+#include "h/fmt_scan.h"
+#include "h/mts.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "sbr/terminal.h"
 
 #define	NADDRS	100

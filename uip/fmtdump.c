@@ -5,13 +5,13 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/fmt_scan.h>
-#include <h/fmt_compile.h>
-#include <h/scansbr.h>
+#include "h/fmt_scan.h"
+#include "h/fmt_compile.h"
+#include "h/scansbr.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 
 #define FMTDUMP_SWITCHES \
     X("form formatfile", 0, FORMSW) \

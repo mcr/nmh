@@ -5,13 +5,13 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
 #include <fcntl.h>
-#include <h/signals.h>
-#include <h/mts.h>
+#include "h/signals.h"
+#include "h/mts.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "sbr/m_maildir.h"
 #include "sbr/m_mktemp.h"
 #include "sbr/makedir.h"

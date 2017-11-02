@@ -6,8 +6,8 @@
  */
 
 #include <limits.h>
-#include <h/mh.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/utils.h"
 
 #define STR(s) #s
 #define SIZE(n) (sizeof STR(n)) /* Includes NUL. */

@@ -5,10 +5,10 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>   /* for snprintf() */
-#include <h/nmh.h>
-#include <h/utils.h>
-#include <h/tws.h>
+#include "h/mh.h"   /* for snprintf() */
+#include "h/nmh.h"
+#include "h/utils.h"
+#include "h/tws.h"
 #include <time.h>
 
 #if !defined(HAVE_STRUCT_TM_TM_GMTOFF)

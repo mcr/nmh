@@ -1,7 +1,7 @@
 /* mh.h -- main header file for all of nmh
  */
 
-#include <h/nmh.h>
+#include "h/nmh.h"
 
 /* It's undefined behaviour in C99 to convert from a function pointer to
  * a data-object pointer, e.g. void pointer.  gcc's -pedantic warns of
@@ -574,4 +574,4 @@ extern char *version_str;
 extern char *whatnowproc;
 extern char *whomproc;
 
-#include <h/prototypes.h>
+#include "h/prototypes.h"

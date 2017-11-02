@@ -41,9 +41,9 @@
  *	value of 1 is assumed if this argument is absent.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "h/done.h"
 #include "sbr/m_maildir.h"
 

@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <mts/smtp/smtp.h>
+#include "mts/smtp/smtp.h"
 
 
 #define RCV_MOK	0

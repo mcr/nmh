@@ -10,10 +10,10 @@
 %n2500
 %a5000
 %{
-#include <h/nmh.h>
-#include <h/mh.h>
-#include <h/utils.h>
-#include <h/tws.h>
+#include "h/nmh.h"
+#include "h/mh.h"
+#include "h/utils.h"
+#include "h/tws.h"
 
   /* Since we're looking at a string at a time, don't worry about
    *  wrapping to the next buffer.

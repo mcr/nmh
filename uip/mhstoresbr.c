@@ -5,16 +5,16 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
 #include <fcntl.h>
-#include <h/md5.h>
-#include <h/mts.h>
-#include <h/tws.h>
-#include <h/fmt_scan.h>
-#include <h/mime.h>
-#include <h/mhparse.h>
-#include <h/utils.h>
+#include "h/md5.h"
+#include "h/mts.h"
+#include "h/tws.h"
+#include "h/fmt_scan.h"
+#include "h/mime.h"
+#include "h/mhparse.h"
+#include "h/utils.h"
 #include "mhmisc.h"
 #include "mhshowsbr.h"
 #include "sbr/m_maildir.h"

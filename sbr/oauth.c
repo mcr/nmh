@@ -5,7 +5,7 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
 
 #ifdef OAUTH_SUPPORT
@@ -21,10 +21,10 @@
 #include <unistd.h>
 
 #include <curl/curl.h>
-#include <thirdparty/jsmn/jsmn.h>
+#include "thirdparty/jsmn/jsmn.h"
 
-#include <h/oauth.h>
-#include <h/utils.h>
+#include "h/oauth.h"
+#include "h/utils.h"
 #include "lock_file.h"
 
 #define JSON_TYPE "application/json"

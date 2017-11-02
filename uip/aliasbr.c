@@ -5,10 +5,10 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/aliasbr.h>
-#include <h/addrsbr.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/aliasbr.h"
+#include "h/addrsbr.h"
+#include "h/utils.h"
 #include <pwd.h>
 
 static int akvis;

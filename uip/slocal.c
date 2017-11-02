@@ -19,16 +19,16 @@
  * Ruud de Rooij <ruud@ruud.org>  Sun, 28 May 2000 17:28:55 +0200
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/dropsbr.h>
-#include <h/rcvmail.h>
-#include <h/signals.h>
+#include "h/dropsbr.h"
+#include "h/rcvmail.h"
+#include "h/signals.h"
 #include <setjmp.h>
-#include <h/tws.h>
-#include <h/mts.h>
+#include "h/tws.h"
+#include "h/mts.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "sbr/lock_file.h"
 #include "sbr/m_mktemp.h"
 

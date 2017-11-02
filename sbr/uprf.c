@@ -5,7 +5,7 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 
 
 /* uprf returns true if s starts with prefix, ignoring case.

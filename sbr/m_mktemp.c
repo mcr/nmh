@@ -5,9 +5,9 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
-#include <h/signals.h>
+#include "h/mh.h"
+#include "h/utils.h"
+#include "h/signals.h"
 #include "m_maildir.h"
 #include "m_mktemp.h"
 

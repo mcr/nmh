@@ -5,8 +5,8 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/utils.h"
 
 static char *default_editor = NULL;
 

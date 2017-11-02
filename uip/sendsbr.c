@@ -5,17 +5,17 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/fmt_scan.h>
-#include <h/fmt_compile.h>
-#include <h/signals.h>
+#include "h/fmt_scan.h"
+#include "h/fmt_compile.h"
+#include "h/signals.h"
 #include <setjmp.h>
 #include <fcntl.h>
-#include <h/mime.h>
-#include <h/tws.h>
-#include <h/utils.h>
-#include <h/mts.h>
+#include "h/mime.h"
+#include "h/tws.h"
+#include "h/utils.h"
+#include "h/mts.h"
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -23,7 +23,7 @@
 #include <time.h>
 
 #ifdef OAUTH_SUPPORT
-#include <h/oauth.h>
+#include "h/oauth.h"
 #endif
 #include "h/done.h"
 #include "sbr/m_maildir.h"

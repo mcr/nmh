@@ -6,8 +6,8 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/utils.h"
 
 #ifdef MULTIBYTE_SUPPORT
 #  define NMH_MAX_CHARWIDTH MB_CUR_MAX

@@ -13,11 +13,11 @@
  * Ruud de Rooij <ruud@debian.org>  Sun, 28 Mar 1999 15:34:03 +0200
  */
  
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
-#include <h/signals.h>
-#include <h/utils.h>
-#include <h/mts.h>
+#include "h/signals.h"
+#include "h/utils.h"
+#include "h/mts.h"
 #include "lock_file.h"
 #include "m_mktemp.h"
 

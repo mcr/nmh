@@ -5,8 +5,8 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/utils.h"
 
 /*
  * Add all the messages currently SELECTED to

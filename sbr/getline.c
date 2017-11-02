@@ -10,7 +10,7 @@
 #include <limits.h>
 #include <errno.h>
 
-#include <h/mh.h>
+#include "h/mh.h"
 
 /* Largest possible size of buffer that allows SSIZE_MAX to be returned
  * to indicate SSIZE_MAX - 1 characters read before the '\n'.  The

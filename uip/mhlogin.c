@@ -9,11 +9,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
 #include "h/done.h"
-#include <h/utils.h>
-#include <h/oauth.h>
+#include "h/utils.h"
+#include "h/oauth.h"
 #include "sbr/lock_file.h"
 
 #define MHLOGIN_SWITCHES \

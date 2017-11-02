@@ -6,7 +6,7 @@
  *	Only produce the error message once.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
 
 int

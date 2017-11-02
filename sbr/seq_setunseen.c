@@ -6,8 +6,8 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/utils.h"
 
 /*
  * We scan through the folder and act upon all messages

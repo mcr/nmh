@@ -6,10 +6,10 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
-#include <h/mime.h>
-#include <h/mhparse.h>
+#include "h/mh.h"
+#include "h/utils.h"
+#include "h/mime.h"
+#include "h/mhparse.h"
 #include "sbr/m_mktemp.h"
 #include "mhfree.h"
 

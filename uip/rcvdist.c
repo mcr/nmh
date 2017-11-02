@@ -5,14 +5,14 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/fmt_scan.h>
-#include <h/rcvmail.h>
-#include <h/tws.h>
-#include <h/mts.h>
+#include "h/fmt_scan.h"
+#include "h/rcvmail.h"
+#include "h/tws.h"
+#include "h/mts.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "sbr/m_mktemp.h"
 
 #define RCVDIST_SWITCHES \

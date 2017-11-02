@@ -5,7 +5,7 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 
 int
 stringdex (char *p1, char *p2)

@@ -5,13 +5,13 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/addrsbr.h>
-#include <h/aliasbr.h>
-#include <h/mts.h>
+#include "h/addrsbr.h"
+#include "h/aliasbr.h"
+#include "h/mts.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 
 #define ALI_SWITCHES \
     X("alias aliasfile", 0, ALIASW) \

@@ -29,7 +29,7 @@
  * documentation and/or software.
  */
 
-#include <h/md5.h>
+#include "h/md5.h"
 
 /* Constants for MD5Transform routine. */
 #define S11 7

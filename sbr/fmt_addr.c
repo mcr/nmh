@@ -5,10 +5,10 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/addrsbr.h>
-#include <h/fmt_scan.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/addrsbr.h"
+#include "h/fmt_scan.h"
+#include "h/utils.h"
 
 static char *buf;		/* our current working buffer  */
 static char *bufend;		/* end of working buffer       */

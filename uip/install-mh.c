@@ -5,10 +5,10 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>				/* mh internals */
+#include "h/mh.h"				/* mh internals */
 #include "sbr/error.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "sbr/m_maildir.h"
 #include "sbr/makedir.h"
 #include <pwd.h>				/* structure for getpwuid() results */

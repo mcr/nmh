@@ -5,8 +5,8 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/utils.h"
 
 char **
 getarguments (char *invo_name, int argc, char **argv, int check_context)

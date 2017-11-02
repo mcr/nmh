@@ -5,14 +5,14 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/dropsbr.h>
-#include <h/rcvmail.h>
-#include <h/tws.h>
-#include <h/mts.h>
+#include "h/dropsbr.h"
+#include "h/rcvmail.h"
+#include "h/tws.h"
+#include "h/mts.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 
 #define RCVPACK_SWITCHES \
     X("mbox", 0, MBOXSW) \

@@ -5,9 +5,9 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "m_maildir.h"
 
 /* We allocate the `mi' array 1024 elements at a time */

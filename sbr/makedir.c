@@ -9,7 +9,7 @@
  * Modified to try recursive create.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
 #include "makedir.h"
 #include <sys/file.h>

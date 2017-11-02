@@ -5,13 +5,13 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>   /* for snprintf() */
+#include "h/mh.h"   /* for snprintf() */
 #include "error.h"
-#include <h/utils.h>
+#include "h/utils.h"
 
 #define nmhetcdir(file) NMHETCDIR#file
 
-#include <h/mts.h>
+#include "h/mts.h"
 #include <pwd.h>
 #include <sys/socket.h>
 #include <netdb.h>

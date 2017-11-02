@@ -6,7 +6,7 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "h/mts.h"
 #include "m_rand.h"
 #include "message_id.h"

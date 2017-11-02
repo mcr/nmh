@@ -10,17 +10,17 @@
  * Ruud de Rooij <ruud@ruud.org>  Sun, 28 May 2000 17:28:55 +0200
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/signals.h>
+#include "h/signals.h"
 #include <setjmp.h>
-#include <h/rcvmail.h>
-#include <h/scansbr.h>
-#include <h/fmt_scan.h>
-#include <h/tws.h>
-#include <h/mts.h>
+#include "h/rcvmail.h"
+#include "h/scansbr.h"
+#include "h/fmt_scan.h"
+#include "h/tws.h"
+#include "h/mts.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "sbr/m_mktemp.h"
 #include <fcntl.h>
 

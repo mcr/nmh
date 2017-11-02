@@ -5,8 +5,8 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/utils.h"
 
 static void escape_component (char *name, size_t namesize, char *chars);
 

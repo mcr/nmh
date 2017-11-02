@@ -6,8 +6,8 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
+#include "h/mh.h"
+#include "h/utils.h"
 
 /* allocate this much buffer space at a time */
 #define MAXBUFFER 1024

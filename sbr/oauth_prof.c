@@ -5,7 +5,7 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 
 #ifdef OAUTH_SUPPORT
 
@@ -18,8 +18,8 @@
 #include <strings.h>
 #include <unistd.h>
 
-#include <h/oauth.h>
-#include <h/utils.h>
+#include "h/oauth.h"
+#include "h/utils.h"
 #include "m_maildir.h"
 
 static const struct mh_oauth_service_info SERVICES[] = {

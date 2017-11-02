@@ -5,18 +5,18 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
 #include <fcntl.h>
-#include <h/signals.h>
-#include <h/md5.h>
-#include <h/mts.h>
-#include <h/tws.h>
-#include <h/mime.h>
-#include <h/mhparse.h>
-#include <h/mhcachesbr.h>
+#include "h/signals.h"
+#include "h/md5.h"
+#include "h/mts.h"
+#include "h/tws.h"
+#include "h/mime.h"
+#include "h/mhparse.h"
+#include "h/mhcachesbr.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include "mhmisc.h"
 #include "sbr/m_maildir.h"
 #include "mhfree.h"

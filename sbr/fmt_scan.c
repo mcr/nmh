@@ -8,13 +8,13 @@
  * fmt_compile (found in fmt_compile.c).
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
-#include <h/addrsbr.h>
-#include <h/fmt_scan.h>
-#include <h/tws.h>
-#include <h/fmt_compile.h>
-#include <h/utils.h>
+#include "h/addrsbr.h"
+#include "h/fmt_scan.h"
+#include "h/tws.h"
+#include "h/fmt_compile.h"
+#include "h/utils.h"
 #include "unquote.h"
 
 #ifdef HAVE_SYS_TIME_H

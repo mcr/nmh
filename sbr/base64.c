@@ -5,10 +5,10 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
-#include <h/mime.h>
-#include <h/md5.h>
+#include "h/mime.h"
+#include "h/md5.h"
 #include <inttypes.h>
 
 static const char nib2b64[0x40+1] =

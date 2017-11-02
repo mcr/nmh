@@ -37,13 +37,13 @@
  *				by attachment number.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
 #include <fcntl.h>
-#include <h/mime.h>
-#include <h/utils.h>
+#include "h/mime.h"
+#include "h/utils.h"
 #ifdef OAUTH_SUPPORT
-# include <h/oauth.h>
+#include "h/oauth.h"
 #endif
 #include "h/done.h"
 #include "sbr/m_maildir.h"

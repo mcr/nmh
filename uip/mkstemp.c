@@ -11,7 +11,7 @@
 #endif /* ! NMH */
 
 #ifdef HAVE_CONFIG_H
-#   include <config.h>
+#   include "config.h"
 #endif /* HAVE_CONFIG_H */
 #include <unistd.h>
 #include <stdlib.h>
@@ -119,10 +119,10 @@ build_template(const char *directory, const char *prefix, const char *suffix)
 
 
 #if NMH
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 
 #if HAVE_MKSTEMPS
 #   define MHFIXMSG_SWITCHES \

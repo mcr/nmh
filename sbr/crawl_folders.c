@@ -5,10 +5,10 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
-#include <h/crawl_folders.h>
-#include <h/utils.h>
+#include "h/crawl_folders.h"
+#include "h/utils.h"
 
 struct crawl_context {
     int max;			/* how many folders we currently can hold in

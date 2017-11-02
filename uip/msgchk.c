@@ -5,15 +5,15 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/mts.h>
-#include <h/tws.h>
+#include "h/mts.h"
+#include "h/tws.h"
 #include "h/done.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include <pwd.h>
 
-#include <h/popsbr.h>
+#include "h/popsbr.h"
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)

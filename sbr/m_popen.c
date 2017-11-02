@@ -6,9 +6,9 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
-#include <h/signals.h>
+#include "h/signals.h"
 #include "m_popen.h"
 
 static	int m_pid = NOTOK;	/* Process we're waiting for */

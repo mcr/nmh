@@ -11,7 +11,7 @@
 #include <unistd.h>  /* for getpid() */
 #include <time.h>    /* for time() */
 
-#include <config.h>
+#include "config.h"
 #include "m_rand.h"
 
 #if !HAVE_ARC4RANDOM

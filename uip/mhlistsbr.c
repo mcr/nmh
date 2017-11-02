@@ -6,13 +6,13 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include <fcntl.h>
-#include <h/mts.h>
-#include <h/tws.h>
-#include <h/mime.h>
-#include <h/mhparse.h>
-#include <h/utils.h>
+#include "h/mts.h"
+#include "h/tws.h"
+#include "h/mime.h"
+#include "h/mhparse.h"
+#include "h/utils.h"
 #include "mhmisc.h"
 
 /*

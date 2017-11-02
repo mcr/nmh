@@ -5,11 +5,11 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/mime.h>
-#include <h/mhparse.h>
-#include <h/utils.h>
+#include "h/mime.h"
+#include "h/mhparse.h"
+#include "h/utils.h"
 #include "sbr/makedir.h"
 #include "mhmisc.h"
 

@@ -6,10 +6,10 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/utils.h>
-#include <h/netsec.h>
-#include <h/oauth.h>
+#include "h/mh.h"
+#include "h/utils.h"
+#include "h/netsec.h"
+#include "h/oauth.h"
 #include <stdarg.h>
 #include <sys/select.h>
 #include "base64.h"

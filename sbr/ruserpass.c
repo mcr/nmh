@@ -21,9 +21,9 @@
  * distribution for complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include <pwd.h>
 
 static FILE *cfile;

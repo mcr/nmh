@@ -5,13 +5,13 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
 #include "smtp.h"
-#include <h/mts.h>
-#include <h/signals.h>
-#include <h/utils.h>
-#include <h/netsec.h>
+#include "h/mts.h"
+#include "h/signals.h"
+#include "h/utils.h"
+#include "h/netsec.h"
 
 #include <sys/socket.h>
 #include "sbr/base64.h"

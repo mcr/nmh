@@ -30,17 +30,17 @@
  */
 #endif
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
-#include <h/utils.h>
+#include "h/utils.h"
 #include <fcntl.h>
-#include <h/dropsbr.h>
-#include <h/popsbr.h>
-#include <h/fmt_scan.h>
-#include <h/scansbr.h>
-#include <h/signals.h>
-#include <h/tws.h>
-#include <h/mts.h>
+#include "h/dropsbr.h"
+#include "h/popsbr.h"
+#include "h/fmt_scan.h"
+#include "h/scansbr.h"
+#include "h/signals.h"
+#include "h/tws.h"
+#include "h/mts.h"
 #include "h/done.h"
 #include "sbr/lock_file.h"
 #include "sbr/m_maildir.h"

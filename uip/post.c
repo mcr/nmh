@@ -5,18 +5,18 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "sbr/error.h"
 #include <fcntl.h>
-#include <h/signals.h>
-#include <h/addrsbr.h>
-#include <h/aliasbr.h>
-#include <h/dropsbr.h>
-#include <h/mime.h>
+#include "h/signals.h"
+#include "h/addrsbr.h"
+#include "h/aliasbr.h"
+#include "h/dropsbr.h"
+#include "h/mime.h"
 #include "h/done.h"
-#include <h/utils.h>
-#include <h/tws.h>
-#include <h/mts.h>
+#include "h/utils.h"
+#include "h/tws.h"
+#include "h/mts.h"
 #include "sbr/m_mktemp.h"
 #include "sbr/message_id.h"
 
@@ -25,7 +25,7 @@
 #endif
 #include <time.h>
 
-#include <mts/smtp/smtp.h>
+#include "mts/smtp/smtp.h"
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)

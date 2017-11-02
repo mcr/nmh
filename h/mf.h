@@ -1,7 +1,7 @@
 /* mf.h -- include file for mailbox filters
  */
 
-#include <h/nmh.h>
+#include "h/nmh.h"
 
 #ifndef	NOTOK
 # define NOTOK (-1)

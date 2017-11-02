@@ -5,8 +5,8 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <h/signals.h>
+#include "h/mh.h"
+#include "h/signals.h"
 
 int
 pidwait (pid_t id, int sigsok)

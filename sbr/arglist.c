@@ -5,9 +5,9 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
+#include "h/mh.h"
 #include "error.h"
-#include <h/utils.h>
+#include "h/utils.h"
 
 /*
  * Split up a command into an appropriate array to pass to execvp()
