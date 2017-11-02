@@ -203,7 +203,6 @@ void ruserpass (const char *host, char **aname, char **apass, int flags);
 int remdir (char *);
 void scan_detect_mbox_style (FILE *);
 void scan_finished(void);
-int seq_nameok (char *);
 
 /*
  * Read the sequence files for the folder referenced in the given

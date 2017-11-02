@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_nameok.h"
 #include "seq_add.h"
 #include "error.h"
 
