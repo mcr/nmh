@@ -209,8 +209,6 @@ int seq_delsel (struct msgs *, char *, int, int);
 int seq_getnum (struct msgs *, char *);
 char *seq_list (struct msgs *, char *);
 int seq_nameok (char *);
-void seq_print (struct msgs *, char *);
-void seq_printall (struct msgs *);
 
 /*
  * Read the sequence files for the folder referenced in the given

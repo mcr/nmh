@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_print.h"
 
 /*
  * Print all the sequences in a folder
