@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_bits.h"
 
 
 char *

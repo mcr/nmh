@@ -376,6 +376,7 @@ noinst_HEADERS = \
     sbr/mime_type.h \
     sbr/read_line.h \
     sbr/seq_add.h \
+    sbr/seq_bits.h \
     sbr/seq_del.h \
     sbr/seq_getnum.h \
     sbr/seq_print.h \
