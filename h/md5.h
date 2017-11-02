@@ -6,7 +6,7 @@
  * RSAREF types and constants
  */
 
-#include "h/nmh.h"
+#include "nmh.h"
 #include <inttypes.h>
 
 /* UINT4 defines a four byte word */

@@ -15,7 +15,7 @@
 #error "Please report this to nmh's authors."
 #endif
 
-#include "sbr/ctype-checked.h"
+#include "ctype-checked.h"
 
 /* ctype_identity returns its index less one allowing [EOF, 255] to be
  * used as indexes to ctype_identity + 1. */
