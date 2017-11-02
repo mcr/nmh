@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "print_sw.h"
 
 #ifdef READLINE_SUPPORT
 #include <readline/readline.h>
