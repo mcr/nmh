@@ -98,7 +98,8 @@ static void readonly_folders (void);
  */
 static
 void
-nonexistent_folder (int status) {
+nonexistent_folder (int status)
+{
     NMH_UNUSED (status);
     die("folder %s does not exist", folder);
 }

@@ -26,7 +26,8 @@ struct charstring {
 
 
 static void
-charstring_reserve (charstring_t s, size_t need) {
+charstring_reserve (charstring_t s, size_t need)
+{
     const size_t cur = s->cur - s->buffer;
 
     while (need >= s->max - cur) {
@@ -40,7 +41,8 @@ charstring_reserve (charstring_t s, size_t need) {
  * max is in characters
  */
 charstring_t
-charstring_create (size_t max) {
+charstring_create (size_t max)
+{
     charstring_t s;
 
     NEW(s);
@@ -52,7 +54,8 @@ charstring_create (size_t max) {
 }
 
 charstring_t
-charstring_copy (const charstring_t src) {
+charstring_copy (const charstring_t src)
+{
     const size_t num = src->cur - src->buffer;
     charstring_t s;
 
@@ -70,7 +73,8 @@ charstring_copy (const charstring_t src) {
  * OK to call charstring_free with a NULL argument.
  */
 void
-charstring_free (charstring_t s) {
+charstring_free (charstring_t s)
+{
     if (s) {
         free (s->buffer);
         free (s);
@@ -78,7 +82,8 @@ charstring_free (charstring_t s) {
 }
 
 void
-charstring_push_back (charstring_t s, const char c) {
+charstring_push_back (charstring_t s, const char c)
+{
     charstring_reserve (s, s->cur - s->buffer + 1);
     *s->cur++ = c;
     ++s->chars;
@@ -90,7 +95,8 @@ charstring_push_back (charstring_t s, const char c) {
  */
 void
 charstring_push_back_chars (charstring_t s, const char c[], size_t num,
-                            size_t width) {
+                            size_t width)
+{
     size_t i;
 
     charstring_reserve (s, s->cur - s->buffer + num);
@@ -99,7 +105,8 @@ charstring_push_back_chars (charstring_t s, const char c[], size_t num,
 }
 
 void
-charstring_append (charstring_t dest, const charstring_t src) {
+charstring_append (charstring_t dest, const charstring_t src)
+{
     const size_t num = src->cur - src->buffer;
 
     if (num > 0) {
@@ -111,7 +118,8 @@ charstring_append (charstring_t dest, const charstring_t src) {
 }
 
 void
-charstring_append_cstring (charstring_t dest, const char src[]) {
+charstring_append_cstring (charstring_t dest, const char src[])
+{
     const size_t num = strlen (src);
 
     if (num > 0) {
@@ -123,7 +131,8 @@ charstring_append_cstring (charstring_t dest, const char src[]) {
 }
 
 void
-charstring_clear (charstring_t s) {
+charstring_clear (charstring_t s)
+{
     s->cur = s->buffer;
     s->chars = 0;
 }
@@ -133,7 +142,8 @@ charstring_clear (charstring_t s) {
  * intervening push_back's; use charstring_buffer_copy() instead.
  */
 const char *
-charstring_buffer (const charstring_t s) {
+charstring_buffer (const charstring_t s)
+{
     charstring_reserve (s, s->cur - s->buffer + 1);
 
     /* This is the only place that we null-terminate the buffer. */
@@ -146,7 +156,8 @@ charstring_buffer (const charstring_t s) {
 }
 
 char *
-charstring_buffer_copy (const charstring_t s) {
+charstring_buffer_copy (const charstring_t s)
+{
     char *copy = mh_xmalloc (s->cur - s->buffer + 1);
 
     /* Use charstring_buffer() to null terminate the buffer. */
@@ -156,17 +167,20 @@ charstring_buffer_copy (const charstring_t s) {
 }
 
 size_t
-charstring_bytes (const charstring_t s) {
+charstring_bytes (const charstring_t s)
+{
     return s->cur - s->buffer;
 }
 
 size_t
-charstring_chars (const charstring_t s) {
+charstring_chars (const charstring_t s)
+{
     return s->chars;
 }
 
 int
-charstring_last_char_len (const charstring_t s) {
+charstring_last_char_len (const charstring_t s)
+{
     int len = 0;
 #ifdef MULTIBYTE_SUPPORT
     const char *sp = charstring_buffer (s);

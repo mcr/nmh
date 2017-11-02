@@ -331,7 +331,8 @@ m_getfld_state_t m_getfld_state_init(FILE *iob)
 
 /* scan() needs to force an initial state of FLD for each message. */
 void
-m_getfld_state_reset (m_getfld_state_t *gstate) {
+m_getfld_state_reset (m_getfld_state_t *gstate)
+{
     if (*gstate) {
 	(*gstate)->state = FLD;
     }
@@ -341,7 +342,8 @@ m_getfld_state_reset (m_getfld_state_t *gstate) {
    calls, m_getfld() must keep track of the file position.  The caller
    must use this function to inform m_getfld(). */
 void
-m_getfld_track_filepos (m_getfld_state_t *gstate, FILE *iob) {
+m_getfld_track_filepos (m_getfld_state_t *gstate, FILE *iob)
+{
     if (! *gstate) {
 	*gstate = m_getfld_state_init(iob);
     }
@@ -358,7 +360,8 @@ void m_getfld_track_filepos2(m_getfld_state_t *gstate)
     m_getfld_track_filepos(gstate, (*gstate)->iob);
 }
 
-void m_getfld_state_destroy (m_getfld_state_t *gstate) {
+void m_getfld_state_destroy (m_getfld_state_t *gstate)
+{
     m_getfld_state_t s = *gstate;
 
     if (s) {
@@ -401,7 +404,8 @@ void m_getfld_state_destroy (m_getfld_state_t *gstate) {
 
 
 static void
-enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
+enter_getfld (m_getfld_state_t *gstate, FILE *iob)
+{
     m_getfld_state_t s;
     off_t pos;
     off_t pos_movement;
@@ -475,7 +479,8 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
 }
 
 static void
-leave_getfld (m_getfld_state_t s) {
+leave_getfld (m_getfld_state_t s)
+{
     s->total_bytes_read += s->bytes_read;
 
     if (s->track_filepos) {
@@ -493,7 +498,8 @@ leave_getfld (m_getfld_state_t s) {
 }
 
 static size_t
-read_more (m_getfld_state_t s) {
+read_more (m_getfld_state_t s)
+{
     /* Retain at least edelimlen characters that have already been read,
        if at least edelimlen have been read, so that we can back up to them
        in m_Eom(). */
@@ -519,7 +525,8 @@ read_more (m_getfld_state_t s) {
 /* Return the next character consumed from the input, fetching more of
  * the input for the buffer if required, or EOF on end of file. */
 static int
-Getc (m_getfld_state_t s) {
+Getc (m_getfld_state_t s)
+{
     if ((s->end - s->readpos < 1 && read_more (s) == 0) ||
         s->readpos >= s->end)
         return EOF;

@@ -20,7 +20,8 @@ static bool seeded = false;
 
 
 int
-m_rand (unsigned char *buf, size_t n) {
+m_rand (unsigned char *buf, size_t n)
+{
 #if !HAVE_ARC4RANDOM
   if (! seeded) {
     FILE *devurandom;

@@ -20,7 +20,8 @@ static char *get_file_info(const char *, const char *);
  * is responsible for free'ing returned memory.
  */
 char *
-mime_type(const char *file_name) {
+mime_type(const char *file_name)
+{
     char *content_type = NULL;  /* mime content type */
     char *p;
 

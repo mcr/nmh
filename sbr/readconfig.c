@@ -155,7 +155,8 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 
 
 void
-add_profile_entry (const char *key, const char *value) {
+add_profile_entry (const char *key, const char *value)
+{
     struct node *newnode;
 
     /* This inserts the new node at the beginning of m_defs because

@@ -59,7 +59,8 @@ struct tzdesc {
  */
 static int
 parse_datetime (const char *datetime, const char *zone, bool dst,
-                struct tws *tws) {
+                struct tws *tws)
+{
     char utc_indicator;
     bool form_1;
     int items_matched;
@@ -153,7 +154,8 @@ parse_datetime (const char *datetime, const char *zone, bool dst,
 }
 
 tzdesc_t
-load_timezones (const contentline *clines) {
+load_timezones (const contentline *clines)
+{
     tzdesc_t timezones = NULL, timezone = NULL;
     bool in_vtimezone, in_standard, in_daylight;
     tzparams *params = NULL;
@@ -240,7 +242,8 @@ load_timezones (const contentline *clines) {
 }
 
 void
-free_timezones (tzdesc_t timezone) {
+free_timezones (tzdesc_t timezone)
+{
     tzdesc_t next;
 
     for ( ; timezone; timezone = next) {
@@ -270,7 +273,8 @@ free_timezones (tzdesc_t timezone) {
  */
 time_t
 rrule_clock (const char *rrule, const char *starttime, const char *zone,
-             unsigned int year) {
+             unsigned int year)
+{
     time_t clock = 0;
 
     if (nmh_strcasestr (rrule, "FREQ=YEARLY;INTERVAL=1")  ||
@@ -333,7 +337,8 @@ fail:
 }
 
 char *
-format_datetime (tzdesc_t timezones, const contentline *node) {
+format_datetime (tzdesc_t timezones, const contentline *node)
+{
     param_list *p;
     char *dt_timezone = NULL;
     int dst = 0;

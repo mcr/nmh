@@ -60,7 +60,8 @@ vevent vevents = { NULL, NULL, NULL};
 int parser_status = 0;
 
 int
-main (int argc, char *argv[]) {
+main (int argc, char *argv[])
+{
     /* RFC 5322 § 3.3 date-time format, including the optional
        day-of-week and not including the optional seconds.  The
        zone is required by the RFC but not always output by this
@@ -257,7 +258,8 @@ main (int argc, char *argv[]) {
  * - Excise VALARM sections.
  */
 static void
-convert_to_reply (contentline *clines, act action) {
+convert_to_reply (contentline *clines, act action)
+{
     char *partstat = NULL;
     bool found_my_attendee_line = false;
     contentline *node;
@@ -363,7 +365,8 @@ convert_to_reply (contentline *clines, act action) {
  * - Excise VALARM sections.
  */
 static void
-convert_to_cancellation (contentline *clines) {
+convert_to_cancellation (contentline *clines)
+{
     contentline *node;
 
     convert_common (clines, ACT_CANCEL);
@@ -385,7 +388,8 @@ convert_to_cancellation (contentline *clines) {
 }
 
 static void
-convert_common (contentline *clines, act action) {
+convert_common (contentline *clines, act action)
+{
     contentline *node;
     bool in_valarm;
 
@@ -496,7 +500,8 @@ convert_common (contentline *clines, act action) {
 
 /* Echo the input, but with unfolded lines. */
 static void
-dump_unfolded (FILE *file, contentline *clines) {
+dump_unfolded (FILE *file, contentline *clines)
+{
     contentline *node;
 
     for (node = clines; node; node = node->next) {
@@ -505,7 +510,8 @@ dump_unfolded (FILE *file, contentline *clines) {
 }
 
 static void
-output (FILE *file, contentline *clines, int contenttype) {
+output (FILE *file, contentline *clines, int contenttype)
+{
     contentline *node;
 
     if (contenttype) {
@@ -558,7 +564,8 @@ output (FILE *file, contentline *clines, int contenttype) {
  *   - attendees (limited to number specified in initialization)
  */
 static void
-display (FILE *file, contentline *clines, char *nfs) {
+display (FILE *file, contentline *clines, char *nfs)
+{
     tzdesc_t timezones = load_timezones (clines);
     bool in_vtimezone;
     bool in_valarm;
@@ -727,7 +734,8 @@ display (FILE *file, contentline *clines, char *nfs) {
 }
 
 static const char *
-identity (const contentline *node) {
+identity (const contentline *node)
+{
     /* According to RFC 5545 § 3.3.3, an email address in the value
        must be a mailto URI. */
     if (! strncasecmp (node->value, "mailto:", 7)) {
@@ -757,7 +765,8 @@ identity (const contentline *node) {
 }
 
 static char *
-format_params (char *line, param_list *p) {
+format_params (char *line, param_list *p)
+{
     for ( ; p && p->param_name; p = p->next) {
         value_list *v;
         size_t num_values = 0;
@@ -790,7 +799,8 @@ format_params (char *line, param_list *p) {
 }
 
 static char *
-fold (char *line, int uses_cr) {
+fold (char *line, int uses_cr)
+{
     size_t remaining = strlen (line);
     size_t current_line_len = 0;
     charstring_t folded_line = charstring_create (2 * remaining);

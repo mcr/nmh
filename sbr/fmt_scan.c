@@ -67,7 +67,8 @@ match (char *str, char *sub)
  * copy a number to the destination subject to a maximum width
  */
 void
-cpnumber(charstring_t dest, int num, int wid, char fill, size_t max) {
+cpnumber(charstring_t dest, int num, int wid, char fill, size_t max)
+{
     /* Maybe we should handle left padding at some point? */
     if (wid == 0)
 	return;
@@ -120,7 +121,8 @@ cpnumber(charstring_t dest, int num, int wid, char fill, size_t max) {
  * aligned no more than max characters are copied
  */
 void
-cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
+cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max)
+{
     int remaining;     /* remaining output width available */
     bool rjust;
     struct charstring *trimmed;

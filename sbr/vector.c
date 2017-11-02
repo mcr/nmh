@@ -54,7 +54,8 @@
 static void bvector_resize (bvector_t vec, size_t newsize);
 
 bvector_t
-bvector_create (void) {
+bvector_create (void)
+{
     bvector_t vec;
 
     /* See "wider than unsigned long" comment above. */
@@ -74,7 +75,8 @@ void bvector_init(struct bvector *bv)
 }
 
 void
-bvector_copy (bvector_t dest, bvector_t src) {
+bvector_copy (bvector_t dest, bvector_t src)
+{
     size_t bytes = BVEC_BYTES(src->maxsize);
 
     if (dest->bits != dest->tiny)
@@ -88,7 +90,8 @@ bvector_copy (bvector_t dest, bvector_t src) {
 }
 
 void
-bvector_free (bvector_t vec) {
+bvector_free (bvector_t vec)
+{
     bvector_fini(vec);
     free (vec);
 }
@@ -100,20 +103,23 @@ void bvector_fini(struct bvector *bv)
 }
 
 void
-bvector_clear (bvector_t vec, size_t n) {
+bvector_clear (bvector_t vec, size_t n)
+{
     if (n < vec->maxsize)
         vec->bits[BVEC_WORD(n)] &= ~(1ul << BVEC_OFFSET(n));
 }
 
 
 void
-bvector_clear_all (bvector_t vec) {
+bvector_clear_all (bvector_t vec)
+{
     memset (vec->bits, 0, BVEC_BYTES(vec->maxsize));
 }
 
 
 void
-bvector_set (bvector_t vec, size_t n) {
+bvector_set (bvector_t vec, size_t n)
+{
     size_t word = BVEC_WORD(n);
     size_t offset = BVEC_OFFSET(n);
 
@@ -123,7 +129,8 @@ bvector_set (bvector_t vec, size_t n) {
 }
 
 unsigned int
-bvector_at (bvector_t vec, size_t i) {
+bvector_at (bvector_t vec, size_t i)
+{
     if (i < vec->maxsize)
         return !!(vec->bits[BVEC_WORD(i)] & (1ul << BVEC_OFFSET(i)));
 
@@ -131,7 +138,8 @@ bvector_at (bvector_t vec, size_t i) {
 }
 
 static void
-bvector_resize (bvector_t vec, size_t newsize) {
+bvector_resize (bvector_t vec, size_t newsize)
+{
     size_t oldsize = vec->maxsize;
     size_t bytes;
 
@@ -149,7 +157,8 @@ bvector_resize (bvector_t vec, size_t newsize) {
 }
 
 unsigned long
-bvector_first_bits (bvector_t vec) {
+bvector_first_bits (bvector_t vec)
+{
     return *vec->bits;
 }
 
@@ -163,7 +172,8 @@ struct svector {
 static void svector_resize (svector_t, size_t);
 
 svector_t
-svector_create (size_t init_size) {
+svector_create (size_t init_size)
+{
     svector_t vec;
     size_t bytes;
 
@@ -177,20 +187,23 @@ svector_create (size_t init_size) {
 }
 
 void
-svector_free (svector_t vec) {
+svector_free (svector_t vec)
+{
     free (vec->strs);
     free (vec);
 }
 
 char *
-svector_push_back (svector_t vec, char *s) {
+svector_push_back (svector_t vec, char *s)
+{
     if (++vec->size >= vec->maxsize)
         svector_resize (vec, vec->size);
     return vec->strs[vec->size-1] = s;
 }
 
 char *
-svector_at (svector_t vec, size_t i) {
+svector_at (svector_t vec, size_t i)
+{
     if (i >= vec->maxsize)
         svector_resize (vec, i);
     return vec->strs[i];
@@ -201,7 +214,8 @@ svector_at (svector_t vec, size_t i) {
  * The caller can replace the contents of the return address.
  */
 char **
-svector_find (svector_t vec, const char *s) {
+svector_find (svector_t vec, const char *s)
+{
     size_t i;
     char **str = vec->strs;
 
@@ -215,17 +229,20 @@ svector_find (svector_t vec, const char *s) {
 }
 
 char **
-svector_strs (svector_t vec) {
+svector_strs (svector_t vec)
+{
     return vec->strs;
 }
 
 size_t
-svector_size (svector_t vec) {
+svector_size (svector_t vec)
+{
     return vec->size;
 }
 
 static void
-svector_resize (svector_t vec, size_t maxsize) {
+svector_resize (svector_t vec, size_t maxsize)
+{
     size_t old_maxsize = vec->maxsize;
 
     while ((vec->maxsize *= 2) < maxsize)
@@ -245,7 +262,8 @@ struct ivector {
 static void ivector_resize (ivector_t, size_t);
 
 ivector_t
-ivector_create (size_t init_size) {
+ivector_create (size_t init_size)
+{
     ivector_t vec;
     size_t bytes;
 
@@ -259,34 +277,39 @@ ivector_create (size_t init_size) {
 }
 
 void
-ivector_free (ivector_t vec) {
+ivector_free (ivector_t vec)
+{
     free (vec->ints);
     free (vec);
 }
 
 int
-ivector_push_back (ivector_t vec, int n) {
+ivector_push_back (ivector_t vec, int n)
+{
     if (++vec->size >= vec->maxsize)
         ivector_resize (vec, vec->size);
     return vec->ints[vec->size-1] = n;
 }
 
 int
-ivector_at (ivector_t vec, size_t i) {
+ivector_at (ivector_t vec, size_t i)
+{
     if (i >= vec->maxsize)
         ivector_resize (vec, i);
     return vec->ints[i];
 }
 
 int *
-ivector_atp (ivector_t vec, size_t i) {
+ivector_atp (ivector_t vec, size_t i)
+{
     if (i >= vec->maxsize)
         ivector_resize (vec, i);
     return &vec->ints[i];
 }
 
 static void
-ivector_resize (ivector_t vec, size_t maxsize) {
+ivector_resize (ivector_t vec, size_t maxsize)
+{
     size_t old_maxsize = vec->maxsize;
 
     while ((vec->maxsize *= 2) < maxsize)

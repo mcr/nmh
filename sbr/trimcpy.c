@@ -49,7 +49,8 @@ trimcpy (char *cp)
  * complete copyright information.
  */
 char *
-cpytrim (const char *sp) {
+cpytrim (const char *sp)
+{
     char *dp;
     char *cp;
 
@@ -81,7 +82,8 @@ cpytrim (const char *sp) {
  * complete copyright information.
  */
 char *
-rtrim (char *sp) {
+rtrim (char *sp)
+{
     char *cp;
 
     /* start at the end and zap trailing whitespace */

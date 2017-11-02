@@ -1377,7 +1377,8 @@ prefer_parts(CT ct)
    example, a text/plain part before a text/html part in a
    multipart/alternative part, for example, where it belongs. */
 void
-reverse_alternative_parts (CT ct) {
+reverse_alternative_parts (CT ct)
+{
     if (ct->c_type == CT_MULTIPART) {
         struct multipart *m = (struct multipart *) ct->c_ctparams;
         struct part *part;
@@ -3046,7 +3047,8 @@ get_leftover_mp_content (CT ct, int before /* or after */)
 
 
 char *
-ct_type_str (int type) {
+ct_type_str (int type)
+{
     switch (type) {
     case CT_APPLICATION:
         return "application";
@@ -3071,7 +3073,8 @@ ct_type_str (int type) {
 
 
 char *
-ct_subtype_str (int type, int subtype) {
+ct_subtype_str (int type, int subtype)
+{
     switch (type) {
     case CT_APPLICATION:
         switch (subtype) {
@@ -3126,7 +3129,8 @@ ct_subtype_str (int type, int subtype) {
 
 
 int
-ct_str_type (const char *type) {
+ct_str_type (const char *type)
+{
     struct str2init *s2i;
 
     for (s2i = str2cts; s2i->si_key; ++s2i) {
@@ -3143,7 +3147,8 @@ ct_str_type (const char *type) {
 
 
 int
-ct_str_subtype (int type, const char *subtype) {
+ct_str_subtype (int type, const char *subtype)
+{
     struct k2v *kv;
 
     switch (type) {
@@ -3183,7 +3188,8 @@ ct_str_subtype (int type, const char *subtype) {
 
 /* Find the content type and InitFunc for the CT. */
 const struct str2init *
-get_ct_init (int type) {
+get_ct_init (int type)
+{
     const struct str2init *sp;
 
     for (sp = str2cts; sp->si_key; ++sp) {
@@ -3196,7 +3202,8 @@ get_ct_init (int type) {
 }
 
 const char *
-ce_str (int encoding) {
+ce_str (int encoding)
+{
     switch (encoding) {
     case CE_BASE64:
         return "base64";
@@ -3219,7 +3226,8 @@ ce_str (int encoding) {
 
 /* Find the content type and InitFunc for the content encoding method. */
 const struct str2init *
-get_ce_method (const char *method) {
+get_ce_method (const char *method)
+{
     struct str2init *sp;
 
     for (sp = str2ces; sp->si_key; ++sp) {
@@ -3641,7 +3649,8 @@ bad_quote:
  */
 
 char *
-content_charset (CT ct) {
+content_charset (CT ct)
+{
     char *ret_charset = NULL;
 
     ret_charset = get_param(ct->c_ctinfo.ci_first_pm, "charset", '?', 0);

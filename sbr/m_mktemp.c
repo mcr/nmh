@@ -256,7 +256,8 @@ static svector_t exit_filelist = NULL;
  * Register a file for removal at program termination.
  */
 static void
-register_for_removal(const char *pathname) {
+register_for_removal(const char *pathname)
+{
     if (exit_filelist == NULL) exit_filelist = svector_create(20);
     (void) svector_push_back(exit_filelist, mh_xstrdup(pathname));
 }
@@ -280,7 +281,8 @@ register_for_removal(const char *pathname) {
  * quickly created with the same name.
  */
 void
-unregister_for_removal(int remove_files) {
+unregister_for_removal(int remove_files)
+{
     if (exit_filelist) {
         size_t i;
 
@@ -303,7 +305,8 @@ unregister_for_removal(int remove_files) {
  * any case, unlink it.
  */
 int
-m_unlink(const char *pathname) {
+m_unlink(const char *pathname)
+{
     if (exit_filelist) {
         char **slot = svector_find(exit_filelist, pathname);
 
@@ -321,7 +324,8 @@ m_unlink(const char *pathname) {
  * Remove all registered temporary files.
  */
 void
-remove_registered_files_atexit(void) {
+remove_registered_files_atexit(void)
+{
     unregister_for_removal(1);
 }
 
@@ -333,7 +337,8 @@ remove_registered_files_atexit(void) {
  * in case the use was expecting a core dump.
  */
 void
-remove_registered_files(int sig) {
+remove_registered_files(int sig)
+{
     struct sigaction act;
 
     /*

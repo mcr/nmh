@@ -30,7 +30,8 @@ context_find (const char *str)
  */
 char *
 context_find_by_type (const char *string, const char *type,
-                      const char *subtype) {
+                      const char *subtype)
+{
     char *value = NULL;
 
     if (subtype) {
@@ -58,7 +59,8 @@ context_find_by_type (const char *string, const char *type,
  * The search is case insensitive.
  */
 int
-context_find_prefix (const char *prefix) {
+context_find_prefix (const char *prefix)
+{
     struct node *np;
     size_t len;
 

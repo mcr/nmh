@@ -105,7 +105,8 @@ static struct bind binds[] = {
 
 /* Convert name of mts method to integer value and store it. */
 void
-save_mts_method (const char *value) {
+save_mts_method (const char *value)
+{
     if (! strcasecmp (value, "smtp")) {
         mts_method = "smtp";
         sm_mts = MTS_SMTP;

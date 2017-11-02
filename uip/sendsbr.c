@@ -740,7 +740,8 @@ oops:
 
 static
 void
-handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc) {
+handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc)
+{
     const char *addr, *host;
     const char *message;
 
@@ -783,7 +784,8 @@ handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc) {
  */
 static int
 setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
-		   const char **message) {
+		   const char **message)
+{
     const char *saslmech = NULL, *user = NULL;
     mh_oauth_service_info svc;
     char errbuf[256];
@@ -848,7 +850,8 @@ setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
  */
 static
 int
-get_from_header_info(const char *filename, const char **addr, const char **host, const char **message) {
+get_from_header_info(const char *filename, const char **addr, const char **host, const char **message)
+{
     struct stat st;
     FILE *in;
 
@@ -902,7 +905,8 @@ get_from_header_info(const char *filename, const char **addr, const char **host,
  */
 static
 const char *
-get_message_header_info(FILE *in, char *format) {
+get_message_header_info(FILE *in, char *format)
+{
     int dat[5];
     struct format *fmt;
     struct stat st;
@@ -980,7 +984,8 @@ get_message_header_info(FILE *in, char *format) {
  */
 static
 void
-merge_profile_entry(const char *addr, const char *host, char *vec[], int *vecp) {
+merge_profile_entry(const char *addr, const char *host, char *vec[], int *vecp)
+{
     char *addr_entry = concat("sendfrom-", addr, NULL);
     char *profile_entry = context_find(addr_entry);
 

@@ -34,7 +34,8 @@ static void process_args(int, char **, const char **, const char **, const char 
  */
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
     const char *directory = "", *prefix = "", *suffix = "";
     size_t suffix_len;
     int fd;
@@ -67,7 +68,8 @@ main(int argc, char *argv[]) {
 
 
 static char *
-build_template(const char *directory, const char *prefix, const char *suffix) {
+build_template(const char *directory, const char *prefix, const char *suffix)
+{
     const char pattern[] = "XXXXXX";
     size_t len, directory_len, pathsep_len, prefix_len, suffix_len;
     char *template;
@@ -146,7 +148,8 @@ DEFINE_SWITCH_ARRAY(MHFIXMSG, switches);
 
 static void
 process_args(int argc, char **argv, const char **directory,
-             const char **prefix, const char **suffix) {
+             const char **prefix, const char **suffix)
+{
     char **argp, **arguments, *cp, buf[100];
 #   if ! HAVE_MKSTEMPS
     NMH_UNUSED(suffix);
@@ -210,7 +213,8 @@ process_args(int argc, char **argv, const char **directory,
 #else  /* ! NMH */
 static void
 process_args(int argc, char **argv, const char **directory,
-             const char **prefix, const char **suffix) {
+             const char **prefix, const char **suffix)
+{
 #   if HAVE_MKSTEMPS
     const char usage[] =
         "usage: %s [-h] [-d directory] [-p prefix] [-s suffix]\n";

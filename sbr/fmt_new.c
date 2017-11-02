@@ -56,7 +56,8 @@ new_fs (char *form, char *format, char *default_fs)
 
 
 void
-free_fs(void) {
+free_fs(void)
+{
     free (formats);
     formats = 0;
 }

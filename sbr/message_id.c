@@ -22,7 +22,8 @@ static char message_id_[BUFSIZ];
 
 /* Convert name of message id style to integer value and store it. */
 int
-save_message_id_style (const char *value) {
+save_message_id_style (const char *value)
+{
   if (! strcasecmp (value, "localname")) {
     message_id_style = NMH_MESSAGE_ID_LOCALNAME;
     return 0;
@@ -36,7 +37,8 @@ save_message_id_style (const char *value) {
 
 
 char *
-message_id (time_t tclock, int content_id) {
+message_id (time_t tclock, int content_id)
+{
   switch (message_id_style) {
     case NMH_MESSAGE_ID_LOCALNAME: {
 #define P(fmt) \

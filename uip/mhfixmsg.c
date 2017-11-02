@@ -123,7 +123,8 @@ static void pipeser (int);
 
 
 int
-main (int argc, char **argv) {
+main (int argc, char **argv)
+{
     int msgnum;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir = NULL, buf[100], *outfile = NULL;
@@ -517,7 +518,8 @@ main (int argc, char **argv) {
  */
 static int
 mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
-             FILE **infp, char *outfile, FILE **outfp) {
+             FILE **infp, char *outfile, FILE **outfp)
+{
     /* Store input filename in case one of the transformations, i.e.,
        fix_boundary(), rewrites to a tmp file. */
     char *input_filename = maildir
@@ -624,7 +626,8 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
  */
 static int
 copy_input_to_output (const char *input_filename, FILE *infp,
-                      const char *output_filename, FILE *outfp) {
+                      const char *output_filename, FILE *outfp)
+{
     int in = fileno (infp);
     int out = fileno (outfp);
     int status = OK;
@@ -643,7 +646,8 @@ copy_input_to_output (const char *input_filename, FILE *infp,
  * Fix mismatched outer level boundary.
  */
 static int
-fix_boundary (CT *ct, int *message_mods) {
+fix_boundary (CT *ct, int *message_mods)
+{
     struct multipart *mp;
     int status = OK;
 
@@ -719,7 +723,8 @@ fix_boundary (CT *ct, int *message_mods) {
  * Find boundary at end of multipart.
  */
 static int
-get_multipart_boundary (CT ct, char **part_boundary) {
+get_multipart_boundary (CT ct, char **part_boundary)
+{
     char buffer[NMH_BUFSIZ];
     char *end_boundary = NULL;
     off_t begin = (off_t) ct->c_end > (off_t) (ct->c_begin + sizeof buffer)
@@ -806,7 +811,8 @@ get_multipart_boundary (CT ct, char **part_boundary) {
  * Open and copy ct->c_file to file, replacing the multipart boundary.
  */
 static int
-replace_boundary (CT ct, char *file, char *boundary) {
+replace_boundary (CT ct, char *file, char *boundary)
+{
     FILE *fpin, *fpout;
     int compnum, state;
     char buf[NMH_BUFSIZ], name[NAMESZ];
@@ -913,7 +919,8 @@ replace_boundary (CT ct, char *file, char *boundary) {
  * Fix Content-Type header to reflect the content of its part.
  */
 static int
-fix_types (CT ct, svector_t fixtypes, int *message_mods) {
+fix_types (CT ct, svector_t fixtypes, int *message_mods)
+{
     int status = OK;
 
     switch (ct->c_type) {
@@ -1027,7 +1034,8 @@ fix_types (CT ct, svector_t fixtypes, int *message_mods) {
  * Replace a substring, allocating space to hold the new one.
  */
 char *
-replace_substring (char **str, const char *old, const char *new) {
+replace_substring (char **str, const char *old, const char *new)
+{
     char *cp;
 
     if ((cp = strstr (*str, old))) {
@@ -1056,7 +1064,8 @@ replace_substring (char **str, const char *old, const char *new) {
  * Remove a name=value parameter, given just its name, from a header value.
  */
 char *
-remove_parameter (char *str, const char *name) {
+remove_parameter (char *str, const char *name)
+{
     /* It looks to me, based on the BNF in RFC 2045, than there can't
        be whitespace between the parameter name and the "=", or
        between the "=" and the parameter value. */
@@ -1105,7 +1114,8 @@ remove_parameter (char *str, const char *name) {
  * 8 bit.
  */
 static int
-fix_composite_cte (CT ct, int *message_mods) {
+fix_composite_cte (CT ct, int *message_mods)
+{
     int status = OK;
 
     if (ct->c_type == CT_MESSAGE  ||  ct->c_type == CT_MULTIPART) {
@@ -1177,7 +1187,8 @@ fix_composite_cte (CT ct, int *message_mods) {
  * Set content encoding.
  */
 static int
-set_ce (CT ct, int encoding) {
+set_ce (CT ct, int encoding)
+{
     const char *ce = ce_str (encoding);
     const struct str2init *ctinit = get_ce_method (ce);
 
@@ -1234,7 +1245,8 @@ set_ce (CT ct, int encoding) {
  * Make sure each text part has a corresponding text/plain part.
  */
 static int
-ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
+ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain)
+{
     int status = OK;
 
     switch ((*ct)->c_type) {
@@ -1395,7 +1407,8 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
  */
 static int
 find_textplain_sibling (CT parent, int replacetextplain,
-                        int *new_subpart_number) {
+                        int *new_subpart_number)
+{
     struct multipart *mp = (struct multipart *) parent->c_ctparams;
     struct part *part, *prev;
     bool has_text_plain = false;
@@ -1436,7 +1449,8 @@ find_textplain_sibling (CT parent, int replacetextplain,
  * Insert a new text/plain part.
  */
 static int
-insert_new_text_plain_part (CT ct, int new_subpart_number, CT parent) {
+insert_new_text_plain_part (CT ct, int new_subpart_number, CT parent)
+{
     struct multipart *mp = (struct multipart *) parent->c_ctparams;
     struct part *new_part;
 
@@ -1465,7 +1479,8 @@ insert_new_text_plain_part (CT ct, int new_subpart_number, CT parent) {
  * Create a text/plain part to go along with non-plain sibling part.
  */
 static CT
-build_text_plain_part (CT encoded_part) {
+build_text_plain_part (CT encoded_part)
+{
     CT tp_part = divide_part (encoded_part);
     char *tmp_plain_file = NULL;
 
@@ -1503,7 +1518,8 @@ build_text_plain_part (CT encoded_part) {
  * Slip new text/plain part into a new multipart/alternative.
  */
 static int
-insert_into_new_mp_alt (CT *ct, int *message_mods) {
+insert_into_new_mp_alt (CT *ct, int *message_mods)
+{
     CT tp_part = build_text_plain_part (*ct);
     int status = OK;
 
@@ -1543,7 +1559,8 @@ insert_into_new_mp_alt (CT *ct, int *message_mods) {
  * Clone a MIME part.
  */
 static CT
-divide_part (CT ct) {
+divide_part (CT ct)
+{
     CT new_part;
 
     NEW0(new_part);
@@ -1573,7 +1590,8 @@ divide_part (CT ct) {
  * Copy the content info from one part to another.
  */
 static void
-copy_ctinfo (CI dest, CI src) {
+copy_ctinfo (CI dest, CI src)
+{
     PM s_pm, d_pm;
 
     dest->ci_type = src->ci_type ? mh_xstrdup (src->ci_type) : NULL;
@@ -1599,7 +1617,8 @@ copy_ctinfo (CI dest, CI src) {
  * Decode content.
  */
 static int
-decode_part (CT ct) {
+decode_part (CT ct)
+{
     char *tmp_decoded;
     int status;
     FILE *file;
@@ -1629,7 +1648,8 @@ decode_part (CT ct) {
  * be in the future for other than text types.
  */
 static int
-reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
+reformat_part (CT ct, char *file, char *type, char *subtype, int c_type)
+{
     int output_subtype, output_encoding;
     const char *reason = NULL;
     char *cp, *cf;
@@ -1695,7 +1715,8 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
  * Fill in a multipart/alternative part.
  */
 static CT
-build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
+build_multipart_alt (CT first_alt, CT new_part, int type, int subtype)
+{
     char *boundary_prefix = "----=_nmh-multipart";
     char *boundary = concat (boundary_prefix, first_alt->c_partno, NULL);
     char *boundary_indicator = "; boundary=";
@@ -1831,7 +1852,8 @@ return_null:
  * Check that the boundary does not appear in the content.
  */
 static int
-boundary_in_content (FILE **fp, char *file, const char *boundary) {
+boundary_in_content (FILE **fp, char *file, const char *boundary)
+{
     char buffer[NMH_BUFSIZ];
     size_t bytes_read;
     bool found_boundary = false;
@@ -1858,7 +1880,8 @@ boundary_in_content (FILE **fp, char *file, const char *boundary) {
  * Remove all non-Content headers.
  */
 static void
-transfer_noncontent_headers (CT old, CT new) {
+transfer_noncontent_headers (CT old, CT new)
+{
     HF hp, hp_prev;
 
     hp_prev = hp = old->c_first_hf;
@@ -1902,7 +1925,8 @@ transfer_noncontent_headers (CT old, CT new) {
  * Set content type.
  */
 static int
-set_ct_type (CT ct, int type, int subtype, int encoding) {
+set_ct_type (CT ct, int type, int subtype, int encoding)
+{
     char *typename = ct_type_str (type);
     char *subtypename = ct_subtype_str (type, subtype);
     /* E.g, " text/plain" */
@@ -1963,7 +1987,8 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
  */
 static int
 decode_text_parts (CT ct, int encoding, const char *decodetypes,
-                   int *message_mods) {
+                   int *message_mods)
+{
     int status = OK;
     int lf_line_endings = 0;
 
@@ -2083,7 +2108,8 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes,
  * decodetypes (which came from the -decodetypes switch).
  */
 static int
-should_decode(const char *decodetypes, const char *type, const char *subtype) {
+should_decode(const char *decodetypes, const char *type, const char *subtype)
+{
     /* Quick search for matching type[/subtype] in decodetypes:  bracket
        decodetypes with commas, then search for ,type, and ,type/subtype, in
        it. */
@@ -2118,7 +2144,8 @@ should_decode(const char *decodetypes, const char *type, const char *subtype) {
  *  to a string explaining why.
  */
 static int
-content_encoding (CT ct, const char **reason) {
+content_encoding (CT ct, const char **reason)
+{
     CE ce = &ct->c_cefile;
     int encoding = CE_7BIT;
 
@@ -2177,7 +2204,8 @@ content_encoding (CT ct, const char **reason) {
  * Strip carriage returns from content.
  */
 static int
-strip_crs (CT ct, int *message_mods) {
+strip_crs (CT ct, int *message_mods)
+{
     char *charset = content_charset (ct);
     int status = OK;
 
@@ -2331,7 +2359,8 @@ strip_crs (CT ct, int *message_mods) {
  * of the part C-T-E's.
  */
 static void
-update_cte (CT ct) {
+update_cte (CT ct)
+{
     const int least_restrictive_enc = least_restrictive_encoding (ct);
 
     if (least_restrictive_enc != CE_UNKNOWN  &&
@@ -2360,7 +2389,8 @@ update_cte (CT ct) {
  * within a message.
  */
 static int
-least_restrictive_encoding (CT ct) {
+least_restrictive_encoding (CT ct)
+{
     int encoding = CE_UNKNOWN;
 
     switch (ct->c_type) {
@@ -2408,7 +2438,8 @@ least_restrictive_encoding (CT ct) {
  *   CE_8BIT is less restrictive than CE_7BIT.
  */
 static int
-less_restrictive (int encoding, int second_encoding) {
+less_restrictive (int encoding, int second_encoding)
+{
     switch (second_encoding) {
     case CE_BINARY:
         return encoding != CE_BINARY;
@@ -2427,7 +2458,8 @@ less_restrictive (int encoding, int second_encoding) {
  * Convert character set of each part.
  */
 static int
-convert_charsets (CT ct, char *dest_charset, int *message_mods) {
+convert_charsets (CT ct, char *dest_charset, int *message_mods)
+{
     int status = OK;
 
     switch (ct->c_type) {
@@ -2492,7 +2524,8 @@ convert_charsets (CT ct, char *dest_charset, int *message_mods) {
  *    headers, respectively.
  */
 static int
-fix_always (CT ct, int *message_mods) {
+fix_always (CT ct, int *message_mods)
+{
     int status = OK;
 
     switch (ct->c_type) {
@@ -2574,7 +2607,8 @@ fix_always (CT ct, int *message_mods) {
  * Factor out common code for loops in fix_filename_encoding().
  */
 static int
-fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm) {
+fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm)
+{
     bool fixed = false;
 
     if (has_prefix(value, "=?") && has_suffix(value, "?=")) {
@@ -2600,7 +2634,8 @@ fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm) {
  * headers, respectively.
  */
 static int
-fix_filename_encoding (CT ct) {
+fix_filename_encoding (CT ct)
+{
     PM pm;
     HF hf;
     int fixed = 0;
@@ -2666,7 +2701,8 @@ fix_filename_encoding (CT ct) {
  */
 static int
 write_content (CT ct, const char *input_filename, char *outfile, FILE *outfp,
-               int modify_inplace, int message_mods) {
+               int modify_inplace, int message_mods)
+{
     int status = OK;
 
     if (modify_inplace) {
@@ -2743,7 +2779,8 @@ write_content (CT ct, const char *input_filename, char *outfile, FILE *outfp,
  * function to do it.  It touches the parts the decodetypes identifies.
  */
 static void
-set_text_ctparams(CT ct, char *decodetypes, int lf_line_endings) {
+set_text_ctparams(CT ct, char *decodetypes, int lf_line_endings)
+{
     switch (ct->c_type) {
     case CT_MULTIPART: {
         struct multipart *m = (struct multipart *) ct->c_ctparams;
@@ -2779,7 +2816,8 @@ set_text_ctparams(CT ct, char *decodetypes, int lf_line_endings) {
  * use the standard MH backup file.
  */
 static int
-remove_file (const char *file) {
+remove_file (const char *file)
+{
     if (rmmproc) {
         char *rmm_command = concat (rmmproc, " ", file, NULL);
         int status = system (rmm_command);
@@ -2798,7 +2836,8 @@ remove_file (const char *file) {
  * Output formatted message to user.
  */
 static void
-report (char *what, char *partno, char *filename, char *message, ...) {
+report (char *what, char *partno, char *filename, char *message, ...)
+{
     va_list args;
     char *fmt;
 

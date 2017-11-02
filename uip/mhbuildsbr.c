@@ -2045,7 +2045,8 @@ setup_attach_content(CT ct, char *filename)
  * 'attachment'.
  */
 void
-set_disposition (CT ct) {
+set_disposition (CT ct)
+{
     if (ct->c_dispo_type == NULL) {
         char *cp = context_find_by_type ("disposition", ct->c_ctinfo.ci_type,
                                          ct->c_ctinfo.ci_subtype);
@@ -2075,7 +2076,8 @@ set_disposition (CT ct) {
  * -1: ignore content and use user's locale to determine charset
  */
 void
-set_charset (CT ct, int contains8bit) {
+set_charset (CT ct, int contains8bit)
+{
     if (ct->c_type == CT_TEXT) {
         struct text *t;
 
@@ -2114,7 +2116,8 @@ set_charset (CT ct, int contains8bit) {
  */
 void
 expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
-                      const convert_list *convert_head) {
+                      const convert_list *convert_head)
+{
     /* text_plain_ct is used to concatenate all of the text/plain
        replies into one part, instead of having each one in a separate
        part. */
@@ -2190,7 +2193,8 @@ expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
 void
 expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
                      const char *infile, const char *type,
-                     const char *argstring) {
+                     const char *argstring)
+{
     char *reply_file;
     FILE *reply_fp = NULL;
     char *convert, *type_p, *subtype_p;
@@ -2339,7 +2343,8 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
 
 /* Extract any Content-Type header from beginning of convert output. */
 int
-extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
+extract_headers (CT ct, char *reply_file, FILE **reply_fp)
+{
     char *buffer = NULL, *cp, *end_of_header;
     bool found_header = false;
     struct stat statbuf;

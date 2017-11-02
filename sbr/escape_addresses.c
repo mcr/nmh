@@ -12,14 +12,16 @@ static void escape_component (char *name, size_t namesize, char *chars);
 
 
 void
-escape_display_name (char *name, size_t namesize) {
+escape_display_name (char *name, size_t namesize)
+{
   char *specials = "\"(),.:;<>@[\\]";
   escape_component (name, namesize, specials);
 }
 
 
 void
-escape_local_part (char *name, size_t namesize) {
+escape_local_part (char *name, size_t namesize)
+{
   /* wsp (whitespace) is horizontal tab or space, according to
      RFC 5234. */
   char *specials_less_dot_plus_wsp = "	 \"(),:;<>@[\\]";
@@ -33,7 +35,8 @@ escape_local_part (char *name, size_t namesize) {
    namesize argument.  The need_escape argument is a string of
    characters that require that name be escaped. */
 static void
-escape_component (char *name, size_t namesize, char *chars_to_escape) {
+escape_component (char *name, size_t namesize, char *chars_to_escape)
+{
     /* If name contains any chars_to_escape:
        1) enclose it in ""
        2) escape any embedded "

@@ -248,7 +248,8 @@ static const unsigned char b642nib[0x80] = {
  */
 int
 decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
-	      int skip_crs, unsigned char *digest) {
+	      int skip_crs, unsigned char *digest)
+{
     const char *cp = encoded;
     int bitno, skip;
     uint32_t bits;
@@ -351,7 +352,8 @@ test_end:
  * is allocated by the function and must be freed by the caller.
  */
 void
-hexify (const unsigned char *input, size_t len, char **output) {
+hexify (const unsigned char *input, size_t len, char **output)
+{
     /* Start with a charstring capacity that's arbitrarily larger than len. */
     const charstring_t tmp = charstring_create (2 * len);
     const unsigned char *cp = input;

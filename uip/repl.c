@@ -510,7 +510,8 @@ docc (char *cp, int ccflag)
  */
 static void
 add_convert_header (const char *convert_type, char *convert_arg,
-                    char *filename, char *drft) {
+                    char *filename, char *drft)
+{
     char *field_name;
 
     field_name = concat (MHBUILD_FILE_PSEUDOHEADER, convert_type, NULL);

@@ -272,7 +272,8 @@ app_msgnum(struct msgnum_array *msgs, int msgnum)
  * pointer so that the caller can modify it.
  */
 char *
-find_str (const char buf[], size_t buflen, const char *str) {
+find_str (const char buf[], size_t buflen, const char *str)
+{
     const size_t len = strlen (str);
     size_t i;
 
@@ -291,7 +292,8 @@ find_str (const char buf[], size_t buflen, const char *str) {
  * pointer so that the caller can modify it.
  */
 char *
-rfind_str (const char buf[], size_t buflen, const char *str) {
+rfind_str (const char buf[], size_t buflen, const char *str)
+{
     const size_t len = strlen (str);
     size_t i;
 
@@ -305,7 +307,8 @@ rfind_str (const char buf[], size_t buflen, const char *str) {
 
 /* POSIX doesn't have strcasestr() so emulate it. */
 char *
-nmh_strcasestr (const char *s1, const char *s2) {
+nmh_strcasestr (const char *s1, const char *s2)
+{
     const size_t len = strlen (s2);
 
     if (isupper ((unsigned char) s2[0])  ||  islower ((unsigned char)s2[0])) {
@@ -500,7 +503,8 @@ int nmh_init(const char *argv0, bool read_context, bool check_version)
  * use that prefix here.
  */
 int
-nmh_version_changed (int older) {
+nmh_version_changed (int older)
+{
     const char *const context_version = context_find("Version");
 
     if (older) {
@@ -559,7 +563,8 @@ bool contains8bit(const char *start, const char *end)
  * See if input has any 8-bit bytes.
  */
 int
-scan_input (int fd, int *eightbit) {
+scan_input (int fd, int *eightbit)
+{
     int state;
     char buf[BUFSIZ];
 
@@ -581,7 +586,8 @@ scan_input (int fd, int *eightbit) {
  * Convert an int to a char string.
  */
 char *
-m_str(int value) {
+m_str(int value)
+{
     return m_strn(value, 0);
 }
 
@@ -594,7 +600,8 @@ m_str(int value) {
 #define SIZE(n) (sizeof STR(n))
 
 char *
-m_strn(int value, unsigned int width) {
+m_strn(int value, unsigned int width)
+{
     /* Need to include space for negative sign.  But don't use INT_MIN
        because it could be a macro that would fool SIZE(n). */
     static char buffer[SIZE(-INT_MAX)];

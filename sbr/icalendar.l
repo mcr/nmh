@@ -289,7 +289,8 @@ folded-value         {VALUE-CHAR}*({fold}{VALUE-CHAR}*)+
 %%
 
 static char *
-unfold (char *text, size_t *leng) {
+unfold (char *text, size_t *leng)
+{
     /* It's legal to shorten text and modify leng (because we don't
        use yymore()). */
     char *cp;
@@ -321,7 +322,8 @@ unfold (char *text, size_t *leng) {
  * with something other than flex.
  */
 static void
-destroy_icallex(void) {
+destroy_icallex(void)
+{
 #if defined FLEX_SCANNER  &&  defined YY_FLEX_SUBMINOR_VERSION
     /* Hack:  rely on fact that the the YY_FLEX_SUBMINOR_VERSION
        #define was added to flex (flex.skl v. 2.163) after
@@ -335,12 +337,14 @@ destroy_icallex(void) {
  * because flex 2.5.4 doesn't.
  */
 void
-icalset_inputfile (FILE *file) {
+icalset_inputfile (FILE *file)
+{
     yyin = file;
 }
 
 void
-icalset_outputfile (FILE *file) {
+icalset_outputfile (FILE *file)
+{
     yyout = file;
 }
 

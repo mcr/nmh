@@ -791,7 +791,8 @@ show_external (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
 static int
 parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
                       char *file, char *buffer, size_t buflen,
-                      int multipart) {
+                      int multipart)
+{
     int len;
     bool quoted = false;
     char *bp = buffer, *pp;
@@ -1056,7 +1057,8 @@ raw:
 
 
 int
-convert_charset (CT ct, char *dest_charset, int *message_mods) {
+convert_charset (CT ct, char *dest_charset, int *message_mods)
+{
     char *src_charset = content_charset (ct);
     int status = OK;
 
@@ -1252,7 +1254,8 @@ iconv_start:
 
 
 static int
-convert_content_charset (CT ct, char **file) {
+convert_content_charset (CT ct, char **file)
+{
     int status = OK;
 
 #ifdef HAVE_ICONV

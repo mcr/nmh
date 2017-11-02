@@ -46,7 +46,8 @@ struct mhstoreinfo {
 static bool use_param_as_filename(const char *p);
 
 mhstoreinfo_t
-mhstoreinfo_create (CT *ct, char *pwd, const char *csw, int asw, int vsw) {
+mhstoreinfo_create (CT *ct, char *pwd, const char *csw, int asw, int vsw)
+{
     mhstoreinfo_t info;
 
     NEW(info);
@@ -62,14 +63,16 @@ mhstoreinfo_create (CT *ct, char *pwd, const char *csw, int asw, int vsw) {
 }
 
 void
-mhstoreinfo_free (mhstoreinfo_t info) {
+mhstoreinfo_free (mhstoreinfo_t info)
+{
     free (info->cwd);
     free (info->dir);
     free (info);
 }
 
 int
-mhstoreinfo_files_not_clobbered (const mhstoreinfo_t info) {
+mhstoreinfo_files_not_clobbered (const mhstoreinfo_t info)
+{
     return info->files_not_clobbered;
 }
 
@@ -1126,7 +1129,8 @@ copy_some_headers (FILE *out, CT ct)
 
 static
 enum clobber_policy_t
-clobber_policy (const char *value) {
+clobber_policy (const char *value)
+{
   if (value == NULL  ||  ! strcasecmp (value, "always")) {
     return NMH_CLOBBER_ALWAYS;
   }
@@ -1148,7 +1152,8 @@ clobber_policy (const char *value) {
 
 
 static char *
-next_version (char *file, enum clobber_policy_t clobber_policy) {
+next_version (char *file, enum clobber_policy_t clobber_policy)
+{
   const size_t max_versions = 1000000;
   /* 8 = log max_versions  +  one for - or .  +  one for null terminator */
   const size_t buflen = strlen (file) + 8;
@@ -1209,7 +1214,8 @@ next_version (char *file, enum clobber_policy_t clobber_policy) {
 
 
 static char *
-clobber_check (char *original_file, mhstoreinfo_t info) {
+clobber_check (char *original_file, mhstoreinfo_t info)
+{
   /* clobber policy        return value
    * --------------        ------------
    *   -always             original_file

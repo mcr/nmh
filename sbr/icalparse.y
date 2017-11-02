@@ -138,13 +138,15 @@ param_value_list
  * Remove the contentline node (by setting its name to NULL).
  */
 void
-remove_contentline (contentline *node) {
+remove_contentline (contentline *node)
+{
     free (node->name);
     node->name = NULL;
 }
 
 contentline *
-add_contentline (contentline *node, const char *name) {
+add_contentline (contentline *node, const char *name)
+{
     contentline *new_node;
 
     NEW0(new_node);
@@ -159,7 +161,8 @@ add_contentline (contentline *node, const char *name) {
  * Remove the value from a value_list.
  */
 void
-remove_value (value_list *node) {
+remove_value (value_list *node)
+{
     free (node->value);
     node->value = NULL;
 }
@@ -170,7 +173,8 @@ remove_value (value_list *node) {
  */
 contentline *
 find_contentline (contentline *contentlines, const char *name,
-                  const char *val) {
+                  const char *val)
+{
     contentline *node;
 
     for (node = contentlines; node; node = node->next) {
@@ -185,7 +189,8 @@ find_contentline (contentline *contentlines, const char *name,
 }
 
 static char *
-append (contentline *cline, const char *src, const size_t src_len) {
+append (contentline *cline, const char *src, const size_t src_len)
+{
     if (src_len > 0) {
         const size_t len = cline->input_line_len + src_len;
 
@@ -206,7 +211,8 @@ append (contentline *cline, const char *src, const size_t src_len) {
 }
 
 static void
-new_content_line (contentline **cline) {
+new_content_line (contentline **cline)
+{
     contentline *new_node;
 
     NEW0(new_node);
@@ -223,7 +229,8 @@ new_content_line (contentline **cline) {
 }
 
 static void
-new_vevent (vevent *event) {
+new_vevent (vevent *event)
+{
     vevent *new_node, *node;
 
     NEW0(new_node);
@@ -234,7 +241,8 @@ new_vevent (vevent *event) {
 }
 
 void
-add_param_name (contentline *cline, char *name) {
+add_param_name (contentline *cline, char *name)
+{
     param_list *new_node;
     param_list *p;
 
@@ -254,7 +262,8 @@ add_param_name (contentline *cline, char *name) {
  * Add a value to the last parameter seen.
  */
 void
-add_param_value (contentline *cline, char *value) {
+add_param_value (contentline *cline, char *value)
+{
     value_list *new_node;
     param_list *p;
     value_list *v;
@@ -281,7 +290,8 @@ add_param_value (contentline *cline, char *value) {
 }
 
 void
-free_contentlines (contentline *root) {
+free_contentlines (contentline *root)
+{
     contentline *i, *next;
 
     for (i = root; i; i = next) {
@@ -298,7 +308,8 @@ free_contentlines (contentline *root) {
 }
 
 static void
-free_param_names (param_list *p) {
+free_param_names (param_list *p)
+{
     param_list *next;
 
     for ( ; p; p = next) {
@@ -310,7 +321,8 @@ free_param_names (param_list *p) {
 }
 
 static void
-free_param_values (value_list *v) {
+free_param_values (value_list *v)
+{
     value_list *next;
 
     for ( ; v; v = next) {
@@ -321,7 +333,8 @@ free_param_values (value_list *v) {
 }
 
 static int
-icalerror (const char *error) {
+icalerror (const char *error)
+{
     contentline *c;
     charstring_t context = NULL;
 

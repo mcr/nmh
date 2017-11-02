@@ -354,11 +354,13 @@ finished:
 
 /* The following two functions allow access to the global gstate above. */
 void
-scan_finished(void) {
+scan_finished(void)
+{
     m_getfld_state_destroy (&gstate);
 }
 
 void
-scan_detect_mbox_style (FILE *f) {
+scan_detect_mbox_style (FILE *f)
+{
     m_unknown (&gstate, f);
 }
