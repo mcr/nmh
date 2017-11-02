@@ -29,6 +29,7 @@
     X("queue", 0, QUEUESW) \
     X("noqueue", 0, NOQUEUESW) \
     X("append filename", 0, APPENDSW) \
+    X("afolder foldername", 0, AFOLDERSW) \
     X("timestamp", 0, TIMESTAMPSW) \
     X("notimestamp", 0, NOTIMESTAMPSW) \
     X("version", 0, VERSIONSW) \
@@ -46,7 +47,10 @@ struct imap_msg;
 
 struct imap_msg {
     char *command;		/* Command to send */
+    const char *folder;		/* Folder (for append) */
     bool queue;			/* If true, queue for later delivery */
+    bool append;		/* If true, append "command" to mbox */
+    size_t msgsize;		/* RFC822 size of message */
     struct imap_msg *next;	/* Next pointer */
 };
 
@@ -85,7 +89,11 @@ static void ts_report(struct timeval *tv, const char *fmt, ...)
 		      CHECK_PRINTF(2, 3);
 static void imap_negotiate_tls(netsec_context *);
 
-static void add_msg(bool queue, const char *fmt, ...) CHECK_PRINTF(2, 3);
+static void add_msg(bool queue, struct imap_msg **, const char *fmt, ...)
+		    CHECK_PRINTF(3, 4);
+static void add_append(const char *filename, const char *folder);
+
+static size_t rfc822size(const char *filename);
 
 static bool timestamp = false;
 
@@ -97,6 +105,7 @@ main (int argc, char **argv)
     int fd;
     char *saslmech = NULL, *host = NULL, *port = "143", *user = NULL;
     char *cp, **argp, buf[BUFSIZ], *oauth_svc = NULL, *errstr, **arguments, *p;
+    char *afolder = NULL;
     netsec_context *nsc = NULL;
     struct imap_msg *imsg;
     size_t len;
@@ -136,6 +145,18 @@ main (int argc, char **argv)
 	    case USERSW:
 		if (!(user = *argp++) || *user == '-')
 		    die("missing argument to %s", argp[-2]);
+		continue;
+
+	    case AFOLDERSW:
+		if (!(afolder = *argp++) || *afolder == '-')
+		    die("missing argument to %s", argp[-2]);
+		continue;
+	    case APPENDSW:
+		if (!*argp || (**argp == '-'))
+		    die("missing argument to %s", argp[-2]);
+		if (! afolder)
+		    die("Append folder must be set with -afolder first");
+		add_append(*argp++, afolder);
 		continue;
 
 	    case SNOOPSW:
@@ -186,9 +207,9 @@ main (int argc, char **argv)
 	} else if (*cp == '+') {
 	    if (*(cp + 1) == '\0')
 		die("Invalid null folder name");
-	    add_msg(0, "SELECT \"%s\"", cp + 1);
+	    add_msg(0, NULL, "SELECT \"%s\"", cp + 1);
 	} else {
-	    add_msg(queue, "%s", cp);
+	    add_msg(queue, NULL, "%s", cp);
 	}
     }
 
@@ -779,7 +800,7 @@ getline:
  */
 
 static void
-add_msg(bool queue, const char *fmt, ...)
+add_msg(bool queue, struct imap_msg **ret_imsg, const char *fmt, ...)
 {
     struct imap_msg *imsg;
     va_list ap;
@@ -798,6 +819,8 @@ add_msg(bool queue, const char *fmt, ...)
     imsg = mh_xmalloc(sizeof(*imsg));
 
     imsg->command = msg;
+    imsg->folder = NULL;
+    imsg->append = false;
     imsg->queue = queue;
     imsg->next = NULL;
 
@@ -808,6 +831,26 @@ add_msg(bool queue, const char *fmt, ...)
 	msgqueue_tail->next = imsg;
 	msgqueue_tail = imsg;
     }
+
+    if (ret_imsg)
+	*ret_imsg = imsg;
+}
+
+/*
+ * Add an APPEND command to the queue
+ */
+
+static void
+add_append(const char *filename, const char *folder)
+{
+    size_t filesize = rfc822size(filename);
+    struct imap_msg *imsg;
+
+    add_msg(false, &imsg, "%s", filename);
+
+    imsg->folder = folder;
+    imsg->append = true;
+    imsg->msgsize = filesize;
 }
 
 /*
@@ -851,4 +894,37 @@ ts_report(struct timeval *tv, const char *fmt, ...)
     va_end(ap);
 
     printf(": %f sec\n", delta);
+}
+
+/*
+ * Calculate the RFC 822 size of file.
+ */
+
+static size_t
+rfc822size(const char *filename)
+{
+    FILE *f;
+    size_t total = 0, linecap = 0;
+    ssize_t rc;
+    char *line = NULL;
+
+    if (! (f = fopen(filename, "r")))
+	die("Unable to open %s: %s", filename, strerror(errno));
+
+    while ((rc = getline(&line, &linecap, f)) > 0) {
+	total += rc;
+	if (line[rc - 1] == '\n' && (rc == 1 || line[rc - 2] != '\r'))
+	    total++;
+	if (line[rc - 1] != '\n')
+	    total += 2;
+    }
+
+    free(line);
+
+    if (! feof(f))
+	die("Error while reading %s: %s", filename, strerror(errno));
+
+    fclose(f);
+
+    return total;
 }
