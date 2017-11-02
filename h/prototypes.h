@@ -203,8 +203,6 @@ void ruserpass (const char *host, char **aname, char **apass, int flags);
 int remdir (char *);
 void scan_detect_mbox_style (FILE *);
 void scan_finished(void);
-int seq_addmsg (struct msgs *, char *, int, int, int);
-int seq_addsel (struct msgs *, char *, int, int);
 char *seq_bits (struct msgs *);
 int seq_delmsg (struct msgs *, char *, int);
 int seq_delsel (struct msgs *, char *, int, int);

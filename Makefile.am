@@ -375,6 +375,7 @@ noinst_HEADERS = \
     sbr/message_id.h \
     sbr/mime_type.h \
     sbr/read_line.h \
+    sbr/seq_add.h \
     sbr/terminal.h \
     sbr/unquote.h \
     thirdparty/jsmn/jsmn.h \

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_add.h"
 #include "h/utils.h"
 
 /*

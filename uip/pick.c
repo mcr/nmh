@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/seq_add.h"
 #include "sbr/error.h"
 #include "h/tws.h"
 #include "h/picksbr.h"
