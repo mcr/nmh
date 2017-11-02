@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/seq_getnum.h"
 #include "sbr/error.h"
 #include "h/fmt_scan.h"
 #include "h/fmt_compile.h"

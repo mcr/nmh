@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/seq_getnum.h"
 #include "sbr/seq_add.h"
 #include "sbr/arglist.h"
 #include "sbr/error.h"

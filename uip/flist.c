@@ -14,6 +14,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/seq_getnum.h"
 #include "sbr/error.h"
 #include "h/utils.h"
 #include "h/done.h"

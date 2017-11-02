@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_getnum.h"
 #include "error.h"
 #include "h/utils.h"
 

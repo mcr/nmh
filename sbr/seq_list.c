@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_getnum.h"
 #include "h/utils.h"
 
 /* allocate this much buffer space at a time */
