@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include <h/addrsbr.h>
 #include <h/aliasbr.h>
 #include <h/mts.h>

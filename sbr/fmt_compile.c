@@ -40,6 +40,7 @@
  */
 
 #include <h/mh.h>
+#include "error.h"
 #include <h/addrsbr.h>
 #include <h/tws.h>
 #include <h/fmt_scan.h>

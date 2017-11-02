@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "error.h"
 
 void
 cpydata (int in, int out, const char *ifile, const char *ofile)

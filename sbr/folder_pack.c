@@ -7,6 +7,7 @@
  */
 
 #include <h/mh.h>
+#include "error.h"
 
 /*
  * Pack the message in a folder.

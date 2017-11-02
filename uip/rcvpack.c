@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include <h/dropsbr.h>
 #include <h/rcvmail.h>
 #include <h/tws.h>

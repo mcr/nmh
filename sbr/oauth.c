@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "error.h"
 
 #ifdef OAUTH_SUPPORT
 

@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include "h/done.h"
 #include <h/utils.h>
 #include <h/oauth.h>

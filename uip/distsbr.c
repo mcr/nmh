@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include <fcntl.h>
 #include <h/utils.h>
 #include "sbr/m_mktemp.h"

@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include <h/utils.h>
 #include <h/netsec.h>
 #include <stdarg.h>

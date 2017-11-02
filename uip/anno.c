@@ -42,6 +42,7 @@
  */
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include <h/utils.h>
 #include "h/done.h"
 #include "sbr/m_maildir.h"

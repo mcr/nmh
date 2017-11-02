@@ -7,6 +7,7 @@
  */
 
 #include <h/mh.h>
+#include "error.h"
 #include <h/signals.h>
 #include "m_popen.h"
 

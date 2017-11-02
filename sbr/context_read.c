@@ -22,6 +22,7 @@
  */
 
 #include <h/mh.h>				/* mh internals */
+#include "error.h"
 #include "lock_file.h"
 #include "m_maildir.h"
 #include "makedir.h"

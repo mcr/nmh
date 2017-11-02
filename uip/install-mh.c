@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>				/* mh internals */
+#include "sbr/error.h"
 #include "h/done.h"
 #include <h/utils.h>
 #include "sbr/m_maildir.h"

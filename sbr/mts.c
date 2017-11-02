@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>   /* for snprintf() */
+#include "error.h"
 #include <h/utils.h>
 
 #define nmhetcdir(file) NMHETCDIR#file

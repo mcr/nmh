@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "error.h"
 #include <h/mime.h>
 #include <h/md5.h>
 #include <inttypes.h>

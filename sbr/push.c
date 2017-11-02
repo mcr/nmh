@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "error.h"
 #include <h/signals.h>
 #include "h/done.h"
 #include "m_mktemp.h"

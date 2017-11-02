@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/error.h"
 #include "h/icalendar.h"
 #include "sbr/icalparse.h"
 #include <h/fmt_scan.h>

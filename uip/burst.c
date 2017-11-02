@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include <h/utils.h>
 #include <h/mhparse.h>
 #include "h/done.h"

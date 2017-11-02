@@ -14,6 +14,7 @@
  */
  
 #include <h/mh.h>
+#include "error.h"
 #include <h/signals.h>
 #include <h/utils.h>
 #include <h/mts.h>

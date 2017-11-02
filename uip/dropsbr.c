@@ -7,6 +7,7 @@
 
 #include <h/nmh.h>
 #include <h/mh.h>
+#include "sbr/error.h"
 #include <h/utils.h>
 #include <h/dropsbr.h>
 #include <h/mts.h>

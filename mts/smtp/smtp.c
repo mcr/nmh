@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include "smtp.h"
 #include <h/mts.h>
 #include <h/signals.h>

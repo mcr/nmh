@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include <fcntl.h>
 #include "h/done.h"
 #include <h/utils.h>

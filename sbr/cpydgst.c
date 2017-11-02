@@ -7,6 +7,7 @@
  */
 
 #include <h/mh.h>
+#include "error.h"
 
 /*
  * We want to perform the substitution

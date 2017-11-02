@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "error.h"
 
 #include <sys/types.h>
 #include <sys/uio.h>

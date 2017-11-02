@@ -6,6 +6,7 @@
  */
 
 #include <h/mh.h>
+#include "sbr/error.h"
 #include <h/fmt_scan.h>
 #include <h/fmt_compile.h>
 #include <h/signals.h>

@@ -120,6 +120,7 @@ build_template(const char *directory, const char *prefix, const char *suffix)
 
 #if NMH
 #include <h/mh.h>
+#include "sbr/error.h"
 #include "h/done.h"
 #include <h/utils.h>
 
