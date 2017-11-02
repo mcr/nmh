@@ -28,7 +28,8 @@ const char plurals[] = "s";
 #define MAXMSGS 256
 
 /* Call malloc(3), exiting on NULL return. */
-void *mh_xmalloc(size_t size)
+void *
+mh_xmalloc(size_t size)
 {
     void *p;
 
@@ -42,7 +43,8 @@ void *mh_xmalloc(size_t size)
 }
 
 /* Call realloc(3), exiting on NULL return. */
-void *mh_xrealloc(void *ptr, size_t size)
+void *
+mh_xrealloc(void *ptr, size_t size)
 {
     void *new;
 
@@ -62,7 +64,8 @@ void *mh_xrealloc(void *ptr, size_t size)
 }
 
 /* Call calloc(3), exiting on NULL return. */
-void *mh_xcalloc(size_t nelem, size_t elsize)
+void *
+mh_xcalloc(size_t nelem, size_t elsize)
 {
     void *p;
 
@@ -77,7 +80,8 @@ void *mh_xcalloc(size_t nelem, size_t elsize)
 }
 
 /* Duplicate a NUL-terminated string, exit on failure. */
-char *mh_xstrdup(const char *src)
+char *
+mh_xstrdup(const char *src)
 {
     size_t n;
     char *dest;
@@ -173,7 +177,8 @@ addlist (char *list, const char *item)
  * folder_exists
  *      Check to see if a folder exists.
  */
-int folder_exists(const char *folder)
+int
+folder_exists(const char *folder)
 {
     struct stat st;
 
@@ -185,7 +190,8 @@ int folder_exists(const char *folder)
  *      Check to see if a folder exists, if not, prompt the user to create
  *      it.
  */
-void create_folder(char *folder, int autocreate, void (*done_callback)(int))
+void
+create_folder(char *folder, int autocreate, void (*done_callback)(int))
 {
     struct stat st;
     extern int errno;
@@ -338,7 +344,8 @@ nmh_strcasestr (const char *s1, const char *s2)
  * reporting a possibly very long external string back to the user.  One
  * of its advantages over strncpy(3) is it doesn't pad in the common
  * case of no truncation. */
-void trunccpy(char *dst, const char *src, size_t size)
+void
+trunccpy(char *dst, const char *src, size_t size)
 {
     if (!size) {
         inform("trunccpy: zero-length destination: \"%.20s\"",
@@ -356,7 +363,8 @@ void trunccpy(char *dst, const char *src, size_t size)
 
 
 /* has_prefix returns true if non-NULL s starts with non-NULL prefix. */
-bool has_prefix(const char *s, const char *prefix)
+bool
+has_prefix(const char *s, const char *prefix)
 {
     while (*s && *s == *prefix) {
         s++;
@@ -368,7 +376,8 @@ bool has_prefix(const char *s, const char *prefix)
 
 
 /* has_suffix returns true if non-NULL s ends with non-NULL suffix. */
-bool has_suffix(const char *s, const char *suffix)
+bool
+has_suffix(const char *s, const char *suffix)
 {
     size_t ls, lsuf;
 
@@ -381,7 +390,8 @@ bool has_suffix(const char *s, const char *suffix)
 
 /* has_suffix_c returns true if non-NULL string s ends with a c before the
  * terminating NUL. */
-bool has_suffix_c(const char *s, int c)
+bool
+has_suffix_c(const char *s, int c)
 {
     return *s && s[strlen(s) - 1] == c;
 }
@@ -389,7 +399,8 @@ bool has_suffix_c(const char *s, int c)
 
 /* trim_suffix_c deletes c from the end of non-NULL string s if it's
  * present, shortening s by 1.  Only one instance of c is removed. */
-void trim_suffix_c(char *s, int c)
+void
+trim_suffix_c(char *s, int c)
 {
     if (!*s)
         return;
@@ -401,7 +412,8 @@ void trim_suffix_c(char *s, int c)
 
 
 /* to_lower runs all of s through tolower(3). */
-void to_lower(char *s)
+void
+to_lower(char *s)
 {
     unsigned char *b;
 
@@ -411,7 +423,8 @@ void to_lower(char *s)
 
 
 /* to_upper runs all of s through toupper(3). */
-void to_upper(char *s)
+void
+to_upper(char *s)
 {
     unsigned char *b;
 
@@ -420,7 +433,8 @@ void to_upper(char *s)
 }
 
 
-int nmh_init(const char *argv0, bool read_context, bool check_version)
+int
+nmh_init(const char *argv0, bool read_context, bool check_version)
 {
     int status = OK;
     char *locale;
@@ -536,7 +550,8 @@ nmh_version_changed (int older)
  * isascii(3), i.e. is outside [0, 0x7f].  If start is NULL it returns
  * false.  Bytes are examined until a NUL byte, or, if end is not NULL,
  * whilst start is before end. */
-bool contains8bit(const char *start, const char *end)
+bool
+contains8bit(const char *start, const char *end)
 {
     const char *p;
     char c;

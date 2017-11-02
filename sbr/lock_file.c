@@ -133,7 +133,8 @@ lkopendata(const char *file, int access, mode_t mode, int *failed_to_lock)
  * Locking using the spool locking algorithm
  */
 
-int lkopenspool(const char *file, int access, mode_t mode, int *failed_to_lock)
+int
+lkopenspool(const char *file, int access, mode_t mode, int *failed_to_lock)
 {
     static bool deja_vu;
 

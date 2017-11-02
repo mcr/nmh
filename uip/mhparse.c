@@ -4139,7 +4139,8 @@ get_param(PM first, const char *name, char replace, int fetchonly)
  * necessary
  */
 
-char *get_param_value(PM pm, char replace)
+char *
+get_param_value(PM pm, char replace)
 {
     static char buffer[4096];		/* I hope no parameters are larger */
     size_t bufsize = sizeof(buffer);

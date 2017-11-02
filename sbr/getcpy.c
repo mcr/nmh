@@ -13,7 +13,8 @@
 #include <h/utils.h>
 
 /* Return malloc'd copy of str, or of "" if NULL, exit on failure. */
-char *getcpy(const char *str)
+char *
+getcpy(const char *str)
 {
     if (str)
         return mh_xstrdup(str);

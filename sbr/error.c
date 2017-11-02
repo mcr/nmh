@@ -13,7 +13,8 @@
 
 /* inform calls advertise() with no what and no tail.
  * Thus the simple "[invo_name: ]fmt\n" results. */
-void inform(char *fmt, ...)
+void
+inform(char *fmt, ...)
 {
     va_list ap;
 

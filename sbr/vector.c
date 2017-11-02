@@ -67,7 +67,8 @@ bvector_create (void)
     return vec;
 }
 
-void bvector_init(struct bvector *bv)
+void
+bvector_init(struct bvector *bv)
 {
     bv->bits = bv->tiny;
     bv->maxsize = BVEC_INIT_SIZE;
@@ -96,7 +97,8 @@ bvector_free (bvector_t vec)
     free (vec);
 }
 
-void bvector_fini(struct bvector *bv)
+void
+bvector_fini(struct bvector *bv)
 {
     if (bv->bits != bv->tiny)
         free(bv->bits);

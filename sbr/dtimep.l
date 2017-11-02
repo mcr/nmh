@@ -378,7 +378,8 @@ nl      [ \t\n()]
  *  "%option nounput" which is flex-specific
  *  makefile hackery just to compile dtimep.c with different flags
  */
-void dtimep_yyunput(int c)
+void
+dtimep_yyunput(int c)
 {
     unput(c);
 }

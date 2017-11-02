@@ -111,7 +111,8 @@ formataddr (char *orig, char *str)
     return buf;
 }
 
-char *concataddr (char *orig, char *str)
+char *
+concataddr (char *orig, char *str)
 {
     return formataddr(orig, str);
 }

@@ -82,12 +82,14 @@ static int extract_headers (CT, char *, FILE **);
 static unsigned char directives_stack[32];
 static unsigned int directives_index;
 
-static int do_direct(void)
+static int
+do_direct(void)
 {
     return directives_stack[directives_index];
 }
 
-static void directive_onoff(int onoff)
+static void
+directive_onoff(int onoff)
 {
     if (directives_index >= sizeof(directives_stack) - 1) {
 	fprintf(stderr, "mhbuild: #on/off overflow, continuing\n");
@@ -96,13 +98,15 @@ static void directive_onoff(int onoff)
     directives_stack[++directives_index] = onoff;
 }
 
-static void directive_init(int onoff)
+static void
+directive_init(int onoff)
 {
     directives_index = 0;
     directives_stack[0] = onoff;
 }
 
-static void directive_pop(void)
+static void
+directive_pop(void)
 {
     if (directives_index > 0)
 	directives_index--;

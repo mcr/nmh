@@ -288,7 +288,8 @@ netsec_set_snoop(netsec_context *nsc, int snoop)
  * Set the snoop callback for this connection.
  */
 
-void netsec_set_snoop_callback(netsec_context *nsc,
+void
+netsec_set_snoop_callback(netsec_context *nsc,
 			       netsec_snoop_callback callback, void *context)
 {
     nsc->ns_snoop_cb = callback;
@@ -1103,7 +1104,8 @@ netsec_set_sasl_params(netsec_context *nsc, const char *service,
  * library when asked.
  */
 
-int netsec_get_user(void *context, int id, const char **result,
+int
+netsec_get_user(void *context, int id, const char **result,
 		    unsigned int *len)
 {
     netsec_context *nsc = (netsec_context *) context;

@@ -285,7 +285,8 @@ dasctime (struct tws *tw, int flags)
  * return the string representation of the numeric offset.
  */
 
-char *dtimezone(int offset, int flags)
+char *
+dtimezone(int offset, int flags)
 {
     static char buffer[sizeof "+3579139459"]; /* 2,147,483,648 / 60 = 35,791,394 */
     bool pos;

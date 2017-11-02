@@ -1346,7 +1346,8 @@ clobber_check (char *original_file, mhstoreinfo_t info)
   return file;
 }
 
-static bool use_param_as_filename(const char *p)
+static bool
+use_param_as_filename(const char *p)
 {
     /* Preserve result of original test that considered an empty string
      * OK. */

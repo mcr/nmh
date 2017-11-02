@@ -105,7 +105,8 @@ write_charset_8bit (void)
  *   http://www.cl.cam.ac.uk/~mgk25/ucs/norm_charmap.c
  */
 
-static const char *norm_charmap(char *name)
+static const char *
+norm_charmap(char *name)
 {
     static const char *correct[] = {
         "UTF-8",

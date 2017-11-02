@@ -1596,7 +1596,8 @@ putch (char ch, unsigned long flags)
  * Either way, the result depends on ASCII LF, either from typing Enter
  * or an escaped Ctrl-J, being amongst the read characters.
  */
-static bool linefeed_typed(void)
+static bool
+linefeed_typed(void)
 {
     char buf[128];
     ssize_t n;
