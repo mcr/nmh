@@ -204,8 +204,6 @@ int remdir (char *);
 void scan_detect_mbox_style (FILE *);
 void scan_finished(void);
 char *seq_bits (struct msgs *);
-int seq_delmsg (struct msgs *, char *, int);
-int seq_delsel (struct msgs *, char *, int, int);
 int seq_getnum (struct msgs *, char *);
 char *seq_list (struct msgs *, char *);
 int seq_nameok (char *);

@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_del.h"
 #include "seq_add.h"
 #include "h/utils.h"
 
