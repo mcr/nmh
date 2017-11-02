@@ -11,11 +11,12 @@
 #include "h/done.h"
 #include <h/utils.h>
 #include <sys/file.h>		/* L_SET */
+#include "replsbr.h"
 
-extern short ccto;		/* from repl.c */
-extern short cccc;
-extern short ccme;
-extern short querysw;
+short ccto = -1;
+short cccc = -1;
+short ccme = -1;
+short querysw = 0;
 
 static int dftype=0;
 

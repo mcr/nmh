@@ -380,6 +380,7 @@ noinst_HEADERS = \
     uip/mhmisc.h \
     uip/mhoutsbr.h \
     uip/mhshowsbr.h \
+    uip/replsbr.h \
     #
 
 ##

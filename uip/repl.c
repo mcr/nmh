@@ -10,6 +10,7 @@
 #include "h/done.h"
 #include <h/utils.h>
 #include "sbr/m_maildir.h"
+#include "replsbr.h"
 
 #define REPL_SWITCHES \
     X("group", 0, GROUPSW) \
@@ -91,11 +92,6 @@ static struct swit aqrl[] = {
     { "refile +folder", 0, REFILSW },
     { NULL, 0, 0 }
 };
-
-short ccto = -1;		/* global for replsbr */
-short cccc = -1;
-short ccme = -1;
-short querysw = 0;
 
 static short outputlinelen = OUTPUTLINELEN;
 static bool groupreply;			/* Is this a group reply?        */
