@@ -73,8 +73,6 @@ void discard (FILE *);
  */
 int decode_qp(unsigned char byte1, unsigned char byte2) CONST;
 
-int default_done (int);
-
 /*
  * Encode a message header using RFC 2047 encoding.  If the message contains
  * no non-ASCII characters, then leave the header as-is.
