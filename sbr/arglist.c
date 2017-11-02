@@ -7,6 +7,7 @@
 
 #include "h/mh.h"
 #include "error.h"
+#include "arglist.h"
 #include "h/utils.h"
 
 /*

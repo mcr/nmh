@@ -362,6 +362,7 @@ noinst_HEADERS = \
     h/tws.h \
     h/utils.h \
     mts/smtp/smtp.h \
+    sbr/arglist.h \
     sbr/base64.h \
     sbr/ctype-checked.h \
     sbr/error.h \

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/arglist.h"
 #include "sbr/error.h"
 #include "h/mime.h"
 #include "h/done.h"
