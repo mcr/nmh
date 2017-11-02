@@ -5,12 +5,12 @@
  * complete copyright information.
  */
 
-#include <netdb.h>   /* for getaddrinfo */
+#include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <unistd.h>  /* for gethostname */
-#include <limits.h>  /* for _POSIX_HOST_NAME_MAX */
-#include <string.h>  /* for memset */
+#include <unistd.h>
+#include <limits.h>
+#include <string.h>
 #include <stdio.h>
 #include <errno.h>
 

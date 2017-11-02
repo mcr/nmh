@@ -21,12 +21,12 @@
  *	    environment variable or by the profile.
  */
 
-#include "h/mh.h"				/* mh internals */
+#include "h/mh.h"
 #include "error.h"
 #include "lock_file.h"
 #include "m_maildir.h"
 #include "makedir.h"
-#include <pwd.h>				/* structure for getpwuid() results */
+#include <pwd.h>
 #include "h/utils.h"
 
 void

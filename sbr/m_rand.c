@@ -5,11 +5,11 @@
  * complete copyright information.
  */
 
-#include <stdlib.h>  /* for abs(), srand(), rand(), arc4random() */
+#include <stdlib.h>
 #include <stdbool.h>
-#include <stdio.h>   /* for fopen(), fread(), fclose() */
-#include <unistd.h>  /* for getpid() */
-#include <time.h>    /* for time() */
+#include <stdio.h>
+#include <unistd.h>
+#include <time.h>
 
 #include "config.h"
 #include "m_rand.h"

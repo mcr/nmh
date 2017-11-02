@@ -5,7 +5,7 @@
  * complete copyright information.
  */
 
-#include "h/mh.h"   /* for snprintf() */
+#include "h/mh.h"
 #include "error.h"
 #include "h/utils.h"
 

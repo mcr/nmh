@@ -10,7 +10,7 @@
 #include "h/mts.h"
 #include "m_rand.h"
 #include "message_id.h"
-#include <sys/time.h>  /* for gettimeofday() */
+#include <sys/time.h>
 #include "base64.h"
 
 

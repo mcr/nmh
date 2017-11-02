@@ -11,7 +11,7 @@
 #include "h/fmt_scan.h"
 #include "h/done.h"
 #include "h/utils.h"
-#include <sys/file.h>		/* L_SET */
+#include <sys/file.h>
 #include "replsbr.h"
 
 short ccto = -1;

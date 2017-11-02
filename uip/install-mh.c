@@ -5,13 +5,13 @@
  * complete copyright information.
  */
 
-#include "h/mh.h"				/* mh internals */
+#include "h/mh.h"
 #include "sbr/error.h"
 #include "h/done.h"
 #include "h/utils.h"
 #include "sbr/m_maildir.h"
 #include "sbr/makedir.h"
-#include <pwd.h>				/* structure for getpwuid() results */
+#include <pwd.h>
 #include "sbr/read_line.h"
 
 #define INSTALLMH_SWITCHES \
