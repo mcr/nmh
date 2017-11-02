@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_list.h"
 #include "seq_getnum.h"
 #include "seq_print.h"
 

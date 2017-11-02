@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_list.h"
 #include "seq_getnum.h"
 #include "h/utils.h"
 
