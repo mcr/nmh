@@ -738,8 +738,7 @@ oops:
 }
 
 
-static
-void
+static void
 handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc)
 {
     const char *addr, *host;
@@ -848,8 +847,7 @@ setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
 /*
  * Extract user and domain from From: header line in draft.
  */
-static
-int
+static int
 get_from_header_info(const char *filename, const char **addr, const char **host, const char **message)
 {
     struct stat st;
@@ -903,8 +901,7 @@ get_from_header_info(const char *filename, const char **addr, const char **host,
  * Get formatted information from header of a message.
  * Adapted from process_single_file() in uip/fmttest.c.
  */
-static
-const char *
+static const char *
 get_message_header_info(FILE *in, char *format)
 {
     int dat[5];
@@ -982,8 +979,7 @@ get_message_header_info(FILE *in, char *format)
  * If no -server passed in from profile or commandline, could use smtp.<svc>.com for gmail,
  * but that might not generalize for other svcs.
  */
-static
-void
+static void
 merge_profile_entry(const char *addr, const char *host, char *vec[], int *vecp)
 {
     char *addr_entry = concat("sendfrom-", addr, NULL);

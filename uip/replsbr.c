@@ -484,8 +484,7 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 }
 
 
-static
-char *
+static char *
 fix_addresses (char *str)
 {
     char *fixed_str = NULL;

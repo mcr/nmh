@@ -1127,8 +1127,7 @@ copy_some_headers (FILE *out, CT ct)
 /******************************************************************************/
 /* -clobber support */
 
-static
-enum clobber_policy_t
+static enum clobber_policy_t
 clobber_policy (const char *value)
 {
   if (value == NULL  ||  ! strcasecmp (value, "always")) {

@@ -96,8 +96,7 @@ static void readonly_folders (void);
  * Function for printing error message if folder does not exist with
  * -nocreate.
  */
-static
-void
+static void
 nonexistent_folder (int status)
 {
     NMH_UNUSED (status);
