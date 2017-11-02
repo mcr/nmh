@@ -11,6 +11,7 @@
 #include <h/tws.h>
 #include <h/utils.h>
 #include "sbr/m_mktemp.h"
+#include "forwsbr.h"
 
 /*
  * Take from replsbr.c - a buffer big enough to read in data header lines

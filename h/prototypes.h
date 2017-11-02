@@ -316,8 +316,6 @@ void m_pclose(void);
 int mhl(int, char **);
 int mhlsbr(int, char **, FILE *(*)(char *));
 int distout (char *, char *, char *);
-int build_form (char *, char *, int *, char *, char *, char *, char *,
-		char *, char *);
 int sendsbr (char **, int, char *, char *, struct stat *, int, const char *);
 int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);
