@@ -181,7 +181,6 @@ void m_unknown(m_getfld_state_t *, FILE *);
 void m_unknown2(m_getfld_state_t *);
 
 char *nmh_getpass(const char *);
-char *new_fs (char *, char *, char *);
 char *path(char *, int);
 int pidwait (pid_t, int);
 int pidstatus (int, FILE *, char *);
@@ -298,19 +297,11 @@ char *write_charset_8bit (void);
 
 
 /*
- * some prototypes for address parsing system
- * (others are in addrsbr.h)
- */
-char *LocalName(int);
-char *SystemName(void);
-
-/*
  * prototypes for some routines in uip
  */
 int annotate (char *, char *, char *, bool, bool, int, bool);
 void annolist(char *, char *, char *, int);
 void annopreserve(int);
-void m_pclose(void);
 int mhl(int, char **);
 int mhlsbr(int, char **, FILE *(*)(char *));
 int distout (char *, char *, char *);

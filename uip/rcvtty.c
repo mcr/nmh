@@ -15,6 +15,7 @@
 #include <setjmp.h>
 #include <h/rcvmail.h>
 #include <h/scansbr.h>
+#include <h/fmt_scan.h>
 #include <h/tws.h>
 #include <h/mts.h>
 #include "h/done.h"
