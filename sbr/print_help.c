@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "print_help.h"
 
 
 void

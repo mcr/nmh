@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/print_help.h"
 #include "sbr/error.h"
 #include "h/addrsbr.h"
 #include "h/fmt_scan.h"

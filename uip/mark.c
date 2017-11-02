@@ -8,6 +8,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/print_help.h"
 #include "sbr/seq_bits.h"
 #include "sbr/seq_del.h"
 #include "sbr/seq_print.h"

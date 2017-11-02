@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/print_help.h"
 #include "sbr/error.h"
 #include "h/icalendar.h"
 #include "sbr/icalparse.h"

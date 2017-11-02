@@ -8,6 +8,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/print_help.h"
 #include "sbr/error.h"
 #include "h/crawl_folders.h"
 #include "h/done.h"
