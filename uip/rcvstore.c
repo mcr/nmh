@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/print_version.h"
 #include "sbr/print_help.h"
 #include "sbr/seq_add.h"
 #include "sbr/error.h"

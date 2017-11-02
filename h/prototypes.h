@@ -175,7 +175,6 @@ char *path(char *, int);
 int pidwait (pid_t, int);
 int pidstatus (int, FILE *, char *);
 char *pluspath(char *);
-void print_version (char *);
 void push (void);
 char *r1bindex(char *, int) PURE;
 void readconfig (struct node **, FILE *, const char *, int);
