@@ -472,7 +472,7 @@ try_it_again:
     return 1;
 }
 
-void
+static void
 docc (char *cp, int ccflag)
 {
     switch (smatch (cp, ccswitches)) {
@@ -508,7 +508,7 @@ docc (char *cp, int ccflag)
  * The ARGS pseudoheader is optional, but we always add it when
  * -convertargs is used.
  */
-void
+static void
 add_convert_header (const char *convert_type, char *convert_arg,
                     char *filename, char *drft) {
     char *field_name;
