@@ -92,7 +92,7 @@ static void imap_negotiate_tls(netsec_context *);
 
 static void add_msg(bool queue, struct imap_msg **, const char *fmt, ...)
 		    CHECK_PRINTF(3, 4);
-static void add_append(const char *filename, const char *folder);
+static void add_append(const char *filename, const char *folder, bool queue);
 
 static size_t rfc822size(const char *filename);
 
@@ -157,7 +157,7 @@ main (int argc, char **argv)
 		    die("missing argument to %s", argp[-2]);
 		if (! afolder)
 		    die("Append folder must be set with -afolder first");
-		add_append(*argp++, afolder);
+		add_append(*argp++, afolder, queue);
 		continue;
 
 	    case SNOOPSW:
@@ -297,7 +297,7 @@ main (int argc, char **argv)
 	    goto finish;
 	}
 
-	if (get_imap_response(nsc, "CAPABILITY", &capstring, NULL, false, true,
+	if (get_imap_response(nsc, "CAPABILITY ", &capstring, NULL, false, true,
 			      &errstr) != OK) {
 	    fprintf(stderr, "Cannot get CAPABILITY response: %s\n", errstr);
 	    goto finish;
@@ -308,7 +308,9 @@ main (int argc, char **argv)
 	    goto finish;
 	}
 
-	parse_capability(capstring, strlen(capstring));
+	p = capstring + 11;	/* "CAPABILITY " */
+
+	parse_capability(p, strlen(p));
 	free(capstring);
     }
 
@@ -363,7 +365,7 @@ main (int argc, char **argv)
 	    goto finish;
 	}
 
-	if (get_imap_response(nsc, "CAPABILITY", &capstring, NULL, false,
+	if (get_imap_response(nsc, "CAPABILITY ", &capstring, NULL, false,
 			      true, &errstr) != OK) {
 	    fprintf(stderr, "Cannot get CAPABILITY response: %s\n", errstr);
 	    goto finish;
@@ -374,7 +376,9 @@ main (int argc, char **argv)
 	    goto finish;
 	}
 
-	parse_capability(capstring, strlen(capstring));
+	p = capstring + 11;	/* "CAPABILITY " */
+
+	parse_capability(p, strlen(p));
 	free(capstring);
     }
 
@@ -527,7 +531,7 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 		   unsigned int *outdatalen, void *context, char **errstr)
 {
     int rc, snoopoffset;
-    char *mech, *line;
+    char *mech, *line, *capstring, *p;
     size_t len;
     netsec_context *nsc = (netsec_context *) context;
 
@@ -655,16 +659,24 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 
     case NETSEC_SASL_FINISH:
         line = NULL;
-    	if (get_imap_response(nsc, NULL, NULL, &line, false, true,
-			      errstr) != OK)
+	if (get_imap_response(nsc, "CAPABILITY ", &capstring, &line,
+			      false, true, errstr) != OK)
 	    return NOTOK;
 	/*
 	 * We MIGHT get a capability response here.  If so, be sure we
-	 * parse it.
+	 * parse it.  We ALSO might get a untagged CAPABILITY response.
+	 * Which one should we prefer?  I guess we'll go with the untagged
+	 * one.
 	 */
 
-	if (line && has_prefix(line, "OK [CAPABILITY ")) {
-	    char *p = line + 15, *q;
+	if (capstring) {
+	    p = capstring + 11;		/* "CAPABILITY " */
+	    parse_capability(p, strlen(p));
+	    free(capstring);
+	} else if (line && has_prefix(line, "OK [CAPABILITY ")) {
+	    char *q;
+
+	    p = line + 15;
 	    q = strchr(p, ']');
 
 	    if (q)
@@ -757,7 +769,7 @@ send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
     FILE *f;
     bool nonsynlit = false;
     char *status = NULL, *line = NULL;
-    size_t linesize = 0, total = 0;
+    size_t linesize = 0;
     ssize_t rc;
 
     /*
@@ -826,8 +838,6 @@ send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
 		free(line);
 		return NOTOK;
 	    }
-	    fprintf(stderr, "Wrote %u bytes\n", (unsigned int) rc);
-	    total += rc;
 	} else {
 	    if (line[rc - 1] == '\n')
 		rc--;
@@ -839,10 +849,6 @@ send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
 		free(line);
 		return NOTOK;
 	    }
-
-	    fprintf(stderr, "Write %u bytes (plus 2 for CR-LF)\n",
-		    (unsigned int) rc);
-	    total += rc + 2;
 	}
     }
 
@@ -853,8 +859,6 @@ send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
 		   strerror(errno));
 	return NOTOK;
     }
-
-    fprintf(stderr, "%u bytes written total\n", (unsigned int) total);
 
     /*
      * Send a final \r\n for the end of the command
@@ -923,6 +927,9 @@ getline:
 			    numerrs = true;
 			    netsec_err(errstr, "%s", line + strlen(cmd2->tag));
 			}
+			if (timestamp)
+			    ts_report(&cmd2->start, "Command (%s) execution "
+				      "time", cmd2->prefix);
 			free(cmd2);
 			if (status)
 			    *status = getcpy(line);
@@ -982,12 +989,12 @@ add_msg(bool queue, struct imap_msg **ret_imsg, const char *fmt, ...)
  */
 
 static void
-add_append(const char *filename, const char *folder)
+add_append(const char *filename, const char *folder, bool queue)
 {
     size_t filesize = rfc822size(filename);
     struct imap_msg *imsg;
 
-    add_msg(false, &imsg, "%s", filename);
+    add_msg(queue, &imsg, "%s", filename);
 
     imsg->folder = folder;
     imsg->append = true;
