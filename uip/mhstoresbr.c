@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/path.h"
 #include "sbr/error.h"
 #include <fcntl.h>
 #include "h/md5.h"

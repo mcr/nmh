@@ -171,10 +171,8 @@ void m_unknown(m_getfld_state_t *, FILE *);
 void m_unknown2(m_getfld_state_t *);
 
 char *nmh_getpass(const char *);
-char *path(char *, int);
 int pidwait (pid_t, int);
 int pidstatus (int, FILE *, char *);
-char *pluspath(char *);
 void push (void);
 char *r1bindex(char *, int) PURE;
 void readconfig (struct node **, FILE *, const char *, int);

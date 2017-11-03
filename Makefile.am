@@ -374,6 +374,7 @@ noinst_HEADERS = \
     sbr/makedir.h \
     sbr/message_id.h \
     sbr/mime_type.h \
+    sbr/path.h \
     sbr/print_help.h \
     sbr/print_sw.h \
     sbr/print_version.h \
