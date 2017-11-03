@@ -378,6 +378,7 @@ noinst_HEADERS = \
     sbr/print_help.h \
     sbr/print_sw.h \
     sbr/print_version.h \
+    sbr/push.h \
     sbr/read_line.h \
     sbr/seq_add.h \
     sbr/seq_bits.h \
