@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "pidstatus.h"
 #include "arglist.h"
 #include "error.h"
 

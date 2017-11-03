@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "pidstatus.h"
 
 /*
  * Return 0 if the command exited with an exit code of zero, a nonzero code
