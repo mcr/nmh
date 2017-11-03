@@ -81,9 +81,10 @@ static void clear_capability(void);
 static int have_capability(void);
 static int send_imap_command(netsec_context *, bool noflush, char **errstr,
 			     const char *fmt, ...) CHECK_PRINTF(4, 5);
+static int send_append(netsec_context *, struct imap_msg *, char **errstr);
 static int get_imap_response(netsec_context *, const char *token,
-			     char **tokenresp, char **status, int failerr,
-			     char **errstr);
+			     char **tokenresp, char **status, bool contok,
+			     bool failerr, char **errstr);
 
 static void ts_report(struct timeval *tv, const char *fmt, ...)
 		      CHECK_PRINTF(2, 3);
@@ -296,7 +297,7 @@ main (int argc, char **argv)
 	    goto finish;
 	}
 
-	if (get_imap_response(nsc, "CAPABILITY", &capstring, NULL, 1,
+	if (get_imap_response(nsc, "CAPABILITY", &capstring, NULL, false, true,
 			      &errstr) != OK) {
 	    fprintf(stderr, "Cannot get CAPABILITY response: %s\n", errstr);
 	    goto finish;
@@ -322,7 +323,8 @@ main (int argc, char **argv)
 	    goto finish;
 	}
 
-	if (get_imap_response(nsc, NULL, NULL, NULL, 1, &errstr) != OK) {
+	if (get_imap_response(nsc, NULL, NULL, NULL, false, true,
+			      &errstr) != OK) {
 	    fprintf(stderr, "STARTTLS failed: %s\n", errstr);
 	    goto finish;
 	}
@@ -361,8 +363,8 @@ main (int argc, char **argv)
 	    goto finish;
 	}
 
-	if (get_imap_response(nsc, "CAPABILITY", &capstring, NULL, 1,
-			      &errstr) != OK) {
+	if (get_imap_response(nsc, "CAPABILITY", &capstring, NULL, false,
+			      true, &errstr) != OK) {
 	    fprintf(stderr, "Cannot get CAPABILITY response: %s\n", errstr);
 	    goto finish;
 	}
@@ -384,16 +386,24 @@ main (int argc, char **argv)
     while (msgqueue_head != NULL) {
 	imsg = msgqueue_head;
 
-	if (send_imap_command(nsc, imsg->queue, &errstr, "%s",
-			      imsg->command) != OK) {
-	    fprintf(stderr, "Cannot send command \"%s\": %s\n", imsg->command,
-		    errstr);
-	    free(errstr);
-	    goto finish;
-	}
+	if (imsg->append) {
+	    if (send_append(nsc, imsg, &errstr) != OK) {
+		fprintf(stderr, "Cannot send APPEND for %s to mbox %s: %s\n",
+			imsg->command, imsg->folder, errstr);
+		free(errstr);
+		goto finish;
+	    }
+	} else if (send_imap_command(nsc, imsg->queue, &errstr, "%s",
+				     imsg->command) != OK) {
+		fprintf(stderr, "Cannot send command \"%s\": %s\n",
+			imsg->command, errstr);
+		free(errstr);
+		goto finish;
+	    }
 
 	if (! imsg->queue) {
-	    if (get_imap_response(nsc, NULL, NULL, NULL, 0, &errstr) != OK) {
+	    if (get_imap_response(nsc, NULL, NULL, NULL, false, false,
+				  &errstr) != OK) {
 		fprintf(stderr, "Unable to get response for command "
 			"\"%s\": %s\n", imsg->command, errstr);
 		goto finish;
@@ -415,17 +425,16 @@ main (int argc, char **argv)
 	free(errstr);
     }
 
-    while (cmdqueue)
-	if (get_imap_response(nsc, NULL, NULL, NULL, 0, &errstr) != OK) {
-	    fprintf(stderr, "Error fetching final command "
-		    "responses: %s\n", errstr);
-	}
+    if (get_imap_response(nsc, NULL, NULL, NULL, false, false, &errstr) != OK) {
+	fprintf(stderr, "Error fetching final command responses: %s\n", errstr);
+	free(errstr);
+    }
 
     if (timestamp)
 	ts_report(&tv_auth, "Total command execution time");
 
     send_imap_command(nsc, false, NULL, "LOGOUT");
-    get_imap_response(nsc, NULL, NULL, NULL, 0, NULL);
+    get_imap_response(nsc, NULL, NULL, NULL, false, false, NULL);
 
 finish:
     netsec_shutdown(nsc);
@@ -646,7 +655,8 @@ imap_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 
     case NETSEC_SASL_FINISH:
         line = NULL;
-    	if (get_imap_response(nsc, NULL, NULL, &line, 1, errstr) != OK)
+    	if (get_imap_response(nsc, NULL, NULL, &line, false, true,
+			      errstr) != OK)
 	    return NOTOK;
 	/*
 	 * We MIGHT get a capability response here.  If so, be sure we
@@ -738,13 +748,135 @@ send_imap_command(netsec_context *nsc, bool noflush, char **errstr,
 }
 
 /*
+ * Send an APPEND to the server, which requires some extra semantics
+ */
+
+static int
+send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
+{
+    FILE *f;
+    bool nonsynlit = false;
+    char *status = NULL, *line = NULL;
+    size_t linesize = 0, total = 0;
+    ssize_t rc;
+
+    /*
+     * If we have the LITERAL+ extension, or we have LITERAL- and our
+     * message is 4096 bytes or less, we can do it all in one message.
+     * Otherwise we have to wait for a contination marker (+).
+     */
+
+    if (capability_set("LITERAL+") ||
+		(capability_set("LITERAL-") && imsg->msgsize <= 4096)) {
+	nonsynlit = true;
+    } else {
+	/*
+	 * Since we need to do a command contination, make sure we have
+	 * no outstanding commands.
+	 */
+
+	if (netsec_flush(nsc, errstr) != OK)
+	    return NOTOK;
+	if (get_imap_response(nsc, NULL, NULL, NULL, false,
+			      false, errstr) != OK)
+	    return NOTOK;
+    }
+
+    /*
+     * Send our APPEND command
+     */
+
+    if (send_imap_command(nsc, nonsynlit, errstr, "APPEND \"%s\" {%u%s}",
+			  imsg->folder, (unsigned int) imsg->msgsize,
+			  nonsynlit ? "+" : "") != OK)
+	return NOTOK;
+
+    /*
+     * If we need to wait for a syncing literal, do that now
+     */
+
+    if (! nonsynlit) {
+	if (get_imap_response(nsc, NULL, NULL, &status, true,
+			      true, errstr) != OK) {
+	    imsg->queue = true;	/* XXX Sigh */
+	    fprintf(stderr, "APPEND command failed: %s\n", *errstr);
+	    free(*errstr);
+	    return OK;
+	}
+	if (!(status && has_prefix(status, "+"))) {
+	    netsec_err(errstr, "Expected contination (+), but got: %s", status);
+	    free(status);
+	    return NOTOK;
+	}
+    }
+
+    /*
+     * Now write the message out, but make sure we end each line with \r\n
+     */
+
+    if ((f = fopen(imsg->command, "r")) == NULL) {
+	netsec_err(errstr, "Unable to open %s: %s", imsg->command,
+		   strerror(errno));
+	return NOTOK;
+    }
+
+    while ((rc = getline(&line, &linesize, f)) > 0) {
+	if (rc > 1 && line[rc - 1] == '\n' && line[rc - 2] == '\r') {
+	    if (netsec_write(nsc, line, rc, errstr) != OK) {
+		free(line);
+		return NOTOK;
+	    }
+	    fprintf(stderr, "Wrote %u bytes\n", (unsigned int) rc);
+	    total += rc;
+	} else {
+	    if (line[rc - 1] == '\n')
+		rc--;
+	    if (netsec_write(nsc, line, rc, errstr) != OK) {
+		free(line);
+		return NOTOK;
+	    }
+	    if (netsec_write(nsc, "\r\n", 2, errstr) != OK) {
+		free(line);
+		return NOTOK;
+	    }
+
+	    fprintf(stderr, "Write %u bytes (plus 2 for CR-LF)\n",
+		    (unsigned int) rc);
+	    total += rc + 2;
+	}
+    }
+
+    free(line);
+
+    if (! feof(f)) {
+	netsec_err(errstr, "Error reading %s: %s", imsg->command,
+		   strerror(errno));
+	return NOTOK;
+    }
+
+    fprintf(stderr, "%u bytes written total\n", (unsigned int) total);
+
+    /*
+     * Send a final \r\n for the end of the command
+     */
+
+    if (netsec_write(nsc, "\r\n", 2, errstr) != OK)
+	return NOTOK;
+
+    if (! imsg->queue)
+	return netsec_flush(nsc, errstr);
+
+    return OK;
+}
+
+/*
  * Get all outstanding responses.  If we were passed in a token string
  * to look for, return it.
  */
 
 static int
 get_imap_response(netsec_context *nsc, const char *token, char **tokenresponse,
-		  char **status, int failerr, char **errstr)
+		  char **status, bool condok, bool failerr, char **errstr)
 {
     char *line;
     struct imap_cmd *cmd;
@@ -763,6 +895,15 @@ getline:
 		    free(*tokenresponse);
 		*tokenresponse = getcpy(line + 2);
 	    }
+	} if (condok && has_prefix(line, "+")) {
+	    if (status) {
+		*status = getcpy(line);
+	    }
+	    /*
+	     * Special case; return now but don't dequeue the tag,
+	     * since we will want to get final  result later.
+	     */
+	    return OK;
 	} else {
 
 	    if (has_prefix(line, cmdqueue->tag)) {
