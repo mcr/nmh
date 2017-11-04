@@ -30,6 +30,7 @@
     X("noqueue", 0, NOQUEUESW) \
     X("append filename", 0, APPENDSW) \
     X("afolder foldername", 0, AFOLDERSW) \
+    X("batch filename", 0, BATCHSW) \
     X("timestamp", 0, TIMESTAMPSW) \
     X("notimestamp", 0, NOTIMESTAMPSW) \
     X("version", 0, VERSIONSW) \
@@ -47,7 +48,7 @@ struct imap_msg;
 
 struct imap_msg {
     char *command;		/* Command to send */
-    const char *folder;		/* Folder (for append) */
+    char *folder;		/* Folder (for append) */
     bool queue;			/* If true, queue for later delivery */
     bool append;		/* If true, append "command" to mbox */
     size_t msgsize;		/* RFC822 size of message */
@@ -93,6 +94,8 @@ static void imap_negotiate_tls(netsec_context *);
 static void add_msg(bool queue, struct imap_msg **, const char *fmt, ...)
 		    CHECK_PRINTF(3, 4);
 static void add_append(const char *filename, const char *folder, bool queue);
+
+static void batchfile(const char *filename, char *afolder, bool queue);
 
 static size_t rfc822size(const char *filename);
 
@@ -154,10 +157,16 @@ main (int argc, char **argv)
 		continue;
 	    case APPENDSW:
 		if (!*argp || (**argp == '-'))
-		    die("missing argument to %s", argp[-2]);
+		    die("missing argument to %s", argp[-1]);
 		if (! afolder)
 		    die("Append folder must be set with -afolder first");
 		add_append(*argp++, afolder, queue);
+		continue;
+
+	    case BATCHSW:
+		if (! *argp || (**argp == '-'))
+		    die("missing argument to %s", argp[-1]);
+		batchfile(*argp++, afolder, queue);
 		continue;
 
 	    case SNOOPSW:
@@ -208,7 +217,7 @@ main (int argc, char **argv)
 	} else if (*cp == '+') {
 	    if (*(cp + 1) == '\0')
 		die("Invalid null folder name");
-	    add_msg(0, NULL, "SELECT \"%s\"", cp + 1);
+	    add_msg(false, NULL, "SELECT \"%s\"", cp + 1);
 	} else {
 	    add_msg(queue, NULL, "%s", cp);
 	}
@@ -417,6 +426,7 @@ main (int argc, char **argv)
 	msgqueue_head = imsg->next;
 
 	free(imsg->command);
+	free(imsg->folder);
 	free(imsg);
     }
 
@@ -781,17 +791,6 @@ send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
     if (capability_set("LITERAL+") ||
 		(capability_set("LITERAL-") && imsg->msgsize <= 4096)) {
 	nonsynlit = true;
-    } else {
-	/*
-	 * Since we need to do a command contination, make sure we have
-	 * no outstanding commands.
-	 */
-
-	if (netsec_flush(nsc, errstr) != OK)
-	    return NOTOK;
-	if (get_imap_response(nsc, NULL, NULL, NULL, false,
-			      false, errstr) != OK)
-	    return NOTOK;
     }
 
     /*
@@ -820,6 +819,7 @@ send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
 	    free(status);
 	    return NOTOK;
 	}
+	free(status);
     }
 
     /*
@@ -836,6 +836,7 @@ send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
 	if (rc > 1 && line[rc - 1] == '\n' && line[rc - 2] == '\r') {
 	    if (netsec_write(nsc, line, rc, errstr) != OK) {
 		free(line);
+		fclose(f);
 		return NOTOK;
 	    }
 	} else {
@@ -843,10 +844,12 @@ send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
 		rc--;
 	    if (netsec_write(nsc, line, rc, errstr) != OK) {
 		free(line);
+		fclose(f);
 		return NOTOK;
 	    }
 	    if (netsec_write(nsc, "\r\n", 2, errstr) != OK) {
 		free(line);
+		fclose(f);
 		return NOTOK;
 	    }
 	}
@@ -857,8 +860,11 @@ send_append(netsec_context *nsc, struct imap_msg *imsg, char **errstr)
     if (! feof(f)) {
 	netsec_err(errstr, "Error reading %s: %s", imsg->command,
 		   strerror(errno));
+	fclose(f);
 	return NOTOK;
     }
+
+    fclose(f);
 
     /*
      * Send a final \r\n for the end of the command
@@ -905,7 +911,7 @@ getline:
 	    }
 	    /*
 	     * Special case; return now but don't dequeue the tag,
-	     * since we will want to get final  result later.
+	     * since we will want to get final result later.
 	     */
 	    return OK;
 	} else {
@@ -996,9 +1002,90 @@ add_append(const char *filename, const char *folder, bool queue)
 
     add_msg(queue, &imsg, "%s", filename);
 
-    imsg->folder = folder;
+    imsg->folder = getcpy(folder);
     imsg->append = true;
     imsg->msgsize = filesize;
+}
+
+/*
+ * Process a batch file, which can contain commands (and some arguments)
+ */
+
+static void
+batchfile(const char *filename, char *afolder, bool queue)
+{
+    FILE *f;
+    char *line = NULL;
+    size_t linesize = 0;
+    ssize_t rc;
+    bool afolder_alloc = false;
+
+    if (!(f = fopen(filename, "r"))) {
+	die("Unable to open batch file %s: %s", filename, strerror(errno));
+    }
+
+    while ((rc = getline(&line, &linesize, f)) > 0) {
+	line[rc - 1] = '\0';
+	if (*line == '-') {
+	    switch (smatch (line + 1, switches)) {
+	    case QUEUESW:
+		queue = true;
+		continue;
+	    case NOQUEUESW:
+		queue = false;
+		continue;
+	    case AFOLDERSW:
+		if (afolder_alloc)
+		    free(afolder);
+		rc = getline(&line, &linesize, f);
+		if (rc <= 0)
+		    die("Unable to read next line for -afolder");
+		if (rc == 1)
+		    die("Folder name cannot be blank");
+		line[rc - 1] = '\0';
+		afolder = getcpy(line);
+		afolder_alloc = true;
+		continue;
+
+	    case APPENDSW:
+		rc = getline(&line, &linesize, f);
+		if (rc <= 0)
+		    die("Unable to read filename for -append");
+		if (rc == 1)
+		    die("Filename for -append cannot be blank");
+		line[rc - 1] = '\0';
+		add_append(line, afolder, queue);
+		continue;
+
+	    case AMBIGSW:
+		ambigsw (line, switches);
+		done (1);
+	    case UNKWNSW:
+		die("%s unknown", line);
+	    default:
+		die("Switch %s not supported in batch mode", line);
+	    }
+	} else if (*line == '+') {
+	    if (*(line + 1) == '\0')
+		die("Invalid null folder name");
+	    add_msg(false, NULL, "SELECT \"%s\"", line + 1);
+	} else {
+	    if (*line == '\0')
+		continue;	/* Ignore blank line */
+	    add_msg(queue, NULL, "%s", line);
+	}
+    }
+
+    if (!feof(f)) {
+	die("Read of \"%s\" failed: %s", filename, strerror(errno));
+    }
+
+    fclose(f);
+
+    if (afolder_alloc)
+	free(afolder);
+
+    free(line);
 }
 
 /*
