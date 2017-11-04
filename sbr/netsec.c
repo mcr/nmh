@@ -807,6 +807,7 @@ netsec_vprintf(netsec_context *nsc, char **errstr, const char *format,
 	       va_list ap)
 {
     int rc;
+    va_list apcopy;
 
     /*
      * Cheat a little.  If we can fit the data into our outgoing buffer,
@@ -814,8 +815,10 @@ netsec_vprintf(netsec_context *nsc, char **errstr, const char *format,
      */
 
 retry:
+    va_copy(apcopy, ap);
     rc = vsnprintf((char *) nsc->ns_outptr,
-		   nsc->ns_outbufsize - nsc->ns_outbuflen, format, ap);
+		   nsc->ns_outbufsize - nsc->ns_outbuflen, format, apcopy);
+    va_end(apcopy);
 
     if (rc >= (int) (nsc->ns_outbufsize - nsc->ns_outbuflen)) {
 	/*
