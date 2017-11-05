@@ -390,6 +390,7 @@ noinst_HEADERS = \
     sbr/seq_print.h \
     sbr/terminal.h \
     sbr/unquote.h \
+    sbr/vector.h \
     thirdparty/jsmn/jsmn.h \
     uip/forwsbr.h \
     uip/mhfree.h \
