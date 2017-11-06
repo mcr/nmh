@@ -38,6 +38,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/ambigsw.h"
 #include "sbr/push.h"
 #include "sbr/path.h"
 #include "sbr/print_version.h"

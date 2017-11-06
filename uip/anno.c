@@ -42,6 +42,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/ambigsw.h"
 #include "sbr/path.h"
 #include "sbr/print_version.h"
 #include "sbr/print_help.h"

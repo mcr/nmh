@@ -16,7 +16,6 @@ char *etcpath(char *) NONNULL(1);
 struct msgs_array;
 
 void add_profile_entry (const char *, const char *);
-void ambigsw (const char *, const struct swit *) NONNULL(1, 2);
 int atooi(char *) NONNULL(1) PURE;
 char **brkstring (char *, char *, char *) NONNULL(1);
 
