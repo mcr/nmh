@@ -22,6 +22,7 @@
  */
 
 #include "h/mh.h"
+#include "readconfig.h"
 #include "path.h"
 #include "error.h"
 #include "lock_file.h"

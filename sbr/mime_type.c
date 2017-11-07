@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "readconfig.h"
 #include "error.h"
 #include "h/utils.h"
 #include "h/tws.h"

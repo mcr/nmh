@@ -15,8 +15,6 @@ char *etcpath(char *) NONNULL(1);
 
 struct msgs_array;
 
-void add_profile_entry (const char *, const char *);
-
 /*
  * Check to see if we can display a given character set natively.
  * Arguments include:
@@ -170,7 +168,6 @@ void m_unknown2(m_getfld_state_t *);
 char *nmh_getpass(const char *);
 int pidwait (pid_t, int);
 char *r1bindex(char *, int) PURE;
-void readconfig (struct node **, FILE *, const char *, int);
 int refile (char **, char *);
 
 /*
