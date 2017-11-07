@@ -366,6 +366,7 @@ noinst_HEADERS = \
     sbr/arglist.h \
     sbr/atooi.h \
     sbr/base64.h \
+    sbr/brkstring.h \
     sbr/ctype-checked.h \
     sbr/error.h \
     sbr/lock_file.h \

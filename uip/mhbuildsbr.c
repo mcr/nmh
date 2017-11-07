@@ -14,6 +14,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/brkstring.h"
 #include "sbr/pidstatus.h"
 #include "sbr/path.h"
 #include "sbr/error.h"

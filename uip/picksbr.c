@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/brkstring.h"
 #include "sbr/ambigsw.h"
 #include "sbr/error.h"
 #include "h/tws.h"

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "brkstring.h"
 #include "error.h"
 #include "arglist.h"
 #include "h/utils.h"

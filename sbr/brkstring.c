@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "brkstring.h"
 #include "h/utils.h"
 
 /* allocate this number of pointers at a time */

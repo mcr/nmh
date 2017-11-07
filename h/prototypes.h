@@ -16,7 +16,6 @@ char *etcpath(char *) NONNULL(1);
 struct msgs_array;
 
 void add_profile_entry (const char *, const char *);
-char **brkstring (char *, char *, char *) NONNULL(1);
 
 /*
  * Check to see if we can display a given character set natively.

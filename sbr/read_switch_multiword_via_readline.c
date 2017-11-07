@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "brkstring.h"
 #include "ambigsw.h"
 #include "print_sw.h"
 

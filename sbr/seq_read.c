@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "brkstring.h"
 #include "error.h"
 #include "h/utils.h"
 #include "lock_file.h"
