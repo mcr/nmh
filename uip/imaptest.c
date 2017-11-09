@@ -33,6 +33,7 @@
     X("batch filename", 0, BATCHSW) \
     X("timestamp", 0, TIMESTAMPSW) \
     X("notimestamp", 0, NOTIMESTAMPSW) \
+    X("timeout", 0, TIMEOUTSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
 
@@ -106,7 +107,7 @@ main (int argc, char **argv)
 {
     bool sasl = false, tls = false, initialtls = false;
     bool snoop = false, queue = false;
-    int fd;
+    int fd, timeout = 0;
     char *saslmech = NULL, *host = NULL, *port = "143", *user = NULL;
     char *cp, **argp, buf[BUFSIZ], *oauth_svc = NULL, *errstr, **arguments, *p;
     char *afolder = NULL;
@@ -167,6 +168,13 @@ main (int argc, char **argv)
 		if (! *argp || (**argp == '-'))
 		    die("missing argument to %s", argp[-1]);
 		batchfile(*argp++, afolder, queue);
+		continue;
+
+	    case TIMEOUTSW:
+		if (! *argp || (**argp == '-'))
+		    die("missing argument to %s", argp[-1]);
+		if (! (timeout = atoi(*argp++)))
+		    die("Invalid timeout: %s", argp[-1]);
 		continue;
 
 	    case SNOOPSW:
@@ -232,6 +240,9 @@ main (int argc, char **argv)
 	netsec_set_userid(nsc, user);
 
     netsec_set_hostname(nsc, host);
+
+    if (timeout)
+	netsec_set_timeout(nsc, timeout);
 
     if (snoop)
 	netsec_set_snoop(nsc, 1);
