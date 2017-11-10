@@ -369,6 +369,7 @@ noinst_HEADERS = \
     sbr/brkstring.h \
     sbr/context_del.h \
     sbr/context_find.h \
+    sbr/context_read.h \
     sbr/ctype-checked.h \
     sbr/error.h \
     sbr/lock_file.h \

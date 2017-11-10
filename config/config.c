@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/context_read.h"
 #include "sbr/m_maildir.h"
 #include <pwd.h>
 
