@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "folder_addmsg.h"
 #include "error.h"
 #include <fcntl.h>
 
