@@ -8,6 +8,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/context_find.h"
 #include "sbr/ambigsw.h"
 #include "sbr/path.h"
 #include "sbr/print_version.h"

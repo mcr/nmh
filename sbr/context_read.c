@@ -22,6 +22,7 @@
  */
 
 #include "h/mh.h"
+#include "context_find.h"
 #include "readconfig.h"
 #include "path.h"
 #include "error.h"

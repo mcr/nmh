@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "context_find.h"
 #include "brkstring.h"
 #include "seq_getnum.h"
 #include "seq_del.h"

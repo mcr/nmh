@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "context_find.h"
 
 
 /* Does not return NULL. */

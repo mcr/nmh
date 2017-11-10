@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "context_find.h"
 #include "brkstring.h"
 #include "seq_add.h"
 #include "h/utils.h"

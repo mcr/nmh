@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "context_find.h"
 #include "print_help.h"
 #include "error.h"
 #include "h/utils.h"

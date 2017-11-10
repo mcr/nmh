@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "context_find.h"
 #include "h/utils.h"
 
 static char *default_editor = NULL;
