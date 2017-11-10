@@ -10,6 +10,7 @@
  */
 
 #include "h/mh.h"
+#include "context_save.h"
 #include "context_find.h"
 #include "atooi.h"
 #include "error.h"

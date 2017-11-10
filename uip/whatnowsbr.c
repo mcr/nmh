@@ -38,6 +38,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/context_save.h"
 #include "sbr/context_find.h"
 #include "sbr/brkstring.h"
 #include "sbr/ambigsw.h"

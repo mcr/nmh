@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/context_save.h"
 #include "sbr/context_replace.h"
 #include "sbr/context_del.h"
 #include "sbr/context_find.h"

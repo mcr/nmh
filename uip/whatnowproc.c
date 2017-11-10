@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/context_save.h"
 #include "sbr/error.h"
 #include "h/done.h"
 

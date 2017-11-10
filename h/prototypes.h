@@ -31,7 +31,6 @@ int client(char *, char *, char *, int, int);
 void closefds(int);
 char *concat (const char *, ...) ENDNULL;
 int context_foil (char *);
-void context_save (void);
 char **copyip (char **, char **, int);
 void cpydata (int, int, const char *, const char *);
 void cpydgst (int, int, char *, char *);
