@@ -30,7 +30,6 @@ int check_charset (char *, int);
 int client(char *, char *, char *, int, int);
 void closefds(int);
 char *concat (const char *, ...) ENDNULL;
-int context_foil (char *);
 char **copyip (char **, char **, int);
 void cpydata (int, int, const char *, const char *);
 void cpydgst (int, int, char *, char *);

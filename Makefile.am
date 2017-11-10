@@ -369,6 +369,7 @@ noinst_HEADERS = \
     sbr/brkstring.h \
     sbr/context_del.h \
     sbr/context_find.h \
+    sbr/context_foil.h \
     sbr/context_read.h \
     sbr/context_replace.h \
     sbr/context_save.h \

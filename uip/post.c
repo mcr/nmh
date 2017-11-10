@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/context_foil.h"
 #include "sbr/readconfig.h"
 #include "sbr/ambigsw.h"
 #include "sbr/pidstatus.h"
