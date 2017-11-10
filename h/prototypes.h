@@ -30,7 +30,6 @@ int check_charset (char *, int);
 int client(char *, char *, char *, int, int);
 void closefds(int);
 char *concat (const char *, ...) ENDNULL;
-int context_del (char *);
 int context_foil (char *);
 void context_read (void);
 void context_replace (char *, char *);
