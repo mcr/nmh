@@ -90,7 +90,6 @@ void seq_setcur (struct msgs *, int);
 void seq_setprev (struct msgs *);
 void seq_setunseen (struct msgs *, int);
 int showfile (char **, char *);
-int smatch(const char *, const struct swit *) PURE;
 
 /*
  * prototypes for some routines in uip

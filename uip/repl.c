@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/smatch.h"
 #include "sbr/refile.h"
 #include "sbr/m_draft.h"
 #include "sbr/m_convert.h"

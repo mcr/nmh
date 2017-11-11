@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/smatch.h"
 #include "sbr/fmt_rfc2047.h"
 #include "sbr/cpydata.h"
 #include "sbr/trimcpy.h"

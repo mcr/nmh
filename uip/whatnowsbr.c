@@ -38,6 +38,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/smatch.h"
 #include "sbr/r1bindex.h"
 #include "sbr/refile.h"
 #include "sbr/closefds.h"

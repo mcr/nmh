@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/smatch.h"
 #include "sbr/client.h"
 #include "sbr/getcpy.h"
 #include "sbr/brkstring.h"

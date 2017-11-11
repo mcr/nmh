@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/smatch.h"
 #include "sbr/cpydata.h"
 #include "sbr/context_find.h"
 #include "sbr/ambigsw.h"

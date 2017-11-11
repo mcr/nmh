@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/smatch.h"
 #include "sbr/remdir.h"
 #include "sbr/ssequal.h"
 #include "sbr/m_atoi.h"

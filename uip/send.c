@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/smatch.h"
 #include "sbr/closefds.h"
 #include "sbr/cpydata.h"
 #include "sbr/m_draft.h"
