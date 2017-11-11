@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/escape_addresses.h"
 #include "sbr/pidstatus.h"
 #include "sbr/arglist.h"
 #include "sbr/error.h"

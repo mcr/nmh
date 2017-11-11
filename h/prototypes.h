@@ -70,9 +70,6 @@ int decode_qp(unsigned char byte1, unsigned char byte2) CONST;
 int encode_rfc2047(const char *name, char **value, int encoding,
 		   const char *charset);
 
-void escape_display_name (char *, size_t);
-void escape_local_part (char *, size_t);
-
 /*
  * Print null-terminated PROMPT to and flush standard output.  Read answers from
  * standard input until one matches an entry in SWITCHES.  When one matches,

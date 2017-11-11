@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "escape_addresses.h"
 #include "context_find.h"
 #include "error.h"
 #include "h/utils.h"
