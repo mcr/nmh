@@ -9,6 +9,7 @@
  */
 
 #include "h/mh.h"
+#include "r1bindex.h"
 
 /* Does not return NULL. */
 char *

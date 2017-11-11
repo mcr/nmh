@@ -12,6 +12,7 @@
 #include <sys/types.h>
 
 #include "h/mh.h"
+#include "sbr/r1bindex.h"
 #include "sbr/trimcpy.h"
 #include "sbr/vfgets.h"
 #include "sbr/getcpy.h"

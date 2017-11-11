@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/r1bindex.h"
 #include "sbr/uprf.h"
 #include "sbr/check_charset.h"
 #include "sbr/m_draft.h"

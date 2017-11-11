@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/r1bindex.h"
 #include "sbr/ruserpass.h"
 #include "sbr/fmt_rfc2047.h"
 #include "sbr/uprf.h"

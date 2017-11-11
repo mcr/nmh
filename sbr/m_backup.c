@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "r1bindex.h"
 #include "m_backup.h"
 #include "m_mktemp.h"
 

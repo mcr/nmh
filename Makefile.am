@@ -415,6 +415,7 @@ noinst_HEADERS = \
     sbr/print_sw.h \
     sbr/print_version.h \
     sbr/push.h \
+    sbr/r1bindex.h \
     sbr/read_line.h \
     sbr/readconfig.h \
     sbr/refile.h \

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/r1bindex.h"
 #include "sbr/snprintb.h"
 #include "sbr/copyip.h"
 #include "sbr/discard.h"
