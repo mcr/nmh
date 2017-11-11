@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_backup.h"
 #include "sbr/context_find.h"
 #include "sbr/readconfig.h"
 #include "sbr/ambigsw.h"

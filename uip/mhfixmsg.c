@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_backup.h"
 #include "sbr/getfolder.h"
 #include "sbr/folder_read.h"
 #include "sbr/context_save.h"
