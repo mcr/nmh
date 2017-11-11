@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "ext_hook.h"
 #include "folder_realloc.h"
 #include "folder_addmsg.h"
 #include "error.h"

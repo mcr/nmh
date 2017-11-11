@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "ext_hook.h"
 #include "folder_delmsgs.h"
 #include "context_save.h"
 #include "arglist.h"

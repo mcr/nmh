@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "ext_hook.h"
 #include "context_find.h"
 #include "pidstatus.h"
 #include "arglist.h"
