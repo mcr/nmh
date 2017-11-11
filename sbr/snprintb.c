@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "snprintb.h"
 
 
 char *

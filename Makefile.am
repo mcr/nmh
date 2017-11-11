@@ -424,6 +424,7 @@ noinst_HEADERS = \
     sbr/seq_list.h \
     sbr/seq_nameok.h \
     sbr/seq_print.h \
+    sbr/snprintb.h \
     sbr/ssequal.h \
     sbr/strindex.h \
     sbr/terminal.h \

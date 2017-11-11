@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "snprintb.h"
 #include "strindex.h"
 #include "uprf.h"
 #include "getcpy.h"
