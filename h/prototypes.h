@@ -191,7 +191,6 @@ int stringdex (char *, char *) PURE;
 char *trimcpy (char *);
 
 int uprf (const char *, const char *) PURE;
-int vfgets (FILE *, char **);
 
 /*
  * prototypes for some routines in uip

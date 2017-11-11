@@ -418,6 +418,7 @@ noinst_HEADERS = \
     sbr/terminal.h \
     sbr/unquote.h \
     sbr/vector.h \
+    sbr/vfgets.h \
     thirdparty/jsmn/jsmn.h \
     uip/forwsbr.h \
     uip/mhfree.h \
