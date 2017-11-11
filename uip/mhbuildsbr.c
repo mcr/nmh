@@ -14,6 +14,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/encode_rfc2047.h"
 #include "sbr/copyip.h"
 #include "sbr/cpydata.h"
 #include "sbr/trimcpy.h"

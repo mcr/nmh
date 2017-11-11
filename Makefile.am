@@ -381,6 +381,7 @@ noinst_HEADERS = \
     sbr/cpydgst.h \
     sbr/ctype-checked.h \
     sbr/discard.h \
+    sbr/encode_rfc2047.h \
     sbr/error.h \
     sbr/escape_addresses.h \
     sbr/ext_hook.h \

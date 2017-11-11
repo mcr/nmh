@@ -18,26 +18,6 @@ struct msgs_array;
 char *concat (const char *, ...) ENDNULL;
 
 /*
- * Encode a message header using RFC 2047 encoding.  If the message contains
- * no non-ASCII characters, then leave the header as-is.
- *
- * Arguments include:
- *
- * name		- Message header name
- * value	- Message header content; must point to allocated memory
- *		  (may be changed if encoding is necessary)
- * encoding	- Encoding type.  May be one of CE_UNKNOWN (function chooses
- *		  the encoding), CE_BASE64 or CE_QUOTED
- * charset	- Charset used for encoding.  If NULL, obtain from system
- *		  locale.
- *
- * Returns 0 on success, any other value on failure.
- */
-
-int encode_rfc2047(const char *name, char **value, int encoding,
-		   const char *charset);
-
-/*
  * Print null-terminated PROMPT to and flush standard output.  Read answers from
  * standard input until one matches an entry in SWITCHES.  When one matches,
  * return its swret field.  Return 0 on EOF.
