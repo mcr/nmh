@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "getcpy.h"
 #include "error.h"
 #include "h/utils.h"
 

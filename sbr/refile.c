@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "getcpy.h"
 #include "context_save.h"
 #include "arglist.h"
 #include "error.h"

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "getcpy.h"
 #include "context_find.h"
 #include "error.h"
 #include "h/addrsbr.h"

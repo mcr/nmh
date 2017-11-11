@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "getcpy.h"
 #include "context_replace.h"
 #include "error.h"
 #include "h/utils.h"

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/getcpy.h"
 #include "sbr/error.h"
 #include <fcntl.h>
 #include "h/fmt_scan.h"

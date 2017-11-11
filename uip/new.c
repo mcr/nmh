@@ -12,6 +12,7 @@
 #include <sys/types.h>
 
 #include "h/mh.h"
+#include "sbr/getcpy.h"
 #include "sbr/m_atoi.h"
 #include "sbr/context_save.h"
 #include "sbr/context_replace.h"

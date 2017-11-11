@@ -10,6 +10,7 @@
  */
 
 #include "h/mh.h"
+#include "getcpy.h"
 #include "h/utils.h"
 
 /* Return malloc'd copy of str, or of "" if NULL, exit on failure. */

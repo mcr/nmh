@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "getcpy.h"
 #include "m_atoi.h"
 #include "brkstring.h"
 #include "error.h"

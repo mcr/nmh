@@ -110,9 +110,6 @@ char **getarguments (char *, int, char **, int);
  */
 char *get_charset(void);
 
-/* Return malloc'd copy of str, or of "" if NULL, exit on failure. */
-char *getcpy(const char *str);
-
 m_getfld_state_t m_getfld_state_init(FILE *iob);
 void m_getfld_state_reset (m_getfld_state_t *);
 void m_getfld_state_destroy (m_getfld_state_t *);
