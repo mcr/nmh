@@ -390,6 +390,7 @@ noinst_HEADERS = \
     sbr/m_atoi.h \
     sbr/m_backup.h \
     sbr/m_convert.h \
+    sbr/m_draft.h \
     sbr/m_maildir.h \
     sbr/m_mktemp.h \
     sbr/m_popen.h \

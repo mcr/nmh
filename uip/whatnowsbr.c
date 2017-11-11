@@ -38,6 +38,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_draft.h"
 #include "sbr/m_backup.h"
 #include "sbr/geteditor.h"
 #include "sbr/context_save.h"

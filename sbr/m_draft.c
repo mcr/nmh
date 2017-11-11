@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "m_draft.h"
 #include "m_convert.h"
 #include "folder_read.h"
 #include "folder_realloc.h"
