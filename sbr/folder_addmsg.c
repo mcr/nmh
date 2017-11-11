@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "cpydata.h"
 #include "m_atoi.h"
 #include "ext_hook.h"
 #include "folder_realloc.h"

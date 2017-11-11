@@ -374,6 +374,7 @@ noinst_HEADERS = \
     sbr/context_read.h \
     sbr/context_replace.h \
     sbr/context_save.h \
+    sbr/cpydata.h \
     sbr/cpydgst.h \
     sbr/ctype-checked.h \
     sbr/discard.h \

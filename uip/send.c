@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/cpydata.h"
 #include "sbr/m_draft.h"
 #include "sbr/m_convert.h"
 #include "sbr/folder_read.h"

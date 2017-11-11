@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "cpydata.h"
 #include "error.h"
 
 void

@@ -19,7 +19,6 @@ int client(char *, char *, char *, int, int);
 void closefds(int);
 char *concat (const char *, ...) ENDNULL;
 char **copyip (char **, char **, int);
-void cpydata (int, int, const char *, const char *);
 int decode_rfc2047 (char *, char *, size_t);
 
 /*

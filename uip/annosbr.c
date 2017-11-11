@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/cpydata.h"
 #include "sbr/m_backup.h"
 #include "sbr/error.h"
 #include "h/tws.h"
