@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "m_atoi.h"
 #include "folder_read.h"
 #include "error.h"
 #include "h/utils.h"

@@ -8,6 +8,7 @@
  */
 
 #include "h/mh.h"
+#include "m_atoi.h"
 
 
 int

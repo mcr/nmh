@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_atoi.h"
 #include "sbr/getfolder.h"
 #include "sbr/ext_hook.h"
 #include "sbr/context_save.h"
