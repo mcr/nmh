@@ -375,6 +375,7 @@ noinst_HEADERS = \
     sbr/context_save.h \
     sbr/ctype-checked.h \
     sbr/error.h \
+    sbr/fdcompare.h \
     sbr/folder_addmsg.h \
     sbr/folder_delmsgs.h \
     sbr/folder_free.h \

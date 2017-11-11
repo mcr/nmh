@@ -73,7 +73,6 @@ int encode_rfc2047(const char *name, char **value, int encoding,
 void escape_display_name (char *, size_t);
 void escape_local_part (char *, size_t);
 int ext_hook(char *, char *, char *);
-int fdcompare (int, int);
 
 /*
  * Print null-terminated PROMPT to and flush standard output.  Read answers from
