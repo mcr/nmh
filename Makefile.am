@@ -397,6 +397,7 @@ noinst_HEADERS = \
     sbr/getcpy.h \
     sbr/geteditor.h \
     sbr/getfolder.h \
+    sbr/getpass.h \
     sbr/lock_file.h \
     sbr/m_atoi.h \
     sbr/m_backup.h \

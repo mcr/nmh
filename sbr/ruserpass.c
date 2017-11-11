@@ -22,6 +22,7 @@
  */
 
 #include "h/mh.h"
+#include "getpass.h"
 #include "ruserpass.h"
 #include "credentials.h"
 #include "error.h"
