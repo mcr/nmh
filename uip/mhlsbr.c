@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/discard.h"
 #include "sbr/trimcpy.h"
 #include "sbr/vfgets.h"
 #include "sbr/check_charset.h"

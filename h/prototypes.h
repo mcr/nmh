@@ -22,7 +22,6 @@ char **copyip (char **, char **, int);
 void cpydata (int, int, const char *, const char *);
 void cpydgst (int, int, char *, char *);
 int decode_rfc2047 (char *, char *, size_t);
-void discard (FILE *);
 
 /*
  * Decode two characters into their quoted-printable representation.

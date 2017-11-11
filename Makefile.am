@@ -375,6 +375,7 @@ noinst_HEADERS = \
     sbr/context_replace.h \
     sbr/context_save.h \
     sbr/ctype-checked.h \
+    sbr/discard.h \
     sbr/error.h \
     sbr/escape_addresses.h \
     sbr/ext_hook.h \

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "discard.h"
 
 #include <termios.h>
 
