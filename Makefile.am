@@ -417,6 +417,7 @@ noinst_HEADERS = \
     sbr/seq_print.h \
     sbr/terminal.h \
     sbr/unquote.h \
+    sbr/uprf.h \
     sbr/vector.h \
     sbr/vfgets.h \
     thirdparty/jsmn/jsmn.h \

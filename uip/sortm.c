@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/uprf.h"
 #include "sbr/m_convert.h"
 #include "sbr/getfolder.h"
 #include "sbr/ext_hook.h"

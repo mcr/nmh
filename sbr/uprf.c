@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "uprf.h"
 
 
 /* uprf returns true if s starts with prefix, ignoring case.

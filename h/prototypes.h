@@ -190,8 +190,6 @@ int ssequal (const char *, const char *) PURE;
 int stringdex (char *, char *) PURE;
 char *trimcpy (char *);
 
-int uprf (const char *, const char *) PURE;
-
 /*
  * prototypes for some routines in uip
  */

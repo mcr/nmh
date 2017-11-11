@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "uprf.h"
 
 int
 stringdex (char *p1, char *p2)

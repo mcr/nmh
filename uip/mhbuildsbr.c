@@ -14,6 +14,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/uprf.h"
 #include "sbr/check_charset.h"
 #include "sbr/getcpy.h"
 #include "sbr/m_convert.h"
