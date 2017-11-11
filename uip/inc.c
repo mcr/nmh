@@ -31,6 +31,7 @@
 #endif
 
 #include "h/mh.h"
+#include "sbr/folder_realloc.h"
 #include "sbr/folder_free.h"
 #include "sbr/context_save.h"
 #include "sbr/context_replace.h"

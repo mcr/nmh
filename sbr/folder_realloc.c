@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "folder_realloc.h"
 #include "error.h"
 #include "h/utils.h"
 

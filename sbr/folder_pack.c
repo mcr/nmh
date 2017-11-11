@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "folder_realloc.h"
 #include "folder_pack.h"
 #include "error.h"
 

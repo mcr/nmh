@@ -87,8 +87,6 @@ int fdcompare (int, int);
  */
 struct msgs *folder_read (char *name, int lockflag);
 
-struct msgs *folder_realloc (struct msgs *, int, int);
-
 /*
  * Print null-terminated PROMPT to and flush standard output.  Read answers from
  * standard input until one matches an entry in SWITCHES.  When one matches,
