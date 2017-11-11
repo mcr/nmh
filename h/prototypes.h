@@ -67,22 +67,6 @@ int pidwait (pid_t, int);
 char *r1bindex(char *, int) PURE;
 int refile (char **, char *);
 
-/*
- * Read our credentials file and (optionally) ask the user for anything
- * missing.
- *
- * Arguments:
- *
- * host		- Hostname (to scan credentials file)
- * aname	- Pointer to filled-in username
- * apass	- Pointer to filled-in password
- * flags	- One or more of RUSERPASS_NO_PROMPT_USER,
- *                RUSERPASS_NO_PROMPT_PASSWORD
- */
-void ruserpass (const char *host, char **aname, char **apass, int flags);
-#define RUSERPASS_NO_PROMPT_USER	0x01
-#define RUSERPASS_NO_PROMPT_PASSWORD	0x02
-
 void scan_detect_mbox_style (FILE *);
 void scan_finished(void);
 

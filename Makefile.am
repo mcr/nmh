@@ -418,6 +418,7 @@ noinst_HEADERS = \
     sbr/read_line.h \
     sbr/readconfig.h \
     sbr/remdir.h \
+    sbr/ruserpass.h \
     sbr/seq_add.h \
     sbr/seq_bits.h \
     sbr/seq_del.h \
