@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/check_charset.h"
 #include "sbr/getcpy.h"
 #include "sbr/context_find.h"
 #include "sbr/pidstatus.h"

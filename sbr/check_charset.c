@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "check_charset.h"
 
 #include <string.h>
 #include <langinfo.h>

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/check_charset.h"
 #include "sbr/m_draft.h"
 #include "sbr/m_convert.h"
 #include "sbr/getfolder.h"

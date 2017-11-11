@@ -15,18 +15,6 @@ char *etcpath(char *) NONNULL(1);
 
 struct msgs_array;
 
-/*
- * Check to see if we can display a given character set natively.
- * Arguments include:
- *
- * str	- Name of character set to check against
- * len	- Length of "str"
- *
- * Returns 1 if the specified character set can be displayed natively,
- * 0 otherwise.
- */
-
-int check_charset (char *, int);
 int client(char *, char *, char *, int, int);
 void closefds(int);
 char *concat (const char *, ...) ENDNULL;
@@ -101,14 +89,6 @@ char **read_switch_multiword_via_readline (char *, struct swit *);
 #endif /* READLINE_SUPPORT */
 
 char **getarguments (char *, int, char **, int);
-
-/*
- * Returns the MIME character set indicated by the current locale setting.
- * Should be used by routines that want to convert to/from the local
- * character set, or if you want to check to see if you can display content
- * in the local character set.
- */
-char *get_charset(void);
 
 m_getfld_state_t m_getfld_state_init(FILE *iob);
 void m_getfld_state_reset (m_getfld_state_t *);
@@ -212,13 +192,6 @@ char *trimcpy (char *);
 
 int uprf (const char *, const char *) PURE;
 int vfgets (FILE *, char **);
-
-/*
- * Output the local character set name, but make sure it is suitable for
- * 8-bit characters.
- */
-char *write_charset_8bit (void);
-
 
 /*
  * prototypes for some routines in uip

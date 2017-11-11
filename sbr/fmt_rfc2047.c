@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "check_charset.h"
 #include "h/utils.h"
 #ifdef HAVE_ICONV
 #  include <iconv.h>
