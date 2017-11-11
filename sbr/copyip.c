@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "copyip.h"
 
 
 char **

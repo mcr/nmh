@@ -14,6 +14,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/copyip.h"
 #include "sbr/cpydata.h"
 #include "sbr/trimcpy.h"
 #include "sbr/uprf.h"

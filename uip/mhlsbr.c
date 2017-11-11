@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/copyip.h"
 #include "sbr/discard.h"
 #include "sbr/trimcpy.h"
 #include "sbr/vfgets.h"

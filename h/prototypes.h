@@ -18,7 +18,6 @@ struct msgs_array;
 int client(char *, char *, char *, int, int);
 void closefds(int);
 char *concat (const char *, ...) ENDNULL;
-char **copyip (char **, char **, int);
 int decode_rfc2047 (char *, char *, size_t);
 
 /*
