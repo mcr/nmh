@@ -74,7 +74,6 @@ void escape_display_name (char *, size_t);
 void escape_local_part (char *, size_t);
 int ext_hook(char *, char *, char *);
 int fdcompare (int, int);
-int folder_delmsgs (struct msgs *, int, int);
 void folder_free (struct msgs *);
 int folder_pack (struct msgs **, int);
 

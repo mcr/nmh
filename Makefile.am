@@ -376,6 +376,7 @@ noinst_HEADERS = \
     sbr/ctype-checked.h \
     sbr/error.h \
     sbr/folder_addmsg.h \
+    sbr/folder_delmsgs.h \
     sbr/lock_file.h \
     sbr/m_maildir.h \
     sbr/m_mktemp.h \
