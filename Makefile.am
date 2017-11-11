@@ -384,6 +384,7 @@ noinst_HEADERS = \
     sbr/folder_pack.h \
     sbr/folder_read.h \
     sbr/folder_realloc.h \
+    sbr/geteditor.h \
     sbr/lock_file.h \
     sbr/m_maildir.h \
     sbr/m_mktemp.h \

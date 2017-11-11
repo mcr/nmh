@@ -113,7 +113,6 @@ char *get_charset(void);
 /* Return malloc'd copy of str, or of "" if NULL, exit on failure. */
 char *getcpy(const char *str);
 
-char *get_default_editor(void);
 char *getfolder(int) PURE;
 
 int m_atoi (char *) PURE;
