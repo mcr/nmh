@@ -378,6 +378,7 @@ noinst_HEADERS = \
     sbr/folder_addmsg.h \
     sbr/folder_delmsgs.h \
     sbr/folder_free.h \
+    sbr/folder_pack.h \
     sbr/lock_file.h \
     sbr/m_maildir.h \
     sbr/m_mktemp.h \

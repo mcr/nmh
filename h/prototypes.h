@@ -74,7 +74,6 @@ void escape_display_name (char *, size_t);
 void escape_local_part (char *, size_t);
 int ext_hook(char *, char *, char *);
 int fdcompare (int, int);
-int folder_pack (struct msgs **, int);
 
 /*
  * Read a MH folder structure and return an allocated "struct msgs"
