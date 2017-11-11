@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/closefds.h"
 #include "sbr/uprf.h"
 #include "sbr/escape_addresses.h"
 #include "sbr/pidstatus.h"

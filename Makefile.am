@@ -368,6 +368,7 @@ noinst_HEADERS = \
     sbr/base64.h \
     sbr/brkstring.h \
     sbr/check_charset.h \
+    sbr/closefds.h \
     sbr/context_del.h \
     sbr/context_find.h \
     sbr/context_foil.h \

@@ -20,6 +20,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/closefds.h"
 #include "sbr/trimcpy.h"
 #include "sbr/getcpy.h"
 #include "sbr/ambigsw.h"

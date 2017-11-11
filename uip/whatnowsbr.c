@@ -38,6 +38,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/closefds.h"
 #include "sbr/copyip.h"
 #include "sbr/getcpy.h"
 #include "sbr/m_draft.h"

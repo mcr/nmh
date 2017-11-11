@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/closefds.h"
 #include "sbr/m_draft.h"
 #include "sbr/context_find.h"
 #include "sbr/brkstring.h"
