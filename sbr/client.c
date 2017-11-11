@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "client.h"
 #include "h/mts.h"
 #include "h/utils.h"
 #include <sys/socket.h>

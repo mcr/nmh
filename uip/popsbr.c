@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/client.h"
 #include "sbr/error.h"
 #include "h/utils.h"
 #include "h/oauth.h"

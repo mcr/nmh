@@ -15,7 +15,6 @@ char *etcpath(char *) NONNULL(1);
 
 struct msgs_array;
 
-int client(char *, char *, char *, int, int);
 char *concat (const char *, ...) ENDNULL;
 int decode_rfc2047 (char *, char *, size_t);
 
