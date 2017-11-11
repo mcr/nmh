@@ -425,6 +425,7 @@ noinst_HEADERS = \
     sbr/seq_nameok.h \
     sbr/seq_print.h \
     sbr/ssequal.h \
+    sbr/strindex.h \
     sbr/terminal.h \
     sbr/trimcpy.h \
     sbr/unquote.h \
