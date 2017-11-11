@@ -22,6 +22,7 @@
  */
 
 #include "h/mh.h"
+#include "credentials.h"
 #include "error.h"
 #include "h/utils.h"
 #include <pwd.h>

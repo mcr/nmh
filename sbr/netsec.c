@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "credentials.h"
 #include "getcpy.h"
 #include "brkstring.h"
 #include "h/utils.h"

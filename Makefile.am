@@ -379,6 +379,7 @@ noinst_HEADERS = \
     sbr/copyip.h \
     sbr/cpydata.h \
     sbr/cpydgst.h \
+    sbr/credentials.h \
     sbr/ctype-checked.h \
     sbr/discard.h \
     sbr/encode_rfc2047.h \
