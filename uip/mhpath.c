@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/getfolder.h"
 #include "sbr/folder_read.h"
 #include "sbr/folder_realloc.h"
 #include "sbr/folder_free.h"
