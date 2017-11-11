@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/cpydgst.h"
 #include "sbr/uprf.h"
 #include "sbr/context_foil.h"
 #include "sbr/readconfig.h"

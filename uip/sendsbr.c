@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/cpydgst.h"
 #include "sbr/trimcpy.h"
 #include "sbr/uprf.h"
 #include "sbr/getcpy.h"

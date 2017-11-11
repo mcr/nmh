@@ -20,7 +20,6 @@ void closefds(int);
 char *concat (const char *, ...) ENDNULL;
 char **copyip (char **, char **, int);
 void cpydata (int, int, const char *, const char *);
-void cpydgst (int, int, char *, char *);
 int decode_rfc2047 (char *, char *, size_t);
 
 /*

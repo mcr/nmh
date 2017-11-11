@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "cpydgst.h"
 #include "error.h"
 
 /*
