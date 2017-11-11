@@ -83,7 +83,6 @@ void ruserpass (const char *host, char **aname, char **apass, int flags);
 #define RUSERPASS_NO_PROMPT_USER	0x01
 #define RUSERPASS_NO_PROMPT_PASSWORD	0x02
 
-int remdir (char *);
 void scan_detect_mbox_style (FILE *);
 void scan_finished(void);
 

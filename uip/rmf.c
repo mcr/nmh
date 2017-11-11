@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/remdir.h"
 #include "sbr/ssequal.h"
 #include "sbr/m_atoi.h"
 #include "sbr/getfolder.h"

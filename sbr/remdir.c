@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "remdir.h"
 #include "context_save.h"
 #include "error.h"
 
