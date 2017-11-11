@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "folder_read.h"
 #include "error.h"
 #include "h/utils.h"
 #include "m_maildir.h"

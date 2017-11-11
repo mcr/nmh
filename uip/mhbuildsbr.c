@@ -14,6 +14,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/folder_read.h"
 #include "sbr/folder_free.h"
 #include "sbr/context_find.h"
 #include "sbr/brkstring.h"

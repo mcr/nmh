@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "folder_read.h"
 #include "folder_realloc.h"
 #include "folder_free.h"
 #include "context_find.h"

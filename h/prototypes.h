@@ -76,18 +76,6 @@ int ext_hook(char *, char *, char *);
 int fdcompare (int, int);
 
 /*
- * Read a MH folder structure and return an allocated "struct msgs"
- * corresponding to the contents of the folder.
- *
- * Arguments include:
- *
- * name		- Name of folder
- * lockflag	- If true, write-lock (and keep open) metadata files.
- *		  See comments for seq_read() for more information.
- */
-struct msgs *folder_read (char *name, int lockflag);
-
-/*
  * Print null-terminated PROMPT to and flush standard output.  Read answers from
  * standard input until one matches an entry in SWITCHES.  When one matches,
  * return its swret field.  Return 0 on EOF.
