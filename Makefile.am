@@ -385,6 +385,7 @@ noinst_HEADERS = \
     sbr/escape_addresses.h \
     sbr/ext_hook.h \
     sbr/fdcompare.h \
+    sbr/fmt_rfc2047.h \
     sbr/folder_addmsg.h \
     sbr/folder_delmsgs.h \
     sbr/folder_free.h \

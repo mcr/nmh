@@ -9,6 +9,7 @@
  */
 
 #include "h/mh.h"
+#include "fmt_rfc2047.h"
 #include "uprf.h"
 #include "context_find.h"
 #include "error.h"
