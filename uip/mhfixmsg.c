@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/trimcpy.h"
 #include "sbr/m_convert.h"
 #include "sbr/m_backup.h"
 #include "sbr/getfolder.h"

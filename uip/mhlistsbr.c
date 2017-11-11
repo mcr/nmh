@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/trimcpy.h"
 #include <fcntl.h>
 #include "h/mts.h"
 #include "h/tws.h"

@@ -8,6 +8,7 @@
  */
 
 #include "h/mh.h"
+#include "trimcpy.h"
 #include "h/utils.h"
 
 

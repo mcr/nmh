@@ -21,8 +21,6 @@ char *concat (const char *, ...) ENDNULL;
 char **copyip (char **, char **, int);
 void cpydata (int, int, const char *, const char *);
 void cpydgst (int, int, char *, char *);
-char *cpytrim (const char *);
-char *rtrim (char *);
 int decode_rfc2047 (char *, char *, size_t);
 void discard (FILE *);
 
@@ -188,7 +186,6 @@ int smatch(const char *, const struct swit *) PURE;
 char *snprintb (char *buffer, size_t size, unsigned flags, char *bitfield);
 int ssequal (const char *, const char *) PURE;
 int stringdex (char *, char *) PURE;
-char *trimcpy (char *);
 
 /*
  * prototypes for some routines in uip

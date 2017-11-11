@@ -416,6 +416,7 @@ noinst_HEADERS = \
     sbr/seq_nameok.h \
     sbr/seq_print.h \
     sbr/terminal.h \
+    sbr/trimcpy.h \
     sbr/unquote.h \
     sbr/uprf.h \
     sbr/vector.h \
