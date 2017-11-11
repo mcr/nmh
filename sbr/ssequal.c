@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "ssequal.h"
 
 /*
  * THIS CODE DOES NOT WORK AS ADVERTISED.

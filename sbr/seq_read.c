@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "ssequal.h"
 #include "trimcpy.h"
 #include "getcpy.h"
 #include "m_atoi.h"

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "ssequal.h"
 #include "getfolder.h"
 #include "path.h"
 #include "h/utils.h"

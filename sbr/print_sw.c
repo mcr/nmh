@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "ssequal.h"
 #include "print_sw.h"
 
 

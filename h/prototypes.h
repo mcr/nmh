@@ -145,7 +145,6 @@ int smatch(const char *, const struct swit *) PURE;
  * from least significant bit to most significant.
  */
 char *snprintb (char *buffer, size_t size, unsigned flags, char *bitfield);
-int ssequal (const char *, const char *) PURE;
 int stringdex (char *, char *) PURE;
 
 /*

@@ -8,6 +8,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/ssequal.h"
 #include "sbr/getcpy.h"
 #include "sbr/m_convert.h"
 #include "sbr/getfolder.h"

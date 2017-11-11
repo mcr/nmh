@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "ssequal.h"
 #include "m_convert.h"
 #include "folder_realloc.h"
 #include "context_find.h"
