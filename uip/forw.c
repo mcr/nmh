@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/refile.h"
 #include "sbr/cpydata.h"
 #include "sbr/cpydgst.h"
 #include "sbr/m_draft.h"

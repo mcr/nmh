@@ -65,7 +65,6 @@ void m_unknown2(m_getfld_state_t *);
 char *nmh_getpass(const char *);
 int pidwait (pid_t, int);
 char *r1bindex(char *, int) PURE;
-int refile (char **, char *);
 
 void scan_detect_mbox_style (FILE *);
 void scan_finished(void);
