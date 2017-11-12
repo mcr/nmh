@@ -42,6 +42,7 @@
  */
 
 #include "h/mh.h"
+#include "annosbr.h"
 #include "sbr/m_name.h"
 #include "sbr/getarguments.h"
 #include "sbr/seq_setcur.h"

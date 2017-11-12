@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "annosbr.h"
 #include "sbr/m_name.h"
 #include "sbr/m_getfld.h"
 #include "sbr/concat.h"

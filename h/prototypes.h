@@ -20,9 +20,6 @@ int pidwait (pid_t, int);
 /*
  * prototypes for some routines in uip
  */
-int annotate (char *, char *, char *, bool, bool, int, bool);
-void annolist(char *, char *, char *, int);
-void annopreserve(int);
 int mhl(int, char **);
 int mhlsbr(int, char **, FILE *(*)(char *));
 int distout (char *, char *, char *);

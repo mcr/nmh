@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "annosbr.h"
 #include "sbr/m_gmprot.h"
 #include "sbr/cpydata.h"
 #include "sbr/m_backup.h"
