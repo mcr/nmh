@@ -85,7 +85,7 @@ check_mech(char *server_mechs, size_t server_mechs_size)
  * suitable for passing to exec. Returned array must be freed. Shouldn't
  * be possible to call this with host set to NULL.
  */
-char **
+static char **
 parse_proxy(char *proxy, char *host)
 {
     char **pargv, **p;
@@ -558,7 +558,7 @@ pop_done (void)
 }
 
 
-int
+static int
 command(const char *fmt, ...)
 {
     va_list ap;
@@ -618,7 +618,7 @@ vcommand (const char *fmt, va_list ap)
 }
 
 
-int
+static int
 multiline (void)
 {
     char buffer[BUFSIZ + LEN(TRM)];
