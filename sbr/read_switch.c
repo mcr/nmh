@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "read_switch.h"
 #include "smatch.h"
 
 

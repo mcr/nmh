@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/read_switch.h"
 #include "sbr/concat.h"
 #include "sbr/closefds.h"
 #include "sbr/uprf.h"

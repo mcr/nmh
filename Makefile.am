@@ -419,6 +419,7 @@ noinst_HEADERS = \
     sbr/push.h \
     sbr/r1bindex.h \
     sbr/read_line.h \
+    sbr/read_switch.h \
     sbr/readconfig.h \
     sbr/refile.h \
     sbr/remdir.h \

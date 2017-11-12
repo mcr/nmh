@@ -16,13 +16,6 @@ char *etcpath(char *) NONNULL(1);
 struct msgs_array;
 
 /*
- * Print null-terminated PROMPT to and flush standard output.  Read answers from
- * standard input until one matches an entry in SWITCHES.  When one matches,
- * return its swret field.  Return 0 on EOF.
- */
-int read_switch(const char *PROMPT, const struct swit *SWITCHES);
-
-/*
  * If standard input is not a tty, return 1 without printing anything.  Else,
  * print null-terminated PROMPT to and flush standard output.  Read answers from
  * standard input until one is "yes" or "no", returning 1 for "yes" and 0 for
