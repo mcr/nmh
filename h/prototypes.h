@@ -67,24 +67,6 @@ int pidwait (pid_t, int);
 void scan_detect_mbox_style (FILE *);
 void scan_finished(void);
 
-/*
- * Read the sequence files for the folder referenced in the given
- * struct msgs and populate the sequence entries in the struct msgs.
- *
- * Arguments:
- *
- * mp		- Folder structure to add sequence entries to
- * lockflag	- If true, obtain a write lock on the sequence file.
- *		  Additionally, the sequence file will remain open
- *		  and a pointer to the filehandle will be stored in
- *		  folder structure, where it will later be used by
- *		  seq_save().
- *
- * Return values:
- *     OK       - successfully read the sequence files, or they don't exist
- *     NOTOK    - failed to lock sequence file
- */
-int seq_read (struct msgs * mp, int lockflag);
 void seq_save (struct msgs *);
 void seq_setcur (struct msgs *, int);
 void seq_setprev (struct msgs *);
