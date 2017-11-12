@@ -16,14 +16,6 @@ char *etcpath(char *) NONNULL(1);
 struct msgs_array;
 
 /*
- * If standard input is not a tty, return 1 without printing anything.  Else,
- * print null-terminated PROMPT to and flush standard output.  Read answers from
- * standard input until one is "yes" or "no", returning 1 for "yes" and 0 for
- * "no".  Also return 0 on EOF.
- */
-int read_yes_or_no_if_tty(const char *PROMPT);
-
-/*
  * Print null-terminated PROMPT to and flush standard output.  Read multi-word
  * answers from standard input until a first word matches an entry in SWITCHES.
  * When one matches, return a pointer to an array of pointers to the words.

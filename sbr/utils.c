@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "read_yes_or_no_if_tty.h"
 #include "concat.h"
 #include "r1bindex.h"
 #include "context_foil.h"
