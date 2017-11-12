@@ -421,6 +421,7 @@ noinst_HEADERS = \
     sbr/read_line.h \
     sbr/read_switch.h \
     sbr/read_switch_multiword.h \
+    sbr/read_switch_multiword_via_readline.h \
     sbr/read_yes_or_no_if_tty.h \
     sbr/readconfig.h \
     sbr/refile.h \

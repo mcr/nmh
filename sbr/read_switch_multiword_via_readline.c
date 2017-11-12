@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "read_switch_multiword_via_readline.h"
 #include "smatch.h"
 #include "brkstring.h"
 #include "ambigsw.h"

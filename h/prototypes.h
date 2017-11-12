@@ -15,13 +15,6 @@ char *etcpath(char *) NONNULL(1);
 
 struct msgs_array;
 
-/*
- * Same as read_switch_multiword but using readline(3) for input.
- */
-#ifdef READLINE_SUPPORT
-char **read_switch_multiword_via_readline (char *, struct swit *);
-#endif /* READLINE_SUPPORT */
-
 char **getarguments (char *, int, char **, int);
 
 m_getfld_state_t m_getfld_state_init(FILE *iob);
