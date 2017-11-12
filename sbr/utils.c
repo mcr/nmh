@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "concat.h"
 #include "r1bindex.h"
 #include "context_foil.h"
 #include "context_replace.h"

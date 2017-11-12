@@ -15,8 +15,6 @@ char *etcpath(char *) NONNULL(1);
 
 struct msgs_array;
 
-char *concat (const char *, ...) ENDNULL;
-
 /*
  * Print null-terminated PROMPT to and flush standard output.  Read answers from
  * standard input until one matches an entry in SWITCHES.  When one matches,

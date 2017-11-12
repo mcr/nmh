@@ -12,6 +12,7 @@
 #include <sys/types.h>
 
 #include "h/mh.h"
+#include "sbr/concat.h"
 #include "sbr/smatch.h"
 #include "sbr/r1bindex.h"
 #include "sbr/trimcpy.h"

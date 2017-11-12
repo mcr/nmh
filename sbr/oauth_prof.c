@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "concat.h"
 #include "getcpy.h"
 #include "context_find.h"
 

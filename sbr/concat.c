@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "concat.h"
 #include "h/utils.h"
 
 

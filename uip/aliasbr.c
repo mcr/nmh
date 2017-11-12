@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/concat.h"
 #include "sbr/vfgets.h"
 #include "sbr/getcpy.h"
 #include "h/aliasbr.h"

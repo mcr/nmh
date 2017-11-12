@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "concat.h"
 #include "ruserpass.h"
 #include "credentials.h"
 #include "context_find.h"

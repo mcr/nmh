@@ -370,6 +370,7 @@ noinst_HEADERS = \
     sbr/check_charset.h \
     sbr/client.h \
     sbr/closefds.h \
+    sbr/concat.h \
     sbr/context_del.h \
     sbr/context_find.h \
     sbr/context_foil.h \

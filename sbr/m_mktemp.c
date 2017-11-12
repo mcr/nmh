@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "concat.h"
 #include "r1bindex.h"
 #include "h/utils.h"
 #include "h/signals.h"

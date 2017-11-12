@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/concat.h"
 #include "sbr/smatch.h"
 #include "sbr/context_save.h"
 #include "sbr/context_replace.h"
