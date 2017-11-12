@@ -31,6 +31,7 @@
 #endif
 
 #include "h/mh.h"
+#include "scansbr.h"
 #include "sbr/m_name.h"
 #include "sbr/m_gmprot.h"
 #include "sbr/getarguments.h"
@@ -57,7 +58,6 @@
 #include "h/dropsbr.h"
 #include "h/popsbr.h"
 #include "h/fmt_scan.h"
-#include "h/scansbr.h"
 #include "h/signals.h"
 #include "h/tws.h"
 #include "h/mts.h"

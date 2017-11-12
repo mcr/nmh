@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "scansbr.h"
 #include "sbr/m_name.h"
 #include "sbr/m_gmprot.h"
 #include "sbr/m_getfld.h"
@@ -13,7 +14,6 @@
 #include "sbr/error.h"
 #include "h/addrsbr.h"
 #include "h/fmt_scan.h"
-#include "h/scansbr.h"
 #include "h/tws.h"
 #include "h/utils.h"
 #include "sbr/terminal.h"

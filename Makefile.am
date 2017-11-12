@@ -357,7 +357,6 @@ noinst_HEADERS = \
     h/popsbr.h \
     h/prototypes.h \
     h/rcvmail.h \
-    h/scansbr.h \
     h/signals.h \
     h/tws.h \
     h/utils.h \
@@ -461,6 +460,7 @@ noinst_HEADERS = \
     uip/mhoutsbr.h \
     uip/mhshowsbr.h \
     uip/replsbr.h \
+    uip/scansbr.h \
     #
 
 ##

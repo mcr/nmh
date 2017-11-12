@@ -11,6 +11,7 @@
  */
 
 #include "h/mh.h"
+#include "scansbr.h"
 #include "sbr/getarguments.h"
 #include "sbr/smatch.h"
 #include "sbr/closefds.h"
@@ -21,7 +22,6 @@
 #include "h/signals.h"
 #include <setjmp.h>
 #include "h/rcvmail.h"
-#include "h/scansbr.h"
 #include "h/fmt_scan.h"
 #include "h/tws.h"
 #include "h/mts.h"

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "scansbr.h"
 #include "sbr/m_name.h"
 #include "sbr/getarguments.h"
 #include "sbr/seq_setprev.h"
@@ -26,7 +27,6 @@
 #include "sbr/seq_getnum.h"
 #include "sbr/error.h"
 #include "h/fmt_scan.h"
-#include "h/scansbr.h"
 #include "h/tws.h"
 #include "h/mts.h"
 #include "h/done.h"

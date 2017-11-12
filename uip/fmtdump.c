@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "scansbr.h"
 #include "sbr/getarguments.h"
 #include "sbr/smatch.h"
 #include "sbr/ambigsw.h"
@@ -14,7 +15,6 @@
 #include "sbr/error.h"
 #include "h/fmt_scan.h"
 #include "h/fmt_compile.h"
-#include "h/scansbr.h"
 #include "h/done.h"
 #include "h/utils.h"
 

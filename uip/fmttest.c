@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "scansbr.h"
 #include "sbr/m_name.h"
 #include "sbr/m_getfld.h"
 #include "sbr/getarguments.h"
@@ -31,7 +32,6 @@
 #include "h/fmt_scan.h"
 #include "h/fmt_compile.h"
 #include "h/utils.h"
-#include "h/scansbr.h"
 #include "h/addrsbr.h"
 #include "h/done.h"
 #include "sbr/m_maildir.h"

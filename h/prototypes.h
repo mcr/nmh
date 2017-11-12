@@ -17,9 +17,6 @@ struct msgs_array;
 
 int pidwait (pid_t, int);
 
-void scan_detect_mbox_style (FILE *);
-void scan_finished(void);
-
 /*
  * prototypes for some routines in uip
  */

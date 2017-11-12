@@ -1,5 +1,8 @@
-/* scansbr.h -- definitions for scan()
- */
+/* scansbr.h -- routines to help scan along...
+ *
+ * This code is Copyright (c) 2017, by the authors of nmh.  See the
+ * COPYRIGHT file in the root directory of the nmh distribution for
+ * complete copyright information. */
 
 #define	SCNENC	2		/* message just fine, but encrypted(!!) */
 #define	SCNMSG	1		/* message just fine                    */
@@ -30,8 +33,6 @@
 
 #define	WIDTH  78
 
-/*
- * prototypes
- */
-int scan (FILE *, int, int, char *, int, int, int, char *, long, int,
-          charstring_t *);
+int scan(FILE *, int, int, char *, int, int, int, char *, long, int, charstring_t *);
+void scan_finished(void);
+void scan_detect_mbox_style(FILE *);
