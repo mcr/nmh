@@ -42,6 +42,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/getarguments.h"
 #include "sbr/seq_setcur.h"
 #include "sbr/seq_save.h"
 #include "sbr/smatch.h"

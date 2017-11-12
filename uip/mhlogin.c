@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "h/mh.h"
+#include "sbr/getarguments.h"
 #include "sbr/concat.h"
 #include "sbr/smatch.h"
 #include "sbr/ambigsw.h"

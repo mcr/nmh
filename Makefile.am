@@ -395,6 +395,7 @@ noinst_HEADERS = \
     sbr/folder_pack.h \
     sbr/folder_read.h \
     sbr/folder_realloc.h \
+    sbr/getarguments.h \
     sbr/getcpy.h \
     sbr/geteditor.h \
     sbr/getfolder.h \

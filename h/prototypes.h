@@ -15,8 +15,6 @@ char *etcpath(char *) NONNULL(1);
 
 struct msgs_array;
 
-char **getarguments (char *, int, char **, int);
-
 m_getfld_state_t m_getfld_state_init(FILE *iob);
 void m_getfld_state_reset (m_getfld_state_t *);
 void m_getfld_state_destroy (m_getfld_state_t *);

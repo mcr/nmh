@@ -14,6 +14,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/getarguments.h"
 #include "sbr/smatch.h"
 #include "sbr/ssequal.h"
 #include "sbr/getfolder.h"

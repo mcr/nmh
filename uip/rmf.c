@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/getarguments.h"
 #include "sbr/read_yes_or_no_if_tty.h"
 #include "sbr/concat.h"
 #include "sbr/smatch.h"
