@@ -433,6 +433,7 @@ noinst_HEADERS = \
     sbr/seq_save.h \
     sbr/seq_setcur.h \
     sbr/seq_setprev.h \
+    sbr/seq_setunseen.h \
     sbr/showfile.h \
     sbr/smatch.h \
     sbr/snprintb.h \

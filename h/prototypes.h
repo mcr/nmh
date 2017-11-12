@@ -67,8 +67,6 @@ int pidwait (pid_t, int);
 void scan_detect_mbox_style (FILE *);
 void scan_finished(void);
 
-void seq_setunseen (struct msgs *, int);
-
 /*
  * prototypes for some routines in uip
  */
