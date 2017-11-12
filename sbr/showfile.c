@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "showfile.h"
 #include "r1bindex.h"
 #include "context_save.h"
 #include "arglist.h"

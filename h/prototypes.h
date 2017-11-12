@@ -89,7 +89,6 @@ void seq_save (struct msgs *);
 void seq_setcur (struct msgs *, int);
 void seq_setprev (struct msgs *);
 void seq_setunseen (struct msgs *, int);
-int showfile (char **, char *);
 
 /*
  * prototypes for some routines in uip
