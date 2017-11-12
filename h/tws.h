@@ -36,23 +36,7 @@ struct tws {
 
 #define	dtwszone(tw) dtimezone (tw->tw_zone, tw->tw_flags)
 
-extern char *tw_dotw[];
-extern char *tw_ldotw[];
-extern char *tw_moty[];
-
 /*
  * prototypes
  */
-char *dtime (time_t *, int);
-char *dtimenow (int);
-char *dctime (struct tws *);
-struct tws *dlocaltimenow (void);
-struct tws *dlocaltime (time_t *);
-struct tws *dgmtime (time_t *);
-char *dasctime (struct tws *, int);
-char *dtimezone (int, int);
-int twsort (struct tws *, struct tws *);
-time_t dmktime (struct tws *);
-void set_dotw (struct tws *);
-
 struct tws *dparsetime (char *);

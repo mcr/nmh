@@ -382,6 +382,7 @@ noinst_HEADERS = \
     sbr/credentials.h \
     sbr/ctype-checked.h \
     sbr/discard.h \
+    sbr/dtime.h \
     sbr/encode_rfc2047.h \
     sbr/error.h \
     sbr/escape_addresses.h \

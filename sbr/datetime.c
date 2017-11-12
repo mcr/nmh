@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "dtime.h"
 #include "error.h"
 #include "h/icalendar.h"
 #include "h/fmt_scan.h"

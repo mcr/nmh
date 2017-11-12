@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/dtime.h"
 #include "sbr/m_name.h"
 #include "sbr/m_getfld.h"
 #include "sbr/getarguments.h"

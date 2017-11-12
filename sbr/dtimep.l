@@ -12,6 +12,7 @@
 %{
 #include "h/nmh.h"
 #include "h/mh.h"
+#include "dtime.h"
 #include "h/utils.h"
 #include "h/tws.h"
 
