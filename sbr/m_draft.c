@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_save.h"
 #include "m_draft.h"
 #include "m_convert.h"
 #include "folder_read.h"

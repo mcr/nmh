@@ -31,6 +31,7 @@
 #endif
 
 #include "h/mh.h"
+#include "sbr/seq_save.h"
 #include "sbr/smatch.h"
 #include "sbr/getfolder.h"
 #include "sbr/ext_hook.h"

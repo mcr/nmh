@@ -8,6 +8,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/seq_save.h"
 #include "sbr/smatch.h"
 #include "sbr/ssequal.h"
 #include "sbr/getcpy.h"

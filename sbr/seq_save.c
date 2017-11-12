@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "seq_save.h"
 #include "context_replace.h"
 #include "context_del.h"
 #include "seq_list.h"
