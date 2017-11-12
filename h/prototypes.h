@@ -20,7 +20,6 @@ int pidwait (pid_t, int);
 /*
  * prototypes for some routines in uip
  */
-int mhl(int, char **);
 int mhlsbr(int, char **, FILE *(*)(char *));
 int distout (char *, char *, char *);
 int sendsbr (char **, int, char *, char *, struct stat *, int, const char *);

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "mhlsbr.h"
 #include "h/done.h"
 #include "h/utils.h"
 
