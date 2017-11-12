@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "distsbr.h"
 #include "sbr/getarguments.h"
 #include "sbr/smatch.h"
 #include "sbr/closefds.h"

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "distsbr.h"
 #include "annosbr.h"
 #include "sbr/m_name.h"
 #include "sbr/m_getfld.h"

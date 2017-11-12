@@ -455,6 +455,7 @@ noinst_HEADERS = \
     sbr/vfgets.h \
     thirdparty/jsmn/jsmn.h \
     uip/annosbr.h \
+    uip/distsbr.h \
     uip/forwsbr.h \
     uip/mhfree.h \
     uip/mhlsbr.h \
