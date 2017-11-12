@@ -15,8 +15,6 @@ char *etcpath(char *) NONNULL(1);
 
 struct msgs_array;
 
-char *m_name (int);
-
 int pidwait (pid_t, int);
 
 void scan_detect_mbox_style (FILE *);

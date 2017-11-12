@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_name.h"
 #include "sbr/r1bindex.h"
 #include "sbr/geteditor.h"
 #include "sbr/context_save.h"

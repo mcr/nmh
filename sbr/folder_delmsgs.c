@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "m_name.h"
 #include "seq_save.h"
 #include "m_backup.h"
 #include "ext_hook.h"

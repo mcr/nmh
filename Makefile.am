@@ -409,6 +409,7 @@ noinst_HEADERS = \
     sbr/m_gmprot.h \
     sbr/m_maildir.h \
     sbr/m_mktemp.h \
+    sbr/m_name.h \
     sbr/m_popen.h \
     sbr/m_rand.h \
     sbr/makedir.h \

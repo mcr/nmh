@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_name.h"
 #include "sbr/m_gmprot.h"
 #include "sbr/getarguments.h"
 #include "sbr/read_switch_multiword.h"

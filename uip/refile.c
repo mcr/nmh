@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_name.h"
 #include "sbr/getarguments.h"
 #include "sbr/seq_setprev.h"
 #include "sbr/seq_setcur.h"

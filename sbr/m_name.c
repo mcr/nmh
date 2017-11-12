@@ -7,6 +7,7 @@
 
 #include <limits.h>
 #include "h/mh.h"
+#include "m_name.h"
 #include "h/utils.h"
 
 #define STR(s) #s

@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "m_name.h"
 #include "seq_setcur.h"
 #include "ext_hook.h"
 #include "folder_realloc.h"

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "m_name.h"
 #include "seq_setprev.h"
 #include "seq_setcur.h"
 #include "seq_save.h"
