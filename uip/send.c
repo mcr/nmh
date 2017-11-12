@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/read_switch_multiword.h"
 #include "sbr/concat.h"
 #include "sbr/seq_setprev.h"
 #include "sbr/seq_save.h"

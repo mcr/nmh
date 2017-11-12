@@ -16,14 +16,6 @@ char *etcpath(char *) NONNULL(1);
 struct msgs_array;
 
 /*
- * Print null-terminated PROMPT to and flush standard output.  Read multi-word
- * answers from standard input until a first word matches an entry in SWITCHES.
- * When one matches, return a pointer to an array of pointers to the words.
- * Return NULL on EOF, interrupt, or other error.
- */
-char **read_switch_multiword(const char *PROMPT, const struct swit *SWITCHES);
-
-/*
  * Same as read_switch_multiword but using readline(3) for input.
  */
 #ifdef READLINE_SUPPORT
