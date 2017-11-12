@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "m_getfld.h"
 #include "concat.h"
 #include "trimcpy.h"
 #include "getcpy.h"

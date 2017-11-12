@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "m_getfld.h"
 #include "error.h"
 #include "h/mts.h"
 #include "h/utils.h"

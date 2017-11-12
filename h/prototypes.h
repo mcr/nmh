@@ -15,18 +15,8 @@ char *etcpath(char *) NONNULL(1);
 
 struct msgs_array;
 
-m_getfld_state_t m_getfld_state_init(FILE *iob);
-void m_getfld_state_reset (m_getfld_state_t *);
-void m_getfld_state_destroy (m_getfld_state_t *);
-void m_getfld_track_filepos (m_getfld_state_t *, FILE *);
-void m_getfld_track_filepos2(m_getfld_state_t *);
-int m_getfld (m_getfld_state_t *, char[NAMESZ], char *, int *, FILE *);
-int m_getfld2(m_getfld_state_t *, char[NAMESZ], char *, int *);
 int m_gmprot (void) PURE;
 char *m_name (int);
-
-void m_unknown(m_getfld_state_t *, FILE *);
-void m_unknown2(m_getfld_state_t *);
 
 int pidwait (pid_t, int);
 

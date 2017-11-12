@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "m_getfld.h"
 #include "seq_read.h"
 #include "ssequal.h"
 #include "trimcpy.h"

@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_getfld.h"
 #include "sbr/getcpy.h"
 #include "sbr/error.h"
 #include "h/addrsbr.h"

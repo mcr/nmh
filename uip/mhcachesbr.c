@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_getfld.h"
 #include "sbr/read_yes_or_no_if_tty.h"
 #include "sbr/trimcpy.h"
 #include "sbr/error.h"

@@ -38,6 +38,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_getfld.h"
 #include "sbr/getarguments.h"
 #include "sbr/read_switch_multiword_via_readline.h"
 #include "sbr/concat.h"

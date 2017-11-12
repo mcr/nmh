@@ -7,6 +7,7 @@
  */
 
 #include "h/mh.h"
+#include "m_getfld.h"
 #include "trimcpy.h"
 #include "getcpy.h"
 #include "readconfig.h"
