@@ -21,4 +21,3 @@ int pidwait (pid_t, int);
  * prototypes for some routines in uip
  */
 int mhlsbr(int, char **, FILE *(*)(char *));
-int WhatNow(int, char **) NORETURN;

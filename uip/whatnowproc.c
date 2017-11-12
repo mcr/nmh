@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "whatnowsbr.h"
 #include "whatnowproc.h"
 #include "sbr/m_name.h"
 #include "sbr/r1bindex.h"

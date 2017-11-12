@@ -466,6 +466,7 @@ noinst_HEADERS = \
     uip/scansbr.h \
     uip/sendsbr.h \
     uip/whatnowproc.h \
+    uip/whatnowsbr.h \
     #
 
 ##
