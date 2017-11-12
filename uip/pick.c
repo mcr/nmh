@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "picksbr.h"
 #include "sbr/m_name.h"
 #include "sbr/getarguments.h"
 #include "sbr/seq_setprev.h"
@@ -26,7 +27,6 @@
 #include "sbr/seq_add.h"
 #include "sbr/error.h"
 #include "h/tws.h"
-#include "h/picksbr.h"
 #include "h/done.h"
 #include "h/utils.h"
 #include "sbr/m_maildir.h"

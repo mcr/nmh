@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "picksbr.h"
 #include "sbr/dtime.h"
 #include "sbr/dtime.h"
 #include "sbr/m_getfld.h"
@@ -15,7 +16,6 @@
 #include "sbr/ambigsw.h"
 #include "sbr/error.h"
 #include "h/tws.h"
-#include "h/picksbr.h"
 #include "h/utils.h"
 
 #ifdef HAVE_SYS_TIME_H

@@ -353,7 +353,6 @@ noinst_HEADERS = \
     h/netsec.h \
     h/nmh.h \
     h/oauth.h \
-    h/picksbr.h \
     h/popsbr.h \
     h/prototypes.h \
     h/rcvmail.h \
@@ -463,6 +462,7 @@ noinst_HEADERS = \
     uip/mhmisc.h \
     uip/mhoutsbr.h \
     uip/mhshowsbr.h \
+    uip/picksbr.h \
     uip/replsbr.h \
     uip/scansbr.h \
     uip/sendsbr.h \
