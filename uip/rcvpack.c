@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_gmprot.h"
 #include "sbr/getarguments.h"
 #include "sbr/smatch.h"
 #include "sbr/ambigsw.h"

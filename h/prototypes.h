@@ -15,7 +15,6 @@ char *etcpath(char *) NONNULL(1);
 
 struct msgs_array;
 
-int m_gmprot (void) PURE;
 char *m_name (int);
 
 int pidwait (pid_t, int);

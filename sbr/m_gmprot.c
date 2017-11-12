@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "m_gmprot.h"
 #include "context_find.h"
 #include "atooi.h"
 

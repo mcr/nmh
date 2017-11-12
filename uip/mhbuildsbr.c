@@ -14,6 +14,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_gmprot.h"
 #include "sbr/m_getfld.h"
 #include "sbr/concat.h"
 #include "sbr/r1bindex.h"

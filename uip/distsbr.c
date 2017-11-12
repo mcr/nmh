@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/m_gmprot.h"
 #include "sbr/m_getfld.h"
 #include "sbr/cpydata.h"
 #include "sbr/uprf.h"
