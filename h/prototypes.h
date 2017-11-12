@@ -21,7 +21,6 @@ int pidwait (pid_t, int);
  * prototypes for some routines in uip
  */
 int mhlsbr(int, char **, FILE *(*)(char *));
-int sendsbr (char **, int, char *, char *, struct stat *, int, const char *);
 int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);
 int WhatNow(int, char **) NORETURN;

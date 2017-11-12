@@ -464,6 +464,7 @@ noinst_HEADERS = \
     uip/mhshowsbr.h \
     uip/replsbr.h \
     uip/scansbr.h \
+    uip/sendsbr.h \
     #
 
 ##

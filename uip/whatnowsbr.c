@@ -38,6 +38,7 @@
  */
 
 #include "h/mh.h"
+#include "sendsbr.h"
 #include "annosbr.h"
 #include "sbr/m_getfld.h"
 #include "sbr/getarguments.h"
