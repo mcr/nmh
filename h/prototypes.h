@@ -16,8 +16,3 @@ char *etcpath(char *) NONNULL(1);
 struct msgs_array;
 
 int pidwait (pid_t, int);
-
-/*
- * prototypes for some routines in uip
- */
-int mhlsbr(int, char **, FILE *(*)(char *));
