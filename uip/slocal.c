@@ -35,7 +35,6 @@
 #include "sbr/print_help.h"
 #include "sbr/error.h"
 #include "h/dropsbr.h"
-#include "h/rcvmail.h"
 #include "h/signals.h"
 #include <setjmp.h>
 #include "h/tws.h"
@@ -393,7 +392,7 @@ main (int argc, char **argv)
     /* deliver the message */
     status = localmail (fd, mdlvr);
 
-    done (status != -1 ? RCV_MOK : RCV_MBX);
+    done(status != -1 ? 0 : 1);
     return 1;
 }
 

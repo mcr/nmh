@@ -21,7 +21,6 @@
 #include "sbr/error.h"
 #include "h/signals.h"
 #include <setjmp.h>
-#include "h/rcvmail.h"
 #include "h/fmt_scan.h"
 #include "h/tws.h"
 #include "h/mts.h"
@@ -150,7 +149,7 @@ main (int argc, char **argv)
     vec[vecp] = 0;
 
     if ((md = vecp ? message_fd (vec) : header_fd ()) == NOTOK)
-	exit (RCV_MBX);
+	exit(1);
 
     user = getusername();
 
@@ -170,7 +169,7 @@ main (int argc, char **argv)
     NMH_UNUSED (utp);
 #endif /* HAVE_GETUTXENT */
 
-    exit (RCV_MOK);
+    exit(0);
 }
 
 

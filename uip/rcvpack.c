@@ -14,7 +14,6 @@
 #include "sbr/print_help.h"
 #include "sbr/error.h"
 #include "h/dropsbr.h"
-#include "h/rcvmail.h"
 #include "h/tws.h"
 #include "h/mts.h"
 #include "h/done.h"
@@ -91,18 +90,18 @@ main (int argc, char **argv)
 
     /* open and lock the file */
     if ((md = mbx_open (file, mbx_style, getuid(), getgid(), m_gmprot())) == NOTOK)
-	done (RCV_MBX);
+	done(1);
 
     /* append the message */
     if (mbx_copy (file, mbx_style, md, fileno(stdin), NULL) == NOTOK) {
 	mbx_close (file, md);
-	done (RCV_MBX);
+	done(1);
     }
 
     /* close and unlock the file */
     if (mbx_close (file, md) == NOTOK)
-	done (RCV_MBX);
+	done(1);
 
-    done (RCV_MOK);
+    done(0);
     return 1;
 }

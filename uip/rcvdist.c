@@ -20,7 +20,6 @@
 #include "sbr/arglist.h"
 #include "sbr/error.h"
 #include "h/fmt_scan.h"
-#include "h/rcvmail.h"
 #include "h/tws.h"
 #include "h/mts.h"
 #include "h/done.h"
@@ -272,5 +271,5 @@ unlink_done (int status)
     if (tmpfil[0])
 	(void) m_unlink (tmpfil);
 
-    exit (status ? RCV_MBX : RCV_MOK);
+    exit(status ? 1 : 0);
 }

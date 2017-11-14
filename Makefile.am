@@ -354,7 +354,6 @@ noinst_HEADERS = \
     h/nmh.h \
     h/oauth.h \
     h/prototypes.h \
-    h/rcvmail.h \
     h/signals.h \
     h/tws.h \
     h/utils.h \
