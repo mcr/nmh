@@ -13,7 +13,7 @@
 #include "h/oauth.h"
 #include "h/netsec.h"
 
-#include "h/popsbr.h"
+#include "popsbr.h"
 #include "h/signals.h"
 #include "sbr/base64.h"
 

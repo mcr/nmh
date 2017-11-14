@@ -19,7 +19,7 @@
 #include "h/utils.h"
 #include <pwd.h>
 
-#include "h/popsbr.h"
+#include "popsbr.h"
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)
