@@ -15,6 +15,7 @@
 #include "sbr/print_help.h"
 #include "sbr/error.h"
 #include "h/icalendar.h"
+#include "sbr/datetime.h"
 #include "sbr/icalparse.h"
 #include "h/fmt_scan.h"
 #include "h/addrsbr.h"

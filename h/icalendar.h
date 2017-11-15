@@ -74,11 +74,6 @@ struct contentline *find_contentline (contentline *, const char *,
                                       const char *) PURE;
 void free_contentlines (contentline *);
 
-typedef struct tzdesc *tzdesc_t;
-tzdesc_t load_timezones (const contentline *);
-void free_timezones (tzdesc_t);
-char *format_datetime (tzdesc_t, const contentline *);
-
 /*
  * The following provide access to, and by, the iCalendar parser.
  */

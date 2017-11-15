@@ -9,6 +9,7 @@
 #include "dtime.h"
 #include "error.h"
 #include "h/icalendar.h"
+#include "datetime.h"
 #include "h/fmt_scan.h"
 #include "h/tws.h"
 #include "h/utils.h"

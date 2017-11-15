@@ -378,6 +378,7 @@ noinst_HEADERS = \
     sbr/crawl_folders.h \
     sbr/credentials.h \
     sbr/ctype-checked.h \
+    sbr/datetime.h \
     sbr/discard.h \
     sbr/dtime.h \
     sbr/encode_rfc2047.h \
