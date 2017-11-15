@@ -274,7 +274,7 @@ free_timezones (tzdesc_t timezone)
  * Given a recurrence rule and year, calculate its time in seconds
  * from 01 January UTC of the year.
  */
-time_t
+static time_t
 rrule_clock (const char *rrule, const char *starttime, const char *zone,
              unsigned int year)
 {
