@@ -8,7 +8,7 @@
 #include "h/mh.h"
 #include "concat.h"
 #include "error.h"
-#include "h/crawl_folders.h"
+#include "crawl_folders.h"
 #include "h/utils.h"
 
 struct crawl_context {

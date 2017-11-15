@@ -29,7 +29,7 @@
 #include "sbr/print_version.h"
 #include "sbr/print_help.h"
 #include "sbr/error.h"
-#include "h/crawl_folders.h"
+#include "sbr/crawl_folders.h"
 #include "h/done.h"
 #include "h/utils.h"
 #include "sbr/lock_file.h"

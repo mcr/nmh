@@ -337,7 +337,6 @@ noinst_LIBRARIES = \
 noinst_HEADERS = \
     h/addrsbr.h \
     h/aliasbr.h \
-    h/crawl_folders.h \
     h/done.h \
     h/dropsbr.h \
     h/fmt_compile.h \
@@ -376,6 +375,7 @@ noinst_HEADERS = \
     sbr/copyip.h \
     sbr/cpydata.h \
     sbr/cpydgst.h \
+    sbr/crawl_folders.h \
     sbr/credentials.h \
     sbr/ctype-checked.h \
     sbr/discard.h \
