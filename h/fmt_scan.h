@@ -289,25 +289,3 @@ void fmt_appendcomp(int bucket, char *component, char *text);
  */
 
 struct comp *fmt_nextcomp(struct comp *comp, unsigned int *bucket);
-
-/*
- * The implementation of the %(formataddr) function.  This is available for
- * programs to provide their own local implementation if they wish to do
- * special processing (see uip/replsbr.c for an example).  Arguments are:
- *
- * orig		- Existing list of addresses
- * str		- New address(es) to append to list.
- *
- * This function returns an allocated string containing the new list of
- * addresses.
- */
-
-char *formataddr(char *orig, char *str);
-
-/*
- * The implementation of the %(concataddr) function.  Arguments and behavior
- * are the same as %(formataddr).  Again, see uip/replsbr.c to see how you
- * can override this behavior.
- */
-
-char *concataddr(char *orig, char *str);

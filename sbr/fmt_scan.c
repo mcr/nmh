@@ -9,6 +9,7 @@
  */
 
 #include "h/mh.h"
+#include "fmt_addr.h"
 #include "dtime.h"
 #include "strindex.h"
 #include "fmt_rfc2047.h"
