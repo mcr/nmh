@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/fmt_new.h"
 #include "sendsbr.h"
 #include "distsbr.h"
 #include "annosbr.h"

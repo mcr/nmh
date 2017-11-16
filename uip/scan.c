@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/fmt_new.h"
 #include "sbr/dtime.h"
 #include "scansbr.h"
 #include "sbr/m_name.h"

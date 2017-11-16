@@ -6,6 +6,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/fmt_new.h"
 #include "whatnowproc.h"
 #include "sbr/m_name.h"
 #include "sbr/m_gmprot.h"

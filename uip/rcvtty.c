@@ -11,6 +11,7 @@
  */
 
 #include "h/mh.h"
+#include "sbr/fmt_new.h"
 #include "scansbr.h"
 #include "sbr/getarguments.h"
 #include "sbr/smatch.h"
