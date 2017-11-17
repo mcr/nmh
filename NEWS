@@ -8,6 +8,9 @@ MH and nmh uses should read careful the NOTEABLE CHANGES section, as there
 are some significant changes to nmh behavior.  Otherwise, please see the
 README and INSTALL files for help on getting started with nmh.
 
+For news of future releases, subscribe to the low-volume
+    https://lists.nongnu.org/mailman/listinfo/nmh-announce
+
 ---------------
 NOTABLE CHANGES
 ---------------
@@ -20,7 +23,7 @@ The largest notable changes in the 1.7 release are:
   (via the Cyrus-SASL library) and TLS.  TLS support has been strengthened
   to perform certificate name validation and to require TLS 1.1 as a
   minimum protocol.  Also, all protocols can make use of the OAuth2/XOAUTH
-  SASL mechanism, which is supported by gmail.
+  SASL mechanism, which is supported by Gmail.
 - send(1) now supports adding switches to post(8) based on the address or
   domain of the email address in the From: header; this more easily allows
   users to support multiple identities.
