@@ -475,6 +475,7 @@ noinst_HEADERS = \
 ##
 ## Extra files we need to install in various places
 ##
+dist_nmhetc_SCRIPTS = etc/rmmproc.messageid
 dist_nmhetc_DATA = \
     etc/MailAliases \
     etc/components \
@@ -495,7 +496,6 @@ dist_nmhetc_DATA = \
     etc/rcvdistcomps.outbox \
     etc/replcomps \
     etc/replgroupcomps \
-    etc/rmmproc.messageid \
     etc/scan.MMDDYY \
     etc/scan.YYYYMMDD \
     etc/scan.curses \
@@ -551,7 +551,6 @@ docs_contribdir = $(docdir)/contrib
 dist_docs_contrib_SCRIPTS = \
     docs/contrib/localpostproc \
     docs/contrib/ml \
-    docs/contrib/replaliases \
     docs/contrib/replyfilter \
     docs/contrib/vpick \
     #
