@@ -473,6 +473,7 @@ process_addresses(struct format *fmt, struct msgs_array *addrs,
 
 	    fmt_scan(fmt, buffer, outwidth, dat, cb);
 	    fputs(charstring_buffer(buffer), stdout);
+            charstring_clear(buffer);
 	    mlistfree();
 
             free(p->pq_text);
@@ -699,6 +700,7 @@ finished:
     }
     fmt_scan(fmt, buffer, outwidth, dat, cb);
     fputs(charstring_buffer (buffer), stdout);
+    charstring_clear(buffer);
     mlistfree();
 }
 
@@ -732,6 +734,7 @@ process_raw(struct format *fmt, struct msgs_array *text, charstring_t buffer,
 
 	fmt_scan(fmt, buffer, outwidth, dat, cb);
 	fputs(charstring_buffer (buffer), stdout);
+        charstring_clear(buffer);
 	mlistfree();
     }
 }
