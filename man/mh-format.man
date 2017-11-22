@@ -429,9 +429,12 @@ specified by their leading field width argument.  For example,
 size in a field six characters wide filled with leading zeros;
 %14(\fIputstrf\^\fR{\fIfrom\^\fR}) will print the \*(lqFrom:\*(rq header
 component in fourteen characters with trailing spaces added as needed.
-For \fIputstrf\fR, using a negative value for the field width causes
-right-justification of the string within the field, with padding on
+Using a negative value for the field width causes
+right-justification within the field, with padding on
 the left up to the field width.
+Padding is with spaces except for a left-padded
+.I putnumf
+when the width starts with zero.
 The functions (\fIputnum\fR\^) and
 (\fIputstr\fR\^) are somewhat special: they print their result in the
 minimum number of characters required, and ignore any leading field width

@@ -70,56 +70,66 @@ match (char *str, char *sub)
     return 1;
 }
 
-/*
- * copy a number to the destination subject to a maximum width
- */
+/* cpnumber formats num as a signed decimal,
+ * appending it to dest if the result doesn't exceed max.
+ * The absolute value of width is the minimum width to produce.
+ * A smaller string is padded;
+ * on the left if width is positive, else the right.
+ * Left-padding uses fill.  It is either ' ' or '0'.
+ * Right-padding is always with space. */
 void
-cpnumber(charstring_t dest, int num, int wid, char fill, size_t max)
+cpnumber(charstring_t dest, int num, int width, char fill, size_t max)
 {
-    /* Maybe we should handle left padding at some point? */
-    if (wid == 0)
-	return;
-    if (wid < 0)
-        wid = -wid; /* OK because wid originally a short. */
-    if ((size_t)wid < (num >= 0 ? max : max-1)) {
-	/* Build up the string representation of num in reverse. */
-	charstring_t rev = charstring_create (0);
-	int i = num >= 0 ? num : -num;
-
-	do {
-	    charstring_push_back (rev, i % 10  +  '0');
-	    i /= 10;
-	} while (--wid > 0  &&  i > 0);
-	if (i > 0) {
-	    /* Overflowed the field (wid). */
-	    charstring_push_back (rev, '?');
-	} else if (num < 0  &&  wid > 0) {
-	    /* Shouldn't need the wid > 0 check, that's why the condition
-	       at the top checks wid < max-1 when num < 0. */
-	    --wid;
-	    if (fill == ' ') {
-		charstring_push_back (rev, '-');
-	    }
-	}
-	while (wid-- > 0  &&  fill != 0) {
-	    charstring_push_back (rev, fill);
-	}
-	if (num < 0  &&  fill == '0') {
-	    charstring_push_back (rev, '-');
-	}
-
-	{
-	    /* Output the string in reverse. */
-	    size_t b = charstring_bytes (rev);
-	    const char *cp = b  ?  &charstring_buffer (rev)[b]  :  NULL;
-
-	    for (; b > 0; --b) {
-		charstring_push_back (dest, *--cp);
-	    }
-	}
-
-	charstring_free (rev);
+    if (width == 0 || width == INT_MIN) {
+        return;
     }
+
+    bool padright = width < 0;
+    if (padright) {
+        width = -width; /* Can't overflow after above check. */
+    }
+    size_t w = width;
+    if (w > max) {
+        return; /* The padded result can't fit. */
+    }
+    if (num < 0 && w == 1) {
+        return; /* No room for `-' and a digit or `?'. */
+    }
+
+    char *s = m_str(num);
+    size_t len = strlen(s);
+    if (len == w) {
+        charstring_append_cstring(dest, s);
+        return;
+    }
+
+    bool neg = *s == '-';
+    if (len < w) {
+        if (padright) {
+            charstring_append_cstring(dest, s);
+            while (len++ < w) {
+                charstring_push_back(dest, ' ');
+            }
+            return;
+        }
+
+        if (neg && fill == '0') {
+            charstring_push_back(dest, *s++);
+        }
+        while (len++ < w) {
+            charstring_push_back(dest, fill);
+        }
+        charstring_append_cstring(dest, s);
+        return;
+    }
+
+    /* Transform 1234567 -> 1234?67 and -1234567 -> 1234-?7. */
+    char *news = s + len - w;
+    if (neg) {
+        *news = '-';
+    }
+    news[neg] = '?';
+    charstring_append_cstring(dest, news);
 }
 
 /*
