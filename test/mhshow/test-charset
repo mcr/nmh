@@ -20,18 +20,16 @@ check_exit '-eq 1' mhshow -
 
 require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
-skip_param_value_checks=0
+iconv_elides_question_marks=0
 if test "$ICONV_ENABLED" -eq 0; then
     text_size=10
 else
     text_size=11
-    #### For unknown reasons, the parameter values checks fail on the
-    #### FreeBSD10 buildbot.  It doesn't support EBCDIC-US, which is used
-    #### by the checks, so check for that.  Though that doesn't seem to be
-    #### the reason.
-    utf8="`printf '\344' | iconv -f EBCDIC-US -t UTF-8 2>/dev/null`" &&
-    test x"$utf8" = xU ||
-        skip_param_value_checks=1
+    #### The GNU iconv library normalises charset names by eliding '?', along
+    #### with some other characters.  The iconv library used on FreeBSD/NetBSD
+    #### doesn't.
+    printf x | iconv -f ?UTF-8 -t UTF-8 >/dev/null 2>&1  &&
+        iconv_elides_question_marks=1
 fi
 
 expected=$MH_TEST_DIR/$$.expected
@@ -83,18 +81,16 @@ run_prog mhshow $msgnum > $actual 2>&1
 check "$expected" "$actual" : locale profile component
 
 
-if test $skip_param_value_checks -eq 1; then
-    finish_test
-    exit $failed
-fi
-
+#### RFC 2231 defines the extended value syntax:
+#### extended-initial-value := [charset] "'" [language] "'"
+####                           extended-other-values
+#### used below, where language is blank.
 
 start_test 'Encoded parameter value'
 msgfile=`mhpath new`
 msgnum=`basename $msgfile`
-#### The encoded charset name is really UTF-8 encoded,
-#### but say it's UTF-16 to exercise the iconv code,
-#### if it's available, in get_param_value().
+#### Use a charset to exercise the iconv code, if it's available,
+#### in get_param_value().
 cat > $msgfile <<EOF
 From: foo@example.edu
 To: bar@example.edu
@@ -145,7 +141,11 @@ MIME-Version: 1.0
 EOF
 
 run_prog mhshow $msgnum > $actual 2>&1
-check "$expected" "$actual"
+if [ $iconv_elides_question_marks -eq 1 ]; then
+    check "$expected" "$actual"
+else
+    grep "Can't convert .*us-ascii to UTF-8" "$actual" >/dev/null  ||  failed=1
+fi
 
 
 finish_test
