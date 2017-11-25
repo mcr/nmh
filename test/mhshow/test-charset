@@ -28,7 +28,7 @@ else
     #### The GNU iconv library normalises charset names by eliding '?', along
     #### with some other characters.  The iconv library used on FreeBSD/NetBSD
     #### doesn't.
-    printf x | iconv -f ?UTF-8 -t UTF-8 >/dev/null 2>&1  &&
+    printf x | iconv -f '?UTF-8' -t UTF-8 >/dev/null 2>&1  &&
         iconv_elides_question_marks=1
 fi
 
