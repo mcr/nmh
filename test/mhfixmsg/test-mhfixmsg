@@ -179,6 +179,7 @@ run_test 'mhfixmsg last -outfile '"$actual"' -verbose' \
 QUOTED-PRINTABLE with 8 bit"
 check "$expected" "$actual" 'keep first'
 
+sbackup="`mhparam sbackup`"
 
 # check with no options:  checks backup
 start_test "with no options:  checks backup"
@@ -187,7 +188,7 @@ folder last >/dev/null
 run_test 'mhfixmsg' ''
 check "$expected" "$MH_TEST_DIR"/Mail/inbox/11 'keep first'
 cp "$MH_TEST_DIR"/Mail/inbox/11.original "$MH_TEST_DIR"/Mail/inbox/11
-check "$MH_TEST_DIR"/Mail/inbox/,11 "$MH_TEST_DIR"/Mail/inbox/11.original
+check "$MH_TEST_DIR/Mail/inbox/${sbackup}11" "$MH_TEST_DIR"/Mail/inbox/11.original
 
 
 # check backup with -file
@@ -196,7 +197,7 @@ cp "$MH_TEST_DIR"/Mail/inbox/11 "$MH_TEST_DIR"/Mail/inbox/11.original
 folder last >/dev/null
 run_test 'mhfixmsg -file '"$MH_TEST_DIR"/Mail/inbox/11 ''
 check "$MH_TEST_DIR"/Mail/inbox/11 "$expected" 'keep first'
-check "$MH_TEST_DIR"/Mail/inbox/,11 "$MH_TEST_DIR"/Mail/inbox/11.original
+check "$MH_TEST_DIR/Mail/inbox/${sbackup}11" "$MH_TEST_DIR"/Mail/inbox/11.original
 
 
 # check -file with directory
@@ -1375,7 +1376,7 @@ EOF
 
   run_test 'mhfixmsg 21 -normmproc'
   check "${MH_TEST_DIR}/Mail/inbox/22" \
-        "${MH_TEST_DIR}/Mail/inbox/,21" 'keep first'
+        "${MH_TEST_DIR}/Mail/inbox/${sbackup}21" 'keep first'
 fi
 
 
@@ -1790,7 +1791,7 @@ check "$expected" "$actual"
 
 
 # make sure there are no tmp files left over
-find "$MH_TEST_DIR/Mail" \( -name 'mhfix*' -o -name ',mhfix*' \) -print \
+find "$MH_TEST_DIR/Mail" -name '*mhfix*' -print \
   >"$actual"
 cat >"$expected" <<EOF
 EOF

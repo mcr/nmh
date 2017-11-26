@@ -29,7 +29,7 @@ EOF
 }
 
 draft="$MH_TEST_DIR/$$.draft"
-draftorig="$MH_TEST_DIR/,$$.draft.orig"
+draftorig="$MH_TEST_DIR/`mhparam sbackup`$$.draft.orig"
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 

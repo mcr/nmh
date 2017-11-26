@@ -115,7 +115,7 @@ Rebuild message with 7-bit headers, WITHOUT -headerencoding utf-8.
 post: problem initializing server; [BHST] ready; I'll buy that for a dollar!
 send: message not delivered to anyone
 EOF
-mv -f "${MH_TEST_DIR}/Mail/,draft" "${MH_TEST_DIR}/Mail/draft"
+mv -f "${MH_TEST_DIR}/Mail/`mhparam sbackup`draft" "${MH_TEST_DIR}/Mail/draft"
 
 set +e
 test_post "${testname}.actual" "${testname}.expected" 2>"${testname}.err"
