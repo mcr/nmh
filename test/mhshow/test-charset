@@ -90,13 +90,14 @@ start_test 'Encoded parameter value'
 msgfile=`mhpath new`
 msgnum=`basename $msgfile`
 #### Use a charset to exercise the iconv code, if it's available,
-#### in get_param_value().
+#### in get_param_value().  The Content-Type charset is UTF-8, encoded
+#### to exercise iconv.
 cat > $msgfile <<EOF
 From: foo@example.edu
 To: bar@example.edu
 Subject: test
 MIME-Version: 1.0
-Content-Type: text/plain; charset*=EBCDIC-US''%e4%e3%c6%60%f8
+Content-Type: text/plain; charset*=ISO-2022-KR''%1b%24%29%43%55%54%46%2d%38
 Content-Transfer-Encoding: quoted-printable
 Content-Description: bogus quoted-printable data
 Date: Sun, 18 Dec 2005 00:52:39 +0100
@@ -118,8 +119,10 @@ Content-Description: bogus quoted-printable data
 4 ÷ 2 = 2
 EOF
 
-run_prog mhshow $msgnum > $actual 2>&1
-check "$expected" "$actual" : encoded parameter value
+if test "$ICONV_ENABLED" -eq 1; then
+    run_prog mhshow $msgnum > $actual 2>&1
+    check "$expected" "$actual" : encoded parameter value
+fi
 
 
 start_test 'replacement character in parameter value'
