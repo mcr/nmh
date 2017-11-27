@@ -1727,7 +1727,7 @@ check "`mhpath last`" "$actual" 'keep first'
 
 start_test "pass through message with relative folder path with parse error"
 #### Factor out leading portion of current folder path and make it relative.
-pwd=`pwd`
+pwd=`pwd -P`
 set +e
 run_prog mhfixmsg +./`mhpath | sed "s%^$pwd/%%"` last -out - >"$actual" 2>/dev/null
 set -e
