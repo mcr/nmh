@@ -18,13 +18,9 @@ commit checklist
 4. man page and other documentation updated?
 5. docs/pending-release-notes updated?
 6. should commit message reference bug report?
-7. update/close bug report (with commit id)?
-8. notify nmh-users?
-
-A buildbot at http://orthanc.ca:8010/waterfall polls for new commits and
-builds them on a few platforms.  Keep an eye on its progress in case
-you've committed something non-portable.  (If you can provide another
-platform, contact the nmh-workers list.)
+7. be sure that commit message starts with one-line synopsis, then a blank line
+8. update/close bug report (with commit id)?
+9. notify nmh-users?
 
 
 ---------------------------------
