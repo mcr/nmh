@@ -4,19 +4,18 @@
 nmh is routinely built and tested on recent versions of the following
 platforms:
     Cygwin (32- and 64-bit)
-    FreeBSD 9
     FreeBSD 10
     Linux (Fedora, Ubuntu, and CentOS distributions)
-    Mac OS X 10.9
-    OpenBSD 5.4
-    Solaris 11
+    macOS
 
 nmh was known in the distant past to compile on the following platforms (save
 the exceptions noted below), using an ANSI C compiler, such as gcc:
     AIX 4.1.5.0.01
+    FreeBSD 9
     IRIX 6.5
     NetBSD 1.4.2
-    Solaris 7 and 8 (sparc,x86)
+    OpenBSD 5.4
+    Solaris 7, 8, and 11 (sparc,x86)
     SunOS 4.1
 
 On all platforms, the following programs are required to build nmh from a
