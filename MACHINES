@@ -7,6 +7,7 @@ platforms:
     FreeBSD 10
     Linux (Fedora, Ubuntu, and CentOS distributions)
     macOS
+    OpenBSD 6.1
 
 nmh was known in the distant past to compile on the following platforms (save
 the exceptions noted below), using an ANSI C compiler, such as gcc:
@@ -14,7 +15,6 @@ the exceptions noted below), using an ANSI C compiler, such as gcc:
     FreeBSD 9
     IRIX 6.5
     NetBSD 1.4.2
-    OpenBSD 5.4
     Solaris 7, 8, and 11 (sparc,x86)
     SunOS 4.1
 
