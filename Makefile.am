@@ -27,12 +27,6 @@ MHNSEARCHPATH = "$(PATH)"
 MHNSEARCHPROG = $(srcdir)/etc/mhn.find.sh
 
 ##
-## Install config files and back-end programs in our own subdirecctories.
-##
-nmhetcdir  = @sysconfdir@/nmh
-nmhlibexecdir = @libexecdir@/nmh
-
-##
 ## nmh _does_ have a test suite!
 ##
 TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \

@@ -11,7 +11,7 @@ AM_INIT_AUTOMAKE([-Wall foreign serial-tests subdir-objects 1.12])
 AC_CANONICAL_HOST
 
 AC_MSG_NOTICE([configuring for AC_PACKAGE_NAME-AC_PACKAGE_VERSION])
-AC_SUBST(VERSION,AC_PACKAGE_VERSION)dnl
+AC_SUBST([VERSION], [AC_PACKAGE_VERSION])dnl
 
 dnl What date of nmh are we building?
 DATE=`cat ${srcdir}/DATE`
@@ -559,6 +559,20 @@ AS_IF([test "$LEX" = flex],
        AC_SUBST([AM_LFLAGS])])
 
 dnl ------------------
+dnl By default we put backend executables in $(libexecdir)/nmh and
+dnl configuration files in $(sysconfdir)/nmh, but let a user override
+dnl these choices by supplying these variables
+dnl ------------------
+
+AC_ARG_VAR([nmhlibexecdir], [The installation directory for backend programs
+used by nmh.  Defaults to $(libexecdir)/nmh.])
+AS_IF([test -z ${nmhlibexecdir+x}], [nmhlibexecdir='${libexecdir}/nmh'])
+
+AC_ARG_VAR([nmhetcdir], [The installation directory for configuration files
+used by nmh.  Defaults to $(sysconfdir)/nmh.])
+AS_IF([test -z ${nmhetcdir+x}], [nmhetcdir='${sysconfdir}/nmh'])
+
+dnl ------------------
 dnl FOR INTERNAL USE by the NMH test suite
 dnl ------------------
 AC_ARG_VAR([NMHETCDIRINST], [for internal use by nmh test suite])
@@ -601,8 +615,9 @@ dnl We only use the expanded versions to print the install paths in
 dnl the final summary and should use them nowhere else (see the autoconf
 dnl docs for the rationale for bindir etc being unexpanded).
 eval "nmhbin=${bindir}";         eval "nmhbin=${nmhbin}"
-eval "nmhlibexec=${libexecdir}"; eval "nmhlibexec=${nmhlibexec}"
-eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf=${nmhsysconf}"
+eval "nmhlibexec=${nmhlibexecdir}"; eval "nmhlibexec=${nmhlibexec}"
+eval "nmhlibexec=${nmhlibexec}"
+eval "nmhsysconf=${nmhetcdir}"; eval "nmhsysconf=${nmhsysconf}"
 eval "nmhman=${mandir}";         eval "nmhman=${nmhman}"
 eval "nmhdoc=${docdir}";         eval "nmhdoc=${nmhdoc}"
 eval "nmhrpm=${nmhrpm}";
@@ -618,8 +633,8 @@ linker flags               : ${AM_LDFLAGS} ${LDFLAGS}
 preprocessor flags         : ${AM_CPPFLAGS} ${CPPFLAGS}
 source code location       : ${srcdir}
 binary install path        : ${nmhbin}
-libexec install path       : ${nmhlibexec}/nmh
-config files install path  : ${nmhsysconf}/nmh
+libexec install path       : ${nmhlibexec}
+config files install path  : ${nmhsysconf}
 man page install path      : ${nmhman}
 docs install path          : ${nmhdoc}
 RPM build root             : ${nmhrpm}
