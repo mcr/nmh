@@ -18,16 +18,11 @@
 #    For example:
 #      $ rpm -i nmh-1.4-0.fc16.src.rpm
 #      $ rpmbuild --rmsource --rmspec \
-#          --define '_sysconfdir /usr/local/nmh/etc' \
 #          --define 'configure_opts --with-cyrus-sasl --with-tls' \
 #          --bb ~/lib/rpmbuild/SPECS/nmh.spec
 #
 # If configure has previously been run successfully in the workspace,
 # it will not be invoked again, even if configure_opts is defined.
-#
-# Note that "make rpm" sets _sysconfdir.  If configuring to install
-# anyplace other than the default _sysconfdir, typically /etc, and
-# you're not using this through "make rpm", be sure to set _sysconfdir.
 #
 # With kernel (fcntl, flock, or lockf) locking, or with dot locking
 # and a lockdir that's writable by the user, bin/inc does not need to
