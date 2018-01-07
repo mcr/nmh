@@ -21,7 +21,7 @@ folder, folders \- set/list current nmh folder/message
 .RB [ \-list " | " \-nolist ]
 .RB [ \-push " | " \-pop ]
 .RB [ \-pack " | " \-nopack ]
-.RB [ \-print ]
+.RB [ \-print " | " \-noprint ]
 .RB [ \-verbose " | " \-noverbose ]
 .HP 5
 .B folders
@@ -57,7 +57,14 @@ argument is given, this corresponds to a \*(lqcd\*(rq operation
 in the shell; when no
 .I +folder
 argument is given, this corresponds roughly to a \*(lqpwd\*(rq
-operation in the shell.)
+operation in the shell.) If
+.B \-noprint
+is specified, a
+.I +folder
+and/or
+.I msg
+may still be specified to set the current folder and/or message,
+but the folder summary will not be printed.
 .PP
 If the specified (or default) folder doesn't exist,
 .B folder
@@ -75,12 +82,6 @@ Specifying
 will cause
 .B folder
 to print an error message and exit without creating a folder.
-.\"
-.\" note - this doesn't work at present
-.\" If `\-noprint' is specified,
-.\" a `+folder' and/or `msg' may still be specified
-.\" to set the current folder and/or message,
-.\" but the folder summary will not be printed.
 .SS "Multiple Folders"
 Specifying
 .B \-all
@@ -249,8 +250,9 @@ to the \*(lqdirs\*(rq operation in the shell.  The
 .BR \-pop ,
 and
 .B \-list
-switches all disable
-.BR \-print .
+switches disable the default
+.B \-print
+behavior.
 .SH FILES
 .TP 20
 $HOME/.mh_profile
@@ -297,12 +299,12 @@ msg
 \-noverbose
 .TP
 \-print
-is the default if no
+is the default if none of
 .BR -list ,
 .BR \-push ,
 or
 .B \-pop
-is specified.
+are specified.
 .TP
 \-list
 is the default if

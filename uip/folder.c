@@ -130,7 +130,7 @@ nonexistent_folder (int status)
 int
 main (int argc, char **argv)
 {
-    bool printsw = false;
+    int printsw = -1;
     bool listsw = false;
     bool pushsw = false;
     bool popsw = false;
@@ -224,10 +224,10 @@ main (int argc, char **argv)
 		    continue;
 
 		case PRNTSW: 
-		    printsw = true;
+		    printsw = 1;
 		    continue;
 		case NPRNTSW: 
-		    printsw = false;
+		    printsw = 0;
 		    continue;
 
 		case LISTSW: 
@@ -265,11 +265,13 @@ main (int argc, char **argv)
     nmhdir = concat (m_maildir (""), "/", NULL);
 
     /*
-     * If we aren't working with the folder stack
-     * (-push, -pop, -list) then the default is to print.
+     * If not directed via -print/-noprint, we print folder summary
+     * info unless if we're working with the folder stack (i.e.,
+     * -push, -pop, or -list).
      */
-    if (!pushsw && !popsw && !listsw)
-	printsw = true;
+    if (printsw == -1) {
+	printsw = !(pushsw || popsw || listsw);
+    }
 
     /* Pushing a folder onto the folder stack */
     if (pushsw) {
@@ -394,7 +396,8 @@ main (int argc, char **argv)
     /*
      * Print out folder information
      */
-    print_folders();
+    if (printsw)
+	print_folders();
 
     context_save ();	/* save the context file */
     done (0);
