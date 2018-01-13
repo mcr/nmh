@@ -141,7 +141,6 @@ main (int argc, char **argv)
     struct msgs_array msgs = { 0, 0, NULL }, compargs = { 0, 0, NULL};
     bool dump = false;
     int i;
-    int outputsize = 0;
     bool dupaddrs = true;
     bool trace = false;
     int files = 0;
@@ -155,6 +154,8 @@ main (int argc, char **argv)
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
+    bool outputsize_given = false;
+    int outputsize;
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    /*
@@ -190,6 +191,7 @@ main (int argc, char **argv)
 		    continue;
 
 		case OUTSIZESW:
+                    outputsize_given = true;
 		    if (!(cp = *argp++) || *cp == '-')
 		    	die("missing argument to %s", argp[-2]);
 		    if (strcmp(cp, "max") == 0)
@@ -345,11 +347,8 @@ main (int argc, char **argv)
 
     buffer = charstring_create(BUFSIZ);
 
-    if (outputsize == 0) {
-	if (mode == MESSAGE)
-	    outputsize = sc_width();
-	else
-	    outputsize = INT_MAX;
+    if (!outputsize_given) {
+        outputsize = mode == MESSAGE ? sc_width() : INT_MAX;
     }
 
     dat[0] = msgnum;
