@@ -311,6 +311,9 @@ mhshow-suffix-application/PostScript: .ps
 .PP
 to automatically append a suffix to the temporary files.
 .PP
+The matching with the content type identifier is case-insensitive, both in
+mhshow-suffix-<type> and mhshow-show-<type> (below) profile entries.
+.PP
 The method used to display the different contents in the messages bodies
 will be determined by a \*(lqdisplay string\*(rq.  To find the display
 string,
