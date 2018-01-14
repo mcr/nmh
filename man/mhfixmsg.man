@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% 2016-11-08 "%nmhversion%"
+.TH MHFIXMSG %manext1% 2018-01-14 "%nmhversion%"
 .
 .\" %nmhwarning%
 .
@@ -20,6 +20,9 @@ mhfixmsg \- nmh's MIME-email rewriter with various transformations
 .BR \-nodecodetext ]
 .RB [ \-decodetypes
 .IR "type/[subtype][,...]" ]
+.RB [ \-decodeheaderfieldbodies
+utf-8 |
+.BR \-nodecodeheaderfieldbodies ]
 .RB [ \-crlflinebreaks " | " \-nocrlflinebreaks ]
 .RB [ \-textcharset
 .I charset
@@ -97,6 +100,18 @@ to restrict
 .B \-decodetext
 to just text/plain parts.
 .PP
+The
+.B \-decodeheaderfieldbodies
+switch enables decoding of UTF-8 header field bodies, when supplied
+with its mandatory
+.I utf-8
+argument.  The
+.B \-nodecodeheaderfieldbodies
+inhibits this transformation.  The transformation can produce a message
+that does not conform with RFC 2047, §1, paragraph 6, because the decoded
+header field body could contain unencoded non-ASCII characters.  It is
+therefore not enabled by default.
+.PP
 By default, carriage return characters are preserved or inserted at
 the end of each line of text content.  The
 .B \-crlflinebreaks
@@ -105,7 +120,7 @@ switch selects this behavior and is enabled by default.  The
 switch causes carriage return characters to be stripped from, and not
 inserted in, text content when it is decoded and encoded.  Note that
 its use can cause the generation of MIME messages that do not conform
-to RFC 2046, §4.1.1, paragraph 1.
+with RFC 2046, §4.1.1, paragraph 1.
 .PP
 The
 .B \-textcharset
@@ -294,15 +309,16 @@ content type and/or encoding as follows:
 .PP
 .RS 5
 .nf
-.ta \w'\-crlflinebreaks 'u
-\-decodetext         base64 and quoted-printable encoded text parts
-\-decodetypes        limits parts to which -decodetext applies
-\-crlflinebreaks     text parts
-\-textcharset        text/plain parts
-\-reformat           text parts that are not text/plain
-\-fixboundary        outermost multipart part
-\-fixcte             multipart or message part
-\-fixtype            all except multipart and message parts
+.ta \w'\-decodeheaderfieldbodies 'u
+\-decodetext              base64 and quoted-printable encoded text parts
+\-decodetypes             limits parts to which -decodetext applies
+\-decodeheaderfieldbodies all message parts
+\-crlflinebreaks          text parts
+\-textcharset             text/plain parts
+\-reformat                text parts that are not text/plain
+\-fixboundary             outermost multipart part
+\-fixcte                  multipart or message part
+\-fixtype                 all except multipart and message parts
 .fi
 .RE
 .SS "Backup of Original Message/File"
@@ -529,6 +545,7 @@ is checked.
 .RB ` msgs "' defaults to cur"
 .RB ` "\-decodetext 8bit"'
 .RB ` "\-decodetypes text,application/ics"'
+.RB ` \-nodecodeheaderfieldbodies '
 .RB ` \-crlflinebreaks '
 .RB ` \-notextcharset '
 .RB ` \-reformat '

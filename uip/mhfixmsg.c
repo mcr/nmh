@@ -50,6 +50,8 @@
     X("decodetext 8bit|7bit|binary", 0, DECODETEXTSW) \
     X("nodecodetext", 0, NDECODETEXTSW) \
     X("decodetypes", 0, DECODETYPESW) \
+    X("decodeheaderfieldbodies utf-8", 0, DECODEHEADERFIELDBODIESSW) \
+    X("nodecodeheaderfieldbodies", 0, NDECODEHEADERFIELDBODIESSW) \
     X("crlflinebreaks", 0, CRLFLINEBREAKSSW) \
     X("nocrlflinebreaks", 0, NCRLFLINEBREAKSSW) \
     X("textcharset", 0, TEXTCHARSETSW) \
@@ -99,6 +101,7 @@ typedef struct fix_transformations {
     int replacetextplain;
     int decodetext;
     char *decodetypes;
+    char *decodeheaderfieldbodies; /* Either NULL or "utf-8". */
     /* Whether to use CRLF linebreaks, per RFC 2046 Sec. 4.1.1, par.1. */
     int lf_line_endings;
     char *textcharset;
@@ -137,6 +140,7 @@ static int least_restrictive_encoding (CT) PURE;
 static int less_restrictive (int, int);
 static int convert_charsets (CT, char *, int *);
 static int fix_always (CT, int *);
+static int decode_header_field_bodies (CT, int *);
 static int fix_filename_param (char *, char *, PM *, PM *);
 static int fix_filename_encoding (CT);
 static int write_content (CT, const char *, char *, FILE *, int, int);
@@ -167,6 +171,7 @@ main (int argc, char **argv)
     fx.replacetextplain = 0;
     fx.decodetext = CE_8BIT;
     fx.decodetypes = "text,application/ics";  /* Default, per man page. */
+    fx.decodeheaderfieldbodies = NULL;
     fx.lf_line_endings = 0;
     fx.textcharset = NULL;
 
@@ -218,6 +223,21 @@ main (int argc, char **argv)
                     die("missing argument to %s", argp[-2]);
                 }
                 fx.decodetypes = cp;
+                continue;
+            case DECODEHEADERFIELDBODIESSW:
+                if (! (cp = *argp++)  ||  *cp == '-') {
+                    die("missing argument to %s", argp[-2]);
+                }
+                fx.decodeheaderfieldbodies = cp;
+                if (strcasecmp (cp, "utf-8")  && strcasecmp (cp, "utf8")) {
+                    /* Because UTF-8 strings can't have embedded nulls.  Other
+                       encodings support that, too, but we won't bother to
+                       enumerate them. */
+                    die("-decodeheaderfieldbodies only supports utf-8");
+                }
+                continue;
+            case NDECODEHEADERFIELDBODIESSW:
+                fx.decodeheaderfieldbodies = NULL;
                 continue;
             case CRLFLINEBREAKSSW:
                 fx.lf_line_endings = 0;
@@ -597,6 +617,9 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
         status = decode_text_parts (*ctp, fx->decodetext, fx->decodetypes,
                                     &message_mods);
         update_cte (*ctp);
+    }
+    if (status == OK  &&  fx->decodeheaderfieldbodies) {
+        status = decode_header_field_bodies(*ctp, &message_mods);
     }
     if (status == OK  &&  fx->textcharset != NULL) {
         status = convert_charsets (*ctp, fx->textcharset, &message_mods);
@@ -2623,6 +2646,66 @@ fix_always (CT ct, int *message_mods)
             }
         }
     }}
+
+    return status;
+}
+
+
+/*
+ * Decodes UTF-8 encoded header values.  Similar to fix_filename_param(), but
+ * does not modify any MIME parameter values.
+ */
+static int
+decode_header_field_bodies (CT ct, int *message_mods)
+{
+    int status = OK;
+
+    switch (ct->c_type) {
+    case CT_MULTIPART: {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
+            status = decode_header_field_bodies (part->mp_part, message_mods);
+        }
+        break;
+    }
+
+    case CT_MESSAGE:
+        if (ct->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
+
+            status = decode_header_field_bodies (e->eb_content, message_mods);
+        }
+        break;
+    }
+
+    HF hf;
+
+    for (hf = ct->c_first_hf; hf; hf = hf->next) {
+        /* Only decode UTF-8 values. */
+        if (hf->value  &&  has_suffix(hf->value, "?=\n")  &&
+            (! strncasecmp (hf->value, " =?utf8?", 8)  ||
+             ! strncasecmp (hf->value, " =?utf-8?", 9))) {
+            /* Looks like an RFC 2047 encoded parameter. */
+            char decoded[PATH_MAX + 1];
+
+            if (decode_rfc2047 (hf->value, decoded, sizeof decoded)) {
+                const size_t len = strlen(decoded);
+
+                /* decode_rfc2047() could truncate if the buffer fills up.
+                   Detect and discard if that happened. */
+                if (len < sizeof(decoded) - 1  &&  strcmp(hf->value, decoded)) {
+                    hf->value = mh_xrealloc (hf->value, len + 1);
+                    strncpy (hf->value, decoded, len + 1);
+                    ++*message_mods;
+                }
+            } else {
+                inform("failed to decode %s parameter %s", hf->name, hf->value);
+                status = NOTOK;
+            }
+        }
+    }
 
     return status;
 }

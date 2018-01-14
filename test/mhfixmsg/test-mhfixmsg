@@ -53,6 +53,8 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   -decodetext 8bit|7bit|binary
   -nodecodetext
   -decodetypes
+  -decodeheaderfieldbodies utf-8
+  -nodecodeheaderfieldbodies
   -[no]crlflinebreaks
   -[no]textcharset
   -[no]reformat
@@ -364,8 +366,8 @@ else
 fi
 
 
-# check -nodecode
-start_test "-nodecode"
+# check -nodecodetext
+start_test "-nodecodetext"
 prepare_space >"$expected" <<EOF
 MIME-Version: 1.0
 From: sender@example.com
@@ -429,7 +431,7 @@ if [ $can_reformat_texthtml -eq 1 ]; then
   printf '%s\n' 'mhfixmsg: 12, insert text/plain part' >"$expected.err"
 
   #### lynx inserts multiple blank lines, so squeeze them.
-  run_prog mhfixmsg last -nodecode -outfile - -verbose 2>"$actual.err" | \
+  run_prog mhfixmsg last -nodecodetext -outfile - -verbose 2>"$actual.err" | \
     squeeze_lines >"$actual"
   check "$expected" "$actual" 'ignore space'
   check "$expected.err" "$actual.err"
@@ -1790,6 +1792,67 @@ run_prog mhfixmsg -file - -outfile - <`mhpath last` >"$actual" 2>/dev/null
 check "$expected" "$actual"
 
 
+start_test "-nodecodeheaderfieldbodies"
+cat >"`mhpath new`" <<EOF
+To: recipient@example.com
+From: sender@example.com
+Date: Wed, 28 Sep 2016 11:24:28 -0400
+Subject: =?utf-8?B?dGhpcyBTdWJqZWN0IHdhcyBVVEYtOCBlbmNvZGVk?=
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary=001a114dd3e8fe9c56053d92f414
+Content-Transfer-Encoding: 8bit
+
+--001a114dd3e8fe9c56053d92f414
+Content-Type: text/plain; charset=UTF-8
+
+This is a test.
+
+--001a114dd3e8fe9c56053d92f414
+Content-Type: text/plain; charset=UTF-8; name="test.txt"
+Content-Disposition: attachment; filename="test.txt"
+Content-Transfer-Encoding: 8bit
+
+This is the first text/plain part, in a subpart.  The file name
+is test.txt.
+
+--001a114dd3e8fe9c56053d92f414--
+EOF
+run_prog mhfixmsg -file - -outfile - -decodeheaderfieldbodies utf-8 \
+     -nodecodeheaderfieldbodies <`mhpath last` >"$actual" 2>/dev/null
+check `mhpath last` "$actual" 'keep first'
+
+
+start_test "test decoding of UTF-8 header value"
+cat >"$expected" <<EOF
+To: recipient@example.com
+From: sender@example.com
+Date: Wed, 28 Sep 2016 11:24:28 -0400
+Subject: this Subject was UTF-8 encoded
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary=001a114dd3e8fe9c56053d92f414
+Content-Transfer-Encoding: 8bit
+
+--001a114dd3e8fe9c56053d92f414
+Content-Type: text/plain; charset=UTF-8
+
+This is a test.
+
+--001a114dd3e8fe9c56053d92f414
+Content-Type: text/plain; charset=UTF-8; name="test.txt"
+Content-Disposition: attachment; filename="test.txt"
+Content-Transfer-Encoding: 8bit
+
+This is the first text/plain part, in a subpart.  The file name
+is test.txt.
+
+--001a114dd3e8fe9c56053d92f414--
+EOF
+
+run_prog mhfixmsg -file - -outfile - -decodeheaderfieldbodies utf-8 \
+     <`mhpath last` >"$actual" 2>/dev/null
+check "$expected" "$actual"
+
+
 # make sure there are no tmp files left over
 find "$MH_TEST_DIR/Mail" -name '*mhfix*' -print \
   >"$actual"
@@ -1797,6 +1860,7 @@ cat >"$expected" <<EOF
 EOF
 
 check "$expected" "$actual"
+
 
 finish_test
 exit $failed
