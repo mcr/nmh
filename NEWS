@@ -128,6 +128,7 @@ BUG FIXES
 - scan can now handle empty files without violating an assert [Bug #51693].
 - An error when writing an error message, e.g. EPIPE, no longer causes
   recursion until the stack is exhausted.
+- rcvdist(1) now passes switch arguments to post(8).
 
 -------------------
 DEPRECATED FEATURES

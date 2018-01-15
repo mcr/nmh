@@ -85,7 +85,7 @@ DEFINE_SWITCH_ENUM(POST);
 #undef X
 
 #define X(sw, minchars, id) { sw, minchars, id },
-DEFINE_SWITCH_ARRAY(POST, post_switches);
+DEFINE_SWITCH_ARRAY(POST, post_switches_with_args);
 #undef X
 
 static char backup[BUFSIZ] = "";
@@ -130,17 +130,19 @@ main (int argc, char **argv)
 		case AMBIGSW: 
 		    ambigsw (cp, switches);
 		    done (1);
-		case UNKWNSW: 
+		case UNKWNSW: {
+		    const int argno = smatch(cp, post_switches_with_args);
 		    vec[vecp++] = --cp;
-		    if (smatch(cp + 1, post_switches) != UNKWNSW) {
+		    if (argno != AMBIGSW && argno != UNKWNSW) {
 			/* It's a post switch that does take an argument. */
 			if (!(cp = *argp) || *cp == '-') {
 			    die("missing argument to %s", argp[-1]);
 			}
-                        vec[vecp++] = *argp++;
+			vec[vecp++] = cp;
+			++argp;
 		    }
 		    continue;
-
+		}
 		case HELPSW: 
 		    snprintf (buf, sizeof(buf),
 			"%s [switches] [switches for postproc] address ...",
