@@ -1,0 +1,298 @@
+#! /bin/sh
+
+# Tests for fmttest(1).
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+# fmttest(1) doesn't accept `--' to mark the end of option processing.
+# This is a bug.  It also considers a string of `-3' to be an unknown
+# option `3';  `-- -3' can't be used.  One workaround is to give a
+# string of `3' and use `%(void(minus 0))' in the format string to
+# negate it, but this contains a space and makes parsing the here file
+# tedious.  Instead, pass the test value as the component `t', with a
+# dummy string `unused' to satisfy the requirement of at least one thing
+# to format.
+
+t="$MH_TEST_DIR/$$"
+want_out="$t.want.1" want_err="$t.want.2"
+got_out="$t.got.1" got_err="$t.got.2"
+ok=true
+while read -r fmt val size out; do
+    if test "$fmt" = '#'; then continue; fi
+
+    if test -n "$out"; then printf -- "$out\n"; fi >$want_out
+    >$want_err
+    r=0
+    fmttest -raw -format "$fmt" -outsize "$size" \
+        --t "`printf -- $val`" unused >$got_out 2>$got_err ||
+    r=$?
+
+    label="of \"$fmt\", size \"$size\", with \"$val\""
+    if test $r -ne 0; then
+        echo "$0: exit status $label is not 0: $r"
+        ok=false
+    fi
+    check $want_out $got_out : "output $label" || ok=false
+    check $want_err $got_err : "errors $label" || ok=false
+    $ok || break
+done <<\E
+# The `^' and `$' aren't used here as regexp meta-characters, but as
+# bracketing characters around the escape that mnemonically stand for
+# `before' and `after'.  If parenthesis or similar are used then they
+# trigger annoying behaviour in some editors.
+#
+# Test cpstripped() with FT_COMP.
+#
+%{t} foo max foo
+%{t} foo 0
+%{t} foo 1 f
+%{t} foo 2 fo
+%{t} foo 3 foo
+%{t} foo 4 foo
+^%{t} foo max ^foo
+^%{t} foo 0
+^%{t} foo 1 ^
+^%{t} foo 2 ^f
+^%{t} foo 3 ^fo
+^%{t} foo 4 ^foo
+^%{t} foo 5 ^foo
+%{t}$ foo max foo$
+%{t}$ foo 0
+%{t}$ foo 1 f
+%{t}$ foo 2 fo
+%{t}$ foo 3 foo
+%{t}$ foo 4 foo$
+%{t}$ foo 5 foo$
+^%{t}$ foo max ^foo$
+^%{t}$ foo 0
+^%{t}$ foo 1 ^
+^%{t}$ foo 2 ^f
+^%{t}$ foo 3 ^fo
+^%{t}$ foo 4 ^foo
+^%{t}$ foo 5 ^foo$
+^%{t}$ foo 6 ^foo$
+#
+# zputlit only outputs if there's room for following content.
+# This suggests a zputlit to cancel the effect of an earlier zputlit may
+# not appear.
+^%(zputlit{t})%{t}$ foo max ^foofoo$
+^%(zputlit{t})%{t}$ foo 5 ^foofoo$
+^%(zputlit{t})%{t}$ foo 4 ^foofoo
+^%(zputlit{t})%{t}$ foo 3 ^foofo
+^%(zputlit{t})%{t}$ foo 2 ^foof
+^%(zputlit{t})%{t}$ foo 1 ^
+^%(zputlit{t})%{t}$ foo 0
+#
+# Test leading whitespace is stripped, and intervening compressed.
+%{t} \40foo 3 foo
+%{t} \t\40foo 3 foo
+%{t} \t\40f\n\vo\n\no 3 f o
+%{t} \t\40f\n\vo\n\no 4 f o\40
+%{t} \t\40f\n\vo\n\no 5 f o o
+#
+# Test cptrimmed() with FT_COMPF.
+%5{t} dum max dum \40
+%5{t} dumb max dumb\40
+%5{t} dumbw max dumbw
+%5{t} dumbwa max dumbw
+%5{t} dumbwai max dumbw
+%5{t} dumbwai 6 dumbw
+%5{t} dumbwai 5 dumbw
+%5{t} dumbwai 4 dumb
+^%5{t} dum max ^dum \40
+^%5{t} dumb max ^dumb\40
+^%5{t} dumbw max ^dumbw
+^%5{t} dumbwa max ^dumbw
+^%5{t} dumbwai max ^dumbw
+^%5{t} dumbwai 6 ^dumbw
+^%5{t} dumbwai 5 ^dumb
+^%5{t} dumbwai 4 ^dum
+%5{t}$ dum max dum  $
+%5{t}$ dumb max dumb $
+%5{t}$ dumbw max dumbw$
+%5{t}$ dumbwa max dumbw$
+%5{t}$ dumbwai max dumbw$
+%5{t}$ dumbwai 7 dumbw$
+%5{t}$ dumbwai 6 dumbw$
+%5{t}$ dumbwai 5 dumbw
+%5{t}$ dumbwai 4 dumb
+^%5{t}$ dum max ^dum  $
+^%5{t}$ dumb max ^dumb $
+^%5{t}$ dumbw max ^dumbw$
+^%5{t}$ dumbwa max ^dumbw$
+^%5{t}$ dumbwai max ^dumbw$
+^%5{t}$ dumbwai 8 ^dumbw$
+^%5{t}$ dumbwai 7 ^dumbw$
+^%5{t}$ dumbwai 6 ^dumbw
+^%5{t}$ dumbwai 5 ^dumb
+#
+%-5{t} dum max \40 dum
+%-5{t} dumb max \40dumb
+%-5{t} dumbw max dumbw
+%-5{t} dumbwa max dumbw
+%-5{t} dumbwai max dumbw
+%-5{t} dumbwai 6 dumbw
+%-5{t} dumbwai 5 dumbw
+%-5{t} dumbwai 4 dumb
+^%-5{t} dum max ^  dum
+^%-5{t} dumb max ^ dumb
+^%-5{t} dumbw max ^dumbw
+^%-5{t} dumbwa max ^dumbw
+^%-5{t} dumbwai max ^dumbw
+^%-5{t} dumbwai 7 ^dumbw
+^%-5{t} dumbwai 6 ^dumbw
+^%-5{t} dumbwai 5 ^dumb
+%-5{t}$ dum max \40 dum$
+%-5{t}$ dumb max \40dumb$
+%-5{t}$ dumbw max dumbw$
+%-5{t}$ dumbwa max dumbw$
+%-5{t}$ dumbwai max dumbw$
+%-5{t}$ dumbwai 7 dumbw$
+%-5{t}$ dumbwai 6 dumbw$
+%-5{t}$ dumbwai 5 dumbw
+%-5{t}$ dumbwai 4 dumb
+^%-5{t}$ dum max ^  dum$
+^%-5{t}$ dumb max ^ dumb$
+^%-5{t}$ dumbw max ^dumbw$
+^%-5{t}$ dumbwa max ^dumbw$
+^%-5{t}$ dumbwai max ^dumbw$
+^%-5{t}$ dumbwai 8 ^dumbw$
+^%-5{t}$ dumbwai 7 ^dumbw$
+^%-5{t}$ dumbwai 6 ^dumbw
+^%-5{t}$ dumbwai 5 ^dumb
+#
+# Test cpnumber().
+#
+%(void(compval{t}))%0(putnumf) 3 max
+%(void(compval{t}))%1(putnumf) 3 max 3
+%(void(compval{t}))%2(putnumf) 3 max \0403
+%(void(compval{t}))%3(putnumf) 3 max \040 3
+%(void(compval{t}))%00(putnumf) 3 max
+%(void(compval{t}))%01(putnumf) 3 max 3
+%(void(compval{t}))%02(putnumf) 3 max 03
+%(void(compval{t}))%03(putnumf) 3 max 003
+%(void(compval{t}))%-0(putnumf) 3 max
+%(void(compval{t}))%-1(putnumf) 3 max 3
+%(void(compval{t}))%-2(putnumf) 3 max 3\40
+%(void(compval{t}))%-3(putnumf) 3 max 3 \40
+%(void(compval{t}))%-00(putnumf) 3 max
+%(void(compval{t}))%-01(putnumf) 3 max 3
+%(void(compval{t}))%-02(putnumf) 3 max 3\40
+%(void(compval{t}))%-03(putnumf) 3 max 3 \40
+#
+%(void(compval{t}))%0(putnumf) -3 max
+%(void(compval{t}))%1(putnumf) -3 max
+%(void(compval{t}))%2(putnumf) -3 max -3
+%(void(compval{t}))%3(putnumf) -3 max \040-3
+%(void(compval{t}))%4(putnumf) -3 max \040 -3
+%(void(compval{t}))%00(putnumf) -3 max
+%(void(compval{t}))%01(putnumf) -3 max
+%(void(compval{t}))%02(putnumf) -3 max -3
+%(void(compval{t}))%03(putnumf) -3 max -03
+%(void(compval{t}))%04(putnumf) -3 max -003
+%(void(compval{t}))%-0(putnumf) -3 max
+%(void(compval{t}))%-1(putnumf) -3 max
+%(void(compval{t}))%-2(putnumf) -3 max -3
+%(void(compval{t}))%-3(putnumf) -3 max -3\40
+%(void(compval{t}))%-4(putnumf) -3 max -3 \40
+%(void(compval{t}))%-00(putnumf) -3 max
+%(void(compval{t}))%-01(putnumf) -3 max
+%(void(compval{t}))%-02(putnumf) -3 max -3
+%(void(compval{t}))%-03(putnumf) -3 max -3\40
+%(void(compval{t}))%-04(putnumf) -3 max -3 \40
+#
+%(void(compval{t}))%0(putnumf) 42 max
+%(void(compval{t}))%1(putnumf) 42 max ?
+%(void(compval{t}))%2(putnumf) 42 max 42
+%(void(compval{t}))%3(putnumf) 42 max \04042
+%(void(compval{t}))%00(putnumf) 42 max
+%(void(compval{t}))%01(putnumf) 42 max ?
+%(void(compval{t}))%02(putnumf) 42 max 42
+%(void(compval{t}))%03(putnumf) 42 max 042
+%(void(compval{t}))%-0(putnumf) 42 max
+%(void(compval{t}))%-1(putnumf) 42 max ?
+%(void(compval{t}))%-2(putnumf) 42 max 42
+%(void(compval{t}))%-3(putnumf) 42 max 42\40
+%(void(compval{t}))%-00(putnumf) 42 max
+%(void(compval{t}))%-01(putnumf) 42 max ?
+%(void(compval{t}))%-02(putnumf) 42 max 42
+%(void(compval{t}))%-03(putnumf) 42 max 42\40
+#
+%(void(compval{t}))%0(putnumf) -42 max
+%(void(compval{t}))%1(putnumf) -42 max
+%(void(compval{t}))%2(putnumf) -42 max -?
+%(void(compval{t}))%3(putnumf) -42 max -42
+%(void(compval{t}))%4(putnumf) -42 max \40-42
+%(void(compval{t}))%00(putnumf) -42 max
+%(void(compval{t}))%01(putnumf) -42 max
+%(void(compval{t}))%02(putnumf) -42 max -?
+%(void(compval{t}))%03(putnumf) -42 max -42
+%(void(compval{t}))%04(putnumf) -42 max -042
+%(void(compval{t}))%-0(putnumf) -42 max
+%(void(compval{t}))%-1(putnumf) -42 max
+%(void(compval{t}))%-2(putnumf) -42 max -?
+%(void(compval{t}))%-3(putnumf) -42 max -42
+%(void(compval{t}))%-4(putnumf) -42 max -42\40
+%(void(compval{t}))%-00(putnumf) -42 max
+%(void(compval{t}))%-01(putnumf) -42 max
+%(void(compval{t}))%-02(putnumf) -42 max -?
+%(void(compval{t}))%-03(putnumf) -42 max -42
+%(void(compval{t}))%-04(putnumf) -42 max -42\40
+#
+%(void(compval{t}))%5(putnumf) 13579 0
+%(void(compval{t}))%5(putnumf) 13579 1
+%(void(compval{t}))%5(putnumf) 13579 2
+%(void(compval{t}))%5(putnumf) 13579 3
+%(void(compval{t}))%5(putnumf) 13579 4
+%(void(compval{t}))%5(putnumf) 13579 5 13579
+%(void(compval{t}))%5(putnumf) 13579 6 13579
+%(void(compval{t}))%6(putnumf) 13579 5
+%(void(compval{t}))%6(putnumf) 13579 6 \04013579
+%(void(compval{t}))^%5(putnumf) 13579 0
+%(void(compval{t}))^%5(putnumf) 13579 1 ^
+%(void(compval{t}))^%5(putnumf) 13579 2 ^
+%(void(compval{t}))^%5(putnumf) 13579 3 ^
+%(void(compval{t}))^%5(putnumf) 13579 4 ^
+%(void(compval{t}))^%5(putnumf) 13579 5 ^
+%(void(compval{t}))^%5(putnumf) 13579 6 ^13579
+%(void(compval{t}))^%5(putnumf) 13579 7 ^13579
+%(void(compval{t}))^%6(putnumf) 13579 6 ^
+%(void(compval{t}))^%6(putnumf) 13579 7 ^ 13579
+%(void(compval{t}))^%6(putnumf) 13579 8 ^ 13579
+%(void(compval{t}))%5(putnumf)$ 13579 0
+# FIXME: If output won't fit, stop;  the `$' is wrong.
+%(void(compval{t}))%5(putnumf)$ 13579 1 $
+%(void(compval{t}))%5(putnumf)$ 13579 2 $
+%(void(compval{t}))%5(putnumf)$ 13579 3 $
+%(void(compval{t}))%5(putnumf)$ 13579 4 $
+%(void(compval{t}))%5(putnumf)$ 13579 5 13579
+%(void(compval{t}))%5(putnumf)$ 13579 6 13579$
+%(void(compval{t}))%5(putnumf)$ 13579 7 13579$
+%(void(compval{t}))%6(putnumf)$ 13579 5 $
+%(void(compval{t}))%6(putnumf)$ 13579 6 \04013579
+%(void(compval{t}))%6(putnumf)$ 13579 7 \04013579$
+%(void(compval{t}))%6(putnumf)$ 13579 8 \04013579$
+%(void(compval{t}))^%5(putnumf)$ 13579 0
+%(void(compval{t}))^%5(putnumf)$ 13579 1 ^
+# FIXME: If output won't fit, stop;  the `$' is wrong.
+%(void(compval{t}))^%5(putnumf)$ 13579 2 ^$
+%(void(compval{t}))^%5(putnumf)$ 13579 3 ^$
+%(void(compval{t}))^%5(putnumf)$ 13579 4 ^$
+%(void(compval{t}))^%5(putnumf)$ 13579 5 ^$
+%(void(compval{t}))^%5(putnumf)$ 13579 6 ^13579
+%(void(compval{t}))^%5(putnumf)$ 13579 7 ^13579$
+%(void(compval{t}))^%5(putnumf)$ 13579 8 ^13579$
+%(void(compval{t}))^%6(putnumf)$ 13579 7 ^\04013579
+%(void(compval{t}))^%6(putnumf)$ 13579 8 ^\04013579$
+%(void(compval{t}))^%6(putnumf)$ 13579 9 ^\04013579$
+E
+
+$ok
+finish_test

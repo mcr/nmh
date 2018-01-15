@@ -65,6 +65,7 @@ TESTS = \
     test/format/test-curses \
     test/format/test-dp \
     test/format/test-fmtdump \
+    test/format/test-fmttest \
     test/format/test-functions \
     test/format/test-localmbox \
     test/format/test-myhost \
