@@ -12,12 +12,16 @@ if test -z "${MH_OBJ_DIR}"; then
     MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
 fi
 
-. "$MH_OBJ_DIR/test/common.sh"
+. "${MH_OBJ_DIR}/test/common.sh"
 
 setup_test
 
 # Use proper program, likely not the first one on PATH.
 rcvdist="${MH_LIBEXEC_DIR}/rcvdist"
+
+arith_eval 64000 + $$ % 1000
+localport=$arith_val
+testname="${MH_TEST_DIR}/$$"
 
 check_exit '-eq 1' $rcvdist -
 
@@ -26,6 +30,7 @@ actual=$MH_TEST_DIR/$$.actual
 
 
 # check -help
+start_test -help
 cat >$expected <<EOF
 Usage: rcvdist [switches] [switches for postproc] address ...
   switches are:
@@ -39,6 +44,7 @@ run_prog "$rcvdist" -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
+start_test -version
 case `$rcvdist -v` in
   rcvdist\ --*) ;;
   *           ) printf '%s: rcvdist -v generated unexpected output\n' "$0" >&2
@@ -46,12 +52,75 @@ case `$rcvdist -v` in
 esac
 
 # check unknown switch
+start_test 'unknown switch'
 run_test "$rcvdist -nonexistent" \
   'rcvdist: usage: rcvdist [switches] [switches for postproc] address ...'
 
 # check with no switches
+start_test 'no switches'
 run_test "$rcvdist" \
   'rcvdist: usage: rcvdist [switches] [switches for postproc] address ...'
+
+#### Use fakesmtp for this first test.
+# check post switch with argument
+start_test 'post switch with argument'
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date: Sun, 14 Jan 2018 12:00:00 -0500
+
+This is a test.
+EOF
+
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<somebody@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date:
+Resent-To: somebody@example.com
+Resent-From: Somebody Else <somebody@example.com>
+Resent-Date:
+
+This is a test.
+.
+QUIT
+EOF
+
+cat > "$MH_TEST_DIR/Mail/rcvdistcomps" <<'EOF'
+%(lit)%(formataddr{addresses})\
+%<(nonnull)%(void(width))%(putaddr Resent-To:)%>
+%(lit)%(formataddr{to})\
+%<(nonnull)%(void(width))%(putaddr Resent-From:)\n%>
+EOF
+
+# Set this for the EHLO command
+echo "clientname: nosuchhost.example.com" >> ${MHMTSCONF}
+
+# $1: message draft file
+# $2: output filename for fakesmtp, i.e., the sent message
+test_post ()
+{
+    pid=`"${MH_OBJ_DIR}/test/fakesmtp" "$2" $localport`
+
+    run_prog $rcvdist -form "$MH_TEST_DIR/Mail/rcvdistcomps" -server 127.0.0.1 -port $localport somebody@example.com <$1
+
+    sed -e 's/^Date:.*/Date:/' -e 's/^Resent-Date:.*/Resent-Date:/' "$2" > "$2".nodate
+    rm -f "$2"
+
+    check "$2".nodate "$3"
+}
+
+test_post "${MH_TEST_DIR}/Mail/draft" "${testname}.fakesmtp" "${testname}.expected"
 
 #### Use sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
@@ -78,15 +147,15 @@ test_rcvdist ()
 }
 
 # check with address
+start_test 'with address'
 cat > "$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
 Message-Id: 1@test.nmh
 Subject: Testing message 1
-Resent-From: `${MH_LIBEXEC_DIR}/ap -format '%(localmbox)' 0 | \
-              sed 's/^<\(.*\)>$/\1/'`
 Resent-To: recipient@example.com
+Resent-From: Some User <user@example.com>
 Resent-Date:
 
 This is message number 1
@@ -95,6 +164,7 @@ EOF
 test_rcvdist recipient@example.com < "$MH_TEST_DIR/Mail/inbox/1"
 
 # check -form
+start_test -form
 cat > "$expected" <<EOF
 From: Test2 <test2@example.com>
 To: Some User <user@example.com>
@@ -108,15 +178,9 @@ Resent-Date:
 This is message number 2
 EOF
 
-cat > "$MH_TEST_DIR/Mail/rcvdistcomps" <<'EOF'
-%(lit)%(formataddr{addresses})\
-%<(nonnull)%(void(width))%(putaddr Resent-To:)%>
-%(lit)%(formataddr{to})\
-%<(nonnull)%(void(width))%(putaddr Resent-From:)\n%>
-EOF
-
 test_rcvdist -form "$MH_TEST_DIR/Mail/rcvdistcomps" recipient@example.com \
   < "$MH_TEST_DIR/Mail/inbox/2"
 
 
+finish_test
 exit ${failed:-0}

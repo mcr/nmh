@@ -40,6 +40,54 @@ DEFINE_SWITCH_ENUM(RCVDIST);
 DEFINE_SWITCH_ARRAY(RCVDIST, switches);
 #undef X
 
+#ifndef CYRUS_SASL
+# define SASLminc(a) (a)
+#else /* CYRUS_SASL */
+# define SASLminc(a)  0
+#endif /* CYRUS_SASL */
+
+#ifndef OAUTH_SUPPORT
+# define OAUTHminc(a)	(a)
+#else /* OAUTH_SUPPORT */
+# define OAUTHminc(a)	0
+#endif /* OAUTH_SUPPORT */
+
+/* These are just the post(1) switches that take an argument. */
+#define POST_SWITCHES \
+    X("alias aliasfile", 0, ALIASW) \
+    X("filter filterfile", 0, FILTSW) \
+    X("library directory", -7, LIBSW) /* interface from send, whom */ \
+    X("width columns", 0, WIDTHSW) \
+    X("idanno number", -6, ANNOSW) /* interface from send    */ \
+    X("client host", -6, CLIESW) \
+    X("server host", 6, SERVSW) /* specify alternate SMTP server */ \
+    X("partno", -6, PARTSW) \
+    X("saslmech", SASLminc(5), SASLMECHSW) \
+    X("user", SASLminc(-4), USERSW) \
+    X("port server submission port name/number", 4, PORTSW) \
+    X("fileproc", -4, FILEPROCSW) \
+    X("mhlproc", -3, MHLPROCSW) \
+    X("sendmail program", 0, MTSSM) \
+    X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
+    X("credentials legacy|file:filename", 0, CREDENTIALSSW) \
+    X("messageid localname|random", 2, MESSAGEIDSW) \
+    X("authservice auth-service-name", OAUTHminc(-11), AUTHSERVICESW) \
+    X("oauthcredfile credential-file", OAUTHminc(-7), OAUTHCREDFILESW) \
+    X("oauthclientid client-id", OAUTHminc(-12), OAUTHCLIDSW) \
+    X("oauthclientsecret client-secret", OAUTHminc(-12), OAUTHCLSECSW) \
+    X("oauthauthendpoint authentication-endpoint", OAUTHminc(-6), OAUTHAUTHENDSW) \
+    X("oauthredirect redirect-uri", OAUTHminc(-6), OAUTHREDIRSW) \
+    X("oauthtokenendpoint token-endpoint", OAUTHminc(-6), OAUTHTOKENDSW) \
+    X("oauthscope scope", OAUTHminc(-6), OAUTHSCOPESW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(POST);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(POST, post_switches);
+#undef X
+
 static char backup[BUFSIZ] = "";
 static char drft[BUFSIZ] = "";
 static char tmpfil[BUFSIZ] = "";
@@ -84,6 +132,13 @@ main (int argc, char **argv)
 		    done (1);
 		case UNKWNSW: 
 		    vec[vecp++] = --cp;
+		    if (smatch(cp + 1, post_switches) != UNKWNSW) {
+			/* It's a post switch that does take an argument. */
+			if (!(cp = *argp) || *cp == '-') {
+			    die("missing argument to %s", argp[-1]);
+			}
+                        vec[vecp++] = *argp++;
+		    }
 		    continue;
 
 		case HELPSW: 
