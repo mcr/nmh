@@ -129,6 +129,7 @@ BUG FIXES
 - An error when writing an error message, e.g. EPIPE, no longer causes
   recursion until the stack is exhausted.
 - rcvdist(1) now passes switch arguments to post(8).
+- The uses of %{charset} in mhn.defaults were wrapped with double quotes.
 
 -------------------
 DEPRECATED FEATURES

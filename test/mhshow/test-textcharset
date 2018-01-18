@@ -305,6 +305,23 @@ EOF
 run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual" : parameter value quoting with text following
 
+# check malicious parameter value quoting
+msgfile=`mhpath new`
+msgnum=`basename $msgfile`
+cat >"$msgfile" <<'EOF'
+Subject: shows difficulty of quoting with /bin/sh -c
+MIME-Version: 1.0
+Content-Type: text/html; charset="oops'; echo should not see this!"
+
+EOF
+
+cat >"$expected" <<EOF
+[ part  - text/html -   0B  ]
+EOF
+
+run_prog mhshow -noheader -form mhl.null last >"$actual" 2>&1
+check "$expected" "$actual" : malicious parameter value quoting
+
 #
 # test a large file that needs to be converted to UTF-8
 #

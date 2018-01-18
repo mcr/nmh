@@ -360,14 +360,14 @@ for the current display string to finish execution before executing
 the next display string.
 .PP
 The {parameter} escape is typically used in a command line argument
-that should only be present if it has a non-null value.  Its value
-will be wrapped with single quotes if the escape is not so wrapped.
+that should only be present if it has a non-null value.  It is highly
+recommended that the entire escape be wrapped in double quotes.
 Shell parameter expansion can construct the argument only when it is
 non-null, e.g.,
 .PP
 .RS 5
 .nf
-mhshow-show-text/html: charset=%{charset};
+mhshow-show-text/html: charset="%{charset}";
   w3m ${charset:+-I $charset} -T text/html %F
 .fi
 .RE
