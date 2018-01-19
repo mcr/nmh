@@ -131,7 +131,7 @@ fi
 ####
 cat <<EOF >>${TMP}
 mhbuild-convert-text/calendar: mhical -infile %F -contenttype
-mhbuild-convert-text: charset="%{charset}"; iconv -f "\${charset:-us-ascii}" -t utf-8 %F${replfmt}
+mhbuild-convert-text: charset="%{charset}"; iconv -f \${charset:-us-ascii} -t utf-8 %F${replfmt}
 mhbuild-disposition-text/calendar: inline
 mhbuild-disposition-message/rfc822: inline
 EOF
