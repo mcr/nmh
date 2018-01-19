@@ -175,6 +175,12 @@ squeeze_lines() {
   sed '/^$/N;/\n$/D'
 }
 
+#### Filter that removes blank lines and leading space that lynx inserts.
+#### but sufficient for our purpose.
+squeeze_whitespace() {
+  sed '/^$/D; s/^ *//;'
+}
+
 #### Filter that converts non-breakable space U+00A0 to an ASCII space.
 prepare_space() {
   sed 's/'"`printf '\\302\\240'`"'/ /g'

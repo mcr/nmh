@@ -136,9 +136,8 @@ EOF
 
   # check it
   start_test 'text/html part'
-  # The sed command removes blank lines and leading space that lynx inserts.
   run_prog mhshow -part 1.1.1 -form mhl.null $msgnum |
-      sed '/^$/D; s/^ *//;' > $actual 2>&1
+      squeeze_whitespace > $actual 2>&1
   check "$expected" "$actual" : part 1.1.1
 fi
 
