@@ -41,7 +41,7 @@ Usage: msgchk [switches] [users ...]
   -help
 EOF
 
-run_prog msgchk -help | head -9 >"$actual" 2>&1
+run_prog msgchk -help 2>&1 | head -9 >"$actual"
 check "$expected" "$actual"
 
 # check -version
