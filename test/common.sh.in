@@ -39,6 +39,9 @@ unset MHLDEBUG MHWDEBUG PAGER XOAUTH SMTPUTF8
 #### Set LC_ALL in individual tests as needed.  Unset these so
 #### that we don't depend on user's settings in other tests.
 unset LANG LC_ALL LC_CTYPE
+# Don't have libcurl(3) use the environment's proxy for tests'
+# connections to 127.0.0.1.
+unset http_proxy ALL_PROXY all_proxy
 
 #### Use a test dir for tmp files when MHTMPDIR applies.
 MHTMPDIR="$MH_TEST_DIR"/Mail
