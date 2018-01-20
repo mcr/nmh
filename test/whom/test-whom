@@ -50,7 +50,7 @@ Usage: whom [switches] [file]
   -help
 EOF
 
-run_prog whom -help | head -10 >$actual 2>&1
+run_prog whom -help 2>&1 | head -10 >$actual
 check $expected $actual
 
 # check -version
