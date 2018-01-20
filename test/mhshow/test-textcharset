@@ -319,7 +319,7 @@ cat >"$expected" <<EOF
 [ part  - text/html -   0B  ]
 EOF
 
-run_prog mhshow -noheader -form mhl.null last | squeeze_whitespace >"$actual" 2>&1
+run_prog mhshow -noheader -form mhl.null last 2>&1 | squeeze_whitespace >"$actual"
 check "$expected" "$actual" : malicious parameter value quoting
 
 #
