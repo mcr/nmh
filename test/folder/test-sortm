@@ -40,7 +40,7 @@ Usage: sortm [+folder] [msgs] [switches]
 EOF
 
 #### Skip nmh intro text.
-run_prog sortm -help | sed '/^$/,$d' >"$actual" 2>&1
+run_prog sortm -help 2>&1 | sed '/^$/,$d' >"$actual"
 check "$expected" "$actual"
 
 # check -version

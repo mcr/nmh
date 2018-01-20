@@ -49,7 +49,7 @@ Usage: mhical [switches]
 EOF
 
 #### Skip nmh intro text.
-run_prog mhical -help | sed '/^$/,$d' >"$actual" 2>&1
+run_prog mhical -help 2>&1 | sed '/^$/,$d' >"$actual"
 check "$expected" "$actual"
 
 

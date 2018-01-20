@@ -51,7 +51,7 @@ else
 fi
 
 #### Skip nmh intro text.
-run_prog $mkstemp -h | sed '/^$/,$d' >"$actual" 2>&1
+run_prog $mkstemp -h 2>&1 | sed '/^$/,$d' >"$actual"
 check "$expected" "$actual"
 
 

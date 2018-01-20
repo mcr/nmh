@@ -73,7 +73,7 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
 EOF
 
 #### Skip nmh intro text.
-run_prog mhfixmsg -help | sed '/^$/,$d' >"$actual" 2>&1
+run_prog mhfixmsg -help 2>&1 | sed '/^$/,$d' >"$actual"
 check "$expected" "$actual"
 
 
