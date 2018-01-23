@@ -413,7 +413,10 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	  struct fmt_callbacks *callbacks)
 {
     char *sp;
-    char *savestr, *str;
+    /* If str points to part of buffer[] or buffer2[] then it must only
+     * ever point at their first element as otherwise undefined
+     * behaviour from overlapping strncpy(3)s can result. */
+    char *str, *savestr;
     char buffer[NMH_BUFSIZ], buffer2[NMH_BUFSIZ];
     int i, c;
     bool rjust;
@@ -757,6 +760,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 			    *xp-- = '\0';
 		    if (rjust && i > 0 && (int) strlen(str) > i)
 			str += strlen(str) - i;
+                    str = memmove(buffer, str, strlen(str) + 1);
 	    }
 	    break;
 
@@ -946,6 +950,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	            	    else
 	            		break;
 	            }
+                    str = memmove(buffer, str, strlen(str) + 1);
 	        } else if (!(str = get_x400_friendly (mn->m_mbox,
 				buffer, sizeof(buffer)))) {
 	unfriendly:
