@@ -34,8 +34,6 @@
 
 extern int debugsw;
 
-int nolist   = 0;
-
 char *progsw = NULL;
 
 /* flags for moreproc/header display */
@@ -913,7 +911,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
 
 	    case 'l':
 		/* display listing prior to displaying content */
-		*xlist = !nolist;
+		*xlist = 1;
 		break;
 
 	    case 's':
