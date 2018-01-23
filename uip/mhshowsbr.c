@@ -470,7 +470,6 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
     }
 
     vec = argsplit(buffer, &file, &vecp);
-    vec[vecp++] = NULL;
 
     fflush (stdout);
 
