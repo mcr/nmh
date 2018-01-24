@@ -74,7 +74,7 @@ then the part is not decoded (and a message will be displayed if
 .B \-verbose
 is enabled).  Note that
 .B \-decodetext
-binary can produce messages that are not RFC 2045 compliant.
+binary can produce messages that are not compliant with RFC 5322, §2.1.1.
 .PP
 When the
 .B \-decodetext
