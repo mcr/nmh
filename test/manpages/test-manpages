@@ -48,8 +48,9 @@ fi
 rm -f "$actual"
 touch "$actual"
 
-
 for manpage in man?/*.?; do
+  LC_ALL=C grep -n '[^	 -~]' /dev/null "$manpage" 2>&1 |
+  sed 's/^/non-ascii:/' >>"$actual"
   groff -Tutf8 -mandoc $warnings "$manpage" >/dev/null 2>>"$actual"
 done
 

@@ -74,7 +74,7 @@ then the part is not decoded (and a message will be displayed if
 .B \-verbose
 is enabled).  Note that
 .B \-decodetext
-binary can produce messages that are not compliant with RFC 5322, §2.1.1.
+binary can produce messages that are not compliant with RFC 5322, \(sc2.1.1.
 .PP
 When the
 .B \-decodetext
@@ -108,7 +108,7 @@ with its mandatory
 argument.  The
 .B \-nodecodeheaderfieldbodies
 inhibits this transformation.  The transformation can produce a message
-that does not conform with RFC 2047, §1, paragraph 6, because the decoded
+that does not conform with RFC 2047, \(sc1, paragraph 6, because the decoded
 header field body could contain unencoded non-ASCII characters.  It is
 therefore not enabled by default.
 .PP
@@ -120,7 +120,7 @@ switch selects this behavior and is enabled by default.  The
 switch causes carriage return characters to be stripped from, and not
 inserted in, text content when it is decoded and encoded.  Note that
 its use can cause the generation of MIME messages that do not conform
-with RFC 2046, §4.1.1, paragraph 1.
+with RFC 2046, \(sc4.1.1, paragraph 1.
 .PP
 The
 .B \-textcharset
@@ -206,7 +206,7 @@ The
 switch enables a transformation to change the
 Content-Transfer-Encoding from an invalid value to 8-bit in message
 parts with a Content-Type of multipart and message, as required by
-RFC 2045, §6.4.  That condition is indicated by a \*(lqmust be
+RFC 2045, \(sc6.4.  That condition is indicated by a \*(lqmust be
 encoded in 7bit, 8bit, or binary\*(rq error message from
 .B mhlist
 and other
