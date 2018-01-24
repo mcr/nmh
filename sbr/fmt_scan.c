@@ -795,15 +795,18 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    value *= fmt->f_value;
 	    break;
 	case FT_LV_DIVIDE_L:
-	    if (fmt->f_value)
-		value /= fmt->f_value;
-	    else
+            if (fmt->f_value == 0 || (fmt->f_value == -1 && value == INT_MIN)) {
+                // FIXME: Tell the user, and probably stop.
 		value = 0;
+            } else {
+                value /= fmt->f_value;
+            }
 	    break;
 	case FT_LV_MODULO_L:
 	    if (fmt->f_value)
 		value %= fmt->f_value;
 	    else
+                // FIXME: Tell the user, and probably stop.
 		value = 0;
 	    break;
 	case FT_SAVESTR:
