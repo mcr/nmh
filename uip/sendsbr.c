@@ -260,12 +260,8 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 		     * of each message/partial in the collection.
 		     */
 		    if (!strcasecmp (name, "Subject")) {
-			size_t sublen;
-
 			strncpy (subject, buffer, BUFSIZ);
-			sublen = strlen (subject);
-			if (sublen > 0 && subject[sublen - 1] == '\n')
-			    subject[sublen - 1] = '\0';
+                        trim_suffix_c(subject, '\n');
 		    }
 
 		    dp = add (concat (name, ":", buffer, NULL), dp);

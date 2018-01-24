@@ -1837,7 +1837,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
     switch (filterpid = fork()) {
         char **args, *program;
 	struct arglist *a;
-	int i, dat[5], s, argp;
+	int i, dat[5], argp;
 
     case 0:
     	/*
@@ -1862,14 +1862,9 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
 	    fmt_scan(a->a_fmt, scanl, BUFSIZ, dat, NULL);
 	    args[i] = charstring_buffer_copy (scanl);
 	    charstring_free (scanl);
-	    /*
-	     * fmt_scan likes to put a trailing newline at the end of the
-	     * format string.  If we have one, get rid of it.
-	     */
-	    s = strlen(args[i]);
-	    if (args[i][s - 1] == '\n')
-		args[i][s - 1] = '\0';
-
+	    /* Trim a trailing linefeed that fmt_scan() likes to put at
+             * the end of the format string. */
+            trim_suffix_c(args[i], '\n');
 	    if (mhldebug)
 		fprintf(stderr, "filterarg: fmt=\"%s\", output=\"%s\"\n",
 			a->a_nfs, args[i]);
