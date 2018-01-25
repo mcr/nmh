@@ -146,10 +146,13 @@ EOF
 run_prog mhshow $msgnum > $actual 2>&1
 if [ $iconv_elides_question_marks -eq 1 ]; then
     check "$expected" "$actual"
+elif grep "Can't convert .*us-ascii to UTF-8" "$actual" >/dev/null; then
+    :
 else
-    grep "Can't convert .*us-ascii to UTF-8" "$actual" >/dev/null  ||  failed=1
+    echo 'iconv complaint not found'
+    sed -n l "$actual"
+    failed=1
 fi
-
 
 finish_test
 exit $failed
