@@ -30,7 +30,7 @@ seq_nameok (char *s)
 	  strcmp (s, "last") &&
 	  strcmp (s, "prev") &&
 	  strcmp (s, "next"))) {
-	inform("illegal sequence name: %s", s);
+        inform("sequence name is reserved: %s", s);
 	return 0;
     }
 
@@ -39,7 +39,7 @@ seq_nameok (char *s)
      * an alphabetic character ...
      */
     if (!isalpha ((unsigned char) *s)) {
-	inform("illegal sequence name: %s", s);
+        inform("sequence name must start with letter: %s", s);
 	return 0;
     }
 
@@ -48,7 +48,7 @@ seq_nameok (char *s)
      */
     for (pp = s + 1; *pp; pp++)
 	if (!isalnum ((unsigned char) *pp)) {
-	    inform("illegal sequence name: %s", s);
+            inform("sequence name must be alphanumeric: %s", s);
 	    return 0;
 	}
 
