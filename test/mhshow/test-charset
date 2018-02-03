@@ -117,8 +117,6 @@ fi
 
 
 start_test 'replacement character in parameter value'
-#### The output of this test doesn't show it, but it covers the
-#### noiconv: portion of get_param_value().
 cat > $msgfile <<'EOF'
 Subject: invalid parameter value charset
 MIME-Version: 1.0
