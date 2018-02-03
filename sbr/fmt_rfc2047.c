@@ -93,7 +93,9 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
     if (!strchr (str, '='))
 	return 0;
 
+#ifdef HAVE_ICONV
     bool use_iconv = false; /* are we converting encoding with iconv? */
+#endif
     bool between_encodings = false;
     bool equals_pending = false;
     for (p = str, q = dst; *p; p++) {
