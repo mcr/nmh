@@ -34,7 +34,6 @@ typedef unsigned long (*SizeCEFunc) (CT);
 struct hfield {
     char *name;		/* field name */
     char *value;	/* field body */
-    int hf_encoding;	/* internal flag for transfer encoding to use */
     HF next;		/* link to next header field */
 };
 

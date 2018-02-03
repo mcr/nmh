@@ -1184,7 +1184,6 @@ fix_composite_cte (CT ct, int *message_mods)
 
                     NEW(h);
                     h->name = mh_xstrdup (hf->name);
-                    h->hf_encoding = hf->hf_encoding;
                     h->next = hf->next;
                     hf->next = h;
 
