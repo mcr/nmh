@@ -257,7 +257,7 @@ if install-mh -check >/dev/null 2>&1; then
     fi
   fi
 
-  if test -x "$mhbin/mhparam"; then
+  if test $yes -eq 1  -a  -x "$mhbin/mhparam"; then
     if mhparam sasl >/dev/null; then
       case `$mhbin/mhparam sasl` in
         *sasl*) config_sasl=y ;;
@@ -315,8 +315,16 @@ config_opts="--prefix=$config_prefix"
   config_opts="$config_opts --with-mts=$config_mts"
 [ "$config_smtpserver"  -a  "$config_smtpserver" != localhost ]  &&
   config_opts="$config_opts --with-smtpserver=$config_smtpserver"
-[ "$config_sasl" = y ]  &&  config_opts="$config_opts --with-cyrus-sasl"
-[ "$config_tls" = y ]  &&  config_opts="$config_opts --with-tls"
+if [ "$config_sasl" = y ]; then
+    config_opts="$config_opts --with-cyrus-sasl"
+elif [ "$config_sasl" != 'determined by configure' ]; then
+    config_opts="$config_opts --with-cyrus-sasl=no"
+fi
+if [ "$config_tls" = y ]; then
+    config_opts="$config_opts --with-tls"
+elif [ "$config_tls" != 'determined by configure' ]; then
+    config_opts="$config_opts --with-tls=no"
+fi
 
 #### dotlocking, the usual default, requires chgrp and chmod of inc.
 installpriv=
