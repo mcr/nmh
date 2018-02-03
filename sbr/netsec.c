@@ -1497,6 +1497,7 @@ netsec_get_sasl_ssf(netsec_context *nsc)
 #ifdef CYRUS_SASL
     return nsc->sasl_ssf;
 #else /* CYRUS_SASL */
+    NMH_UNUSED(nsc);
     return 0;
 #endif /* CYRUS_SASL */
 }
