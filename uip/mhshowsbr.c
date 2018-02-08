@@ -113,9 +113,8 @@ show_all_messages(CT *cts, int concat, int textonly, int inlineonly)
 	formsw = mh_xstrdup(etcpath("mhl.headers"));
 
     /*
-     * Compile the content marker and header format lines
+     * Compile the header format line
      */
-    mfmt = compile_marker(markerform);
     hfmt = compile_header(headerform);
 
     /*
@@ -131,14 +130,18 @@ show_all_messages(CT *cts, int concat, int textonly, int inlineonly)
 	if (type_ok (ct, 1)) {
 	    if (headersw) output_header(ct, hfmt);
 
+	    /*
+	     * Compile the content marker format line
+	     */
+	    mfmt = compile_marker(markerform);
 	    show_single_message (ct, formsw, concat, textonly, inlineonly,
 				 mfmt);
+	    fmt_free(mfmt, 0);
 	}
     }
 
     free_markercomps();
     fmt_free(hfmt, 1);
-    fmt_free(mfmt, 1);
 }
 
 
@@ -1338,7 +1341,7 @@ compile_marker(char *form)
 
     fmtstring = new_fs(form, NULL, DEFAULT_MARKER);
 
-    (void) fmt_compile(fmtstring, &fmt, 1);
+    (void) fmt_compile(fmtstring, &fmt, 0);
     free_fs();
 
     /*

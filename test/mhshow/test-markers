@@ -1,0 +1,67 @@
+#!/bin/sh
+######################################################
+#
+# Test mhshow part markers
+#
+######################################################
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+start_test
+
+# check markers when showing multiple messages
+start_test "makers when showing multiple messages"
+cat >"$expected" <<EOF
+[ part 1 - text/plain -   30B  ]
+first message, part 1 content
+[ part 2 - text/plain - first message, part 2 C-D  30B  ]
+first message, part 2 content
+[ part 1 - text/plain -   31B  ]
+second message, part 1 content
+EOF
+
+cat >"`mhpath new`" <<EOF
+Content-Type: multipart/mixed;boundary="_boundary_"
+MIME-Version: 1.0
+
+--_boundary_
+Content-Type: text/plain
+
+first message, part 1 content
+
+--_boundary_
+Content-Type: text/plain
+Content-Description: first message, part 2 C-D
+
+first message, part 2 content
+
+--_boundary_--
+EOF
+
+cat >"`mhpath new`" <<EOF
+Content-Type: multipart/mixed;boundary="_boundary_"
+MIME-Version: 1.0
+
+--_boundary_
+Content-Type: text/plain
+
+second message, part 1 content
+
+--_boundary_--
+EOF
+
+run_prog mhshow -noheader -form mhl.null -concat last:2 > "$actual"
+check "$expected" "$actual"
+
+
+finish_test
+exit $failed
