@@ -47,23 +47,19 @@
 }
 
 {
-   gdbm 1.13-1 writes uninitialised bytes from malloc'd area to file
+   gdbm 1.13 writes uninitialised bytes from malloc'd area to file
    Memcheck:Param
    write(buf)
-   fun:__write_nocancel
+   ...
    fun:_gdbm_full_write
    fun:gdbm_fd_open
    fun:dbm_open
-   fun:suppress_duplicates
-   fun:localmail
-   fun:main
 }
-
 
 {
    dyld libraryLocator on MacOS 10.11.6 (El Capitan)
    Memcheck:Cond
-   fun:bcmp
+   fun:vbcmp
    ...
    fun:_ZN4dyldL14libraryLocator*
 }
