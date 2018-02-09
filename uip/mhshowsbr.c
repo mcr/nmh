@@ -103,7 +103,6 @@ void
 show_all_messages(CT *cts, int concat, int textonly, int inlineonly)
 {
     CT ct, *ctp;
-    struct format *hfmt, *mfmt;
 
     /*
      * If form is not specified, then get default form
@@ -111,11 +110,6 @@ show_all_messages(CT *cts, int concat, int textonly, int inlineonly)
      */
     if (!formsw)
 	formsw = mh_xstrdup(etcpath("mhl.headers"));
-
-    /*
-     * Compile the header format line
-     */
-    hfmt = compile_header(headerform);
 
     /*
      * If form is "mhl.null", suppress display of header.
@@ -128,20 +122,30 @@ show_all_messages(CT *cts, int concat, int textonly, int inlineonly)
 
 	/* if top-level type is ok, then display message */
 	if (type_ok (ct, 1)) {
-	    if (headersw) output_header(ct, hfmt);
-
 	    /*
 	     * Compile the content marker format line
 	     */
-	    mfmt = compile_marker(markerform);
+	    struct format *mfmt = compile_marker(markerform);;
+
+	    if (headersw) {
+		/*
+		 * Compile the header format line
+		 */
+		struct format *hfmt = compile_header(headerform);
+		output_header(ct, hfmt);
+		fmt_free(hfmt, 0);
+	    }
+
 	    show_single_message (ct, formsw, concat, textonly, inlineonly,
 				 mfmt);
 	    fmt_free(mfmt, 0);
 	}
     }
 
+    /* Reset the format component hashtable, which free's any components which
+       it references. */
+    fmt_free(NULL, 1);
     free_markercomps();
-    fmt_free(hfmt, 1);
 }
 
 
@@ -1318,7 +1322,7 @@ compile_header(char *form)
 
     fmtstring = new_fs(form, NULL, DEFAULT_HEADER);
 
-    (void) fmt_compile(fmtstring, &fmt, 1);
+    (void) fmt_compile(fmtstring, &fmt, 0);
     free_fs();
 
     while ((comp = fmt_nextcomp(comp, &bucket)) != NULL) {
