@@ -518,7 +518,7 @@ do_cache:
      * Store the message content
      */
     if (storesw) {
-	info = mhstoreinfo_create (cts, cwd, "always", autosw, verbosw);;
+	info = mhstoreinfo_create (cts, cwd, "always", autosw, verbosw);
 	store_all_messages (info);
 	mhstoreinfo_free (info);
     }

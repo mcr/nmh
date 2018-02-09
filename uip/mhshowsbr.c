@@ -123,7 +123,7 @@ show_all_messages(CT *cts, int concat, int textonly, int inlineonly)
 	    /*
 	     * Compile the content marker format line
 	     */
-	    struct format *mfmt = compile_marker(markerform);;
+	    struct format *mfmt = compile_marker(markerform);
 
 	    if (headersw) {
 		/*
