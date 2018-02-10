@@ -76,6 +76,7 @@ main (int argc, char **argv)
     char **argp, *nfs, **arguments;
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
+    charstring_t scanl = NULL;
     FILE *in;
 
     if (nmh_init(argv[0], true, true)) { return 1; }
@@ -190,14 +191,14 @@ main (int argc, char **argv)
 
 	scan_detect_mbox_style (in);
 	for (msgnum = 1; ; ++msgnum) {
-	    charstring_t scanl = NULL;
-
 	    state = scan (in, msgnum, -1, nfs, width, 0, 0,
 			  hdrflag ? file : NULL, 0L, 1, &scanl);
-	    charstring_free (scanl);
+	    if (scanl)
+		charstring_clear(scanl);
 	    if (state != SCNMSG && state != SCNENC)
 		break;
 	}
+	charstring_free (scanl);
 	scan_finished ();
 	fclose (in);
 	done (0);
@@ -256,7 +257,6 @@ main (int argc, char **argv)
 	 (revflag ? msgnum >= mp->lowsel : msgnum <= mp->hghsel);
 	 msgnum += (revflag ? -1 : 1)) {
 	if (is_selected(mp, msgnum)) {
-	    charstring_t scanl = NULL;
 
 	    if ((in = fopen (cp = m_name (msgnum), "r")) == NULL) {
 		    admonish (cp, "unable to open message");
@@ -294,7 +294,8 @@ main (int argc, char **argv)
 		    inform("message %d: empty", msgnum);
 		    break;
 	    }
-	    charstring_free (scanl);
+	    if (scanl)
+		charstring_clear(scanl);
 	    scan_finished ();
 	    hdrflag = false;
 	    fclose (in);
@@ -302,6 +303,7 @@ main (int argc, char **argv)
 		fflush (stdout);
 	}
     }
+    charstring_free (scanl);
 
     ivector_free (seqnum);
     folder_free (mp);	/* free folder/message structure */

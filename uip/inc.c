@@ -217,6 +217,7 @@ main (int argc, char **argv)
     FILE *aud = NULL;
     char b[PATH_MAX + 1];
     char *maildir_copy = NULL;	/* copy of mail directory because the static gets overwritten */
+    charstring_t scanl = NULL;
 
     int nmsgs, nbytes;
     char *MAILHOST_env_variable;
@@ -613,7 +614,6 @@ main (int argc, char **argv)
 
         hghnum = msgnum = mp->hghmsg;
 	for (i = 1; i <= nmsgs; i++) {
-	    charstring_t scanl = NULL;
 
 	    msgnum++;
             cp = mh_xstrdup(m_name (msgnum));
@@ -655,7 +655,9 @@ main (int argc, char **argv)
 		    fflush (stdout);
 		break;
 	    }
-	    charstring_free (scanl);
+
+	    if (scanl)
+		charstring_clear (scanl);
 
             if (ferror(pf) || fclose (pf)) {
                 int e = errno;
@@ -672,6 +674,9 @@ main (int argc, char **argv)
 	    scan_finished();
 	}
 
+	charstring_free (scanl);
+	scanl = NULL;
+
 	if (pop_quit () == NOTOK)
 	    die("%s", response);
 
@@ -681,8 +686,6 @@ main (int argc, char **argv)
 	scan_detect_mbox_style (in);		/* the MAGIC invocation... */
 	hghnum = msgnum = mp->hghmsg;
 	for (;;) {
-	    charstring_t scanl = NULL;
-
 	    /* create scanline for new message */
 	    switch (incerr = scan (in, msgnum + 1, msgnum + 1, nfs, width,
 			      msgnum == hghnum && chgflag, 1, NULL, 0L, noisy,
@@ -719,16 +722,18 @@ main (int argc, char **argv)
 		if (noisy)
 		    fflush (stdout);
 
+		charstring_clear (scanl);
 		msgnum++;
 		continue;
 	    }
-	    charstring_free (scanl);
 
 	    /* If we get here there was some sort of error from scan(),
 	     * so stop processing anything more from the spool.
 	     */
 	    break;
 	}
+	charstring_free (scanl);
+	scanl = NULL;
 
     } else {
         /* Mail from Maildir. */
@@ -738,8 +743,6 @@ main (int argc, char **argv)
 
 	hghnum = msgnum = mp->hghmsg;
 	for (i = 0; i < num_maildir_entries; i++) {
-	    charstring_t scanl = NULL;
-
 	    msgnum++;
 
 	    sp = Maildir[i].filename;
@@ -803,7 +806,7 @@ main (int argc, char **argv)
 		    fflush (stdout);
 		break;
 	    }
-	    charstring_free (scanl);
+	    charstring_clear (scanl);
 
 	    if (ferror(pf) || fclose (pf)) {
 		int e = errno;
@@ -821,6 +824,8 @@ main (int argc, char **argv)
 	    scan_finished();
 	}
 	free (Maildir); /* From now on Maildir is just a flag - don't dref! */
+	charstring_free (scanl);
+	scanl = NULL;
     }
 
     scan_finished ();
