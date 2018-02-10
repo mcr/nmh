@@ -79,3 +79,29 @@
    ...
    fun:_ZN4dyldL14libraryLocator*
 }
+
+{
+   Mach msg uninitialized bytes (MacOS X)
+   Memcheck:Param
+   mach_msg("rcv_name")
+   fun:mach_msg_trap
+   ...
+   fun:_os_trace*
+}
+
+{
+   Mach msg->desc.port uninitialized bytes (MacOS X)
+   Memcheck:Param
+   msg->desc.port.name
+   fun:mach_msg_trap
+   ...
+   fun:_os_trace*
+}
+
+{
+   Invalid read of size 16 (MacOS X)
+   Memcheck:Addr16
+   fun:_platform_memchr$VARIANT$Base
+   fun:fgets
+   fun:mts_read_conf_file
+}
