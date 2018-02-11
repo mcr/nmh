@@ -247,9 +247,9 @@ static void
 cpstripped (charstring_t dest, size_t max, char *str)
 {
     static bool deja_vu;
-    static char *oddchar;
+    static char oddchar[MB_LEN_MAX * 2];
     static size_t oddlen;
-    static char *spacechar;
+    static char spacechar[MB_LEN_MAX * 2];
     static size_t spacelen;
     char *end;
     bool squash;
@@ -259,19 +259,12 @@ cpstripped (charstring_t dest, size_t max, char *str)
     int w;
 
     if (!deja_vu) {
-        size_t two;
-
         deja_vu = true;
 
-        two = MB_CUR_MAX * 2; /* Varies at run-time. */
-
-        oddchar = mh_xmalloc(two);
-        oddlen = wcstombs(oddchar, L"?", two);
+        oddlen = wcstombs(oddchar, L"?", sizeof oddchar);
         assert(oddlen > 0);
-
         assert(wcwidth(L' ') == 1); /* Need to pad in ones. */
-        spacechar = mh_xmalloc(two);
-        spacelen = wcstombs(spacechar, L" ", two);
+        spacelen = wcstombs(spacechar, L" ", sizeof spacechar);
         assert(spacelen > 0);
     }
 
