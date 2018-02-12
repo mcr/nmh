@@ -1148,7 +1148,11 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 			       comp->c_mn will be run through
 			       FT_LS_ADDR, which will strip off any
 			       pers name. */
-			    free (comp->c_text);
+			    /* NB: We remove the call to free() here
+			       because it interferes with the buffer
+			       management in scansbr.c.  Revisit this
+			       when we clean up memory handling */
+			    /* free (comp->c_text); */
 			    comp->c_text = str = strdup (mn->m_text);
 			    comp->c_mn = mn;
 			}
