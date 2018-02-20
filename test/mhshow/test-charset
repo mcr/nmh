@@ -20,8 +20,17 @@ check_exit '-eq 1' mhshow -
 
 require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
-text_size=10
-test "$ICONV_ENABLED" -eq 1 && text_size=11
+iconv_elides_question_marks=0
+if test "$ICONV_ENABLED" -eq 0; then
+    text_size=10
+else
+    text_size=11
+    #### The GNU iconv library normalises charset names by eliding '?', along
+    #### with some other characters.  The iconv libraries used on FreeBSD/NetBSD
+    #### and Mac OS X don't.
+    printf x | iconv -f '?UTF-8' -t UTF-8 >/dev/null 2>&1  &&
+        iconv_elides_question_marks=1
+fi
 
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
@@ -72,6 +81,13 @@ run_prog mhshow $msgnum > $actual 2>&1
 check "$expected" "$actual" : locale profile component
 
 
+#### All of the remaining tests rely on iconv.a
+if test "$ICONV_ENABLED" -eq 0; then
+  finish_test
+  exit $failed
+fi
+
+
 #### RFC 2231 defines the extended value syntax:
 #### extended-initial-value := [charset] "'" [language] "'"
 ####                           extended-other-values
@@ -110,12 +126,14 @@ Content-Description: bogus quoted-printable data
 4 ÷ 2 = 2
 EOF
 
-if test "$ICONV_ENABLED" -eq 1; then
-    run_prog mhshow $msgnum > $actual 2>&1
-    check "$expected" "$actual" : encoded parameter value
-fi
+run_prog mhshow $msgnum > $actual 2>&1
+check "$expected" "$actual" : encoded parameter value
 
 
+#### mhshow replaces the invalid character in the charset parameter value with
+#### a '?'.  So, a charset name of "?us-ascii" is fed to iconv.  If
+#### $iconv_elides_question_marks, iconv will normalize that to "us-ascii".
+#### Otherwise, we expect iconv to fail.
 start_test 'replacement character in parameter value'
 cat > $msgfile <<'EOF'
 Subject: invalid parameter value charset
@@ -133,7 +151,16 @@ MIME-Version: 1.0
 EOF
 
 run_prog mhshow $msgnum > $actual 2>&1
-check "$expected" "$actual"
+if [ $iconv_elides_question_marks -eq 1 ]; then
+    check "$expected" "$actual"
+else
+    if grep "Can't convert .*us-ascii to UTF-8" "$actual" >/dev/null; then
+        rm -f "$expected" "$actual"
+    else
+        failed=1
+    fi
+fi
+
 
 finish_test
 exit $failed
