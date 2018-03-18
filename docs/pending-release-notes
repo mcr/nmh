@@ -4,6 +4,9 @@ Things to add to the release notes for the next full release:
 NEW FEATURES
 ------------
 
+- The default editor has been changed from 'vi' to 'prompter', to align with
+  historical practice and reduce packaging dependencies on external programs.
+
 -----------------
 OBSOLETE FEATURES
 -----------------

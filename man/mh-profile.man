@@ -166,7 +166,7 @@ for details about private sequences.
 .RE
 .PP
 .BR Editor :
-vi
+prompter
 .RS 5
 Defines the editor to be used by the commands
 .BR comp ,
@@ -175,7 +175,7 @@ Defines the editor to be used by the commands
 and
 .BR repl .
 If not set, the value will be taken from the VISUAL and EDITOR environment
-variables.  (profile, default: vi)
+variables.  (profile, default: prompter)
 .RE
 .PP
 .BR Msg\-Protect :

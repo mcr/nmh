@@ -22,7 +22,7 @@ get_default_editor(void)
 
     if (!(str = context_find("editor")) && !(str = getenv("VISUAL")) &&
     	!(str = getenv("EDITOR"))) {
-	str = "vi";
+	str = "prompter";
     }
 
     return default_editor = str;
