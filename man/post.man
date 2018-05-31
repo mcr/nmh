@@ -188,9 +188,9 @@ but can be overridden here with the
 switch.
 .PP
 If nmh is using
-.BR sendmail/pipe
+.B sendmail/pipe
 or
-.BR sendmail/smtp
+.B sendmail/smtp
 as its mail transport system, the
 .B \-sendmail
 switch can be used to override the default
