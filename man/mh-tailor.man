@@ -214,7 +214,9 @@ for this functionality.
 This option is only available if you set
 .B mts
 to
-.BR sendmail .
+.B sendmail/smtp
+or
+.BR sendmail/pipe .
 .PP
 .BR sendmail :
 %sendmailpath%

@@ -393,9 +393,11 @@ but can be overridden here with the
 .B \-mts
 switch.
 .PP
-If nmh is using as its mail transport system
-.BR sendmail/pipe ,
-the
+If nmh is using
+.BR sendmail/pipe
+or
+.BR sendmail/smtp
+as its mail transport system, the
 .B \-sendmail
 switch can be used to override the default
 .B sendmail
