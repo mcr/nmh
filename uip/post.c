@@ -318,7 +318,7 @@ static int annoaux (struct mailname *);
 static void insert_fcc (struct headers *, char *);
 static void make_bcc_file (int);
 static void verify_all_addresses (int, int, char *, int, char *);
-static void chkadr (void) PURE;
+static void chkadr (void);
 static void sigon (void);
 static void sigoff (void);
 static void p_refile (char *);
