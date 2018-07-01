@@ -82,7 +82,7 @@ int
 main (int argc, char **argv)
 {
     int md, vecp = 0;
-    char *cp, *user, buf[BUFSIZ], tty[BUFSIZ];
+    char *cp, *user, buf[BUFSIZ];
     char **argp, **arguments, *vec[MAXARGS];
     struct utmpx *utp;
 
@@ -160,13 +160,11 @@ main (int argc, char **argv)
         if (utp->ut_type == USER_PROCESS && utp->ut_user[0] != 0
                && utp->ut_line[0] != 0
                && strncmp (user, utp->ut_user, sizeof(utp->ut_user)) == 0) {
-            strncpy (tty, utp->ut_line, sizeof(utp->ut_line));
-	    alert (tty, md);
+	    alert(utp->ut_line, md);
         }
     }
     endutxent();
 #else
-    NMH_UNUSED (tty);
     NMH_UNUSED (utp);
 #endif /* HAVE_GETUTXENT */
 
