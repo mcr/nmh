@@ -1078,8 +1078,9 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 							formatproc != NULL) {
 			    filterbody(c1, buf, sizeof(buf), state, gstate);
 			} else {
-			    holder.c_text = mh_xmalloc (sizeof(buf));
-			    strncpy (holder.c_text, buf, sizeof(buf));
+                            bufsz = sizeof buf;
+                            holder.c_text = mh_xmalloc(bufsz);
+                            strncpy(holder.c_text, buf, bufsz);
 			    while (state == BODY) {
 				putcomp (c1, &holder, BODYCOMP);
 				bufsz = sizeof buf;
