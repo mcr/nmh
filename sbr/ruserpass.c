@@ -175,7 +175,7 @@ ruserpass(const char *host, char **aname, char **apass, int flags)
 	    mypass = *aname;
 	}
 
-        *aname = mh_xstrdup(mypass);
+        *apass = mh_xstrdup(mypass);
     }
 
 }
