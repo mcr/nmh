@@ -138,7 +138,7 @@ static char *host = NULL;
 static char *routepath = NULL;
 static char *grp = NULL;
 static char *note = NULL;
-static char err[BUFSIZ];
+static char err[BUFSIZ+39];
 static char adr[BUFSIZ];
 
 static struct adrx  adrxs2;

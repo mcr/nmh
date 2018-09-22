@@ -226,7 +226,7 @@ mnfree (struct mailname *mp)
 char *
 auxformat (struct mailname *mp, int extras)
 {
-    static char addr[BUFSIZ];
+    static char addr[BUFSIZ-4];
     static char buffer[BUFSIZ];
 
 	if (mp->m_nohost)
