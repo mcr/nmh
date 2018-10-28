@@ -357,8 +357,8 @@ getuserinfo (void)
     /* If there's a Local-Mailbox profile component, try to extract
        the username from it.  But don't try very hard, this assumes
        the very simple User Name <user@name.com> form.
-       Note that post(8) and whom(1) use context_foil (), so they
-       won't see the profile component. */
+       Note that post(8) uses context_foil(), so it won't see the profile
+       component. */
     if ((np = context_find("Local-Mailbox")) != NULL) {
 	char *left_angle_bracket = strchr (np, '<');
 	char *at_sign = strchr (np, '@');
@@ -397,8 +397,8 @@ getuserinfo (void)
     /* The $SIGNATURE environment variable overrides the GECOS field's idea of
        your real name. If SIGNATURE isn't set, use the Signature profile
        setting if it exists.
-       Note that post(8) and whom(1) use context_foil (), so they
-       won't see the profile component. */
+       Note that post(8) uses context_foil(), so it won't see the profile
+       component. */
     if ((cp = getenv ("SIGNATURE")) && *cp)
 	strncpy (fullname, cp, sizeof(fullname));
     else if ((cp = context_find("Signature")))
