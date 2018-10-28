@@ -225,6 +225,12 @@ is used.
 ^%nmhlibexecdir%/post~^Program to deliver a message
 ^/tmp/mhmail*~^Temporary copy of message
 .fi
+.SH "PROFILE COMPONENTS"
+.B mhmail
+does
+.I not
+consult the user's
+.I \&.mh_profile
 .SH "SEE ALSO"
 .IR dist (1),
 .IR send (1),
@@ -248,5 +254,4 @@ switch, the context of
 .B send
 is used.
 .B mhmail
-does not read the context file itself, so an entry for it will be
-ignored.
+does not read the context file itself.
