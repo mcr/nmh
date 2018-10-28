@@ -39,6 +39,15 @@ run_prog scan +inbox -width 80 >"$actual" || exit 1
 check "$expected" "$actual"
 
 
+# check full output device, if one exists
+if test -c /dev/full; then
+  start_test 'full output device'
+  printf 'scan: failed to fflush stdout: No space left on device\n' >"$expected"
+  scan last >/dev/full 2>"$actual"  &&  false
+  check "$expected" "$actual"
+fi
+
+
 # check highlighting
 start_test 'highlighting'
 cat >"$expected" <<EOF

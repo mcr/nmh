@@ -19,3 +19,4 @@ DEPRECATED FEATURES
 BUG FIXES
 ---------
 
+- scan(1) now checks for full output device [Bug #50925].
