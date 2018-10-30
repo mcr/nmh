@@ -299,9 +299,8 @@ main (int argc, char **argv)
 	    scan_finished ();
 	    hdrflag = false;
 	    fclose (in);
-	    if (ontty  &&  fflush (stdout) == EOF) {
-		adios("stdout", "failed to fflush");
-	    }
+	    if (ontty)
+		fflush (stdout);
 	}
     }
     charstring_free (scanl);

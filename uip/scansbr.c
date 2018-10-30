@@ -340,14 +340,8 @@ finished:
     if (bodycomp)
 	bodycomp->c_text = saved_c_text;
 
-    if (noisy) {
-	if (fputs (charstring_buffer (*scanl), stdout) == EOF) {
-	    adios("stdout", "failed to fputs");
-	}
-	if (fflush (stdout)) {
-	    adios("stdout", "failed to fflush");
-	}
-    }
+    if (noisy)
+	fputs (charstring_buffer (*scanl), stdout);
 
     cptr = fmt_findcomp ("encrypted");
     encrypted = cptr && cptr->c_text;
