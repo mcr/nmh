@@ -16,6 +16,10 @@
 extern long timezone;
 #endif
 
+/* Size of largest possible int representing a time zone offset in minutes:
+   2,147,483,648 / 60 = 35,791,394 */
+#define DTZ_BUFFER_SIZE (sizeof "+3579139459")
+
 /*
  * The number of days in the year, accounting for leap years
  */
@@ -249,7 +253,8 @@ dtime (time_t *clock, int alpha_timezone)
 char *
 dasctime (struct tws *tw, int flags)
 {
-    char buffer[80];
+    char buffer[77];
+    char tzbuffer[DTZ_BUFFER_SIZE];
     static char result[80];
     int twf;
 
@@ -258,14 +263,14 @@ dasctime (struct tws *tw, int flags)
 
     /* Display timezone if known */
     if (tw->tw_flags & TW_SZEXP)
-	snprintf(result, sizeof(result), " %s", dtimezone(tw->tw_zone, tw->tw_flags | flags));
+	snprintf(tzbuffer, sizeof(tzbuffer), " %s", dtimezone(tw->tw_zone, tw->tw_flags | flags));
     else
-	result[0] = '\0';
+	tzbuffer[0] = '\0';
 
     snprintf(buffer, sizeof(buffer), "%02d %s %0*d %02d:%02d:%02d%s",
 	    tw->tw_mday, tw_moty[tw->tw_mon],
 	    tw->tw_year < 100 ? 2 : 4, tw->tw_year,
-	    tw->tw_hour, tw->tw_min, tw->tw_sec, result);
+	    tw->tw_hour, tw->tw_min, tw->tw_sec, tzbuffer);
 
     if ((twf = tw->tw_flags & TW_SDAY)) {
         if (twf == TW_SEXP)
@@ -289,7 +294,7 @@ dasctime (struct tws *tw, int flags)
 char *
 dtimezone(int offset, int flags)
 {
-    static char buffer[sizeof "+3579139459"]; /* 2,147,483,648 / 60 = 35,791,394 */
+    static char buffer[DTZ_BUFFER_SIZE];
     bool pos;
     unsigned os, hours, mins;
 
