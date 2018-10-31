@@ -156,7 +156,6 @@ WhatNow (int argc, char **argv)
     char **argp, **arguments;
     struct stat st;
     char	cwd[PATH_MAX + 1];	/* current working directory */
-    char	file[PATH_MAX + 1];	/* file name buffer */
     char	shell[PATH_MAX + 1];	/* shell response buffer */
     FILE	*f;			/* read pointer for bgnd proc */
     char	*l;			/* set on -l to alist  command */
@@ -450,6 +449,8 @@ WhatNow (int argc, char **argv)
 	     */
 
 	    if ((f = popen_in_dir(cwd, buf, "r")) != NULL) {
+                char file[2 * PATH_MAX + 2]; /* file name buffer */
+
 		while (fgets(shell, sizeof (shell), f) != NULL) {
 		    char *ctype;
 
