@@ -294,7 +294,7 @@ static char *
 replformataddr (char *orig, char *str)
 {
     int len;
-    char baddr[BUFSIZ], error[BUFSIZ];
+    char baddr[BUFSIZ+6], error[BUFSIZ];
     bool isgroup;
     char *dst;
     char *cp;

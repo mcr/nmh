@@ -54,7 +54,7 @@ char *spoollocking = DEFAULT_LOCKING;
 /* Cache the username, fullname, and mailbox of the user */
 static char username[BUFSIZ];
 static char fullname[BUFSIZ];
-static char localmbox[BUFSIZ];
+static char localmbox[2*BUFSIZ+3];
 
 /*
  * MTS specific variables
