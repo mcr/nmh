@@ -247,7 +247,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 			 * If there is already a "From " line,
 			 * then leave it alone.  Else we add one.
 			 */
-			char tmpbuffer[sizeof buffer];
+			char tmpbuffer[sizeof buffer-7];
 			char *tp, *ep;
 
 			strncpy(tmpbuffer, buffer, sizeof(tmpbuffer));

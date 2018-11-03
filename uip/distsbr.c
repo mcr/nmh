@@ -59,9 +59,11 @@ distout (char *drft, char *msgnam, char *backup)
 	    case FLD: 
 	    case FLDPLUS: 
 		if (uprf (name, "distribute-"))
-		    snprintf (name, sizeof(name), "%s%s", "Resent", &name[10]);
+		    snprintf (name, sizeof(name), "%s%.*s", "Resent", NAMESZ-7,
+			      &name[10]);
 		if (uprf (name, "distribution-"))
-		    snprintf (name, sizeof(name), "%s%s", "Resent", &name[12]);
+		    snprintf (name, sizeof(name), "%s%.*s", "Resent", NAMESZ-7,
+			      &name[12]);
 		if (!uprf (name, "resent")) {
 		    inform(BADHDR, "draft", name);
 		    goto leave_bad;
