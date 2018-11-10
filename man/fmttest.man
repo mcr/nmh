@@ -385,5 +385,7 @@ dat[4]	%(\fIunseen\fR)
 .RB ` \-nofile '
 .RB ` \-dupaddrs '
 .fi
+.SH CONTEXT
+If a folder is given, it will become the current folder.
 .SH BUGS
 It shouldn't require as much code from other programs as it does.
