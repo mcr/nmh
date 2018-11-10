@@ -17,6 +17,8 @@ mhical \- nmh's manipulator of iCalendar event requests
 .RB [[ \-reply
 .IR "accept" " | " "decline" " | " "tentative" "] |"
 .BR \-cancel ]
+.RB [ \-attendee
+.IR address ]
 .RB [ \-contenttype ]
 .RB [ \-infile
 .IR infile ]
@@ -102,6 +104,13 @@ action parameter must be one of
 .IR "decline" ", or"
 .IR "tentative" .
 Delegation is not supported.
+.PP
+If one of your mailboxes matches more than one attendee in the request, the
+.B \-attendee
+switch must be used to select the one to use in the reply.  The
+.B \-attendee
+switch can also be used to specify the attendee address if no attendees match
+any of your mailboxes.
 .SS Cancel
 The
 .B \-cancel
@@ -154,6 +163,7 @@ is checked.
 .SH "SEE ALSO"
 .IR mhbuild (1),
 .IR mh\-format (5),
+.IR mh\-profile (5),
 .IR tzset (3),
 .IR repl (1)
 .SH DEFAULTS
@@ -166,3 +176,9 @@ is checked.
 .B mhical
 supports only a very limited subset of RRULE formats.  Specifically,
 only a frequency of YEARLY and an interval of 1 are supported.
+.PP
+.B mhical
+produces output with just newlines instead of carriage return-newline
+combinations.  This is intentional, to fit with typical
+.B nmh
+convention.

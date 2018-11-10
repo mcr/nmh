@@ -34,7 +34,7 @@ typedef enum act {
     ACT_CANCEL
 } act;
 
-static void convert_to_reply (contentline *, act);
+static int convert_to_reply (contentline *, act, char *);
 static void convert_to_cancellation (contentline *);
 static void convert_common (contentline *, act);
 static void dump_unfolded (FILE *, contentline *);
@@ -51,6 +51,7 @@ static char *fold (char *, int);
     X("format string", 5, FMTSW) \
     X("infile", 0, INFILESW) \
     X("outfile", 0, OUTFILESW) \
+    X("attendee", 0, ATTENDEESW) \
     X("contenttype", 0, CONTENTTYPESW) \
     X("nocontenttype", 0, NCONTENTTYPESW) \
     X("unfold", 0, UNFOLDSW) \
@@ -81,6 +82,7 @@ main (int argc, char *argv[])
     act action = ACT_NONE;
     char *infile = NULL, *outfile = NULL;
     FILE *inputfile = NULL, *outputfile = NULL;
+    char *attendee = NULL;
     bool contenttype = false;
     bool unfold = false;
     vevent *v, *nextvevent;
@@ -161,6 +163,12 @@ main (int argc, char *argv[])
                 outfile = *cp == '-'  ?  mh_xstrdup(cp)  :  path (cp, TFILE);
                 continue;
 
+            case ATTENDEESW:
+                if (! (cp = *argp++) || (*cp == '-' && cp[1]))
+                    die("missing argument to %s", argp[-2]);
+                attendee = cp;
+                continue;
+
             case CONTENTTYPESW:
                 contenttype = true;
                 continue;
@@ -225,9 +233,12 @@ main (int argc, char *argv[])
             if (action == ACT_CANCEL) {
                 convert_to_cancellation (v->contentlines);
             } else {
-                convert_to_reply (v->contentlines, action);
+                parser_status +=
+                    convert_to_reply (v->contentlines, action, attendee);
             }
-            output (outputfile, v->contentlines, contenttype);
+            if (parser_status == 0) {
+                output (outputfile, v->contentlines, contenttype);
+            }
         }
 
         free_contentlines (v->contentlines);
@@ -250,13 +261,15 @@ main (int argc, char *argv[])
         free (outfile);
     }
 
-    return parser_status;
+    return parser_status > 0 ? 1 : 0;
 }
 
 /*
  * - Change METHOD from REQUEST to REPLY.
  * - Change PRODID.
- * - Remove all ATTENDEE lines for other users (based on ismymbox ()).
+ * - Remove all ATTENDEE lines for other users (based on ismymbox()).
+ *   If more than one address matches ismymbox(), the attendee argument,
+ *   from the -attendee switch, must be used to select one.
  * - For the user's ATTENDEE line:
  *   - Remove ROLE and RSVP parameters.
  *   - Change PARTSTAT value to indicate reply action, e.g., ACCEPTED,
@@ -264,14 +277,13 @@ main (int argc, char *argv[])
  * - Insert action at beginning of SUMMARY value.
  * - Remove all X- lines.
  * - Update DTSTAMP with current timestamp.
- * - Remove all DESCRIPTION lines.
  * - Excise VALARM sections.
  */
-static void
-convert_to_reply (contentline *clines, act action)
+static int
+convert_to_reply (contentline *clines, act action, char *attendee)
 {
     char *partstat = NULL;
-    bool found_my_attendee_line = false;
+    unsigned int found_my_attendee_line = 0;
     contentline *node;
 
     convert_common (clines, action);
@@ -314,8 +326,9 @@ convert_to_reply (contentline *clines, act action)
             /* Need to flush getname after use. */
             while (getname ("")) { continue; }
 
-            if (ismymbox (mn)) {
-                found_my_attendee_line = true;
+            if (ismymbox (mn)  &&
+                (attendee == NULL || ! strcasecmp(mn->m_text, attendee))) {
+                ++found_my_attendee_line;
                 for (p = node->params; p && p->param_name; p = p->next) {
                     value_list *v;
 
@@ -337,7 +350,7 @@ convert_to_reply (contentline *clines, act action)
         }
     }
 
-    if (! found_my_attendee_line) {
+    if (found_my_attendee_line == 0) {
         /* Generate and attach an ATTENDEE line for me. */
         contentline *node;
 
@@ -352,16 +365,13 @@ convert_to_reply (contentline *clines, act action)
             add_param_value (new_node, mh_xstrdup (getfullname ()));
             new_node->value = concat ("MAILTO:", getlocalmbox (), NULL);
         }
+    } else if (found_my_attendee_line > 1) {
+        inform("Multiple attendees match your address, "
+               "re-run with -attendee switch");
+        return 1;
     }
 
-    /* Call find_contentline () with node as argument to find multiple
-       matching contentlines. */
-    for (node = clines;
-         (node = find_contentline (node, "DESCRIPTION", 0));
-         node = node->next) {
-        /* ACCEPT, at least, replies don't seem to have DESCRIPTIONS. */
-        remove_contentline (node);
-    }
+    return 0;
 }
 
 /*
@@ -410,7 +420,7 @@ convert_common (contentline *clines, act action)
 
     if ((node = find_contentline (clines, "PRODID", 0))) {
         free (node->value);
-        node->value = mh_xstrdup ("nmh mhical v0.1");
+        node->value = mh_xstrdup ("nmh mhical v0.5");
     }
 
     if ((node = find_contentline (clines, "VERSION", 0))) {
@@ -421,8 +431,8 @@ convert_common (contentline *clines, act action)
 
         if (strcmp (node->value, "2.0")) {
             inform("supports the Version 2.0 specified by RFC 5545 "
-		"but iCalendar object has Version %s, continuing...",
-		node->value);
+                "but iCalendar object has Version %s, continuing...",
+                node->value);
             node->value = mh_xstrdup ("2.0");
         }
     }

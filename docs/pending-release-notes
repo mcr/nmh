@@ -19,3 +19,5 @@ DEPRECATED FEATURES
 BUG FIXES
 ---------
 
+- An -attendee switch has been added to mhical(1), for use when more than one
+  (or zero) attendees match a user's mailbox.

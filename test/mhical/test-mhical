@@ -41,6 +41,7 @@ Usage: mhical [switches]
   -(forma)t string
   -infile
   -outfile
+  -attendee
   -[no]contenttype
   -unfold
   -debug
@@ -335,7 +336,7 @@ start_test "accept of request"
 cat >"$expected" <<'EOF'
 BEGIN:VCALENDAR
 METHOD:REPLY
-PRODID:nmh mhical v0.1
+PRODID:nmh mhical v0.5
 VERSION:2.0
 BEGIN:VTIMEZONE
 TZID:Eastern Standard Time
@@ -421,12 +422,115 @@ mhical -reply accept <"$MH_TEST_DIR/test1.ics" | egrep -v '^DTSTAMP:' \
        >"$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
 
+
+# check accept of request with -attendee
+start_test "accept of request with -attendee"
+cat >"$expected" <<'EOF'
+BEGIN:VCALENDAR
+METHOD:REPLY
+PRODID:nmh mhical v0.5
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Eastern Standard Time
+BEGIN:STANDARD
+DTSTART:16010101T020000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=1SU;BYMONTH=11
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010101T020000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=2SU;BYMONTH=3
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+ORGANIZER;CN=Requester:MAILTO:requester@example.com
+ATTENDEE;PARTSTAT=ACCEPTED;CN=Requestee1:MAILTO:requestee1@example.com
+SUMMARY;LANGUAGE=en-US:Accepted: test request
+DTSTART;TZID=Eastern Standard Time:20150105T090000
+DTEND;TZID=Eastern Standard Time:20150105T093000
+UID:0123456789
+CLASS:PUBLIC
+PRIORITY:5
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:0
+LOCATION;LANGUAGE=en-US:
+END:VEVENT
+END:VCALENDAR
+EOF
+
+cp "$MH" "${MH}.save"
+printf 'Alternate-Mailboxes: RequesteeToo <requestee1@example.com>\n' >> "$MH"
+mhical -reply accept -attendee requestee1@example.com <"$MH_TEST_DIR/test1.ics" \
+    | egrep -v '^DTSTAMP:' >"$MH_TEST_DIR/test1.txt"
+check "$expected" "$MH_TEST_DIR/test1.txt"
+
+
+# check accept of request with other -attendee
+start_test "accept of request with other -attendee"
+cat >"$expected" <<'EOF'
+BEGIN:VCALENDAR
+METHOD:REPLY
+PRODID:nmh mhical v0.5
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Eastern Standard Time
+BEGIN:STANDARD
+DTSTART:16010101T020000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=1SU;BYMONTH=11
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010101T020000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=2SU;BYMONTH=3
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+ORGANIZER;CN=Requester:MAILTO:requester@example.com
+ATTENDEE;PARTSTAT=ACCEPTED;CN=Requestee2:MAILTO:requestee2@example.com
+SUMMARY;LANGUAGE=en-US:Accepted: test request
+DTSTART;TZID=Eastern Standard Time:20150105T090000
+DTEND;TZID=Eastern Standard Time:20150105T093000
+UID:0123456789
+CLASS:PUBLIC
+PRIORITY:5
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:0
+LOCATION;LANGUAGE=en-US:
+END:VEVENT
+END:VCALENDAR
+EOF
+
+mhical -reply accept -attendee requestee2@example.com <"$MH_TEST_DIR/test1.ics" \
+    | egrep -v '^DTSTAMP:' >"$MH_TEST_DIR/test1.txt"
+check "$expected" "$MH_TEST_DIR/test1.txt"
+
+
+# check accept of request without required -attendee
+start_test "accept of request without required -attendee"
+cat >"$expected" <<'EOF'
+mhical: Multiple attendees match your address, re-run with -attendee switch
+EOF
+
+mhical -reply accept <"$MH_TEST_DIR/test1.ics" 2>"$MH_TEST_DIR/test1.txt" \
+    && false
+check "$expected" "$MH_TEST_DIR/test1.txt"
+mv "${MH}.save" "$MH"
+
+
 # check accept of multiple vevent requests in single vcalendar
 start_test "accept of multiple vevent requests in single vcalendar"
 cat >"$expected" <<'EOF'
 BEGIN:VCALENDAR
 METHOD:REPLY
-PRODID:nmh mhical v0.1
+PRODID:nmh mhical v0.5
 VERSION:2.0
 BEGIN:VTIMEZONE
 TZID:Eastern Standard Time
@@ -560,7 +664,7 @@ start_test "decline of request"
 cat >"$expected" <<'EOF'
 BEGIN:VCALENDAR
 METHOD:REPLY
-PRODID:nmh mhical v0.1
+PRODID:nmh mhical v0.5
 VERSION:2.0
 BEGIN:VEVENT
 ORGANIZER;CN=Requester:MAILTO:requester@example.com
@@ -622,7 +726,7 @@ start_test "response of tentative to request, and -nocontenttype"
 cat >"$expected" <<'EOF'
 BEGIN:VCALENDAR
 METHOD:REPLY
-PRODID:nmh mhical v0.1
+PRODID:nmh mhical v0.5
 VERSION:2.0
 BEGIN:VEVENT
 ORGANIZER;CN=Requester:MAILTO:requester@example.com
@@ -687,7 +791,7 @@ Content-Type: text/calendar; method="CANCEL"; charset="UTF-8"
 
 BEGIN:VCALENDAR
 METHOD:CANCEL
-PRODID:nmh mhical v0.1
+PRODID:nmh mhical v0.5
 VERSION:2.0
 BEGIN:VEVENT
 ORGANIZER;CN=Requestee2:MAILTO:requestee2@example.com

@@ -280,7 +280,7 @@ Content-Type: text/calendar; method="REPLY"; charset="UTF-8"
 
 BEGIN:VCALENDAR
 METHOD:REPLY
-PRODID:nmh mhical v0.1
+PRODID:nmh mhical v0.5
 VERSION:2.0
 BEGIN:VTIMEZONE
 TZID:Eastern Standard Time
