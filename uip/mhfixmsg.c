@@ -93,7 +93,7 @@ int debugsw; /* Needed by mhparse.c. */
 /*
  * static prototypes
  */
-typedef struct fix_transformations {
+typedef struct {
     int fixboundary;
     int fixcompositecte;
     svector_t fixtypes;
@@ -127,7 +127,7 @@ static CT divide_part (CT);
 static void copy_ctinfo (CI, CI);
 static int decode_part (CT);
 static int reformat_part (CT, char *, char *, char *, int);
-static CT build_multipart_alt (CT, CT, int, int);
+static CT build_multipart (CT, CT, int, int);
 static int boundary_in_content (FILE **, char *, const char *);
 static void transfer_noncontent_headers (CT, CT);
 static int set_ct_type (CT, int type, int subtype, int encoding);
@@ -907,20 +907,20 @@ replace_boundary (CT ct, char *file, char *boundary)
             if (strcasecmp (TYPE_FIELD, np)) {
                 fprintf (fpout, "%s:%s", np, vp);
             } else {
-	    	char *new_ctline, *new_params;
+                char *new_ctline, *new_params;
 
-	    	replace_param(&ct->c_ctinfo.ci_first_pm,
-			      &ct->c_ctinfo.ci_last_pm, "boundary",
-			      boundary, 0);
+                replace_param(&ct->c_ctinfo.ci_first_pm,
+                              &ct->c_ctinfo.ci_last_pm, "boundary",
+                              boundary, 0);
 
-		new_ctline = concat(" ", ct->c_ctinfo.ci_type, "/",
-				    ct->c_ctinfo.ci_subtype, NULL);
-		new_params = output_params(LEN(TYPE_FIELD) +
-					   strlen(new_ctline) + 1,
-					   ct->c_ctinfo.ci_first_pm, NULL, 0);
+                new_ctline = concat(" ", ct->c_ctinfo.ci_type, "/",
+                                    ct->c_ctinfo.ci_subtype, NULL);
+                new_params = output_params(LEN(TYPE_FIELD) +
+                                           strlen(new_ctline) + 1,
+                                           ct->c_ctinfo.ci_first_pm, NULL, 0);
                 fprintf (fpout, "%s:%s%s\n", np, new_ctline,
-			 FENDNULL(new_params));
-		free(new_ctline);
+                         FENDNULL(new_params));
+                free(new_ctline);
                 free(new_params);
             }
 
@@ -1493,7 +1493,7 @@ find_textplain_sibling (CT parent, int replacetextplain,
 
 
 /*
- * Insert a new text/plain part.
+ * Insert a new text/plain part in a multipart part.
  */
 static int
 insert_new_text_plain_part (CT ct, int new_subpart_number, CT parent)
@@ -1567,12 +1567,13 @@ build_text_plain_part (CT encoded_part)
 static int
 insert_into_new_mp_alt (CT *ct, int *message_mods)
 {
+    /* The following will call decode_part(). */
     CT tp_part = build_text_plain_part (*ct);
     int status = OK;
 
     if (tp_part) {
-        CT mp_alt = build_multipart_alt (*ct, tp_part, CT_MULTIPART,
-                                         MULTI_ALTERNATE);
+        CT mp_alt = build_multipart (*ct, tp_part, CT_MULTIPART,
+                                     MULTI_ALTERNATE);
         if (mp_alt) {
             struct multipart *mp = (struct multipart *) mp_alt->c_ctparams;
 
@@ -1645,13 +1646,13 @@ copy_ctinfo (CI dest, CI src)
     dest->ci_subtype = src->ci_subtype ? mh_xstrdup (src->ci_subtype) : NULL;
 
     for (s_pm = src->ci_first_pm; s_pm; s_pm = s_pm->pm_next) {
-    	d_pm = add_param(&dest->ci_first_pm, &dest->ci_last_pm, s_pm->pm_name,
-			 s_pm->pm_value, 0);
-	if (s_pm->pm_charset) {
-	    d_pm->pm_charset = mh_xstrdup(s_pm->pm_charset);
+        d_pm = add_param(&dest->ci_first_pm, &dest->ci_last_pm, s_pm->pm_name,
+                         s_pm->pm_value, 0);
+        if (s_pm->pm_charset) {
+            d_pm->pm_charset = mh_xstrdup(s_pm->pm_charset);
         }
-	if (s_pm->pm_lang) {
-	    d_pm->pm_lang = mh_xstrdup(s_pm->pm_lang);
+        if (s_pm->pm_lang) {
+            d_pm->pm_lang = mh_xstrdup(s_pm->pm_lang);
         }
     }
 
@@ -1666,10 +1667,9 @@ copy_ctinfo (CI dest, CI src)
 static int
 decode_part (CT ct)
 {
-    char *tmp_decoded;
-    int status;
+    char *tempfile, *tmp_decoded;
     FILE *file;
-    char *tempfile;
+    int status;
 
     if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, &file)) == NULL) {
         die("unable to create temporary file in %s", get_temp_dir());
@@ -1759,13 +1759,15 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type)
 
 
 /*
- * Fill in a multipart/alternative part.
+ * Create and fill in a multipart part.
  */
 static CT
-build_multipart_alt (CT first_alt, CT new_part, int type, int subtype)
+build_multipart (CT first_part, CT new_part, int type, int subtype)
 {
     char *boundary_prefix = "----=_nmh-multipart";
-    char *boundary = concat (boundary_prefix, first_alt->c_partno, NULL);
+    static unsigned int bp_uses = 0;
+    char bp_uses_buf[16];
+    char *boundary;
     char *boundary_indicator = "; boundary=";
     char *typename, *subtypename, *name;
     CT ct;
@@ -1775,7 +1777,15 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype)
 
     NEW0(ct);
 
-    /* Set up the multipart/alternative part.  These fields of *ct were
+    if (bp_uses > 0) {
+        snprintf(bp_uses_buf, sizeof bp_uses_buf - 1, "-%d", bp_uses++);
+    } else {
+        bp_uses_buf[0] = '\0';
+    }
+    boundary =
+        concat (boundary_prefix, bp_uses_buf, first_part->c_partno, NULL);
+
+    /* Set up the multipart part.  These fields of *ct were
        initialized to 0 by mh_xcalloc():
        c_fp, c_unlink, c_begin, c_end,
        c_vrsn, c_ctline, c_celine,
@@ -1788,7 +1798,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype)
        c_showproc, c_termproc, c_storeproc, c_storage, c_folder
     */
 
-    ct->c_file = mh_xstrdup (first_alt->c_file);
+    ct->c_file = mh_xstrdup (first_part->c_file);
     ct->c_type = type;
     ct->c_subtype = subtype;
 
@@ -1835,7 +1845,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype)
                 snprintf (buffer2, sizeof buffer2, "%d", serial);
                 boundary =
                     concat (boundary_prefix,
-                            FENDNULL(first_alt->c_partno),
+                            FENDNULL(first_part->c_partno),
                             "-", buffer2,  NULL);
             }
         }
@@ -1850,18 +1860,18 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype)
                    boundary, "\"", NULL);
 
     /* Load c_first_hf and c_last_hf. */
-    transfer_noncontent_headers (first_alt, ct);
+    transfer_noncontent_headers (first_part, ct);
     add_header (ct, mh_xstrdup (TYPE_FIELD), concat (name, "\n", NULL));
     free (name);
 
     /* Load c_partno. */
-    if (first_alt->c_partno) {
-        ct->c_partno = mh_xstrdup (first_alt->c_partno);
-        free (first_alt->c_partno);
-        first_alt->c_partno = concat (ct->c_partno, ".1", NULL);
+    if (first_part->c_partno) {
+        ct->c_partno = mh_xstrdup (first_part->c_partno);
+        free (first_part->c_partno);
+        first_part->c_partno = concat (ct->c_partno, ".1", NULL);
         new_part->c_partno = concat (ct->c_partno, ".2", NULL);
     } else {
-        first_alt->c_partno = mh_xstrdup ("1");
+        first_part->c_partno = mh_xstrdup ("1");
         new_part->c_partno = mh_xstrdup ("2");
     }
 
@@ -1876,7 +1886,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype)
     NEW(p);
     NEW(p->mp_next);
     p->mp_next->mp_next = NULL;
-    p->mp_next->mp_part = first_alt;
+    p->mp_next->mp_part = first_part;
 
     NEW0(m);
     m->mp_start = concat (boundary, "\n", NULL);
