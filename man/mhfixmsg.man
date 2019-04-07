@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% 2018-01-14 "%nmhversion%"
+.TH MHFIXMSG %manext1% 2019-03-31 "%nmhversion%"
 .
 .\" %nmhwarning%
 .
@@ -31,6 +31,7 @@ utf-8 |
 .RB [ \-replacetextplain " | " \-noreplacetextplain ]
 .RB [ \-fixboundary " | " \-nofixboundary ]
 .RB [ \-fixcte " | " \-nofixcte ]
+.RB [ \-checkbase64 " | " \-nocheckbase64 ]
 .RB [ \-fixtype
 .IR mimetype ]
 .RB [ \-outfile
@@ -214,6 +215,21 @@ and other
 programs that parse MIME messages.
 .PP
 The
+.B \-checkbase64
+switch enables a check of the encoding validity in base64-encoded
+MIME parts.  The check looks for a non-encoded text footer appended
+to a base64-encoded part.  Per RFC 2045 \(sc6.8, the occurrence of
+a "=" character signifies the end of base-64 encoded content.  If
+none is found, a heuristic is used:  specifically, two consecutive
+invalid base64 characters signify the beginning of a plain text
+footer.  If a text footer is found and this switch is enabled,
+.B mhfixmsg
+separates the base64-encoded and non-encoded content and places
+them in a pair of subparts to a newly constructed multipart/mixed
+part.  That multipart/mixed part replaces the original base64-encoded
+part in the MIME structure of the message.
+.PP
+The
 .B \-fixtype
 switch ensures that each part of the message has the correct MIME type
 shown in its Content-Type header.  It may be repeated.  It is
@@ -318,6 +334,7 @@ content type and/or encoding as follows:
 \-reformat                text parts that are not text/plain
 \-fixboundary             outermost multipart part
 \-fixcte                  multipart or message part
+\-checkbase64             base64 encoded parts
 \-fixtype                 all except multipart and message parts
 .fi
 .RE
@@ -552,6 +569,7 @@ is checked.
 .RB ` \-noreplacetextplain '
 .RB ` \-fixboundary '
 .RB ` \-fixcte '
+.RB ` \-checkbase64 '
 .RB ` \-changecur '
 .RB ` \-noverbose '
 .fi

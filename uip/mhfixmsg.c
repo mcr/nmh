@@ -64,6 +64,8 @@
     X("nofixboundary", 0, NFIXBOUNDARYSW) \
     X("fixcte", 0, FIXCOMPOSITECTESW) \
     X("nofixcte", 0, NFIXCOMPOSITECTESW) \
+    X("checkbase64", 0, CHECKBASE64SW) \
+    X("nocheckbase64", 0, NCHECKBASE64SW) \
     X("fixtype mimetype", 0, FIXTYPESW) \
     X("file file", 0, FILESW) \
     X("outfile file", 0, OUTFILESW) \
@@ -105,6 +107,7 @@ typedef struct {
     /* Whether to use CRLF linebreaks, per RFC 2046 Sec. 4.1.1, par.1. */
     int lf_line_endings;
     char *textcharset;
+    bool checkbase64;
 } fix_transformations;
 
 static int mhfixmsgsbr (CT *, char *, const fix_transformations *,
@@ -123,9 +126,13 @@ static int find_textplain_sibling (CT, int, int *);
 static int insert_new_text_plain_part (CT, int, CT);
 static CT build_text_plain_part (CT);
 static int insert_into_new_mp_alt (CT *, int *);
+static int insert_into_new_mp_mixed (CT *, const char *, int *);
 static CT divide_part (CT);
 static void copy_ctinfo (CI, CI);
 static int decode_part (CT);
+static size_t get_valid_base64 (CT, char **);
+static size_t find_invalid_base64_pos (const char *);
+static int check_base64_encoding (CT *);
 static int reformat_part (CT, char *, char *, char *, int);
 static CT build_multipart (CT, CT, int, int);
 static int boundary_in_content (FILE **, char *, const char *);
@@ -139,7 +146,7 @@ static void update_cte (CT);
 static int least_restrictive_encoding (CT) PURE;
 static int less_restrictive (int, int);
 static int convert_charsets (CT, char *, int *);
-static int fix_always (CT, int *);
+static int fix_always (CT *, const fix_transformations *, int *);
 static int decode_header_field_bodies (CT, int *);
 static int fix_filename_param (char *, char *, PM *, PM *);
 static int fix_filename_encoding (CT);
@@ -174,6 +181,7 @@ main (int argc, char **argv)
     fx.decodeheaderfieldbodies = NULL;
     fx.lf_line_endings = 0;
     fx.textcharset = NULL;
+    fx.checkbase64 = true;
 
     if (nmh_init(argv[0], true, false)) { return 1; }
 
@@ -253,6 +261,12 @@ main (int argc, char **argv)
                 continue;
             case NTEXTCHARSETSW:
                 fx.textcharset = 0;
+                continue;
+            case CHECKBASE64SW:
+                fx.checkbase64 = true;
+                continue;
+            case NCHECKBASE64SW:
+                fx.checkbase64 = false;
                 continue;
             case FIXBOUNDARYSW:
                 fx.fixboundary = 1;
@@ -599,7 +613,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
     } /* else *outfp was defined by caller */
 
     reverse_alternative_parts (*ctp);
-    status = fix_always (*ctp, &message_mods);
+    status = fix_always (ctp, fx, &message_mods);
     if (status == OK  &&  fx->fixboundary) {
         status = fix_boundary (ctp, &message_mods);
     }
@@ -1604,6 +1618,79 @@ insert_into_new_mp_alt (CT *ct, int *message_mods)
 
 
 /*
+ * Slip new text/plain part into a new multipart/mixed.
+ */
+static int
+insert_into_new_mp_mixed (CT *ct, const char *content, int *message_mods)
+{
+    CT main_part = divide_part (*ct);
+    const char *reason = NULL;
+    const int encoding = content_encoding (main_part, &reason);
+    int status = OK;
+
+    if (set_ct_type(main_part, (*ct)->c_type, (*ct)->c_subtype,
+                    main_part->c_encoding) != OK) {
+        inform("failed to set Content-Type of main part");
+        return NOTOK;
+    }
+    if (set_ct_type(*ct, (*ct)->c_type, (*ct)->c_subtype, encoding) != OK) {
+        inform("failed to set Content-Type of new part");
+        return NOTOK;
+    }
+
+    if (main_part) {
+        /* Load remainder into the new part. */
+        CE cefile = &(*ct)->c_cefile;
+        CT mp_alt;
+
+        cefile->ce_file =
+            mh_xstrdup(m_mktemp2 (NULL, invo_name, NULL, &cefile->ce_fp));
+        if (cefile->ce_file == NULL) {
+            die("unable to create temporary file in %s", get_temp_dir());
+        }
+        cefile->ce_unlink = 1;
+        fprintf (cefile->ce_fp, "%s", content);
+
+        /* Put both parts into a new multipart. */
+        mp_alt = build_multipart (*ct, main_part, CT_MULTIPART, MULTI_MIXED);
+        if (mp_alt) {
+            struct multipart *mp = (struct multipart *) mp_alt->c_ctparams;
+
+            /* So fix_composite_cte doesn't try to overwrite the encoding.  If
+               the content needs to be decoded, c_encoding will be properly
+               set. */
+            mp_alt->c_encoding = encoding;
+
+            if (mp  &&  mp->mp_parts) {
+                mp->mp_parts->mp_part = main_part;
+                /* Make the new multipart/alternative the parent. */
+                *ct = mp_alt;
+
+                ++*message_mods;
+                if (verbosw) {
+                    report (NULL, (*ct)->c_partno, (*ct)->c_file,
+                            "insert text/plain part");
+                }
+            } else {
+                free_content (main_part);
+                free_content (mp_alt);
+                status = NOTOK;
+            }
+        } else {
+            inform("failed to build multipart/alternate");
+            status = NOTOK;
+        }
+    } else {
+        /* Should never happen. */
+        inform("failed to insert new text part into multipart/related");
+        status = NOTOK;
+    }
+
+    return status;
+}
+
+
+/*
  * Clone a MIME part.
  */
 static CT
@@ -1683,6 +1770,134 @@ decode_part (CT ct)
     free (tmp_decoded);
     if (fclose (file)) {
         inform("unable to close temporary file %s, continuing...", tempfile);
+    }
+
+    return status;
+}
+
+
+/*
+ * If base64-encoded content has a text trailer, return the location, relative
+ * to c->c_begin, where the valid base64 ends.  And return the trailer in the
+ * addresses pointed to by remainderp.  The caller is responsible for
+ * deallocating that.  If no text trailer, return ct->c_end - ct->c_begin and
+ * leave remainderp unchanged.
+ */
+static size_t
+get_valid_base64 (CT ct, char **remainderp) {
+    const size_t len = ct->c_end - ct->c_begin;
+    char *buf, format[16];
+    size_t pos;
+    int fd;
+
+    if (! ct->c_fp  &&  ((ct->c_fp = fopen (ct->c_file, "r")) == NULL)) {
+        advise (ct->c_file, "unable to open for reading");
+        return NOTOK;
+    }
+    if ((fd = fileno (ct->c_fp)) == -1  ||
+        lseek (fd, ct->c_begin, SEEK_SET) == (off_t) -1) {
+        advise (ct->c_file, "unable to seek in");
+        return NOTOK;
+    }
+    buf = mh_xmalloc(len + 1);
+    snprintf(format, sizeof format, "%%%luc", (unsigned long) len);
+    if (fscanf(ct->c_fp, format, buf) == EOF) {
+        advise (ct->c_file, "unable to read");
+        return NOTOK;
+    }
+    buf[len] = '\0';
+
+    pos = find_invalid_base64_pos(buf);
+
+    if (ct->c_begin + pos < (size_t) ct->c_end) {
+        *remainderp = mh_xstrdup(&buf[pos]);
+    } else {
+        pos = ct->c_end - ct->c_begin;
+    }
+    free(buf);
+
+    return pos;
+}
+
+
+/*
+ * Find position in byte string of invalid base64 code.  Skip individual
+ * invalid characters because RFC 2045 Sec 6.8 says they should be ignored.
+ * The motivating use case is a text footer that was mistakenly applied to
+ * base64 content.  Therefore, if any of these is found, return the position
+ * of:
+ * 1. The byte (or end) after one or two consecutive pad ('=') bytes.
+ * 2. The first of a pair of invalid base64 bytes.
+ *
+ * If the base64 code is valid, return the position of the null terminator.
+ *
+ * encoded      - the base64-encoded string
+ */
+static size_t
+find_invalid_base64_pos (const char *encoded) {
+    const char *cp;
+    size_t pos;
+    bool found_pad = false;
+    unsigned int found_invalid = 0;
+
+    for (cp = encoded, pos = 0;
+         *cp && ! found_pad && found_invalid < 2;
+         ++cp, ++pos) {
+        if (isspace ((unsigned char) *cp) ||
+            isalnum ((unsigned char) *cp) ||
+            *cp == '+' || *cp == '/' || *cp == '=') {
+            /* Valid base64 byte. */
+            if (*cp == '=') {
+                /* "evidence that the end of the data has been reached"
+                   according to RFC 2045 */
+                found_pad = true;
+            }
+            /* Require consecutive invalid bytes.  Let decodeBase64() handle
+               individual ones. */
+            found_invalid = 0;
+        } else {
+            ++found_invalid;
+        }
+    }
+
+    if (found_pad  &&  *cp  &&  *cp == '=') {
+        /* Skip over last in pair of ==. */
+        ++cp, ++pos;
+    } else if (found_invalid == 2) {
+        /* If a pair of consecutive invalid bytes, back up to first one. */
+        --cp, --pos;
+        --cp, --pos;
+    }
+
+    /* Skip over any trailing whitespace. */
+    while (*cp  &&  isspace((unsigned char) *cp)) {
+        ++cp, ++pos;
+    }
+
+    return pos;
+}
+
+
+/*
+ * Check for valid base64 encoding, and "fix" if invalid.
+ */
+static int
+check_base64_encoding (CT *ctp)
+{
+    char *remainder = NULL;
+    int status = OK;
+
+    /* If there's a footer after base64 content, set c_end to before it, and
+       store the footer in remainder. */
+    (*ctp)->c_end = (*ctp)->c_begin + get_valid_base64(*ctp, &remainder);
+
+    if (remainder != NULL) {
+        /* Move ct to a subpart of a new multipart/related, and add the
+           remainder as a new text/plain subpart of it. */
+        int ignore_message_mods = 0;
+
+        status = insert_into_new_mp_mixed(ctp, remainder, &ignore_message_mods);
+        free(remainder);
     }
 
     return status;
@@ -2581,37 +2796,37 @@ convert_charsets (CT ct, char *dest_charset, int *message_mods)
  *    headers, respectively.
  */
 static int
-fix_always (CT ct, int *message_mods)
+fix_always (CT *ctp, const fix_transformations *fx, int *message_mods)
 {
     int status = OK;
 
-    switch (ct->c_type) {
+    switch ((*ctp)->c_type) {
     case CT_MULTIPART: {
-        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct multipart *m = (struct multipart *) (*ctp)->c_ctparams;
         struct part *part;
 
         for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
-            status = fix_always (part->mp_part, message_mods);
+            status = fix_always (&part->mp_part, fx, message_mods);
         }
         break;
     }
 
     case CT_MESSAGE:
-        if (ct->c_subtype == MESSAGE_EXTERNAL) {
-            struct exbody *e = (struct exbody *) ct->c_ctparams;
+        if ((*ctp)->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) (*ctp)->c_ctparams;
 
-            status = fix_always (e->eb_content, message_mods);
+            status = fix_always (&e->eb_content, fx, message_mods);
         }
         break;
 
     default: {
         HF hf;
 
-        if (ct->c_first_hf) {
-            fix_filename_encoding (ct);
+        if ((*ctp)->c_first_hf) {
+            fix_filename_encoding (*ctp);
         }
 
-        for (hf = ct->c_first_hf; hf; hf = hf->next) {
+        for (hf = (*ctp)->c_first_hf; hf; hf = hf->next) {
             size_t len = strlen (hf->value);
 
             if (strcasecmp (hf->name, TYPE_FIELD) != 0  &&
@@ -2635,24 +2850,28 @@ fix_always (CT ct, int *message_mods)
                 hf->value[len - 1] = '\0';
 
                 /* Also, if Content-Type parameter, remove trailing ';'
-                   from ct->c_ctline.  This probably isn't necessary
+                   from (*ctp)->c_ctline.  This probably isn't necessary
                    but can't hurt. */
-                if (strcasecmp(hf->name, TYPE_FIELD) == 0 && ct->c_ctline) {
-                    size_t l = strlen(ct->c_ctline) - 1;
-                    while (isspace((unsigned char)(ct->c_ctline[l])) ||
-                           ct->c_ctline[l] == ';') {
-                        ct->c_ctline[l--] = '\0';
+                if (strcasecmp(hf->name, TYPE_FIELD) == 0 && (*ctp)->c_ctline) {
+                    size_t l = strlen((*ctp)->c_ctline) - 1;
+                    while (isspace((unsigned char)((*ctp)->c_ctline[l])) ||
+                           (*ctp)->c_ctline[l] == ';') {
+                        (*ctp)->c_ctline[l--] = '\0';
                         if (l == 0) { break; }
                     }
                 }
 
                 ++*message_mods;
                 if (verbosw) {
-                    report (NULL, ct->c_partno, ct->c_file,
+                    report (NULL, (*ctp)->c_partno, (*ctp)->c_file,
                             "remove trailing ; from %s parameter value",
                             hf->name);
                 }
             }
+        }
+
+        if (fx->checkbase64  &&  (*ctp)->c_encoding == CE_BASE64) {
+            status = check_base64_encoding (ctp);
         }
     }}
 

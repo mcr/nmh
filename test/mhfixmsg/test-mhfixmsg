@@ -61,6 +61,7 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   -[no]replacetextplain
   -[no]fixboundary
   -[no]fixcte
+  -[no]checkbase64
   -fixtype mimetype
   -file file
   -outfile file
@@ -1850,6 +1851,301 @@ EOF
 
 run_prog mhfixmsg -file - -outfile - -decodeheaderfieldbodies utf-8 \
      <`mhpath last` >"$actual" 2>/dev/null
+check "$expected" "$actual"
+
+
+start_test "-checkbase64 with base64 code that ends with == plus footer"
+cat >"`mhpath new`" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends with ==
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBzb21lIHRleHQuCg==
+
+--
+Wait, this shouldn't be here.
+EOF
+
+cat >"$expected" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends with ==
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_nmh-multipart"
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+This is some text.
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+--
+Wait, this shouldn't be here.
+
+------=_nmh-multipart--
+EOF
+run_prog mhfixmsg last -outfile "$actual"
+check "$expected" "$actual"
+
+
+start_test "-checkbase64 with -nodecodetext"
+cat >"`mhpath new`" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends with ==
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBzb21lIHRleHQuCg==
+
+--
+Wait, this shouldn't be here.
+EOF
+
+cat >"$expected" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends with ==
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_nmh-multipart"
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBzb21lIHRleHQuCg==
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+--
+Wait, this shouldn't be here.
+
+------=_nmh-multipart--
+EOF
+run_prog mhfixmsg -nodecodetext last -outfile "$actual"
+check "$expected" "$actual"
+
+
+start_test "-checkbase64 with base64 code that ends with = plus footer"
+cat >"`mhpath new`" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends with =
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBwbGFpbiB0ZXh0Lgo=
+
+--
+Wait, this shouldn't be here.
+EOF
+
+cat >"$expected" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends with =
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_nmh-multipart"
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+This is plain text.
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+--
+Wait, this shouldn't be here.
+
+------=_nmh-multipart--
+EOF
+run_prog mhfixmsg last -outfile "$actual"
+check "$expected" "$actual"
+
+
+start_test "-checkbase64 with base64 code that ends without = plus footer"
+cat >"`mhpath new`" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends without =
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBzb21lIHRleHQK
+
+--
+Wait, this shouldn't be here.
+EOF
+
+cat >"$expected" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends without =
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_nmh-multipart"
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+This is some text
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+--
+Wait, this shouldn't be here.
+
+------=_nmh-multipart--
+EOF
+run_prog mhfixmsg last -outfile "$actual"
+check "$expected" "$actual"
+
+
+start_test "-checkbase64 with base64 code that contains single invalid character"
+cat >"`mhpath new`" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends without =
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBzb21lIHRleHQK
+
+-X-
+Wait, this shouldn't be here.
+EOF
+
+cat >"$expected" <<EOF
+From: Test <test@example.com>
+Subject: base64 code that ends without =
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBzb21lIHRleHQK
+
+-X-
+Wait, this shouldn't be here.
+EOF
+
+cat >"$expected_err" <<EOF
+mhfixmsg: invalid base64 byte 0x2d: -X-
+Wait, this shouldn't be here.
+
+EOF
+
+run_prog mhfixmsg last -outfile "$actual" 2>"$actual_err" || true
+check "$expected" "$actual"
+check "$expected_err" "$actual_err"
+
+
+start_test "-checkbase64 with base64 code in MIME part"
+cat >"`mhpath new`" <<EOF
+From: Test <test@example.com>
+Subject: MIME part with base64 encoded text and unencoded footer
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_nmh-multipart"
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBzb21lIHRleHQK
+
+--
+Wait, this shouldn't be here.
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+This is a second text/plain part.
+
+------=_nmh-multipart--
+EOF
+
+cat >"$expected" <<EOF
+From: Test <test@example.com>
+Subject: MIME part with base64 encoded text and unencoded footer
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_nmh-multipart"
+
+------=_nmh-multipart
+Content-Type: multipart/mixed; boundary="----=_nmh-multipart1"
+
+------=_nmh-multipart1
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+This is some text
+
+------=_nmh-multipart1
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+--
+Wait, this shouldn't be here.
+
+------=_nmh-multipart1--
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+This is a second text/plain part.
+
+------=_nmh-multipart--
+EOF
+run_prog mhfixmsg last -outfile "$actual"
+check "$expected" "$actual"
+
+
+start_test "-checkbase64 with 8-bit encoded base64 code"
+cat >"`mhpath new`" <<EOF
+From: Test <test@example.com>
+Subject: 8-bit encoded base64 code
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+U2VlIFJGQyAyMDQ1IMKnNi44Lg==
+
+--
+Wait, this shouldn't be here.
+EOF
+cat >"$expected" <<EOF
+From: Test <test@example.com>
+Subject: 8-bit encoded base64 code
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_nmh-multipart"
+Content-Transfer-Encoding: 8bit
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+
+See RFC 2045 §6.8.
+
+------=_nmh-multipart
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+--
+Wait, this shouldn't be here.
+
+------=_nmh-multipart--
+EOF
+
+run_prog mhfixmsg last -outfile "$actual"
 check "$expected" "$actual"
 
 
