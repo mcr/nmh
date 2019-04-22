@@ -5,8 +5,10 @@
  * complete copyright information. */
 
 /* TLS flags */
-#define P_INITTLS 0x01
-#define P_NOVERIFY 0x02
+#define P_STARTTLS 0x01
+#define P_INITTLS 0x02
+#define P_TLSENABLEMASK 0x03
+#define P_NOVERIFY 0x04
 
 int pop_init(char *, char *, char *, char *, int, int, char *, int, const char *);
 int pop_stat(int *, int *);
