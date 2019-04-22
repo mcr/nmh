@@ -970,6 +970,11 @@ dumpone(struct format *fmt)
 	case FT_LV_DAT:
 		printf(", value dat[%d]", fmt->f_value);
 		break;
+
+	case FT_PUTADDR:
+		fputs(", header ", stdout);
+		litputs(fmt->f_text);
+
 	}
 	putchar('\n');
 }
