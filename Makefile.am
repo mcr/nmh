@@ -361,7 +361,6 @@ noinst_HEADERS = \
     sbr/brkstring.h \
     sbr/check_charset.h \
     sbr/client.h \
-    sbr/closefds.h \
     sbr/concat.h \
     sbr/context_del.h \
     sbr/context_find.h \
@@ -1040,7 +1039,6 @@ sbr_libmh_a_SOURCES = \
     sbr/charstring.c \
     sbr/check_charset.c \
     sbr/client.c \
-    sbr/closefds.c \
     sbr/concat.c \
     sbr/context_del.c \
     sbr/context_find.c \

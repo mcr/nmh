@@ -15,7 +15,6 @@
 #include "scansbr.h"
 #include "sbr/getarguments.h"
 #include "sbr/smatch.h"
-#include "sbr/closefds.h"
 #include "sbr/ambigsw.h"
 #include "sbr/print_version.h"
 #include "sbr/print_help.h"
@@ -238,7 +237,6 @@ message_fd (char **vec)
     rewind (stdin);
     if (dup2 (fd, 1) == NOTOK || dup2 (fd, 2) == NOTOK)
 	_exit(1);
-    closefds (3);
     setpgid(0, getpid());	/* put in own process group */
     if (execvp (vec[0], vec) == NOTOK) {
         _exit(1);

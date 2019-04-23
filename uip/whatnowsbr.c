@@ -49,7 +49,6 @@
 #include "sbr/smatch.h"
 #include "sbr/r1bindex.h"
 #include "sbr/refile.h"
-#include "sbr/closefds.h"
 #include "sbr/copyip.h"
 #include "sbr/getcpy.h"
 #include "sbr/m_draft.h"
@@ -1264,8 +1263,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
     }
     if ((pushsw = pushed))
 	push ();
-
-    closefds (3);
 
     if (sendsbr (vec, vecp, program, file, &st, 1, auth_svc) == OK)
 	done (0);

@@ -26,7 +26,6 @@
 #include "sbr/getarguments.h"
 #include "sbr/smatch.h"
 #include "sbr/strindex.h"
-#include "sbr/closefds.h"
 #include "sbr/trimcpy.h"
 #include "sbr/getcpy.h"
 #include "sbr/ambigsw.h"
@@ -1093,7 +1092,6 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 	    }
 	    if (fd != 3)
 		dup2 (fd, 3);
-	    closefds (4);
 
 #ifdef TIOCNOTTY
 	    if ((fd = open ("/dev/tty", O_RDWR)) != -1) {

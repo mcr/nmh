@@ -15,7 +15,6 @@
 #include "sbr/seq_save.h"
 #include "sbr/showfile.h"
 #include "sbr/smatch.h"
-#include "sbr/closefds.h"
 #include "sbr/cpydata.h"
 #include "sbr/m_draft.h"
 #include "sbr/m_convert.h"
@@ -483,7 +482,6 @@ go_to_it:
 	push ();
 
     status = 0;
-    closefds (3);
 
     for (msgnum = 0; msgnum < msgp; msgnum++) {
         switch (sendsbr (vec, vecp, program, msgs[msgnum], &st, 1, auth_svc)) {

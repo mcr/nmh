@@ -9,7 +9,6 @@
 #include "distsbr.h"
 #include "sbr/getarguments.h"
 #include "sbr/smatch.h"
-#include "sbr/closefds.h"
 #include "sbr/m_draft.h"
 #include "sbr/context_find.h"
 #include "sbr/brkstring.h"
@@ -189,8 +188,6 @@ main (int argc, char **argv)
 	vec[vecp++] = "-dist";
     }
     vec[vecp] = NULL;
-
-    closefds (3);
 
     if (distsw) {
         if ((child_id = fork()) == -1)

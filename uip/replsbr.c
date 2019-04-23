@@ -12,7 +12,6 @@
 #include "sbr/m_getfld.h"
 #include "sbr/read_switch.h"
 #include "sbr/concat.h"
-#include "sbr/closefds.h"
 #include "sbr/uprf.h"
 #include "sbr/escape_addresses.h"
 #include "sbr/pidstatus.h"
@@ -452,7 +451,6 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 	case OK:
 	    dup2 (fileno (in), fileno (stdin));
 	    dup2 (fileno (out), fileno (stdout));
-	    closefds (3);
 
 	    /*
 	     * We're not allocating the memory for the extra arguments,
