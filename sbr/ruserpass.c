@@ -136,9 +136,11 @@ ruserpass(const char *host, char **aname, char **apass, int flags)
 			break;
 		    }
 		}
+		fclose(cfile);
 		return;
 	    }
 	}
+	fclose(cfile);
     }
 
     if (!*aname && ! (flags & RUSERPASS_NO_PROMPT_USER)) {
