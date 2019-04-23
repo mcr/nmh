@@ -9,6 +9,7 @@
 #include "client.h"
 #include "h/mts.h"
 #include "h/utils.h"
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -71,7 +72,15 @@ client (char *server, char *service, char *response, int len_response,
 	}
 
 	if (connect(sd, ai->ai_addr, ai->ai_addrlen) == 0) {
+	    int flags;
+
 	    freeaddrinfo(res);
+
+	    flags = fcntl(sd, F_GETFD, 0);
+
+	    if (flags != -1)
+	    	fcntl(sd, F_SETFD, flags | FD_CLOEXEC);
+
 	    return sd;
 	}
 
