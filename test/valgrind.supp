@@ -38,12 +38,7 @@
    socketcall.connect(serv_addr.sa_data)
    fun:connect
    ...
-   fun:sa_dst_lookup
-   fun:sa_dst_compare_internal
-   fun:_qsort
-   fun:_gai_sort_list
    fun:si_addrinfo
-   fun:getaddrinfo
 }
 
 {
