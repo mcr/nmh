@@ -38,6 +38,7 @@ inc \- incorporate new mail to an nmh folder
 .IR mechanism ]
 .RB [ \-authservice
 .IR service ]
+.RB [ \-tls ]
 .RB [ \-initialtls ]
 .RB [ \-notls ]
 .RB [ \-certverify " | " \-nocertverify ]
@@ -286,11 +287,20 @@ for more details.
 If
 .B nmh
 has been compiled with TLS support, the
+.B \-tls
+and
 .B \-initialtls
-switch will require the negotiation of TLS when connecting
-to the remote POP server.
+switches will require the negotiation of TLS when connecting
+to the remote POP server. The
+.B \-tls
+switch will direct
 .B inc
-will negotiate TLS immediately after the connection has taken place,
+to negotiate TLS as part of the normal POP protocol using
+the STLS command.  The
+.B \-initialtls
+switch will direct
+.B inc
+to negotiate TLS immediately after the connection has taken place,
 before any POP commands are sent or received.  Data encrypted by TLS is
 labeled `(tls-encrypted)' and `(tls-decrypted)' when viewing the POP
 transaction with the
