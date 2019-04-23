@@ -22,6 +22,7 @@ all/mail/nomail ]
 .RB [ \-sasl " | " \-nosasl ]
 .RB [ \-saslmech
 .IR mechanism ]
+.RB [ \-tls ]
 .RB [ \-initialtls ]
 .RB [ \-notls ]
 .RB [ \-certverify " | " \-nocertverify ]
@@ -155,9 +156,14 @@ for more details.
 If
 .B nmh
 has been compiled with TLS support, the
+.B \-tls
+and
 .B \-initialtls
-switch will require the negotiation of TLS when connecting
+switches will require the negotiation of TLS when connecting
 to the remote POP server.  The
+.B \-tls
+switch will negotiate TLS as part of the normal POP protocol using
+the STLS command.  The
 .B \-initialtls
 switch will negotiate TLS immediately after the connection has taken place,
 before any POP commands are sent or received.  Data encrypted by TLS is

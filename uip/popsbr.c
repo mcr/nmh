@@ -81,6 +81,58 @@ check_mech(char *server_mechs, size_t server_mechs_size)
 }
 
 /*
+ * If capable, issue the STLS command and start the TLS negotiation
+ */
+
+static int
+pop_start_tls(void)
+{
+    int status;
+    bool stls = false;
+    char *errstr;
+
+    /*
+     * Issue the CAPA command and see if we have the STLS capability
+     */
+
+    if (command("CAPA") == NOTOK) {
+	snprintf(response, sizeof(response),
+		 "The POP CAPA command failed; POP server does not "
+		 "support STLS");
+	return NOTOK;
+    }
+
+    while ((status = multiline()) != DONE) {
+        if (status == NOTOK)
+	    return NOTOK;
+
+	if (strcasecmp(response, "STLS") == 0)
+	    stls = true;
+    }
+
+    if (!stls) {
+	snprintf(response, sizeof(response), "POP server does not support "
+		 "STLS");
+	return NOTOK;
+    }
+
+    /*
+     * Issue STLS and then start the actual TLS negotiation
+     */
+
+    if (command("STLS") == NOTOK)
+    	return NOTOK;
+
+    if (netsec_negotiate_tls(nsc, &errstr) != OK) {
+	snprintf(response, sizeof(response), "%s", errstr);
+	free(errstr);
+	return NOTOK;
+    }
+
+    return OK;
+}
+
+/*
  * Split string containing proxy command into an array of arguments
  * suitable for passing to exec. Returned array must be freed. Shouldn't
  * be possible to call this with host set to NULL.
@@ -211,17 +263,19 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
     netsec_set_fd(nsc, fd1, fd2);
     netsec_set_snoop(nsc, snoop);
 
-    if (tls & P_INITTLS) {
+    if (tls & P_TLSENABLEMASK) {
 	if (netsec_set_tls(nsc, 1, tls & P_NOVERIFY, &errstr) != OK) {
 	    snprintf(response, sizeof(response), "%s", errstr);
 	    free(errstr);
 	    return NOTOK;
 	}
 
-	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
-	    snprintf(response, sizeof(response), "%s", errstr);
-	    free(errstr);
-	    return NOTOK;
+	if (tls & P_INITTLS) {
+	    if (netsec_negotiate_tls(nsc, &errstr) != OK) {
+		snprintf(response, sizeof(response), "%s", errstr);
+		free(errstr);
+		return NOTOK;
+	    }
 	}
     }
 
@@ -240,6 +294,10 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 		fprintf (stderr, "<--- %s\n", response);
 	    if (*response == '+') {
                 nmh_creds_t creds;
+
+		if (tls & P_STARTTLS)
+		    if (pop_start_tls() != OK)
+			return NOTOK;
 
 		if (sasl) {
 		    char server_mechs[256];

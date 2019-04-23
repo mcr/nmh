@@ -96,6 +96,7 @@
     X("sasl", 0, SASLSW) \
     X("nosasl", 0, NOSASLSW) \
     X("saslmech", 0, SASLMECHSW) \
+    X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NOTLSSW) \
     X("certverify", TLSminc(-10), CERTVERSW) \
@@ -205,7 +206,8 @@ main (int argc, char **argv)
     int width = -1;
     int hghnum = 0, msgnum = 0;
     FILE *pf = NULL;
-    bool sasl, tls, noverify;
+    bool sasl, noverify;
+    int tls = 0;
     int incerr = 0; /* <0 if inc hits an error which means it should not truncate mailspool */
     char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
@@ -368,12 +370,16 @@ main (int argc, char **argv)
 		    die("missing argument to %s", argp[-2]);
 		continue;
 
+	    case TLSSW:
+		tls = 1;
+		continue;
+
 	    case INITTLSSW:
-                tls = true;
+                tls = 2;
 		continue;
 
 	    case NOTLSSW:
-                tls = false;
+                tls = 0;
 		continue;
 
 	    case CERTVERSW:
@@ -434,8 +440,10 @@ main (int argc, char **argv)
 	    }
 	}
 
-	if (tls)
-	    tlsflag |= P_INITTLS;
+	if (tls == 1)
+	    tlsflag = P_STARTTLS;
+	else if (tls == 2)
+	    tlsflag = P_INITTLS;
 
 	if (noverify)
 	    tlsflag |= P_NOVERIFY;

@@ -48,6 +48,7 @@
     X("nosasl", SASLminc(6), NOSASLSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
+    X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NOTLSSW) \
     X("certverify", TLSminc(-10), CERTVERSW) \
@@ -89,7 +90,7 @@ main (int argc, char **argv)
     int notifysw = NT_ALL;
     int status = 0;
     bool sasl = false;
-    bool tls = false;
+    int tls = 0;
     bool noverify = false;
     bool snoop = false;
     int vecp = 0;
@@ -176,12 +177,16 @@ main (int argc, char **argv)
 			die("missing argument to %s", argp[-2]);
 		    continue;
 
+		case TLSSW:
+		    tls = 1;
+		    continue;
+
 		case INITTLSSW:
-		    tls = true;
+		    tls = 2;
 		    continue;
 
 		case NOTLSSW:
-		    tls = false;
+		    tls = 0;
 		    continue;
 
 		case CERTVERSW:
@@ -232,8 +237,10 @@ main (int argc, char **argv)
     if (host) {
 	int tlsflag = 0;
 
-	if (tls)
-	    tlsflag |= P_INITTLS;
+	if (tls == 1)
+	    tlsflag = P_STARTTLS;
+	else if (tls == 2)
+	    tlsflag = P_INITTLS;
 
 	if (noverify)
 	    tlsflag |= P_NOVERIFY;
