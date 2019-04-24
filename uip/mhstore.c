@@ -31,7 +31,6 @@
 #include "h/tws.h"
 #include "h/mime.h"
 #include "h/mhparse.h"
-#include "h/mhcachesbr.h"
 #include "h/done.h"
 #include "h/utils.h"
 #include "mhmisc.h"
@@ -51,8 +50,6 @@
     X("type content", 0, TYPESW) \
     X("prefer content", 0, PREFERSW) \
     X("noprefer", 0, NPREFERSW) \
-    X("rcache policy", 0, RCACHESW) \
-    X("wcache policy", 0, WCACHESW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("clobber always|auto|suffix|ask|never", 0, CLOBBERSW) \
@@ -81,7 +78,7 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int msgnum, *icachesw;
+    int msgnum;
     bool autosw = false;
     /* verbosw defaults to 1 for backward compatibility. */
     bool verbosw = true;
@@ -130,25 +127,6 @@ main (int argc, char **argv)
 		continue;
 	    case NAUTOSW:
 		autosw = false;
-		continue;
-
-	    case RCACHESW:
-		icachesw = &rcachesw;
-		goto do_cache;
-	    case WCACHESW:
-		icachesw = &wcachesw;
-do_cache:
-		if (!(cp = *argp++) || *cp == '-')
-		    die("missing argument to %s", argp[-2]);
-		switch (*icachesw = smatch (cp, cache_policy)) {
-		case AMBIGSW:
-		    ambigsw (cp, cache_policy);
-		    done (1);
-		case UNKWNSW:
-		    die("%s unknown", cp);
-		default:
-		    break;
-		}
 		continue;
 
 	    case CHECKSW:
@@ -249,15 +227,6 @@ do_cache:
 	readconfig(NULL, fp, cp, 0);
 	fclose (fp);
     }
-
-    /* Check for public cache location */
-    if ((cache_public = context_find (nmhcache)) && *cache_public != '/')
-	cache_public = NULL;
-
-    /* Check for private cache location */
-    if (!(cache_private = context_find (nmhprivcache)))
-	cache_private = ".cache";
-    cache_private = mh_xstrdup(m_maildir(cache_private));
 
     /*
      * Cache the current directory before we do any chdirs()'s.

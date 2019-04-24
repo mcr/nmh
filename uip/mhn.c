@@ -1,4 +1,4 @@
-/* mhn.c -- display, list, cache, or store the contents of MIME messages
+/* mhn.c -- display, list, or store the contents of MIME messages
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
@@ -32,7 +32,6 @@
 #include "h/fmt_scan.h"
 #include "h/mime.h"
 #include "h/mhparse.h"
-#include "h/mhcachesbr.h"
 #include "h/done.h"
 #include "h/utils.h"
 #include "mhmisc.h"
@@ -43,8 +42,6 @@
 #define MHN_SWITCHES \
     X("auto", 0, AUTOSW) \
     X("noauto", 0, NAUTOSW) \
-    X("cache", 0, CACHESW) \
-    X("nocache", 0, NCACHESW) \
     X("check", -5, CHECKSW) \
     X("nocheck", -7, NCHECKSW) \
     X("headers", 0, HEADSW) \
@@ -63,8 +60,6 @@
     X("form formfile", 0, FORMSW) \
     X("part number", 0, PARTSW) \
     X("type content", 0, TYPESW) \
-    X("rcache policy", 0, RCACHESW) \
-    X("wcache policy", 0, WCACHESW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     /*					\
@@ -107,7 +102,6 @@ static int rfc934sw = 0;
 /*
  * what action to take?
  */
-static bool cachesw;
 static bool listsw;
 static bool showsw;
 static bool storesw;
@@ -126,7 +120,7 @@ main (int argc, char **argv)
     bool sizesw = true;
     bool headsw = true;
     bool autosw = false;
-    int msgnum, *icachesw;
+    int msgnum;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
     char **arguments;
@@ -170,32 +164,6 @@ main (int argc, char **argv)
 		continue;
 	    case NAUTOSW:
 		autosw = false;
-		continue;
-
-	    case CACHESW:
-		cachesw = true;
-		continue;
-	    case NCACHESW:
-		cachesw = false;
-		continue;
-
-	    case RCACHESW:
-		icachesw = &rcachesw;
-		goto do_cache;
-	    case WCACHESW:
-		icachesw = &wcachesw;
-do_cache:
-		if (!(cp = *argp++) || *cp == '-')
-		    die("missing argument to %s", argp[-2]);
-		switch (*icachesw = smatch (cp, cache_policy)) {
-		case AMBIGSW:
-		    ambigsw (cp, cache_policy);
-		    done (1);
-		case UNKWNSW:
-		    die("%s unknown", cp);
-		default:
-		    break;
-		}
 		continue;
 
 	    case CHECKSW:
@@ -345,15 +313,6 @@ do_cache:
 	fclose (fp);
     }
 
-    /* Check for public cache location */
-    if ((cache_public = context_find (nmhcache)) && *cache_public != '/')
-	cache_public = NULL;
-
-    /* Check for private cache location */
-    if (!(cache_private = context_find (nmhprivcache)))
-	cache_private = ".cache";
-    cache_private = mh_xstrdup(m_maildir(cache_private));
-
     /*
      * Cache the current directory before we do any chdirs()'s.
      */
@@ -369,8 +328,8 @@ do_cache:
 	char *vec[MAXARGS];
 	int vecp;
 
-	if (showsw || storesw || cachesw)
-	    die("cannot use -build with -show, -store, -cache");
+	if (showsw || storesw)
+	    die("cannot use -build with -show, -store");
 	if (msgs.size < 1)
 	    die("need to specify a %s composition file", invo_name);
 	if (msgs.size > 1)
@@ -395,7 +354,7 @@ do_cache:
     /*
      * Process a mhn composition file (old MH style)
      */
-    if (msgs.size == 1 && !folder && !npart && !cachesw
+    if (msgs.size == 1 && !folder && !npart
 	&& !showsw && !storesw && !ntype && !file
 	&& (cp = getenv ("mhdraft"))
 	&& strcmp (cp, msgs.msgs[0]) == 0) {
@@ -479,11 +438,11 @@ do_cache:
      * You can't give more than one of these flags
      * at a time.
      */
-    if (showsw + listsw + storesw + cachesw > 1)
-	die("can only use one of -show, -list, -store, -cache at same time");
+    if (showsw + listsw + storesw > 1)
+	die("can only use one of -show, -list, -store at same time");
 
     /* If no action is specified, assume -show */
-    if (!listsw && !showsw && !storesw && !cachesw)
+    if (!listsw && !showsw && !storesw)
 	showsw = true;
 
     userrs = true;
@@ -527,12 +486,6 @@ do_cache:
 	seq_save (mp);			  /* synchronize sequences  */
 	context_save ();		  /* save the context file  */
     }
-
-    /*
-     * Cache the message content
-     */
-    if (cachesw)
-	cache_all_messages (cts);
 
     /*
      * Show the message content

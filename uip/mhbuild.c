@@ -21,7 +21,6 @@
 #include "h/tws.h"
 #include "h/mime.h"
 #include "h/mhparse.h"
-#include "h/mhcachesbr.h"
 #include "h/done.h"
 #include "h/utils.h"
 #include "sbr/m_maildir.h"
@@ -48,8 +47,6 @@
     X("noverbose", 0, NVERBSW) \
     X("disposition", 0, DISPOSW) \
     X("nodisposition", 0, NDISPOSW) \
-    X("rcache policy", 0, RCACHESW) \
-    X("wcache policy", 0, WCACHESW) \
     X("contentid", 0, CONTENTIDSW) \
     X("nocontentid", 0, NCONTENTIDSW) \
     X("headerencoding encoding-algorithm", 0, HEADERENCSW) \
@@ -106,7 +103,6 @@ main (int argc, char **argv)
     bool verbosw = false;
     bool dispo = false;
     size_t maxunencoded = MAXTEXTPERLN;
-    int *icachesw;
     char *cp, buf[BUFSIZ];
     char buffer[BUFSIZ], *compfile = NULL;
     char **argp, **arguments;
@@ -158,25 +154,6 @@ main (int argc, char **argv)
 		 */
 		autobuild = false;
 		directives = true;
-		continue;
-
-	    case RCACHESW:
-		icachesw = &rcachesw;
-		goto do_cache;
-	    case WCACHESW:
-		icachesw = &wcachesw;
-	    do_cache: ;
-		if (!(cp = *argp++) || *cp == '-')
-		    die("missing argument to %s", argp[-2]);
-		switch (*icachesw = smatch (cp, cache_policy)) {
-		case AMBIGSW:
-		    ambigsw (cp, cache_policy);
-		    done (1);
-		case UNKWNSW:
-		    die("%s unknown", cp);
-		default:
-		    break;
-		}
 		continue;
 
 	    case CHECKSW:
@@ -309,15 +286,6 @@ main (int argc, char **argv)
 	readconfig(NULL, fp, cp, 0);
 	fclose (fp);
     }
-
-    /* Check for public cache location */
-    if ((cache_public = context_find (nmhcache)) && *cache_public != '/')
-	cache_public = NULL;
-
-    /* Check for private cache location */
-    if (!(cache_private = context_find (nmhprivcache)))
-	cache_private = ".cache";
-    cache_private = mh_xstrdup(m_maildir(cache_private));
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));

@@ -13,6 +13,10 @@ NEW FEATURES
 OBSOLETE FEATURES
 -----------------
 
+- The MIME content cache functionality has been mostly non-functional since
+  the development on nmh, and consequently all of the content caching code
+  and related switches (-cache/-rcache/-wcache) have been removed.
+
 -------------------
 DEPRECATED FEATURES
 -------------------

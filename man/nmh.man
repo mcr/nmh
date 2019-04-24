@@ -383,7 +383,7 @@ produce formatted listings of nmh messages
 list information about content of MIME messages
 .TP
 .IR mhn (1)
-display/list/store/cache MIME messages
+display/list/store MIME messages
 .TP
 .IR mhshow (1)
 display MIME messages

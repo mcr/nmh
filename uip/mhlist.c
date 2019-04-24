@@ -30,7 +30,6 @@
 #include "h/tws.h"
 #include "h/mime.h"
 #include "h/mhparse.h"
-#include "h/mhcachesbr.h"
 #include "h/done.h"
 #include "h/utils.h"
 #include "mhmisc.h"
@@ -53,8 +52,6 @@
     X("type content", 0, TYPESW) \
     X("prefer content", 0, PREFERSW) \
     X("noprefer", 0, NPREFERSW) \
-    X("rcache policy", 0, RCACHESW) \
-    X("wcache policy", 0, WCACHESW) \
     X("changecur", 0, CHGSW) \
     X("nochangecur", 0, NCHGSW) \
     X("version", 0, VERSIONSW) \
@@ -91,7 +88,7 @@ main (int argc, char **argv)
     bool chgflag = true;
     bool verbosw = false;
     bool dispo = false;
-    int msgnum, *icachesw;
+    int msgnum;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
     char **arguments;
@@ -126,25 +123,6 @@ main (int argc, char **argv)
 	    case VERSIONSW:
 		print_version(invo_name);
 		done (0);
-
-	    case RCACHESW:
-		icachesw = &rcachesw;
-		goto do_cache;
-	    case WCACHESW:
-		icachesw = &wcachesw;
-do_cache:
-		if (!(cp = *argp++) || *cp == '-')
-		    die("missing argument to %s", argp[-2]);
-		switch (*icachesw = smatch (cp, cache_policy)) {
-		case AMBIGSW:
-		    ambigsw (cp, cache_policy);
-		    done (1);
-		case UNKWNSW:
-		    die("%s unknown", cp);
-		default:
-		    break;
-		}
-		continue;
 
 	    case CHECKSW:
 	    case NCHECKSW:
@@ -240,15 +218,6 @@ do_cache:
     /* null terminate the list of acceptable parts/types */
     parts[npart] = NULL;
     types[ntype] = NULL;
-
-    /* Check for public cache location */
-    if ((cache_public = context_find (nmhcache)) && *cache_public != '/')
-	cache_public = NULL;
-
-    /* Check for private cache location */
-    if (!(cache_private = context_find (nmhprivcache)))
-	cache_private = ".cache";
-    cache_private = mh_xstrdup(m_maildir(cache_private));
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));

@@ -27,7 +27,6 @@
 #include "h/mhparse.h"
 #include "h/utils.h"
 #include "mhmisc.h"
-#include "h/mhcachesbr.h"
 #include "sbr/m_mktemp.h"
 #include "mhfree.h"
 #ifdef HAVE_ICONV
@@ -138,7 +137,7 @@ static int openBase64 (CT, char **);
 static int InitQuoted (CT);
 static int openQuoted (CT, char **);
 static int Init7Bit (CT);
-static int openExternal (CT, CT, CE, char **, int *);
+static int openExternal (CT, CE, char **, int *);
 static int InitFile (CT);
 static int openFile (CT, char **);
 static int InitFTP (CT);
@@ -2242,10 +2241,8 @@ clean_up:
  */
 
 static int
-openExternal (CT ct, CT cb, CE ce, char **file, int *fd)
+openExternal (CT ct, CE ce, char **file, int *fd)
 {
-    char cachefile[BUFSIZ];
-
     if (ce->ce_fp) {
 	fseek (ce->ce_fp, 0L, SEEK_SET);
 	goto ready_already;
@@ -2257,16 +2254,6 @@ openExternal (CT ct, CT cb, CE ce, char **file, int *fd)
 	    return NOTOK;
 	}
 	goto ready_already;
-    }
-
-    if (find_cache(ct, rcachesw, NULL, cb->c_id,
-		cachefile, sizeof(cachefile)) != NOTOK) {
-	if ((ce->ce_fp = fopen (cachefile, "r"))) {
-	    ce->ce_file = mh_xstrdup(cachefile);
-	    ce->ce_unlink = 0;
-	    goto ready_already;
-	}
-        admonish (cachefile, "unable to fopen for reading");
     }
 
     *fd = ce->ce_fp ? fileno (ce->ce_fp) : -1;
@@ -2292,12 +2279,11 @@ InitFile (CT ct)
 static int
 openFile (CT ct, char **file)
 {
-    int	fd, cachetype;
-    char cachefile[BUFSIZ];
+    int	fd;
     struct exbody *e = ct->c_ctexbody;
     CE ce = &ct->c_cefile;
 
-    switch (openExternal (e->eb_parent, e->eb_content, ce, file, &fd)) {
+    switch (openExternal (e->eb_parent, ce, file, &fd)) {
 	case NOTOK:
 	    return NOTOK;
 
@@ -2321,39 +2307,6 @@ openFile (CT ct, char **file)
 	return NOTOK;
     }
 
-    if ((!e->eb_permission || strcasecmp (e->eb_permission, "read-write"))
-	    && find_cache (NULL, wcachesw, &cachetype, e->eb_content->c_id,
-		cachefile, sizeof(cachefile)) != NOTOK) {
-	int mask;
-	FILE *fp;
-
-	mask = umask (cachetype ? ~m_gmprot () : 0222);
-	if ((fp = fopen (cachefile, "w"))) {
-	    int	cc;
-	    char buffer[BUFSIZ];
-	    FILE *gp = ce->ce_fp;
-
-	    fseek (gp, 0L, SEEK_SET);
-
-	    while ((cc = fread (buffer, sizeof(*buffer), sizeof(buffer), gp))
-		       > 0)
-		if ((int) fwrite (buffer, sizeof(*buffer), cc, fp) < cc) {
-		    advise ("openFile", "fwrite");
-		}
-	    fflush (fp);
-
-	    if (ferror (gp)) {
-		admonish (ce->ce_file, "error reading");
-		(void) m_unlink (cachefile);
-	    } else if (ferror (fp)) {
-                admonish (cachefile, "error writing");
-                (void) m_unlink (cachefile);
-            }
-	    fclose (fp);
-	}
-	umask (mask);
-    }
-
     fseek (ce->ce_fp, 0L, SEEK_SET);
     *file = ce->ce_file;
     return fileno (ce->ce_fp);
@@ -2373,12 +2326,10 @@ InitFTP (CT ct)
 static int
 openFTP (CT ct, char **file)
 {
-    int	cachetype;
-    bool caching;
     int fd;
     int len, buflen;
     char *bp, *ftp, *user, *pass;
-    char buffer[BUFSIZ], cachefile[BUFSIZ];
+    char buffer[BUFSIZ];
     struct exbody *e;
     CE ce = &ct->c_cefile;
     static char *username = NULL;
@@ -2392,7 +2343,7 @@ openFTP (CT ct, char **file)
     if (!ftp)
 	return NOTOK;
 
-    switch (openExternal (e->eb_parent, e->eb_content, ce, file, &fd)) {
+    switch (openExternal (e->eb_parent, ce, file, &fd)) {
 	case NOTOK:
 	    return NOTOK;
 
@@ -2460,21 +2411,9 @@ openFTP (CT ct, char **file)
     }
 
     ce->ce_unlink = (*file == NULL);
-    caching = false;
-    cachefile[0] = '\0';
-    if ((!e->eb_permission || strcasecmp (e->eb_permission, "read-write"))
-	    && find_cache (NULL, wcachesw, &cachetype, e->eb_content->c_id,
-		cachefile, sizeof(cachefile)) != NOTOK) {
-	if (*file == NULL) {
-	    ce->ce_unlink = 0;
-	    caching = true;
-	}
-    }
 
     if (*file)
 	ce->ce_file = mh_xstrdup(*file);
-    else if (caching)
-	ce->ce_file = mh_xstrdup(cachefile);
     else {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
@@ -2531,40 +2470,6 @@ openFTP (CT ct, char **file)
 	}
     }
 
-    if (cachefile[0]) {
-	if (caching)
-	    chmod (cachefile, cachetype ? m_gmprot () : 0444);
-	else {
-	    int	mask;
-	    FILE *fp;
-
-	    mask = umask (cachetype ? ~m_gmprot () : 0222);
-	    if ((fp = fopen (cachefile, "w"))) {
-		int cc;
-		FILE *gp = ce->ce_fp;
-
-		fseek (gp, 0L, SEEK_SET);
-
-		while ((cc= fread (buffer, sizeof(*buffer), sizeof(buffer), gp))
-		           > 0)
-		    if ((int) fwrite (buffer, sizeof(*buffer), cc, fp) < cc) {
-			advise ("openFTP", "fwrite");
-		    }
-		fflush (fp);
-
-		if (ferror (gp)) {
-		    admonish (ce->ce_file, "error reading");
-		    (void) m_unlink (cachefile);
-		} else if (ferror (fp)) {
-                    admonish (cachefile, "error writing");
-                    (void) m_unlink (cachefile);
-                }
-		fclose (fp);
-	    }
-	    umask (mask);
-	}
-    }
-
     fseek (ce->ce_fp, 0L, SEEK_SET);
     *file = ce->ce_file;
     return fileno (ce->ce_fp);
@@ -2591,7 +2496,7 @@ openMail (CT ct, char **file)
     struct exbody *e = ct->c_ctexbody;
     CE ce = &ct->c_cefile;
 
-    switch (openExternal (e->eb_parent, e->eb_content, ce, file, &fd)) {
+    switch (openExternal (e->eb_parent, ce, file, &fd)) {
 	case NOTOK:
 	    return NOTOK;
 
@@ -2706,10 +2611,7 @@ openURL (CT ct, char **file)
     struct exbody *e = ct->c_ctexbody;
     CE ce = &ct->c_cefile;
     char *urlprog, *program;
-    char buffer[BUFSIZ], cachefile[BUFSIZ];
     int fd;
-    bool caching;
-    int cachetype;
     struct msgs_array args = { 0, 0, NULL};
     pid_t child_id;
 
@@ -2721,7 +2623,7 @@ openURL (CT ct, char **file)
     	return NOTOK;
     }
 
-    switch (openExternal(e->eb_parent, e->eb_content, ce, file, &fd)) {
+    switch (openExternal(e->eb_parent, ce, file, &fd)) {
     	case NOTOK:
 	    return NOTOK;
 
@@ -2738,21 +2640,9 @@ openURL (CT ct, char **file)
     }
 
     ce->ce_unlink = (*file == NULL);
-    caching = false;
-    cachefile[0] = '\0';
-
-    if (find_cache(NULL, wcachesw, &cachetype, e->eb_content->c_id,
-    		   cachefile, sizeof(cachefile)) != NOTOK) {
-	if (*file == NULL) {
-	    ce->ce_unlink = 0;
-	    caching = true;
-	}
-    }
 
     if (*file)
         ce->ce_file = mh_xstrdup(*file);
-    else if (caching)
-        ce->ce_file = mh_xstrdup(cachefile);
     else {
 	char *tempfile;
 	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
@@ -2788,37 +2678,6 @@ openURL (CT ct, char **file)
     	if (pidXwait(child_id, NULL)) {
 	    ce->ce_unlink = 1;
 	    return NOTOK;
-	}
-    }
-
-    if (cachefile[0]) {
-    	if (caching)
-	    chmod(cachefile, cachetype ? m_gmprot() : 0444);
-	else {
-	    int mask;
-	    FILE *fp;
-
-	    mask = umask (cachetype ? ~m_gmprot() : 0222);
-	    if ((fp = fopen(cachefile, "w"))) {
-	    	int cc;
-		FILE *gp = ce->ce_fp;
-
-		fseeko(gp, 0, SEEK_SET);
-
-		while ((cc = fread(buffer, sizeof(*buffer),
-				   sizeof(buffer), gp)) > 0)
-		    if ((int) fwrite(buffer, sizeof(*buffer), cc, fp) < cc) {
-			advise ("openURL", "fwrite");
-		    }
-
-		fflush(fp);
-
-		if (ferror(gp)) {
-		    admonish(ce->ce_file, "error reading");
-		    (void) m_unlink (cachefile);
-		}
-	    }
-	    umask(mask);
 	}
     }
 

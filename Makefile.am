@@ -341,7 +341,6 @@ noinst_HEADERS = \
     h/icalendar.h \
     h/mf.h \
     h/mh.h \
-    h/mhcachesbr.h \
     h/mhparse.h \
     h/mime.h \
     h/mts.h \
@@ -761,8 +760,11 @@ uip_ali_LDADD = $(LDADD) $(POSTLINK)
 uip_anno_SOURCES = uip/anno.c uip/annosbr.c
 uip_anno_LDADD = $(LDADD) $(POSTLINK)
 
-uip_burst_SOURCES = uip/burst.c uip/mhparse.c uip/mhmisc.c uip/mhfree.c \
-		    uip/mhcachesbr.c
+uip_burst_SOURCES = uip/burst.c \
+		    uip/mhparse.c \
+		    uip/mhmisc.c \
+		    uip/mhfree.c \
+		    #
 uip_burst_LDADD = $(LDADD) $(ICONVLIB) $(POSTLINK)
 
 uip_comp_SOURCES = uip/comp.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
@@ -796,26 +798,47 @@ uip_install_mh_LDADD = $(LDADD) $(POSTLINK)
 uip_mark_SOURCES = uip/mark.c
 uip_mark_LDADD = $(LDADD) $(POSTLINK)
 
-uip_mhbuild_SOURCES = uip/mhbuild.c uip/mhbuildsbr.c uip/mhcachesbr.c \
-		      uip/mhlistsbr.c uip/mhoutsbr.c uip/mhmisc.c  \
-		      uip/mhfree.c uip/mhparse.c \
-		      uip/mhstoresbr.c uip/mhshowsbr.c
+uip_mhbuild_SOURCES = uip/mhbuild.c \
+		      uip/mhbuildsbr.c \
+		      uip/mhlistsbr.c \
+		      uip/mhoutsbr.c \
+		      uip/mhmisc.c \
+		      uip/mhfree.c \
+		      uip/mhparse.c \
+		      uip/mhstoresbr.c \
+		      uip/mhshowsbr.c \
+		      #
 uip_mhbuild_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
-uip_mhfixmsg_SOURCES = uip/mhfixmsg.c uip/mhparse.c uip/mhcachesbr.c \
-		       uip/mhoutsbr.c uip/mhmisc.c uip/mhfree.c \
-		       uip/mhshowsbr.c uip/mhlistsbr.c
+uip_mhfixmsg_SOURCES = uip/mhfixmsg.c \
+		       uip/mhparse.c \
+		       uip/mhoutsbr.c \
+		       uip/mhmisc.c \
+		       uip/mhfree.c \
+		       uip/mhshowsbr.c \
+		       uip/mhlistsbr.c \
+		       #
 uip_mhfixmsg_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhical_SOURCES = uip/mhical.c
 uip_mhical_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
-uip_mhlist_SOURCES = uip/mhlist.c uip/mhparse.c uip/mhcachesbr.c \
-		     uip/mhlistsbr.c uip/mhmisc.c uip/mhfree.c
+uip_mhlist_SOURCES = uip/mhlist.c \
+		     uip/mhparse.c \
+		     uip/mhlistsbr.c \
+		     uip/mhmisc.c \
+		     uip/mhfree.c \
+		     #
 uip_mhlist_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
-uip_mhn_SOURCES = uip/mhn.c uip/mhparse.c uip/mhcachesbr.c uip/mhshowsbr.c \
-		  uip/mhlistsbr.c uip/mhstoresbr.c uip/mhmisc.c uip/mhfree.c
+uip_mhn_SOURCES = uip/mhn.c \
+		  uip/mhparse.c \
+		  uip/mhshowsbr.c \
+		  uip/mhlistsbr.c \
+		  uip/mhstoresbr.c \
+		  uip/mhmisc.c \
+		  uip/mhfree.c \
+		  #
 uip_mhn_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhparam_SOURCES = uip/mhparam.c
@@ -824,14 +847,23 @@ uip_mhparam_LDADD = $(LDADD) $(POSTLINK)
 uip_mhpath_SOURCES = uip/mhpath.c
 uip_mhpath_LDADD = $(LDADD) $(POSTLINK)
 
-uip_mhshow_SOURCES = uip/mhshow.c uip/mhparse.c uip/mhcachesbr.c \
-		     uip/mhshowsbr.c uip/mhlistsbr.c uip/mhmisc.c \
-		     uip/mhfree.c
+uip_mhshow_SOURCES = uip/mhshow.c \
+		     uip/mhparse.c \
+		     uip/mhshowsbr.c \
+		     uip/mhlistsbr.c \
+		     uip/mhmisc.c \
+		     uip/mhfree.c \
+		     #
 uip_mhshow_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
-uip_mhstore_SOURCES = uip/mhstore.c uip/mhparse.c uip/mhcachesbr.c \
-		      uip/mhshowsbr.c uip/mhlistsbr.c uip/mhstoresbr.c \
-		      uip/mhmisc.c uip/mhfree.c
+uip_mhstore_SOURCES = uip/mhstore.c \
+		      uip/mhparse.c \
+		      uip/mhshowsbr.c \
+		      uip/mhlistsbr.c \
+		      uip/mhstoresbr.c \
+		      uip/mhmisc.c \
+		      uip/mhfree.c \
+		      #
 uip_mhstore_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_msgchk_SOURCES = uip/msgchk.c uip/popsbr.c

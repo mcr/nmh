@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .
 .SH NAME
-mhn \- display/list/store/cache nmh MIME messages
+mhn \- display/list/store nmh MIME messages
 .SH SYNOPSIS
 .HP 5
 .na
@@ -23,7 +23,6 @@ mhn \- display/list/store/cache nmh MIME messages
 .RB [ \-show " | " \-noshow ]
 .RB [ \-list " | " \-nolist ]
 .RB [ \-store " | " \-nostore ]
-.RB [ \-cache " | " \-nocache ]
 .RB [ \-headers " | " \-noheaders ]
 .RB [ \-realsize " | " \-norealsize ]
 .RB [ \-serialonly " | " \-noserialonly ]
@@ -31,10 +30,6 @@ mhn \- display/list/store/cache nmh MIME messages
 .IR formfile ]
 .RB [ \-pause " | " \-nopause ]
 .RB [ \-auto " | " \-noauto ]
-.RB [ \-rcache
-.IR policy ]
-.RB [ \-wcache
-.IR policy ]
 .PP
 .HP 5
 .B mhn

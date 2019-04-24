@@ -26,10 +26,6 @@ mhlist \- list information about nmh MIME messages
 .RB [ \-noprefer ]
 .RB [ \-headers " | " \-noheaders ]
 .RB [ \-realsize " | " \-norealsize ]
-.RB [ \-rcache
-.IR policy ]
-.RB [ \-wcache
-.IR policy ]
 .RB [ \-changecur " | " \-nochangecur ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-disposition " | " \-nodisposition ]
@@ -224,8 +220,6 @@ to make common part numbering possible across all three programs.
 .RB ` \-nocheck '
 .RB ` \-headers '
 .RB ` \-realsize '
-.RB ` \-rcache\ ask '
-.RB ` \-wcache\ ask '
 .RB ` \-changecur '
 .RB ` \-noverbose '
 .RB ` \-nodisposition '

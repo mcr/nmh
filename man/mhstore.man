@@ -29,10 +29,6 @@ mhstore \- store contents of nmh MIME messages into files
 .RB [ \-auto " | " \-noauto ]
 .RB [ \-clobber
 .IR always " | " auto " | " suffix " | " ask " | " never ]
-.RB [ \-rcache
-.IR policy ]
-.RB [ \-wcache
-.IR policy ]
 .RB [ \-verbose " | " \-noverbose ]
 .ad
 .SH DESCRIPTION
@@ -477,56 +473,6 @@ to determine the program to use to perform the HTTP retrieval.  This program
 is invoked with one argument: the URL of the content to retrieve.  The program
 should write the content to standard out, and should terminate with a status
 of zero if the retrieval is successful and a non-zero exit status otherwise.
-.SS "The Content Cache"
-When
-.B mhstore
-encounters an external content containing a
-\*(lqContent-ID:\*(rq field, and if the content allows caching, then
-depending on the caching behavior of
-.BR mhstore ,
-the content might be read from or written to a cache.
-.PP
-The caching behavior of
-.B mhstore
-is controlled with the
-.B \-rcache
-and
-.B \-wcache
-switches, which define the policy for reading from, and writing to, the cache,
-respectively.  One of four policies may be
-specified: \*(lqpublic\*(rq, indicating that
-.B mhstore
-should make use
-of a publicly-accessible content cache; \*(lqprivate\*(rq, indicating that
-.B mhstore
-should make use of the user's private content cache;
-\*(lqnever\*(rq, indicating that
-.B mhstore
-should never make use of caching; and, \*(lqask\*(rq, indicating that
-.B mhstore
-should ask the user.
-.PP
-There are two directories where contents may be cached: the profile entry
-\*(lqnmh-cache\*(rq names a directory containing world-readable contents, and,
-the profile entry \*(lqnmh-private-cache\*(rq names a directory containing
-private contents.  The former should be an absolute (rooted) directory
-name.
-.PP
-For example,
-.PP
-.RS 5
-nmh-cache: /tmp
-.RE
-.PP
-might be used if you didn't care that the cache got wiped after each
-reboot of the system.  The latter is interpreted relative to the user's
-nmh directory, if not rooted, e.g.,
-.PP
-.RS 5
-nmh-private-cache: .cache
-.RE
-.PP
-(which is the default value).
 .SS "User Environment"
 Because the environment in which
 .B mhstore
@@ -594,8 +540,6 @@ is checked.
 ^Current\-Folder:~^To find the default current folder
 ^nmh-access-ftp:~^Program to retrieve contents via FTP
 ^nmh-access-url:~^Program to retrieve contents via HTTP
-^nmh-cache~^Public directory to store cached external contents
-^nmh-private-cache~^Personal directory to store cached external contents
 ^nmh-storage~^Directory to store contents
 ^mhstore-store-<type>*~^Template for storing contents
 .fi
@@ -612,8 +556,6 @@ is checked.
 .RB ` \-noauto '
 .RB ` \-clobber\ always '
 .RB ` \-nocheck '
-.RB ` \-rcache\ ask '
-.RB ` \-wcache\ ask '
 .RB ` \-verbose '
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
