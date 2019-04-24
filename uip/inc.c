@@ -253,7 +253,7 @@ main (int argc, char **argv)
     if (pophost && *pophost)
 	host = pophost;
 
-    sasl = tls = false;
+    sasl = false;
     chgflag = noisy = noverify = true;
     while ((cp = *argp++)) {
 	if (*cp == '-') {
