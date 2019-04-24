@@ -169,28 +169,6 @@ run_test 'mhlist last -part 4 -noheader -norealsize -realsize' \
      1     multipart/related          180
      4     text/plain                  36'
 
-start_test '-check'
-run_test 'mhlist last -part 2 -noheader -check' \
-'  11       multipart/mixed            936
-     1     multipart/related          180
-     2     text/plain                  36'
-
-start_test '-check with bad MD5 checksum'
-sed 's/\(Content-MD5: \)kq+Hnc/\1BADBAD/' $msgfile > $MH_TEST_DIR/$$.tmp
-mv -f $MH_TEST_DIR/$$.tmp $msgfile
-run_test 'mhlist last -part 2 -noheader -check' \
-'  11       multipart/mixed            936
-     1     multipart/related          180
-     2     text/plain                  36
-mhlist: content integrity suspect (digest mismatch) -- continuing
-    (content text/plain in message 11, part 2)'
-
-start_test '-nocheck, the default'
-run_test 'mhlist last -part 2 -noheader -check -nocheck' \
-'  11       multipart/mixed            936
-     1     multipart/related          180
-     2     text/plain                  36'
-
 #
 # Set the cur sequence to 1 to test default behavior of changecur after
 # this test.

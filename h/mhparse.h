@@ -139,10 +139,6 @@ struct Content {
     int	c_encoding;		/* internal flag for encoding type   */
     int c_reqencoding;		/* Requested encoding (by mhbuild)   */
 
-    /* Content-MD5 info */
-    int	c_digested;		/* have we seen this header before?  */
-    unsigned char c_digest[16];	/* decoded MD5 checksum              */
-
     /* pointers to content-specific structures */
     void *c_ctparams;		/* content type specific data        */
     struct exbody *c_ctexbody;	/* data for type message/external    */
@@ -505,8 +501,6 @@ char *get_param(PM first, const char *name, char replace, int fetchonly);
  * internally).
  */
 char *get_param_value(PM pm, char replace);
-
-extern int checksw;	/* Add Content-MD5 field */
 
 /*
  * mhstore

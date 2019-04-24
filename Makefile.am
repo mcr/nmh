@@ -339,7 +339,6 @@ noinst_HEADERS = \
     h/fmt_compile.h \
     h/fmt_scan.h \
     h/icalendar.h \
-    h/md5.h \
     h/mf.h \
     h/mh.h \
     h/mhcachesbr.h \
@@ -1093,7 +1092,6 @@ sbr_libmh_a_SOURCES = \
     sbr/m_popen.c \
     sbr/m_rand.c \
     sbr/makedir.c \
-    sbr/md5.c \
     sbr/message_id.c \
     sbr/mf.c \
     sbr/mime_type.c \

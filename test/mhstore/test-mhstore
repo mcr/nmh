@@ -214,43 +214,11 @@ run_test 'mhstore last -part 1.1 -auto' \
   'storing message 11 part 1.1 as file test1.txt'
 check "$expected" test1.txt
 
-# check -check
-start_test '-check'
+# check -outfile - with -file
+start_test '-outfile - with -file'
 cat >"$expected" <<'EOF'
 This is the second text/plain part.
 EOF
-run_test 'mhstore last -part 2 -check' \
-         'storing message 11 part 2 as file 11.2.txt'
-check "$expected" 11.2.txt 'keep first'
-
-# check with -check on base64 encoded part
-start_test 'with -check on base64 encoded part'
-cat >"$expected2" <<'EOF'
-This is the fourth text/plain part.
-This test has multiple lines.
-EOF
-run_test 'mhstore last -part 4 -check' \
-         'storing message 11 part 4 as file 11.4.txt'
-check "$expected2" 11.4.txt
-
-# check -check with bad MD5 checksum
-start_test '-check with bad MD5 checksum'
-sed 's/\(Content-MD5: \)kq+Hnc/\1BADBAD/' "$msgfile" >"$MH_TEST_DIR/$$.tmp"
-mv -f "$MH_TEST_DIR/$$.tmp" "$msgfile"
-run_test 'mhstore last -part 2 -check' \
-'storing message 11 part 2 as file 11.2.txt
-mhstore: content integrity suspect (digest mismatch) -- continuing
-    (content text/plain in message 11, part 2)'
-check "$expected" 11.2.txt 'keep first'
-
-# check -nocheck, the default
-start_test '-nocheck, the default'
-run_test 'mhstore last -part 2 -check -nocheck' \
-         'storing message 11 part 2 as file 11.2.txt'
-check "$expected" 11.2.txt 'keep first'
-
-# check -outfile - with -file
-start_test '-outfile - with -file'
 run_prog mhstore -noverbose -file `mhpath 11` -part 2 -outfile - >"$actual" 2>&1
 check "$expected" "$actual"
 

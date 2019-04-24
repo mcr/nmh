@@ -26,7 +26,6 @@
 #include "sbr/error.h"
 #include <fcntl.h>
 #include "h/signals.h"
-#include "h/md5.h"
 #include "h/mts.h"
 #include "h/tws.h"
 #include "h/mime.h"
@@ -39,8 +38,8 @@
 #include "mhfree.h"
 
 #define MHLIST_SWITCHES \
-    X("check", 0, CHECKSW) \
-    X("nocheck", 0, NCHECKSW) \
+    X("check", -5, CHECKSW) \
+    X("nocheck", -7, NCHECKSW) \
     X("headers", 0, HEADSW) \
     X("noheaders", 0, NHEADSW) \
     X("realsize", 0, SIZESW) \
@@ -148,10 +147,8 @@ do_cache:
 		continue;
 
 	    case CHECKSW:
-		checksw++;
-		continue;
 	    case NCHECKSW:
-		checksw = 0;
+		/* Currently a NOP */
 		continue;
 
 	    case HEADSW:

@@ -323,7 +323,7 @@ netsec_b64_snoop_decoder(netsec_context *nsc, const char *string, size_t len,
 	len -= offset;
     }
 
-    if (decodeBase64(string, &decoded, &decodedlen, 1, NULL) == OK) {
+    if (decodeBase64(string, &decoded, &decodedlen, 1) == OK) {
 	/*
 	 * Some mechanisms produce large binary tokens, which aren't really
 	 * readable.  So let's do a simple heuristic.  If the token is greater

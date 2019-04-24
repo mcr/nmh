@@ -17,7 +17,6 @@
 #include "sbr/print_help.h"
 #include "sbr/error.h"
 #include <fcntl.h>
-#include "h/md5.h"
 #include "h/mts.h"
 #include "h/tws.h"
 #include "h/mime.h"
@@ -33,8 +32,8 @@
 #define MHBUILD_SWITCHES \
     X("auto", 0, AUTOSW) \
     X("noauto", 0, NAUTOSW) \
-    X("check", 0, CHECKSW) \
-    X("nocheck", 0, NCHECKSW) \
+    X("check", -5, CHECKSW) \
+    X("nocheck", -7, NCHECKSW) \
     X("directives", 0, DIRECTIVES) \
     X("nodirectives", 0, NDIRECTIVES) \
     X("headers", 0, HEADSW) \
@@ -181,10 +180,8 @@ main (int argc, char **argv)
 		continue;
 
 	    case CHECKSW:
-		checksw++;
-		continue;
 	    case NCHECKSW:
-		checksw = 0;
+	    	/* Currently a NOP */
 		continue;
 
 	    case HEADSW:

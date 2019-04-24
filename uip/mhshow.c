@@ -28,7 +28,6 @@
 #include "sbr/error.h"
 #include <fcntl.h>
 #include "h/signals.h"
-#include "h/md5.h"
 #include "h/mts.h"
 #include "h/tws.h"
 #include "h/fmt_scan.h"
@@ -160,10 +159,8 @@ do_cache:
 		continue;
 
 	    case CHECKSW:
-		checksw++;
-		continue;
 	    case NCHECKSW:
-		checksw = 0;
+		/* Currently a NOP */
 		continue;
 
 	    case CONCATSW:

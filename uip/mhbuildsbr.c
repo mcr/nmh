@@ -35,7 +35,6 @@
 #include "sbr/path.h"
 #include "sbr/error.h"
 #include <fcntl.h>
-#include "h/md5.h"
 #include "h/mts.h"
 #include "h/tws.h"
 #include "h/fmt_scan.h"
@@ -95,7 +94,6 @@ static void set_id (CT, int);
 static int compose_content (CT, int);
 static int scan_content (CT, size_t);
 static int build_headers (CT, int);
-static char *calculate_digest (CT, int);
 static int extract_headers (CT, char *, FILE **);
 
 
@@ -1607,7 +1605,7 @@ scan_content (CT ct, size_t maxunencoded)
     if (ct->c_reqencoding != CE_UNKNOWN)
 	ct->c_encoding = ct->c_reqencoding;
     else {
-	int wants_q_p = (containsnul || linelen || linespace || checksw);
+	int wants_q_p = (containsnul || linelen || linespace);
 
 	switch (ct->c_type) {
 	case CT_TEXT:
@@ -1783,15 +1781,6 @@ skip_headers:
 	return OK;
 
     /*
-     * output the Content-MD5
-     */
-    if (checksw) {
-	np = mh_xstrdup(MD5_FIELD);
-        vp = calculate_digest (ct, ct->c_encoding == CE_QUOTED);
-	add_header (ct, np, vp);
-    }
-
-    /*
      * output the Content-Transfer-Encoding
      * If using EAI and message body is 7-bit, force 8-bit C-T-E.
      */
@@ -1878,101 +1867,6 @@ skip_headers:
     return OK;
 }
 
-
-static char nib2b64[0x40+1] =
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-static char *
-calculate_digest (CT ct, int asciiP)
-{
-    int	cc;
-    char *vp, *op;
-    unsigned char *dp;
-    unsigned char digest[16];
-    unsigned char outbuf[25];
-    MD5_CTX mdContext;
-    CE ce = &ct->c_cefile;
-    char *infilename = ce->ce_file ? ce->ce_file : ct->c_file;
-    FILE *in;
-
-    /* open content */
-    if ((in = fopen (infilename, "r")) == NULL)
-	adios (infilename, "unable to open for reading");
-
-    /* Initialize md5 context */
-    MD5Init (&mdContext);
-
-    /* calculate md5 message digest */
-    if (asciiP) {
-	char *bufp = NULL;
-	size_t buflen;
-	ssize_t gotlen;
-	while ((gotlen = getline(&bufp, &buflen, in)) != -1) {
-	    char c, *cp;
-
-	    cp = bufp + gotlen - 1;
-	    if ((c = *cp) == '\n')
-		gotlen--;
-
-	    MD5Update (&mdContext, (unsigned char *) bufp,
-		       (unsigned int) gotlen);
-
-	    if (c == '\n')
-		MD5Update (&mdContext, (unsigned char *) "\r\n", 2);
-	}
-    } else {
-	char buffer[BUFSIZ];
-	while ((cc = fread (buffer, sizeof(*buffer), sizeof(buffer), in)) > 0)
-	    MD5Update (&mdContext, (unsigned char *) buffer, (unsigned int) cc);
-    }
-
-    /* md5 finalization.  Write digest and zero md5 context */
-    MD5Final (digest, &mdContext);
-
-    /* close content */
-    fclose (in);
-
-    /* print debugging info */
-    if (debugsw) {
-	unsigned char *ep;
-
-	fprintf (stderr, "MD5 digest=");
-	for (ep = (dp = digest) + sizeof digest;
-	         dp < ep; dp++)
-	    fprintf (stderr, "%02x", *dp & 0xff);
-	fprintf (stderr, "\n");
-    }
-
-    /* encode the digest using base64 */
-    for (dp = digest, op = (char *) outbuf,
-				cc = sizeof digest;
-		cc > 0; cc -= 3, op += 4) {
-	unsigned long bits;
-	char *bp;
-
-	bits = (*dp++ & 0xff) << 16;
-	if (cc > 1) {
-	    bits |= (*dp++ & 0xff) << 8;
-	    if (cc > 2)
-		bits |= *dp++ & 0xff;
-	}
-
-	for (bp = op + 4; bp > op; bits >>= 6)
-	    *--bp = nib2b64[bits & 0x3f];
-	if (cc < 3) {
-	    *(op + 3) = '=';
-	    if (cc < 2)
-		*(op + 2) = '=';
-	}
-    }
-
-    /* null terminate string */
-    outbuf[24] = '\0';
-
-    /* now make copy and return string */
-    vp = concat (" ", outbuf, "\n", NULL);
-    return vp;
-}
 
 /*
  * Set things up for the content structure for file "filename" that

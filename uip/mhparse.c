@@ -21,7 +21,6 @@
 #include "sbr/arglist.h"
 #include "sbr/error.h"
 #include <fcntl.h>
-#include "h/md5.h"
 #include "h/mts.h"
 #include "h/tws.h"
 #include "h/mime.h"
@@ -38,8 +37,6 @@
 
 
 extern int debugsw;
-
-int checksw = 0;	/* check Content-MD5 field */
 
 /*
  * These are for mhfixmsg to:
@@ -148,7 +145,6 @@ static int InitFTP (CT);
 static int openFTP (CT, char **);
 static int InitMail (CT);
 static int openMail (CT, char **);
-static int readDigest (CT, char *);
 static int get_leftover_mp_content (CT, int);
 static int InitURL (CT);
 static int openURL (CT, char **);
@@ -508,46 +504,6 @@ get_content (FILE *in, char *file, int toplevel)
 	    /* Call the Init function for this encoding */
 	    if (s2i->si_init && (*s2i->si_init) (ct) == NOTOK)
 		goto out;
-	}
-	else if (!strcasecmp (hp->name, MD5_FIELD)) {
-	/* Get Content-MD5 field */
-	    char *cp, *dp, *ep;
-
-	    if (!checksw)
-		goto next_header;
-
-	    if (ct->c_digested) {
-		inform("message %s has multiple %s: fields",
-			ct->c_file, MD5_FIELD);
-		goto next_header;
-	    }
-
-	    ep = cp = mh_xstrdup(FENDNULL(hp->value)); /* get a copy */
-
-	    while (isspace ((unsigned char) *cp))
-		cp++;
-	    for (dp = strchr(cp, '\n'); dp; dp = strchr(dp, '\n'))
-		*dp++ = ' ';
-	    for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
-		if (!isspace ((unsigned char) *dp))
-		    break;
-	    *++dp = '\0';
-	    if (debugsw)
-		fprintf (stderr, "%s: %s\n", MD5_FIELD, cp);
-
-	    if (*cp == '('  &&
-                get_comment (ct->c_file, MD5_FIELD, &cp, NULL) == NOTOK) {
-		free (ep);
-		goto out;
-	    }
-
-	    for (dp = cp; *dp && !isspace ((unsigned char) *dp); dp++)
-		continue;
-	    *dp = '\0';
-
-	    readDigest (ct, cp);
-	    free (ep);
-	    ct->c_digested++;
 	}
 	else if (!strcasecmp (hp->name, ID_FIELD)) {
 	/* Get Content-ID field */
@@ -1768,7 +1724,6 @@ openBase64 (CT ct, char **file)
     CE ce = &ct->c_cefile;
     unsigned char *decoded;
     size_t decoded_len;
-    unsigned char digest[16];
 
     if (ce->ce_fp) {
 	fseek (ce->ce_fp, 0L, SEEK_SET);
@@ -1852,8 +1807,8 @@ openBase64 (CT ct, char **file)
     /* decodeBase64() requires null-terminated input. */
     *cp = '\0';
 
-    if (decodeBase64 (buffer, &decoded, &decoded_len, ct->c_type == CT_TEXT,
-                      ct->c_digested ? digest : NULL) != OK)
+    if (decodeBase64 (buffer, &decoded, &decoded_len,
+		      ct->c_type == CT_TEXT) != OK)
         goto clean_up;
 
     {
@@ -1866,18 +1821,6 @@ openBase64 (CT ct, char **file)
         if (ferror (ce->ce_fp)) {
             content_error (ce->ce_file, ct, "error writing to");
             goto clean_up;
-        }
-
-        if (ct->c_digested) {
-            if (memcmp(digest, ct->c_digest,
-                       sizeof digest)) {
-                content_error (NULL, ct,
-                               "content integrity suspect (digest mismatch) -- continuing");
-            } else {
-                if (debugsw) {
-                    fprintf (stderr, "content integrity confirmed\n");
-                }
-            }
         }
     }
 
@@ -1944,7 +1887,7 @@ InitQuoted (CT ct)
 static int
 openQuoted (CT ct, char **file)
 {
-    int	cc, digested, len, quoted;
+    int	cc, len, quoted;
     bool own_ct_fp = false;
     char *cp, *ep;
     char *bufp = NULL;
@@ -1954,7 +1897,6 @@ openQuoted (CT ct, char **file)
     CE ce = &ct->c_cefile;
     /* sbeck -- handle suffixes */
     CI ci;
-    MD5_CTX mdContext;
 
     if (ce->ce_fp) {
 	fseek (ce->ce_fp, 0L, SEEK_SET);
@@ -2013,9 +1955,6 @@ openQuoted (CT ct, char **file)
 	own_ct_fp = true;
     }
 
-    if ((digested = ct->c_digested))
-	MD5Init (&mdContext);
-
     quoted = 0;
 
     fseek (ct->c_fp, ct->c_begin, SEEK_SET);
@@ -2048,8 +1987,6 @@ openQuoted (CT ct, char **file)
 		    mask <<= 4;
 		    mask |= hex2nib[((unsigned char) *cp) & 0x7f];
 		    putc (mask, ce->ce_fp);
-		    if (digested)
-			MD5Update (&mdContext, &mask, 1);
 		    if (ferror (ce->ce_fp)) {
 			content_error (ce->ce_file, ct, "error writing to");
 			goto clean_up;
@@ -2087,13 +2024,6 @@ openQuoted (CT ct, char **file)
 
 	    /* Just show the raw byte. */
 	    putc (*cp, ce->ce_fp);
-	    if (digested) {
-		if (*cp == '\n') {
-		    MD5Update (&mdContext, (unsigned char *) "\r\n",2);
-		} else {
-		    MD5Update (&mdContext, (unsigned char *) cp, 1);
-		}
-	    }
 	    if (ferror (ce->ce_fp)) {
 		content_error (ce->ce_file, ct, "error writing to");
 		goto clean_up;
@@ -2111,18 +2041,6 @@ openQuoted (CT ct, char **file)
     if (fflush (ce->ce_fp)) {
 	content_error (ce->ce_file, ct, "error writing to");
 	goto clean_up;
-    }
-
-    if (digested) {
-	unsigned char digest[16];
-
-	MD5Final (digest, &mdContext);
-	if (memcmp(digest, ct->c_digest,
-		   sizeof digest))
-	    content_error (NULL, ct,
-			   "content integrity suspect (digest mismatch) -- continuing");
-	else if (debugsw)
-            fprintf (stderr, "content integrity confirmed\n");
     }
 
     fseek (ce->ce_fp, 0L, SEEK_SET);
@@ -2907,46 +2825,6 @@ openURL (CT ct, char **file)
     fseeko(ce->ce_fp, 0, SEEK_SET);
     *file = ce->ce_file;
     return fileno(ce->ce_fp);
-}
-
-
-/*
- * Stores MD5 digest (in cp, from Content-MD5 header) in ct->c_digest.  It
- * has to be base64 decoded.
- */
-static int
-readDigest (CT ct, char *cp)
-{
-    unsigned char *digest;
-
-    size_t len;
-    if (decodeBase64 (cp, &digest, &len, 0, NULL) == OK) {
-        const size_t maxlen = sizeof ct->c_digest;
-
-        if (strlen ((char *) digest) <= maxlen) {
-            memcpy (ct->c_digest, digest, maxlen);
-
-            if (debugsw) {
-                size_t i;
-
-                fprintf (stderr, "MD5 digest=");
-                for (i = 0; i < maxlen; ++i) {
-                    fprintf (stderr, "%02x", ct->c_digest[i] & 0xff);
-                }
-                fprintf (stderr, "\n");
-            }
-
-            return OK;
-        }
-        if (debugsw) {
-            fprintf (stderr, "invalid MD5 digest (got %d octets)\n",
-                     (int) strlen ((char *) digest));
-        }
-
-        return NOTOK;
-    }
-
-    return NOTOK;
 }
 
 

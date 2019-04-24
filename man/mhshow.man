@@ -36,7 +36,6 @@ mhshow \- display nmh MIME messages
 .IR policy ]
 .RB [ \-wcache
 .IR policy ]
-.RB [ \-check " | " \-nocheck ]
 .ad
 .SH DESCRIPTION
 The
@@ -248,15 +247,6 @@ non-empty, then
 .B mhshow
 will remove each of the messages shown from each sequence named by
 the profile entry.
-.SS "Checking the Contents"
-The
-.B \-check
-switch tells
-.B mhshow
-to check each content for an integrity checksum.  If a content has such
-a checksum (specified as a Content-MD5 header field), then
-.B mhshow
-will attempt to verify the integrity of the content.
 .SS "Showing the Contents"
 The headers of each message are displayed with the
 .I mhlproc

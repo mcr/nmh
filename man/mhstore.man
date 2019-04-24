@@ -33,7 +33,6 @@ mhstore \- store contents of nmh MIME messages into files
 .IR policy ]
 .RB [ \-wcache
 .IR policy ]
-.RB [ \-check " | " \-nocheck ]
 .RB [ \-verbose " | " \-noverbose ]
 .ad
 .SH DESCRIPTION
@@ -175,16 +174,6 @@ The
 switch will cancel any previous
 .B \-prefer
 switches.
-.SS "Checking the Contents"
-The
-.B \-check
-switch tells
-.B mhstore
-to check each content for an integrity checksum.
-If a content has such a checksum (specified as a Content-MD5 header
-field), then
-.B mhstore
-will attempt to verify the integrity of the content.
 .SS "Storing the Contents"
 .B mhstore
 will store the contents of the named messages in

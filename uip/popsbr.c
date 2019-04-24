@@ -454,7 +454,7 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    *outdata = NULL;
 	    *outdatalen = 0;
 	} else {
-	    rc = decodeBase64(line + 2, outdata, &len, 0, NULL);
+	    rc = decodeBase64(line + 2, outdata, &len, 0);
 	    *outdatalen = len;
 	    if (rc != OK) {
 		netsec_err(errstr, "Unable to decode base64 response");

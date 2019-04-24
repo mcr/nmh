@@ -35,7 +35,6 @@ mhn \- display/list/store/cache nmh MIME messages
 .IR policy ]
 .RB [ \-wcache
 .IR policy ]
-.RB [ \-check " | " \-nocheck ]
 .PP
 .HP 5
 .B mhn

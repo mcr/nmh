@@ -8,7 +8,7 @@
 int writeBase64aux(FILE *, FILE *, int);
 int writeBase64(const unsigned char *, size_t, unsigned char *);
 int writeBase64raw(const unsigned char *, size_t, unsigned char *);
-int decodeBase64(const char *, unsigned char **, size_t *, int, unsigned char *);
+int decodeBase64(const char *, unsigned char **, size_t *, int);
 void hexify(const unsigned char *, size_t, char **);
 
 /* Includes trailing NUL. */

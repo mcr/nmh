@@ -30,7 +30,6 @@ mhlist \- list information about nmh MIME messages
 .IR policy ]
 .RB [ \-wcache
 .IR policy ]
-.RB [ \-check " | " \-nocheck ]
 .RB [ \-changecur " | " \-nochangecur ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-disposition " | " \-nodisposition ]
@@ -200,15 +199,6 @@ but are also implemented in
 and
 .B mhstore
 to make common part numbering possible across all three programs.
-.SS "Checking the Contents"
-The
-.B \-check
-switch tells
-.B mhlist
-to check each content for an integrity checksum.  If a content has
-such a checksum (specified as a Content-MD5 header field), then
-.B mhlist
-will attempt to verify the integrity of the content.
 .SH FILES
 .fc ^ ~
 .nf

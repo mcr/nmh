@@ -9,7 +9,6 @@
 #define	ID_FIELD	"Content-ID"
 #define	DESCR_FIELD	"Content-Description"
 #define	DISPO_FIELD	"Content-Disposition"
-#define	MD5_FIELD	"Content-MD5"
 #define	PSEUDOHEADER_PREFIX        "Nmh-"
 #define	ATTACH_FIELD               PSEUDOHEADER_PREFIX "Attach"
 #define	ATTACH_FIELD_ALT           "Attach"

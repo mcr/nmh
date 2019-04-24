@@ -20,7 +20,6 @@ mhbuild \- translate MIME composition drafts for nmh messages
 .RB [ \-contentid " | " \-nocontentid ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-disposition " | " \-nodisposition ]
-.RB [ \-check " | " \-nocheck ]
 .RB [ \-headerencoding
 .I encoding-algorithm
 .RB " | " \-autoheaderencoding ]
@@ -728,17 +727,6 @@ This third part will be text/plain
                     /home/foobar/lib/picture.gif
 .fi
 .RE
-.SS "Integrity Check"
-If
-.B mhbuild
-is given the
-.B \-check
-switch, then it will also associate an integrity check with each
-\*(lqleaf\*(rq content.
-This will add a Content-MD5 header field to the content, along with the md5
-sum of the unencoded contents, per RFC 1864.
-This may be used by the receiver of the message to verify that the contents
-of the message were not changed in transport.
 .SS "Transfer Encodings"
 After
 .B mhbuild
@@ -748,15 +736,6 @@ It will check for 8-bit data, long lines, spaces at the end of lines, and
 clashes with multipart boundaries.
 It will then choose a transfer encoding appropriate for each content type.
 .PP
-If an integrity check is being associated with each content by using
-the
-.B \-check
-switch, then
-.B mhbuild
-will encode each content with
-a transfer encoding, even if the content contains only 7-bit data.
-This is to increase the likelihood that the content is not changed while in
-transport.
 .SS "Invoking mhbuild"
 Typically,
 .B mhbuild

@@ -8,7 +8,6 @@
 #include "h/mh.h"
 #include "error.h"
 #include "h/mime.h"
-#include "h/md5.h"
 #include <inttypes.h>
 
 static const char nib2b64[0x40+1] =
@@ -245,21 +244,16 @@ static const unsigned char b642nib[0x80] = {
  * len          - number of decoded bytes
  * skip-crs     - non-zero for text content, and for which CR's should be
  *                skipped
- * digest       - for an MD5 digest, it can be null
  */
 int
 decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
-	      int skip_crs, unsigned char *digest)
+	      int skip_crs)
 {
     const char *cp = encoded;
     int bitno, skip;
     uint32_t bits;
     /* Size the decoded string very conservatively. */
     charstring_t decoded_c = charstring_create (strlen (encoded));
-    MD5_CTX mdContext;
-
-    if (digest)
-        MD5Init (&mdContext);
 
     bitno = 18;
     bits = 0L;
@@ -292,22 +286,16 @@ test_end:
                     if (! skip_crs  ||  b != '\r') {
                         charstring_push_back (decoded_c, b);
                     }
-                    if (digest)
-                        MD5Update (&mdContext, (unsigned char *) &b, 1);
                     if (skip < 2) {
                         b = (bits >> 8) & 0xff;
                         if (! skip_crs  ||  b != '\r') {
                             charstring_push_back (decoded_c, b);
                         }
-                        if (digest)
-                            MD5Update (&mdContext, (unsigned char *) &b, 1);
                         if (skip < 1) {
                             b = bits & 0xff;
                             if (! skip_crs  ||  b != '\r') {
                                 charstring_push_back (decoded_c, b);
                             }
-                            if (digest)
-                                MD5Update (&mdContext, (unsigned char *) &b, 1);
                         }
                     }
 
@@ -338,10 +326,6 @@ test_end:
     *decoded = (unsigned char *) charstring_buffer_copy (decoded_c);
     *len = charstring_bytes (decoded_c);
     charstring_free (decoded_c);
-
-    if (digest) {
-        MD5Final (digest, &mdContext);
-    }
 
     return OK;
 }

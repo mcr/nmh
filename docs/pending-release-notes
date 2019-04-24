@@ -17,6 +17,11 @@ OBSOLETE FEATURES
 DEPRECATED FEATURES
 -------------------
 
+- The generation and verification of Content-MD5 headers is no longer
+  performed.  The -check and -nocheck switches to various nmh programs
+  that would control this functionality still exist, but are non-functional
+  and will be removed in the next release.
+
 ---------
 BUG FIXES
 ---------

@@ -27,7 +27,6 @@
 #include "sbr/error.h"
 #include <fcntl.h>
 #include "h/signals.h"
-#include "h/md5.h"
 #include "h/mts.h"
 #include "h/tws.h"
 #include "h/mime.h"
@@ -42,8 +41,8 @@
 #define MHSTORE_SWITCHES \
     X("auto", 0, AUTOSW) \
     X("noauto", 0, NAUTOSW) \
-    X("check", 0, CHECKSW) \
-    X("nocheck", 0, NCHECKSW) \
+    X("check", -5, CHECKSW) \
+    X("nocheck", -7, NCHECKSW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
     X("file file", 0, FILESW)		/* interface from show */ \
@@ -153,10 +152,8 @@ do_cache:
 		continue;
 
 	    case CHECKSW:
-		checksw++;
-		continue;
 	    case NCHECKSW:
-		checksw = 0;
+		/* Currently a NOP */
 		continue;
 
 	    case PARTSW:
