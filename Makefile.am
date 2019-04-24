@@ -102,6 +102,7 @@ TESTS = \
     test/mhlist/test-mhlist \
     test/mhmail/test-mhmail \
     test/mhparam/test-mhparam \
+    test/mhparam/test-profile \
     test/mhpath/test-mhpath \
     test/mhshow/test-binary \
     test/mhshow/test-charset \
@@ -161,10 +162,6 @@ TESTS = \
     test/whatnow/test-ls \
     test/whom/test-whom \
     test/cleanup ## The "cleanup" test should always be last.
-
-XFAIL_TESTS = \
-    test/scan/test-scan \
-    #
 
 check_SCRIPTS = test/common.sh
 
