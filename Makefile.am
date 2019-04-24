@@ -102,7 +102,6 @@ TESTS = \
     test/mhlist/test-mhlist \
     test/mhmail/test-mhmail \
     test/mhparam/test-mhparam \
-    test/mhparam/test-profile \
     test/mhpath/test-mhpath \
     test/mhshow/test-binary \
     test/mhshow/test-charset \
