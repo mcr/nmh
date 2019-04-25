@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Generates COMPLETION-BASH from man/mh-chart.man.
+# Generates bash_completion_nmh from man/mh-chart.man.
 #
 # This code is Copyright (c) 2016, by the authors of nmh.
 # See the COPYRIGHT file in the root directory of the nmh
