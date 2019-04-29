@@ -1153,6 +1153,23 @@ InitMultiPart (CT ct)
 	pos += gotlen;
 	if (bufp[0] != '-' || bufp[1] != '-')
 	    continue;
+
+	/*
+	 * A bit of a lame hack; if this line ends in \r\n then replace
+	 * the \r\n with just a \n so that the boundary markers will match
+	 * up properly in case this uses "MS-DOS" line endings.
+	 */
+
+	if (gotlen > 2 && bufp[gotlen - 1] == '\n' &&
+	    bufp[gotlen - 2] == '\r') {
+		/*
+		 * Note we don't change getpos here, because it is used to
+		 * calculate multipart offsets.
+		 */
+		bufp[gotlen - 2] = '\n';
+		bufp[gotlen - 1] = '\0';
+	}
+
 	if (inout) {
 	    if (strcmp (bufp + 2, m->mp_start))
 		continue;
