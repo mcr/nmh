@@ -1192,6 +1192,22 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 #endif /* CYRUS_SASL || OAUTH_SUPPORT */
 
     /*
+     * Output some SASL information if snoop is turned on
+     */
+
+    if (nsc->ns_snoop) {
+	fprintf(stderr, "SASL mechanisms supported by server: %s\n", mechlist);
+
+	if (nsc->sasl_mech) {
+		fprintf(stderr, "User has requested SASL mechanism: %s\n",
+			nsc->sasl_mech);
+	} else {
+		fprintf(stderr, "No SASL mech selected, will pick "
+			"the best mech supported by SASL library\n");
+	}
+    }
+
+    /*
      * If we've been passed a requested mechanism, check our mechanism
      * list from the protocol.  If it's not supported, return an error.
      */
@@ -1228,6 +1244,10 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	 * there is output data, it will be assumed that it is the JSON
 	 * error message.
 	 */
+
+	if (nsc->ns_snoop) {
+		fprintf(stderr, "Using internal XOAUTH2 mechanism\n");
+	}
 
 	if (! nsc->oauth_service) {
 	    netsec_err(errstr, "Internal error: OAuth2 service name not given");
@@ -1291,6 +1311,21 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
      * messages.
      */
 
+    if (nsc->ns_snoop) {
+	const char *client_mechlist;
+
+	rc = sasl_listmech(nsc->sasl_conn, NULL, NULL, " ", NULL,
+			   &client_mechlist, NULL, NULL);
+
+	if (rc != SASL_OK) {
+		fprintf(stderr, "Unable to get client mechlist: %s\n",
+			sasl_errstring(rc, NULL, NULL));
+	} else {
+		fprintf(stderr, "Client supported SASL mechanisms: %s\n",
+			client_mechlist);
+	}
+    }
+
     ZERO(&secprops);
     secprops.maxbufsize = SASL_MAXRECVBUF;
 
@@ -1303,6 +1338,12 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 		nsc->tls_active ? 0 :
 #endif /* TLS_SUPPORT */
 		UINT_MAX;
+
+#ifdef TLS_SUPPORT
+    if (nsc->ns_snoop && nsc->tls_active)
+	fprintf(stderr, "SASL security layers disabled due to the use "
+		"of TLS\n");
+#endif /* TLS_SUPPORT */
 
     rc = sasl_setprop(nsc->sasl_conn, SASL_SEC_PROPS, &secprops);
 
@@ -1329,6 +1370,9 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
     }
 
     nsc->sasl_chosen_mech = getcpy(chosen_mech);
+
+    if (nsc->ns_snoop)
+	fprintf(stderr, "Chosen sasl mechanism: %s\n", chosen_mech);
 
     if (nsc->sasl_proto_cb(NETSEC_SASL_START, saslbuf, saslbuflen, NULL, 0,
 			   nsc->sasl_proto_context, errstr) != OK)
@@ -1404,6 +1448,10 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
     nsc->sasl_ssf = *ssf;
 
     if (nsc->sasl_ssf > 0) {
+	if (nsc->ns_snoop)
+	    fprintf(stderr, "SASL security layer negotiated, SASL will "
+		    "perform encryption\n");
+
 	rc = sasl_getprop(nsc->sasl_conn, SASL_MAXOUTBUF,
 			  (const void **) &outbufmax);
 
@@ -1456,6 +1504,15 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	}
 
 	nsc->sasl_seclayer = 1;
+    } else if (nsc->ns_snoop) {
+	fprintf(stderr, "SASL Security layer NOT negotiated, SASL will NOT "
+		"perform encryption\n");
+#ifdef TLS_SUPPORT
+	if (nsc->tls_active) {
+	    fprintf(stderr, "Encryption will be handled by TLS\n");
+	} else
+#endif /* TLS_SUPPORT */
+	    fprintf(stderr, "Connection will NOT be encrypted, use caution\n");
     }
 
     return OK;
