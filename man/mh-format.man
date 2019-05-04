@@ -269,8 +269,8 @@ num		integer	Set \fInum\fR to zero.
 lit 	literal	string	Set \fIstr\fR to \fIarg\fR.
 lit		string	Clear \fIstr\fR.
 getenv 	literal	string	Set \fIstr\fR to environment value of \fIarg\fR
-profile	literal	string	Set \fIstr\fR to profile component \fIarg\fR
-			value
+profile	literal	string	Set \fIstr\fR to profile or context
+			component \fIarg\fR value
 .\" dat	literal	int	return value of dat[arg]
 nonzero	expr	boolean	\fInum\fR is non-zero
 zero	expr	boolean	\fInum\fR is zero
