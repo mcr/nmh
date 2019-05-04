@@ -14,7 +14,6 @@ usage='Usage: sendfiles [switches] -to recipient -subject subject '"\
   switches are:
   -compress [bzip2 | compress | gzip | lzma | none]
   -from <sender>
-  -[delay] <delay> (expressed in seconds)
   -version
   -help
   Can use PERSON environment variable instead of -from switch.'
@@ -52,8 +51,6 @@ nmhlibexecdir=`$nmhbindir/mhparam libexecdir`
 #### Process switches.
 compress=                   ## compress method
 compressarg=0               ## whether currently handling -compress
-delay=                      ## delay value
-delayarg=0                  ## whether currently handling -delay
 from=                       ## From: contents
 fromarg=0                   ## whether currently handling -from
 subject=                    ## Subject: contents
@@ -63,9 +60,6 @@ toarg=0                     ## whether currently handling -to
 for arg in "$@"; do
   case $arg in
     -c|-co|-com|-comp|-compr|-compre|-compres|-compress) compressarg=1 ;;
-    -d|-de|-del|-dela|-delay) delayarg=1 ;;
-    -[0-9]|-[0-9][0-9]|-[0-9][0-9][0-9]|-[0-9][0-9][0-9][0-9])
-      delay=`printf '%s\n' "$arg" | sed -e 's%-%%'` ;;
     -f|-fr|-fro|-from) fromarg=1 ;;
     #### Support -gzip for backward compatibility.
     -gzip) compress=gzip ;;
@@ -80,9 +74,6 @@ for arg in "$@"; do
     *) if [ $compressarg -eq 1 ]; then
          compress="$arg"
          compressarg=0
-       elif [ $delayarg -eq 1 ]; then
-         delay="$arg"
-         delayarg=0
        elif [ $fromarg -eq 1 ]; then
          from="$arg"
          fromarg=0
@@ -127,8 +118,6 @@ fi
 checkforargs() {
   if [ $compressarg -eq 1 ]; then
     printf 'sendfiles: missing argument to -compress\n' >&2; exit 1
-  elif [ $delayarg -eq 1 ]; then
-    printf 'sendfiles: missing argument to -delay\n' >&2; exit 1
   elif [ $fromarg -eq 1 ]; then
     printf 'sendfiles: missing argument to -from\n' >&2; exit 1
   elif [ $subjectarg -eq 1 ]; then
@@ -181,4 +170,4 @@ tar cvf - "$@" | $compress | \
     "$nmhlibexecdir/viamail" -to "$to" -subject "$subject" \
         -from "$from" -parameters "type=tar$conversion" \
         -comment "extract with $uncompress | tar xvpf -" \
-        -delay "$delay" -verbose
+        -verbose

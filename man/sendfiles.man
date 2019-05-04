@@ -15,7 +15,6 @@ sendfiles \- send multiple files by MIME message with nmh
 .br
 .RB [ \-from
 .IR sender ]
-.RI [ "\-delay n" " | " \-n ]
 .br
 .B \-to
 .I recipient
@@ -40,9 +39,6 @@ with the
 .B tar
 command, and then mail the compressed
 archive to the \*(lqrecipient\*(rq with the given \*(lqsubject\*(rq.
-The archive
-will be automatically split up into as many messages as necessary
-in order to get past most mailers.
 .PP
 The
 .B \-to
@@ -76,51 +72,17 @@ of the compression program by
 .BR \-none )
 disables compression.
 .PP
-Sometimes you want
-.B sendfiles
-to pause after posting a partial
-message.  This is usually the case when you are running
-.B sendmail
-and expect to generate a lot of partial messages.  The
-.B \-delay
-switch specifies the number of seconds to pause in between postings,
-e.g.,
-.PP
-.RS 5
-sendfiles -delay 30 -to recipient -subject \*(lqsubject\*(rq files\0...
-.RE
-.PP
-will pause 30 seconds in between each posting.  An alternate form of
-the switch with just the delay time,
-.BR \-30 ,
-for example, is also supported.
-.PP
 .SS "Extracting the Received Files"
-When these messages are received, invoke
+When the message is received, invoke
 .B mhstore
 once for
-the list of messages.  The default is for
+the received message.  The default is for
 .B mhstore
-to store
-the combined parts as a new message in the current folder, although
-this can be changed using storage formatting strings.  You can then
-use
-.B mhlist
-to find out what's inside; possibly followed by
-.B mhstore
-again to write the archive to a file where you can
+to write the archive to a file where you can
 subsequently uncompress and untar it.  For instance:
 .PP
 .RS 5
 .nf
-$ mhlist 5-8
- msg part  type/subtype             size description
-   5       message/partial           47K part 1 of 4
-   6       message/partial           47K part 2 of 4
-   7       message/partial           47K part 3 of 4
-   8       message/partial           18K part 4 of 4
-$ mhstore 5-8
-reassembling partials 5,6,7,8 to folder inbox as message 9
 $ mhlist -verbose 9
  msg part  type/subtype             size description
    9       application/octet-stream 118K
@@ -140,14 +102,6 @@ will automatically do the extraction for you:
 .PP
 .RS 5
 .nf
-$ mhlist 5-8
- msg part  type/subtype             size description
-   5       message/partial           47K part 1 of 4
-   6       message/partial           47K part 2 of 4
-   7       message/partial           47K part 3 of 4
-   8       message/partial           18K part 4 of 4
-$ mhstore 5-8
-reassembling partials 5,6,7,8 to folder inbox as message 9
 $ mhlist -verbose 9
  msg part  type/subtype             size description
    9       application/octet-stream 118K

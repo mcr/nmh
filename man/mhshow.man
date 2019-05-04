@@ -172,7 +172,7 @@ Type	Subtypes
 ----	--------
 text	plain, enriched
 multipart	mixed, alternative, digest, parallel
-message	rfc822, partial, external-body
+message	rfc822, external-body
 application	octet-stream, postscript
 image	jpeg, gif, png
 audio	basic
@@ -522,14 +522,6 @@ and it will get called automatically.  (To handle other single-octet
 character sets, look at the
 .IR less (1)
 manual entry for information about the LESSCHARDEF environment variable.)
-.SS "Messages of Type message/partial"
-.B mhshow
-cannot directly display messages of type partial.
-You must first reassemble them into a normal message using
-.BR mhstore .
-Check
-.IR mhstore (1)
-for details.
 .SS "External Access"
 For contents of type message/external-body,
 .B mhshow

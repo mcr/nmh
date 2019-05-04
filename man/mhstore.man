@@ -117,7 +117,7 @@ Type	Subtypes
 ----	--------
 text	plain, enriched
 multipart	mixed, alternative, digest, parallel
-message	rfc822, partial, external-body
+message	rfc822, external-body
 application	octet-stream, postscript
 image	jpeg, gif, png
 audio	basic
@@ -293,7 +293,6 @@ Example profile entries might be:
 .nf
 mhstore-store-text: %m%P.txt
 mhstore-store-text: +inbox
-mhstore-store-message/partial: +
 mhstore-store-audio/basic: | raw2audio -e ulaw -s 8000 -c 1 > %m%P.au
 mhstore-store-image/jpeg: %m%P.jpg
 mhstore-store-application/PostScript: %m%P.ps
@@ -374,50 +373,6 @@ terminal,
 .I ask
 behaves the same as
 .IR always .
-.SS "Reassembling Messages of Type message/partial"
-.B mhstore
-is also able to reassemble messages that have been
-split into multiple messages of type \*(lqmessage/partial\*(rq.
-.PP
-When asked to store a content containing a partial message,
-.B mhstore
-will try to locate all of the portions and combine them accordingly.
-The default is to store the combined parts as a new message in the
-current folder, although this can be changed using formatting
-strings as discussed above.  Thus, if someone has sent you a
-message in several parts (such as the output from
-.BR sendfiles ),
-you can easily reassemble them into a single message in the
-following fashion:
-.PP
-.RS 5
-.nf
-$ mhlist 5-8
- msg part  type/subtype             size description
-   5       message/partial           47K part 1 of 4
-   6       message/partial           47K part 2 of 4
-   7       message/partial           47K part 3 of 4
-   8       message/partial           18K part 4 of 4
-$ mhstore 5-8
-reassembling partials 5,6,7,8 to folder inbox as message 9
-$ mhlist -verbose 9
- msg part  type/subtype             size description
-   9       application/octet-stream 118K
-             (extract with uncompress | tar xvpf -)
-             type=tar
-             conversions=compress
-.fi
-.RE
-.PP
-This will store exactly one message, containing the sum of the
-parts.  It doesn't matter whether the partials are specified in
-order, since
-.B mhstore
-will sort the partials, so that they are combined in the correct
-order.  But if
-.B mhstore
-can not locate every partial necessary to reassemble the message,
-it will not store anything.
 .SS "External Access"
 For contents of type message/external-body,
 \fImhstore\fR supports these access-types:

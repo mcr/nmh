@@ -57,7 +57,6 @@ int debugsw = 0;		/* global */
 bool forwsw = true;
 int inplace = 1;
 bool pushsw;
-int splitsw = -1;
 bool unique;
 bool verbsw;
 
@@ -74,7 +73,6 @@ static void alert (char *, int);
 static int tmp_fd (void);
 static void anno (int, struct stat *);
 static void annoaux (int);
-static int splitmsg (char **, int, char *, char *, struct stat *, int);
 static int sendaux (char **, int, char *, char *, struct stat *);
 static void handle_sendfrom(char **, int *, char *, const char *);
 static int get_from_header_info(const char *, const char **, const char **, const char **);
@@ -93,7 +91,6 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
     int status, i;
     pid_t child;
     char buffer[BUFSIZ], file[BUFSIZ];
-    struct stat sts;
     char **buildvec, *buildprogram;
     char *volatile drft = draft;
     /* nvecs is volatile to prevent warning from gcc about possible clobbering
@@ -171,17 +168,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
             handle_sendfrom(vec, nvecsp, draft, auth_svc);
         }
 
-	/*
-	 * Check if we need to split the message into
-	 * multiple messages of type "message/partial".
-	 */
-	if (splitsw >= 0 && !distfile && stat ((char *) drft, &sts) != NOTOK
-		&& sts.st_size >= CPERMSG) {
-	    status = splitmsg (vec, nvecs, program, drft,
-	    		       st, splitsw) ? NOTOK : OK;
-	} else {
-	    status = sendaux (vec, nvecs, program, drft, st) ? NOTOK : OK;
-	}
+	status = sendaux (vec, nvecs, program, drft, st) ? NOTOK : OK;
 
 	/* rename the original draft */
 	if (rename_drft && status == OK &&
@@ -199,233 +186,6 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
     if (distfile)
 	(void) m_unlink (distfile);
 
-    return status;
-}
-
-/*
- * Split large message into several messages of
- * type "message/partial" and send them.
- */
-
-static int
-splitmsg (char **vec, int vecp, char *program, char *drft,
-	  struct stat *st, int delay)
-{
-    int	compnum, nparts, partno, state, status;
-    long pos, start;
-    time_t clock;
-    char *cp, *dp, buffer[NMH_BUFSIZ], msgid[BUFSIZ];
-    char subject[BUFSIZ];
-    char name[NAMESZ], partnum[BUFSIZ];
-    FILE *in;
-    m_getfld_state_t gstate;
-
-    if ((in = fopen (drft, "r")) == NULL)
-	adios (drft, "unable to open for reading");
-
-    cp = dp = NULL;
-    start = 0L;
-
-    /*
-     * Scan through the message and examine the various header fields,
-     * as well as locate the beginning of the message body.
-     */
-    gstate = m_getfld_state_init(in);
-    m_getfld_track_filepos2(&gstate);
-    for (compnum = 1;;) {
-	int bufsz = sizeof buffer;
-	switch (state = m_getfld2(&gstate, name, buffer, &bufsz)) {
-	    case FLD:
-	    case FLDPLUS:
-	        compnum++;
-
-		/*
-		 * This header field is discarded.
-		 */
-		if (!strcasecmp (name, "Message-ID")) {
-		    while (state == FLDPLUS) {
-			bufsz = sizeof buffer;
-			state = m_getfld2(&gstate, name, buffer, &bufsz);
-		    }
-		} else if (uprf (name, XXX_FIELD_PRF)
-			|| !strcasecmp (name, VRSN_FIELD)
-			|| !strcasecmp (name, "Subject")
-		        || !strcasecmp (name, "Encrypted")) {
-		    /*
-		     * These header fields are copied to the enclosed
-		     * header of the first message in the collection
-		     * of message/partials.  For the "Subject" header
-		     * field, we also record it, so that a modified
-		     * version of it, can be copied to the header
-		     * of each message/partial in the collection.
-		     */
-		    if (!strcasecmp (name, "Subject")) {
-			strncpy (subject, buffer, BUFSIZ);
-                        trim_suffix_c(subject, '\n');
-		    }
-
-		    dp = add (concat (name, ":", buffer, NULL), dp);
-		    while (state == FLDPLUS) {
-			bufsz = sizeof buffer;
-			state = m_getfld2(&gstate, name, buffer, &bufsz);
-			dp = add (buffer, dp);
-		    }
-		} else {
-		    /*
-		     * These header fields are copied to the header of
-		     * each message/partial in the collection.
-		     */
-		    cp = add (concat (name, ":", buffer, NULL), cp);
-		    while (state == FLDPLUS) {
-			bufsz = sizeof buffer;
-			state = m_getfld2(&gstate, name, buffer, &bufsz);
-			cp = add (buffer, cp);
-		    }
-		}
-
-		start = ftell (in) + 1;
-		continue;
-
-	   case BODY:
-	   case FILEEOF:
-		break;
-
-	   case LENERR:
-	   case FMTERR:
-		die("message format error in component #%d", compnum);
-
-	   default:
-		die("getfld () returned %d", state);
-	}
-
-	break;
-    }
-    m_getfld_state_destroy (&gstate);
-    if (cp == NULL)
-	die("headers missing from draft");
-
-    nparts = 1;
-    pos = start;
-    while (fgets (buffer, sizeof buffer, in)) {
-	long len;
-
-	if ((pos += (len = strlen (buffer))) > CPERMSG) {
-	    nparts++;
-	    pos = len;
-	}
-    }
-
-    /* Only one part, nothing to split */
-    if (nparts == 1) {
-	free (cp);
-        free(dp);
-
-	fclose (in);
-	return sendaux (vec, vecp, program, drft, st);
-    }
-
-    if (!pushsw) {
-	printf ("Sending as %d Partial Messages\n", nparts);
-	fflush (stdout);
-    }
-    status = OK;
-
-    vec[vecp++] = "-partno";
-    vec[vecp++] = partnum;
-    if (delay == 0)
-	vec[vecp++] = "-queued";
-
-    time (&clock);
-    snprintf (msgid, sizeof(msgid), "%s", message_id (clock, 0));
-
-    fseek (in, start, SEEK_SET);
-    for (partno = 1; partno <= nparts; partno++) {
-	char tmpdrf[BUFSIZ];
-	FILE *out;
-
-	char *cp = m_mktemp2(drft, invo_name, NULL, &out);
-        if (cp == NULL) {
-	    die("unable to create temporary file");
-        }
-	strncpy(tmpdrf, cp, sizeof(tmpdrf));
-
-	/*
-	 * Output the header fields
-	 */
-	fputs (cp, out);
-	fprintf (out, "Subject: %s (part %d of %d)\n", subject, partno, nparts);
-	fprintf (out, "%s: %s\n", VRSN_FIELD, VRSN_VALUE);
-	fprintf (out, "%s: message/partial; id=\"%s\";\n", TYPE_FIELD, msgid);
-	fprintf (out, "\tnumber=%d; total=%d\n", partno, nparts);
-	fprintf (out, "%s: part %d of %d\n\n", DESCR_FIELD, partno, nparts);
-
-	/*
-	 * If this is the first in the collection, output the
-	 * header fields we are encapsulating at the beginning
-	 * of the body of the first message.
-	 */
-	if (partno == 1) {
-	    if (dp)
-		fputs (dp, out);
-	    fprintf (out, "Message-ID: %s\n", msgid);
-	    fprintf (out, "\n");
-	}
-
-	pos = 0;
-	for (;;) {
-	    long len;
-
-	    if (!fgets (buffer, sizeof buffer, in)) {
-		if (partno == nparts)
-		    break;
-		die("premature eof");
-	    }
-
-	    if ((pos += (len = strlen (buffer))) > CPERMSG) {
-		fseek (in, -len, SEEK_CUR);
-		break;
-	    }
-
-	    fputs (buffer, out);
-	}
-
-	if (fflush (out))
-	    adios (tmpdrf, "error writing to");
-
-	fclose (out);
-
-	if (!pushsw && verbsw) {
-	    putchar('\n');
-	    fflush (stdout);
-	}
-
-	/* Pause here, if a delay is specified */
-	if (delay > 0 && 1 < partno && partno <= nparts) {
-	    if (!pushsw) {
-		printf ("pausing %d seconds before sending part %d...\n",
-			delay, partno);
-		fflush (stdout);
-	    }
-	    sleep ((unsigned int) delay);
-	}
-
-	snprintf (partnum, sizeof(partnum), "%d", partno);
-	status = sendaux (vec, vecp, program, tmpdrf, st);
-	(void) m_unlink (tmpdrf);
-	if (status != OK)
-	    break;
-
-	/*
-	 * This is so sendaux will only annotate
-	 * the altmsg the first time it is called.
-	 */
-	annotext = NULL;
-    }
-
-    free (cp);
-    free(dp);
-
-    fclose (in);	/* close the draft */
     return status;
 }
 

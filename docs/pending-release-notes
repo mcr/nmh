@@ -16,6 +16,9 @@ OBSOLETE FEATURES
 - The MIME content cache functionality has been mostly non-functional since
   the development on nmh, and consequently all of the content caching code
   and related switches (-cache/-rcache/-wcache) have been removed.
+- Support for generating and reassembling message/partial messags has been
+  removed; it seems that this has been broken since 1.5 and there is very
+  little support across MUAs.
 
 -------------------
 DEPRECATED FEATURES

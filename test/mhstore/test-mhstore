@@ -222,55 +222,6 @@ EOF
 run_prog mhstore -noverbose -file `mhpath 11` -part 2 -outfile - >"$actual" 2>&1
 check "$expected" "$actual"
 
-# check reassembly of message/partial messages (RFC 1521, 7.3.2)
-start_test 'reassembly of message/partial messages (RFC 1521, 7.3.2)'
-msgfile=`mhpath new`
-cat >"$msgfile" <<'EOF'
-To: recipient@example.com
-From: sender@example.com
-Subject: mhlist test
-MIME-Version: 1.0
-Content-Type: message/partial; id="test-mhstore message/partial test"; number=1
-
-Content-Type: text/plain; charset="iso-8859-1"
-
-This is part one of three.
-EOF
-
-msgfile=`mhpath new`
-cat >"$msgfile" <<'EOF'
-To: recipient@example.com
-From: sender@example.com
-Subject: mhlist test
-MIME-Version: 1.0
-Content-Type: message/partial; id="test-mhstore message/partial test"; number=2
-
-This is part two of three.
-EOF
-
-msgfile=`mhpath new`
-cat >"$msgfile" <<'EOF'
-To: recipient@example.com
-From: sender@example.com
-Subject: mhlist test
-MIME-Version: 1.0
-Content-Type: message/partial; id="test-mhstore message/partial test"; number=3;
-  total=3
-
-This is part three of three.
-EOF
-
-run_test 'mhstore last:3' \
-         'reassembling partials 12,13,14 to folder inbox as message 15'
-
-cat >"$expected" <<'EOF'
-This is part one of three.
-This is part two of three.
-This is part three of three.
-EOF
-run_test 'mhstore last' 'storing message 15 as file 15.txt'
-check "$expected" 15.txt
-
 # cd into Mail directory because it gets cleaned up by the exit trap.
 cd Mail
 

@@ -89,7 +89,6 @@ struct k2v SubMultiPart[] = {
  */
 struct k2v SubMessage[] = {
     { "rfc822",        MESSAGE_RFC822 },
-    { "partial",       MESSAGE_PARTIAL },
     { "external-body", MESSAGE_EXTERNAL },
     { NULL,            MESSAGE_UNKNOWN }	/* this one must be last! */
 };
@@ -1406,49 +1405,6 @@ InitMessage (CT ct)
 
     switch (ct->c_subtype) {
 	case MESSAGE_RFC822:
-	    break;
-
-	case MESSAGE_PARTIAL:
-	    {
-		PM pm;
-		struct partial *p;
-
-		NEW0(p);
-		ct->c_ctparams = (void *) p;
-
-		/* scan for parameters "id", "number", and "total" */
-		for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
-		    if (!strcasecmp (pm->pm_name, "id")) {
-			p->pm_partid = mh_xstrdup(FENDNULL(pm->pm_value));
-			continue;
-		    }
-		    if (!strcasecmp (pm->pm_name, "number")) {
-			if (sscanf (pm->pm_value, "%d", &p->pm_partno) != 1
-			        || p->pm_partno < 1) {
-invalid_param:
-			    inform("invalid %s parameter for \"%s/%s\" type in message %s's %s field",
-                                pm->pm_name, ci->ci_type, ci->ci_subtype,
-                                ct->c_file, TYPE_FIELD);
-			    return NOTOK;
-			}
-			continue;
-		    }
-		    if (!strcasecmp (pm->pm_name, "total")) {
-			if (sscanf (pm->pm_value, "%d", &p->pm_maxno) != 1
-			        || p->pm_maxno < 1)
-			    goto invalid_param;
-			continue;
-		    }
-		}
-
-		if (!p->pm_partid
-		        || !p->pm_partno
-		        || (p->pm_maxno && p->pm_partno > p->pm_maxno)) {
-		    inform("invalid parameters for \"%s/%s\" type in message %s's %s field",
-                        ci->ci_type, ci->ci_subtype, ct->c_file, TYPE_FIELD);
-		    return NOTOK;
-		}
-	    }
 	    break;
 
 	case MESSAGE_EXTERNAL:
@@ -2857,8 +2813,6 @@ ct_subtype_str (int type, int subtype)
         switch (subtype) {
         case MESSAGE_RFC822:
             return "rfc822";
-        case MESSAGE_PARTIAL:
-            return "partial";
         case MESSAGE_EXTERNAL:
             return "external";
         default:

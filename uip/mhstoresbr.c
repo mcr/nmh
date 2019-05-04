@@ -104,15 +104,12 @@ static int store_switch (CT, mhstoreinfo_t);
 static int store_generic (CT, mhstoreinfo_t);
 static int store_application (CT, mhstoreinfo_t);
 static int store_multi (CT, mhstoreinfo_t);
-static int store_partial (CT, mhstoreinfo_t);
 static int store_external (CT, mhstoreinfo_t);
-static int ct_compar (CT *, CT *);
-static int store_content (CT, CT, mhstoreinfo_t);
+static int store_content (CT, mhstoreinfo_t);
 static int output_content_file (CT, int);
 static int output_content_folder (char *, char *);
 static int parse_format_string (CT, char *, char *, int, char *);
 static void get_storeproc (CT);
-static int copy_some_headers (FILE *, CT);
 static char *clobber_check (char *, mhstoreinfo_t);
 
 /*
@@ -178,9 +175,6 @@ store_switch (CT ct, mhstoreinfo_t info)
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
-		case MESSAGE_PARTIAL:
-		    return store_partial (ct, info);
-
 		case MESSAGE_EXTERNAL:
 		    return store_external (ct, info);
 
@@ -220,7 +214,7 @@ store_generic (CT ct, mhstoreinfo_t info)
     if (info->autosw && ct->c_type != CT_MESSAGE)
 	get_storeproc (ct);
 
-    return store_content (ct, NULL, info);
+    return store_content (ct, info);
 }
 
 
@@ -285,7 +279,7 @@ store_application (CT ct, mhstoreinfo_t info)
 	}
     }
 
-    return store_content (ct, NULL, info);
+    return store_content (ct, info);
 }
 
 
@@ -319,110 +313,6 @@ store_multi (CT ct, mhstoreinfo_t info)
     }
 
     return result;
-}
-
-
-/*
- * Reassemble and store the contents of a collection
- * of messages of type "message/partial".
- */
-
-static int
-store_partial (CT ct, mhstoreinfo_t info)
-{
-    int	cur, hi, i;
-    CT p, *ctp, *ctq;
-    CT *base;
-    struct partial *pm, *qm;
-
-    qm = (struct partial *) ct->c_ctparams;
-    if (qm->pm_stored)
-	return OK;
-
-    hi = i = 0;
-    for (ctp = info->cts; *ctp; ctp++) {
-	p = *ctp;
-	if (p->c_type == CT_MESSAGE && p->c_subtype == ct->c_subtype) {
-	    pm = (struct partial *) p->c_ctparams;
-	    if (!pm->pm_stored
-	            && strcmp (qm->pm_partid, pm->pm_partid) == 0) {
-		pm->pm_marked = pm->pm_partno;
-		if (pm->pm_maxno)
-		    hi = pm->pm_maxno;
-		pm->pm_stored = 1;
-		i++;
-	    }
-	    else
-		pm->pm_marked = 0;
-	}
-    }
-
-    if (hi == 0) {
-	inform("missing (at least) last part of multipart message");
-	return NOTOK;
-    }
-
-    base = mh_xcalloc(i + 1, sizeof *base);
-    ctq = base;
-    for (ctp = info->cts; *ctp; ctp++) {
-	p = *ctp;
-	if (p->c_type == CT_MESSAGE && p->c_subtype == ct->c_subtype) {
-	    pm = (struct partial *) p->c_ctparams;
-	    if (pm->pm_marked)
-		*ctq++ = p;
-	}
-    }
-    *ctq = NULL;
-
-    if (i > 1)
-	qsort(base, i, sizeof(*base), (qsort_comp) ct_compar);
-
-    cur = 1;
-    for (ctq = base; *ctq; ctq++) {
-	p = *ctq;
-	pm = (struct partial *) p->c_ctparams;
-	if (pm->pm_marked == cur) {
-	    cur++;
-            continue;
-        }
-
-        if (pm->pm_marked == cur - 1) {
-            inform("duplicate part %d of %d part multipart message, continuing...",
-                      pm->pm_marked, hi);
-            continue;
-        }
-
-missing_part:
-        inform("missing %spart %d of %d part multipart message",
-            cur != hi ? "(at least) " : "", cur, hi);
-        goto losing;
-    }
-    if (hi != --cur) {
-	cur = hi;
-	goto missing_part;
-    }
-
-    /*
-     * Now cycle through the sorted list of messages of type
-     * "message/partial" and save/append them to a file.
-     */
-
-    ctq = base;
-    ct = *ctq++;
-    if (store_content (ct, NULL, info) == NOTOK) {
-losing:
-	free(base);
-	return NOTOK;
-    }
-
-    for (; *ctq; ctq++) {
-	p = *ctq;
-	if (store_content (p, ct, info) == NOTOK)
-	    goto losing;
-    }
-
-    free(base);
-    return OK;
 }
 
 
@@ -477,85 +367,17 @@ store_external (CT ct, mhstoreinfo_t info)
 
 
 /*
- * Compare the numbering from two different
- * message/partials (needed for sorting).
- */
-
-static int
-ct_compar (CT *a, CT *b)
-{
-    struct partial *am = (struct partial *) ((*a)->c_ctparams);
-    struct partial *bm = (struct partial *) ((*b)->c_ctparams);
-
-    return am->pm_marked - bm->pm_marked;
-}
-
-
-/*
  * Store contents of a message or message part to
  * a folder, a file, the standard output, or pass
  * the contents to a command.
- *
- * If the current content to be saved is a followup part
- * to a collection of messages of type "message/partial",
- * then field "p" is a pointer to the Content structure
- * to the first message/partial in the group.
  */
 
 static int
-store_content (CT ct, CT p, mhstoreinfo_t info)
+store_content (CT ct, mhstoreinfo_t info)
 {
     bool appending = false;
     int msgnum = 0;
-    bool is_partial = false;
-    bool first_partial = false;
-    bool last_partial = false;
     char *cp, buffer[BUFSIZ];
-
-    /*
-     * Do special processing for messages of
-     * type "message/partial".
-     *
-     * We first check if this content is of type
-     * "message/partial".  If it is, then we need to check
-     * whether it is the first and/or last in the group.
-     *
-     * Then if "p" is a valid pointer, it points to the Content
-     * structure of the first partial in the group.  So we copy
-     * the file name and/or folder name from that message.  In
-     * this case, we also note that we will be appending.
-     */
-    if (ct->c_type == CT_MESSAGE && ct->c_subtype == MESSAGE_PARTIAL) {
-	struct partial *pm = (struct partial *) ct->c_ctparams;
-
-	/* Yep, it's a message/partial */
-	is_partial = true;
-
-	/* But is it the first and/or last in the collection? */
-	if (pm->pm_partno == 1)
-	    first_partial = true;
-	if (pm->pm_maxno && pm->pm_partno == pm->pm_maxno)
-	    last_partial = true;
-
-	/*
-	 * If "p" is a valid pointer, then it points to the
-	 * Content structure for the first message in the group.
-	 * So we just copy the filename or foldername information
-	 * from the previous iteration of this function.
-	 */
-	if (p) {
-	    appending = true;
-            if (! ct->c_storage) {
-		ct->c_storage = mh_xstrdup(FENDNULL(p->c_storage));
-
-		/* record the folder name */
-		if (p->c_folder) {
-		    ct->c_folder = mh_xstrdup(p->c_folder);
-		}
-	    }
-	    goto got_filename;
-	}
-    }
 
     /*
      * Get storage formatting string.
@@ -644,10 +466,9 @@ got_filename:
 
     /*
      * If necessary, link the file into a folder and remove
-     * the temporary file.  If this message is a partial,
-     * then only do this if it is the last one in the group.
+     * the temporary file.
      */
-    if (ct->c_folder && (!is_partial || last_partial)) {
+    if (ct->c_folder) {
 	msgnum = output_content_folder (ct->c_folder, ct->c_storage);
 	(void) m_unlink (ct->c_storage);
 	if (msgnum == NOTOK)
@@ -659,39 +480,27 @@ got_filename:
          * Now print out the name/number of the message
          * that we are storing.
          */
-        if (is_partial) {
-            if (first_partial)
-                fprintf (stderr, "reassembling partials ");
-            if (last_partial)
-                fputs(ct->c_file, stderr);
-            else
-                fprintf (stderr, "%s,", ct->c_file);
-        } else {
-            fprintf (stderr, "storing message %s", ct->c_file);
-            if (ct->c_partno)
-                fprintf (stderr, " part %s", ct->c_partno);
-        }
+	fprintf (stderr, "storing message %s", ct->c_file);
+	if (ct->c_partno)
+	    fprintf (stderr, " part %s", ct->c_partno);
 
         /*
-         * Unless we are in the "middle" of group of message/partials,
-         * we now print the name of the file, folder, and/or message
+         * We now print the name of the file, folder, and/or message
          * to which we are storing the content.
          */
-        if (!is_partial || last_partial) {
-            if (ct->c_folder) {
-                fprintf (stderr, " to folder %s as message %d\n", ct->c_folder,
-                         msgnum);
-            } else if (!strcmp(ct->c_storage, "-")) {
-                fprintf (stderr, " to stdout\n");
-            } else {
-                int cwdlen = strlen (info->cwd);
+	if (ct->c_folder) {
+	    fprintf (stderr, " to folder %s as message %d\n", ct->c_folder,
+		    msgnum);
+	} else if (!strcmp(ct->c_storage, "-")) {
+	    fprintf (stderr, " to stdout\n");
+	} else {
+	    int cwdlen = strlen (info->cwd);
 
-                fprintf (stderr, " as file %s\n",
-                         !has_prefix(ct->c_storage, info->cwd)
-                         || ct->c_storage[cwdlen] != '/'
-                         ? ct->c_storage : ct->c_storage + cwdlen + 1);
+	    fprintf (stderr, " as file %s\n",
+		    !has_prefix(ct->c_storage, info->cwd)
+		    || ct->c_storage[cwdlen] != '/'
+		    ? ct->c_storage : ct->c_storage + cwdlen + 1);
             }
-        }
     }
 
     return OK;
@@ -705,7 +514,6 @@ got_filename:
 static int
 output_content_file (CT ct, int appending)
 {
-    int filterstate;
     char *file, buffer[BUFSIZ];
     long pos, last;
     FILE *fp;
@@ -763,17 +571,6 @@ losing:
 			appending ? "appending" : "writing");
 		goto losing;
 	    }
-	}
-
-	/*
-	 * Filter the header fields of the initial enclosing
-	 * message/partial into the file.
-	 */
-	if (ct->c_type == CT_MESSAGE && ct->c_subtype == MESSAGE_PARTIAL) {
-	    struct partial *pm = (struct partial *) ct->c_ctparams;
-
-	    if (pm->pm_partno == 1)
-		copy_some_headers (fp, ct);
 	}
 
 	for (;;) {
@@ -834,20 +631,6 @@ losing:
 	}
     }
 
-    /*
-     * Copy a few of the header fields of the initial
-     * enclosing message/partial into the file.
-     */
-    filterstate = 0;
-    if (ct->c_type == CT_MESSAGE && ct->c_subtype == MESSAGE_PARTIAL) {
-	struct partial *pm = (struct partial *) ct->c_ctparams;
-
-	if (pm->pm_partno == 1) {
-	    copy_some_headers (fp, ct);
-	    filterstate = 1;
-	}
-    }
-
     while (fgets (buffer, sizeof buffer, ct->c_fp)) {
 	if ((pos += strlen (buffer)) > last) {
 	    int diff;
@@ -855,37 +638,6 @@ losing:
 	    diff = strlen (buffer) - (pos - last);
 	    if (diff >= 0)
 		buffer[diff] = '\0';
-	}
-	/*
-	 * If this is the first content of a group of
-	 * message/partial contents, then we only copy a few
-	 * of the header fields of the enclosed message.
-	 */
-	if (filterstate) {
-	    switch (buffer[0]) {
-		case ' ':
-		case '\t':
-		    if (filterstate < 0)
-			buffer[0] = 0;
-		    break;
-
-		case '\n':
-		    filterstate = 0;
-		    break;
-
-		default:
-		    if (!uprf (buffer, XXX_FIELD_PRF)
-			    && !uprf (buffer, VRSN_FIELD)
-			    && !uprf (buffer, "Subject:")
-			    && !uprf (buffer, "Encrypted:")
-			    && !uprf (buffer, "Message-ID:")) {
-			filterstate = -1;
-			buffer[0] = 0;
-			break;
-		    }
-		    filterstate = 1;
-		    break;
-	    }
 	}
 	fputs (buffer, fp);
 	if (pos >= last)
@@ -1106,35 +858,6 @@ get_storeproc (CT ct)
     free(cp);
 }
 
-
-/*
- * Copy some of the header fields of the initial message/partial
- * message into the header of the reassembled message.
- */
-
-static int
-copy_some_headers (FILE *out, CT ct)
-{
-    HF hp;
-
-    hp = ct->c_first_hf;	/* start at first header field */
-
-    while (hp) {
-	/*
-	 * A few of the header fields of the enclosing
-	 * messages are not copied.
-	 */
-	if (!uprf (hp->name, XXX_FIELD_PRF)
-		&& strcasecmp (hp->name, VRSN_FIELD)
-		&& strcasecmp (hp->name, "Subject")
-		&& strcasecmp (hp->name, "Encrypted")
-		&& strcasecmp (hp->name, "Message-ID"))
-	    fprintf (out, "%s:%s", hp->name, hp->value);
-	hp = hp->next;	/* next header field */
-    }
-
-    return OK;
-}
 
 /******************************************************************************/
 /* -clobber support */

@@ -23,7 +23,6 @@
 static void list_single_message (CT, int, int, int, int);
 static int list_debug (CT);
 static int list_multi (CT, int, int, int, int, int);
-static int list_partial (CT, int, int, int, int, int);
 static int list_external (CT, int, int, int, int, int);
 static int list_encoding (CT);
 
@@ -100,10 +99,6 @@ list_switch (CT ct, int toplevel, int realsize, int verbose, int debug,
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
-		case MESSAGE_PARTIAL:
-		    return list_partial (ct, toplevel, realsize, verbose,
-					 debug, dispo);
-
 		case MESSAGE_EXTERNAL:
 		    return list_external (ct, toplevel, realsize, verbose,
 					  debug, dispo);
@@ -330,28 +325,6 @@ list_multi (CT ct, int toplevel, int realsize, int verbose, int debug,
 
 	if (part_ok (p) && type_ok (p, 1))
 	    list_switch (p, 0, realsize, verbose, debug, dispo);
-    }
-
-    return OK;
-}
-
-
-/*
- * list content information for type "message/partial"
- */
-
-static int
-list_partial (CT ct, int toplevel, int realsize, int verbose, int debug,
-	      int dispo)
-{
-    struct partial *p = (struct partial *) ct->c_ctparams;
-
-    list_content (ct, toplevel, realsize, verbose, debug, dispo);
-    if (verbose) {
-	printf ("\t     [message %s, part %d", p->pm_partid, p->pm_partno);
-	if (p->pm_maxno)
-	    printf (" of %d", p->pm_maxno);
-	puts("]");
     }
 
     return OK;

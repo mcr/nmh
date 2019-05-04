@@ -83,7 +83,6 @@ Usage: sendfiles [switches] -to recipient -subject subject file1 [file2 ...]
   switches are:
   -compress [bzip2 | compress | gzip | lzma | none]
   -from <sender>
-  -[delay] <delay> (expressed in seconds)
   -version
   -help
   Can use PERSON environment variable instead of -from switch.
@@ -108,7 +107,6 @@ run_test 'sendfiles -nonexistent' "Usage: sendfiles [switches] -to recipient \
   switches are:
   -compress [bzip2 | compress | gzip | lzma | none]
   -from <sender>
-  -[delay] <delay> (expressed in seconds)
   -version
   -help
   Can use PERSON environment variable instead of -from switch."
@@ -123,7 +121,6 @@ Usage: sendfiles [switches] -to recipient \
   switches are:
   -compress [bzip2 | compress | gzip | lzma | none]
   -from <sender>
-  -[delay] <delay> (expressed in seconds)
   -version
   -help
   Can use PERSON environment variable instead of -from switch."
@@ -188,26 +185,6 @@ cat >"$expected" <<EOF
 EOF
 
 PERSON='Sender <sender@example.com>' test_sendfiles cat new -compress none
-
-# check -delay, though for a small file it doesn't do anything
-cat >"$expected" <<EOF
- msg part  type/subtype              size description
-  11       application/octet-stream
-	     type="tar"
-	     (extract with cat | tar xvpf -)
-EOF
-
-test_sendfiles cat new -compress none -delay 5
-
-# check old style -delay, though for a small file it doesn't do anything
-cat >"$expected" <<EOF
- msg part  type/subtype              size description
-  11       application/octet-stream
-	     type="tar"
-	     (extract with cat | tar xvpf -)
-EOF
-
-test_sendfiles cat new -compress none -5
 
 rm -fr "$MH_TEST_DIR/fakesendmail" "$MH_TEST_DIR/$testfile" "$MH_TEST_DIR/tmp"
 

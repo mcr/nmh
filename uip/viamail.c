@@ -34,7 +34,6 @@
     X("parameters arguments", 0, PARAMSW) \
     X("description text", 0, DESCRIPTSW) \
     X("comment text", 0, COMMENTSW) \
-    X("delay seconds", 0, DELAYSW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
     X("version", 0, VERSIONSW) \
@@ -50,21 +49,19 @@ DEFINE_SWITCH_ARRAY(VIAMAIL, switches);
 #undef X
 
 extern int debugsw;
-extern int splitsw;
 extern bool verbsw;
 
 /*
  * static prototypes
  */
-static int via_mail (char *, char *, char *, char *, char *, int, char *);
+static int via_mail (char *, char *, char *, char *, char *, char *);
 
 
 int
 main (int argc, char **argv)
 {
-    int delay = 0;
     char *f1 = NULL, *f2 = NULL, *f3 = NULL;
-    char *f4 = NULL, *f5 = NULL, *f7 = NULL;
+    char *f4 = NULL, *f5 = NULL, *f6 = NULL;
     char *cp, buf[BUFSIZ];
     char **argp, **arguments;
 
@@ -110,19 +107,8 @@ main (int argc, char **argv)
 		if (!(f5 = *argp++))
 		    die("missing argument to %s", argp[-2]);
 		continue;
-	    case DELAYSW:
-		if (!(cp = *argp++) || *cp == '-')
-		    die("missing argument to %s", argp[-2]);
-
-		/*
-		 * If there is an error, just reset the delay parameter
-		 * to -1.  We will set a default delay later.
-		 */
-		if (sscanf (cp, "%d", &delay) != 1)
-		    delay = -1;
-		continue;
 	    case FROMSW:
-		if (!(f7 = *argp++))
+		if (!(f6 = *argp++))
 		    die("missing argument to %s", argp[-2]);
 		continue;
 
@@ -143,7 +129,7 @@ main (int argc, char **argv)
     if (!f1)
 	die("missing -viamail \"mailpath\" switch");
 
-    via_mail (f1, f2, f3, f4, f5, delay, f7);
+    via_mail (f1, f2, f3, f4, f5, f6);
     return 0;  /* dead code to satisfy the compiler */
 }
 
@@ -154,7 +140,7 @@ main (int argc, char **argv)
 
 static int
 via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
-          char *cmntsw, int delay, char *fromsw)
+          char *cmntsw, char *fromsw)
 {
     int	status, vecp;
     char tmpfil[BUFSIZ], *program;
@@ -207,11 +193,6 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
 
     if (fstat (fileno (fp), &st) == NOTOK)
 	adios ("failed", "fstat of %s", tmpfil);
-
-    if (delay < 0)
-	splitsw = 10;
-    else
-	splitsw = delay;
 
     status = 0;
 

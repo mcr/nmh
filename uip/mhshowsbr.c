@@ -59,7 +59,6 @@ static int show_multi (CT, int, int, int, int, struct format *);
 static int show_multi_internal (CT, int, int, int, int, struct format *);
 static int show_multi_aux (CT, int, char *, struct format *);
 static int show_message_rfc822 (CT, int, struct format *);
-static int show_partial (CT, int);
 static int show_external (CT, int, int, int, int, struct format *);
 static int parse_display_string (CT, char *, int *, int *, char *, char *,
 				 size_t, int multipart);
@@ -269,9 +268,6 @@ show_switch (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
-		case MESSAGE_PARTIAL:
-		    return show_partial (ct, alternate);
-
 		case MESSAGE_EXTERNAL:
 		    return show_external (ct, alternate, concatsw, textonly,
 					  inlineonly, fmt);
@@ -761,21 +757,6 @@ show_message_rfc822 (CT ct, int alternate, struct format *fmt)
     if (!alternate)
 	content_error (NULL, ct, "don't know how to display content");
 
-    return NOTOK;
-}
-
-
-/*
- * Show content of type "message/partial".
- */
-
-static int
-show_partial (CT ct, int alternate)
-{
-    NMH_UNUSED (alternate);
-
-    content_error (NULL, ct,
-	"in order to display this message, you must reassemble it");
     return NOTOK;
 }
 

@@ -242,17 +242,7 @@ struct multipart {
 /* Flags for subtypes of MESSAGE */
 #define	MESSAGE_UNKNOWN	 0x00
 #define	MESSAGE_RFC822	 0x01
-#define	MESSAGE_PARTIAL	 0x02
-#define	MESSAGE_EXTERNAL 0x03
-
-/* Structure for message/partial */
-struct partial {
-    char *pm_partid;
-    int	pm_partno;
-    int	pm_maxno;
-    int	pm_marked;
-    int	pm_stored;
-};
+#define	MESSAGE_EXTERNAL 0x02
 
 /* Structure for message/external */
 struct exbody {

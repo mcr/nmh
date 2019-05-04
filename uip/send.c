@@ -69,7 +69,6 @@
     X("nomsgid", 0, NMSGDSW) \
     X("push", 0, PUSHSW) \
     X("nopush", 0, NPUSHSW) \
-    X("split seconds", 0, SPLITSW) \
     X("unique", -6, UNIQSW) \
     X("nounique", -8, NUNIQSW) \
     X("verbose", 0, VERBSW) \
@@ -124,7 +123,6 @@ extern int debugsw;		/* from sendsbr.c */
 extern bool forwsw;
 extern int inplace;
 extern bool pushsw;
-extern int splitsw;
 extern bool unique;
 extern bool verbsw;
 
@@ -217,11 +215,6 @@ main (int argc, char **argv)
 		    continue;
 		case NPUSHSW: 
 		    pushsw = false;
-		    continue;
-
-		case SPLITSW: 
-		    if (!(cp = *argp++) || sscanf (cp, "%d", &splitsw) != 1)
-			die("missing argument to %s", argp[-2]);
 		    continue;
 
 		case UNIQSW: 

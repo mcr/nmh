@@ -28,8 +28,6 @@ send \- send an nmh message
 .RB [ \-messageid
 .IR localname " | " random ]
 .RB [ \-push " | " \-nopush ]
-.RB [ \-split
-.IR seconds ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-watch " | " \-nowatch ]
 .RB [ \-mts
@@ -212,31 +210,6 @@ useful) feature.  Consult
 .IR mh-draft (5)
 for more
 information.
-.PP
-If
-.B \-split
-is specified,
-.B send
-will split the draft into one
-or more partial messages prior to sending.  This makes use of the
-MIME features in
-.BR nmh .
-Note however that if
-.B send
-is
-invoked under
-.BR dist ,
-then this switch is ignored\0--\0it makes
-no sense to redistribute a message in this fashion.  Sometimes you want
-.B send
-to pause after posting a partial message.  This is usually
-the case when you are running
-.B sendmail
-and expect to generate a
-lot of partial messages.  The argument to
-.B \-split
-tells it how long
-to pause between postings.
 .PP
 .B send
 with no
@@ -677,8 +650,3 @@ Under some configurations, it is not possible to monitor the mail delivery
 transaction;
 .B \-watch
 is a no-op on those systems.
-.PP
-Using
-.B \-split
-.I 0
-doesn't work correctly.

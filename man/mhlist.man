@@ -141,7 +141,7 @@ Type	Subtypes
 ----	--------
 text	plain, enriched
 multipart	mixed, alternative, digest, parallel
-message	rfc822, partial, external-body
+message	rfc822, external-body
 application	octet-stream, postscript
 image	jpeg, gif, png
 audio	basic

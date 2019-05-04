@@ -22,7 +22,6 @@ CT *cts = NULL;
 static void free_header (CT);
 static void free_text (CT);
 static void free_multi (CT);
-static void free_partial (CT);
 static void free_external (CT);
 static void free_pmlist (PM *);
 
@@ -60,10 +59,6 @@ free_content (CT ct)
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
-		case MESSAGE_PARTIAL:
-		    free_partial (ct);
-		    break;
-
 		case MESSAGE_EXTERNAL:
 		    free_external (ct);
 		    break;
@@ -191,21 +186,6 @@ free_multi (CT ct)
     m->mp_parts = NULL;
 
     free(m);
-    ct->c_ctparams = NULL;
-}
-
-
-static void
-free_partial (CT ct)
-{
-    struct partial *p;
-
-    if (!(p = (struct partial *) ct->c_ctparams))
-	return;
-
-    free(p->pm_partid);
-
-    free(p);
     ct->c_ctparams = NULL;
 }
 

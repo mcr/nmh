@@ -988,7 +988,6 @@ extern int debugsw;		/* from sendsbr.c */
 extern bool forwsw;
 extern int inplace;
 extern bool pushsw;
-extern int splitsw;
 extern bool unique;
 extern bool verbsw;
 
@@ -1097,13 +1096,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    continue;
 		case NSPSHSW:
 		    pushed = 0;
-		    continue;
-
-		case SPLITSW:
-		    if (!(cp = *argp++) || sscanf (cp, "%d", &splitsw) != 1) {
-			inform("missing argument to %s", argp[-2]);
-			return;
-		    }
 		    continue;
 
 		case UNIQSW:
