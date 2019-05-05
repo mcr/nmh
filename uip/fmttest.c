@@ -103,9 +103,10 @@ static void dumpone(struct format *);
 static void initlabels(struct format *);
 static int findlabel(struct format *);
 static void assignlabel(struct format *);
-static char *f_typestr(int);
-static char *c_typestr(int);
-static char *c_flagsstr(int);
+static const char *f_typestr(int);
+static const char *c_typestr(int);
+static const char *c_flagsstr(int);
+static const char *c_textlabel(int);
 static void litputs(const char *);
 static void litputc(char);
 static void process_addresses(struct format *, struct msgs_array *,
@@ -915,10 +916,16 @@ dumpone(struct format *fmt)
 		break;
 
 
-	case FT_IF_S:
-	case FT_IF_S_NULL:
 	case FT_IF_MATCH:
 	case FT_IF_AMATCH:
+		putchar(' ');
+		fputs(c_textlabel(fmt->f_type), stdout);
+		putchar(' ');
+		litputs(fmt->f_text);
+		putchar(',');
+		/* FALLTHRU */
+	case FT_IF_S:
+	case FT_IF_S_NULL:
 		fputs(" continue else goto", stdout);
 		/* FALLTHRU */
 	case FT_GOTO:
@@ -945,22 +952,21 @@ dumpone(struct format *fmt)
 		printf(" value %d", fmt->f_value);
 		break;
 
+	case FT_V_MATCH:
+	case FT_V_AMATCH:
+	case FT_PUTADDR:
 	case FT_LS_LIT:
-		fputs(" str ", stdout);
-		litputs(fmt->f_text);
-		break;
-
 	case FT_LS_GETENV:
-		fputs(" getenv ", stdout);
+	case FT_LS_CFIND:
+		putchar(' ');
+		fputs(c_textlabel(fmt->f_type), stdout);
+		putchar(' ');
 		litputs(fmt->f_text);
 		break;
 
 	case FT_LS_DECODECOMP:
 		fputs(", comp ", stdout);
 		litputs(fmt->f_comp->c_name);
-		break;
-
-	case FT_LS_DECODE:
 		break;
 
 	case FT_LS_TRIM:
@@ -970,10 +976,6 @@ dumpone(struct format *fmt)
 	case FT_LV_DAT:
 		printf(", value dat[%d]", fmt->f_value);
 		break;
-
-	case FT_PUTADDR:
-		fputs(", header ", stdout);
-		litputs(fmt->f_text);
 
 	}
 	putchar('\n');
@@ -1034,114 +1036,116 @@ assignlabel(struct format *addr)
 	lvec[lused++] = addr;
 }
 
-static char *
+#define X(name)	case FT_ ## name : return #name
+static const char *
 f_typestr(int t)
 {
 	static char buf[32];
 
 	switch (t) {
-	case FT_COMP: return "COMP";
-	case FT_COMPF: return "COMPF";
-	case FT_LIT: return "LIT";
-	case FT_LITF: return "LITF";
-	case FT_CHAR: return "CHAR";
-	case FT_NUM: return "NUM";
-	case FT_NUMF: return "NUMF";
-	case FT_STR: return "STR";
-	case FT_STRF: return "STRF";
-	case FT_STRFW: return "STRFW";
-	case FT_STRLIT: return "STRLIT";
-	case FT_STRLITZ: return "STRLITZ";
-	case FT_PUTADDR: return "PUTADDR";
-	case FT_LS_COMP: return "LS_COMP";
-	case FT_LS_LIT: return "LS_LIT";
-	case FT_LS_GETENV: return "LS_GETENV";
-	case FT_LS_CFIND: return "LS_CFIND";
-	case FT_LS_DECODECOMP: return "LS_DECODECOMP";
-	case FT_LS_DECODE: return "LS_DECODE";
-	case FT_LS_TRIM: return "LS_TRIM";
-	case FT_LV_COMP: return "LV_COMP";
-	case FT_LV_COMPFLAG: return "LV_COMPFLAG";
-	case FT_LV_LIT: return "LV_LIT";
-	case FT_LV_DAT: return "LV_DAT";
-	case FT_LV_STRLEN: return "LV_STRLEN";
-	case FT_LV_PLUS_L: return "LV_PLUS_L";
-	case FT_LV_MINUS_L: return "LV_MINUS_L";
-	case FT_LV_MULTIPLY_L: return "LV_MULTIPLY_L";
-	case FT_LV_DIVIDE_L: return "LV_DIVIDE_L";
-	case FT_LV_MODULO_L: return "LV_MODULO_L";
-	case FT_LV_CHAR_LEFT: return "LV_CHAR_LEFT";
-	case FT_LS_MONTH: return "LS_MONTH";
-	case FT_LS_LMONTH: return "LS_LMONTH";
-	case FT_LS_ZONE: return "LS_ZONE";
-	case FT_LS_DAY: return "LS_DAY";
-	case FT_LS_WEEKDAY: return "LS_WEEKDAY";
-	case FT_LS_822DATE: return "LS_822DATE";
-	case FT_LS_PRETTY: return "LS_PRETTY";
-	case FT_LS_KILO: return "LS_KILO";
-	case FT_LS_KIBI: return "LS_KIBI";
-	case FT_LV_SEC: return "LV_SEC";
-	case FT_LV_MIN: return "LV_MIN";
-	case FT_LV_HOUR: return "LV_HOUR";
-	case FT_LV_MDAY: return "LV_MDAY";
-	case FT_LV_MON: return "LV_MON";
-	case FT_LV_YEAR: return "LV_YEAR";
-	case FT_LV_YDAY: return "LV_YDAY";
-	case FT_LV_WDAY: return "LV_WDAY";
-	case FT_LV_ZONE: return "LV_ZONE";
-	case FT_LV_CLOCK: return "LV_CLOCK";
-	case FT_LV_RCLOCK: return "LV_RCLOCK";
-	case FT_LV_DAYF: return "LV_DAYF";
-	case FT_LV_DST: return "LV_DST";
-	case FT_LV_ZONEF: return "LV_ZONEF";
-	case FT_LS_PERS: return "LS_PERS";
-	case FT_LS_MBOX: return "LS_MBOX";
-	case FT_LS_HOST: return "LS_HOST";
-	case FT_LS_PATH: return "LS_PATH";
-	case FT_LS_GNAME: return "LS_GNAME";
-	case FT_LS_NOTE: return "LS_NOTE";
-	case FT_LS_ADDR: return "LS_ADDR";
-	case FT_LS_822ADDR: return "LS_822ADDR";
-	case FT_LS_FRIENDLY: return "LS_FRIENDLY";
-	case FT_LV_HOSTTYPE: return "LV_HOSTTYPE";
-	case FT_LV_INGRPF: return "LV_INGRPF";
-	case FT_LS_UNQUOTE: return "LS_UNQUOTE";
-	case FT_LV_NOHOSTF: return "LV_NOHOSTF";
-	case FT_LOCALDATE: return "LOCALDATE";
-	case FT_GMTDATE: return "GMTDATE";
-	case FT_PARSEDATE: return "PARSEDATE";
-	case FT_PARSEADDR: return "PARSEADDR";
-	case FT_FORMATADDR: return "FORMATADDR";
-	case FT_CONCATADDR: return "CONCATADDR";
-	case FT_MYMBOX: return "MYMBOX";
-	case FT_GETMYMBOX: return "GETMYMBOX";
-	case FT_GETMYADDR: return "GETMYADDR";
-	case FT_SAVESTR: return "SAVESTR";
-	case FT_DONE: return "DONE";
-	case FT_PAUSE: return "PAUSE";
-	case FT_NOP: return "NOP";
-	case FT_GOTO: return "GOTO";
-	case FT_IF_S_NULL: return "IF_S_NULL";
-	case FT_IF_S: return "IF_S";
-	case FT_IF_V_EQ: return "IF_V_EQ";
-	case FT_IF_V_NE: return "IF_V_NE";
-	case FT_IF_V_GT: return "IF_V_GT";
-	case FT_IF_MATCH: return "IF_MATCH";
-	case FT_IF_AMATCH: return "IF_AMATCH";
-	case FT_S_NULL: return "S_NULL";
-	case FT_S_NONNULL: return "S_NONNULL";
-	case FT_V_EQ: return "V_EQ";
-	case FT_V_NE: return "V_NE";
-	case FT_V_GT: return "V_GT";
-	case FT_V_MATCH: return "V_MATCH";
-	case FT_V_AMATCH: return "V_AMATCH";
+	X(COMP);
+	X(COMPF);
+	X(LIT);
+	X(LITF);
+	X(CHAR);
+	X(NUM);
+	X(NUMF);
+	X(STR);
+	X(STRF);
+	X(STRFW);
+	X(STRLIT);
+	X(STRLITZ);
+	X(PUTADDR);
+	X(LS_COMP);
+	X(LS_LIT);
+	X(LS_GETENV);
+	X(LS_CFIND);
+	X(LS_DECODECOMP);
+	X(LS_DECODE);
+	X(LS_TRIM);
+	X(LV_COMP);
+	X(LV_COMPFLAG);
+	X(LV_LIT);
+	X(LV_DAT);
+	X(LV_STRLEN);
+	X(LV_PLUS_L);
+	X(LV_MINUS_L);
+	X(LV_MULTIPLY_L);
+	X(LV_DIVIDE_L);
+	X(LV_MODULO_L);
+	X(LV_CHAR_LEFT);
+	X(LS_MONTH);
+	X(LS_LMONTH);
+	X(LS_ZONE);
+	X(LS_DAY);
+	X(LS_WEEKDAY);
+	X(LS_822DATE);
+	X(LS_PRETTY);
+	X(LS_KILO);
+	X(LS_KIBI);
+	X(LV_SEC);
+	X(LV_MIN);
+	X(LV_HOUR);
+	X(LV_MDAY);
+	X(LV_MON);
+	X(LV_YEAR);
+	X(LV_YDAY);
+	X(LV_WDAY);
+	X(LV_ZONE);
+	X(LV_CLOCK);
+	X(LV_RCLOCK);
+	X(LV_DAYF);
+	X(LV_DST);
+	X(LV_ZONEF);
+	X(LS_PERS);
+	X(LS_MBOX);
+	X(LS_HOST);
+	X(LS_PATH);
+	X(LS_GNAME);
+	X(LS_NOTE);
+	X(LS_ADDR);
+	X(LS_822ADDR);
+	X(LS_FRIENDLY);
+	X(LV_HOSTTYPE);
+	X(LV_INGRPF);
+	X(LS_UNQUOTE);
+	X(LV_NOHOSTF);
+	X(LOCALDATE);
+	X(GMTDATE);
+	X(PARSEDATE);
+	X(PARSEADDR);
+	X(FORMATADDR);
+	X(CONCATADDR);
+	X(MYMBOX);
+	X(GETMYMBOX);
+	X(GETMYADDR);
+	X(SAVESTR);
+	X(DONE);
+	X(PAUSE);
+	X(NOP);
+	X(GOTO);
+	X(IF_S_NULL);
+	X(IF_S);
+	X(IF_V_EQ);
+	X(IF_V_NE);
+	X(IF_V_GT);
+	X(IF_MATCH);
+	X(IF_AMATCH);
+	X(S_NULL);
+	X(S_NONNULL);
+	X(V_EQ);
+	X(V_NE);
+	X(V_GT);
+	X(V_MATCH);
+	X(V_AMATCH);
 	default:
 		snprintf(buf, sizeof(buf), "/* ??? #%d */", t);
 		return buf;
 	}
 }
+#undef X
 
-static char *
+static const char *
 c_typestr(int t)
 {
 	static char buf[64];
@@ -1150,13 +1154,35 @@ c_typestr(int t)
 	return buf;
 }
 
-static char *
+static const char *
 c_flagsstr(int t)
 {
 	static char buf[64];
 
 	snprintb(buf, sizeof(buf), t, CF_BITS);
 	return buf;
+}
+
+static const char *
+c_textlabel(int t)
+{
+	switch (t) {
+	case FT_IF_MATCH:
+	case FT_IF_AMATCH:
+	case FT_V_MATCH:
+	case FT_V_AMATCH:
+		return "match string";
+	case FT_LS_LIT:
+		return "string";
+	case FT_PUTADDR:
+		return "header";
+	case FT_LS_GETENV:
+		return "getenv";
+	case FT_LS_CFIND:
+		return "profile entry";
+	default:
+		return "text";
+	}
 }
 
 static void
