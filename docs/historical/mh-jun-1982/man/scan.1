@@ -1,0 +1,90 @@
+.TH SCAN 1 RAND
+.SH NAME
+scan \- produce a one-line-per-message scan listing
+.SH SYNOPSIS
+scan \%[+folder] \%[msgs] \%[\-f\&f] \%[\-header] \%[\-help]
+\%[\-nof\&f] \%[\-noheader] \%[\-time] \%[\-notime] \%[\-numdate] \%[\-nonumdate]
+.SH DESCRIPTION
+\fIScan\fR produces a one-line-per-message listing of the specified
+messages.
+Each \fIscan\fR line contains the message number (name),
+the date, the ``From'' field, the \*(lqSubject'' field, and, if room
+allows, some of the body of the message.
+For example:
+
+.nf
+.ta .5i 1.2i 2.6i
+ #	Date	  From	Subject\ \ \ \ \[\*(<<Body]
+15+	7/\05	dcrocker	nned  <<Last week I asked some of
+16\ \-	7/\05	dcrocker	message id format  <<I recommend
+18	7/\06	Obrien	Re: Exit status from mkdir
+19	7/\07	Obrien	"scan" listing format in MH
+20   7/\07   phyl \    \   \  Short  <<message >>
+.re
+.fi
+
+The `+' on message 15 indicates that it is the current message.
+The `\-' on message 16 indicates that it has been
+replied to, as indicated by a ``Replied:'' component produced by
+an `\-annotate' switch to the \fIrepl\fR command.
+
+If there is sufficient room left on the \fIscan\fR line after the
+subject, the line will be filled with text from the body,
+preceded by <<, and terminated by >> if the body is sufficiently short.
+\fIScan\fR actually reads each of the specified
+messages and parses them to extract the desired fields.
+During parsing, appropriate error messages will be produced if
+there are format errors in any of the messages.
+
+The `\-header' switch produces a header line prior to the \fIscan\fR
+listing, and the `\-f\&f' switch will cause a form feed to be
+output at the end of the \fIscan\fR listing.
+.PP
+Example:
+
+The command:  (scan -ff -header; show all -pr -f) | print
+
+produces a scan listing of the current folder, followed by a form feed,
+followed by a formatted listing of all messages in the folder, one per
+page.  Omitting "-pr -f" will cause the messages to be concatenated,
+separated by a one-line header and two blank lines.
+
+If the `\-time' switch is selected, the time of the message is shown
+after the date.
+If the `\-numdate' switch is selected,
+the date (and time if `\-time' is selected) of the message
+is shown as one long number made up of year, month, day, hour, minute.
+This is useful for sorting messages in a folder.
+.PP
+Example:
+
+162+ 8202192032 Dave-Yost         mh distrib  <<is almost done.
+
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+.br
+Current-Folder:	To find the default current folder
+.SH SEE ALSO
+inc(1), show(1)
+.SH DEFAULTS
+.br
+`+folder' defaults to current
+.br
+`msgs' defaults to all
+.br
+`\-nof\&f'
+.br
+`\-noheader'
+.br
+`\-notime'
+.br
+`\-nonumdate'
+.SH CONTEXT
+If a folder is given, it will become current.
+The current
+message is unaffected.
+.SH BUGS
+The `\-numdate' option ignores timezones.

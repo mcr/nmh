@@ -1,0 +1,69 @@
+.TH MAILER 8 RAND
+.SH NAME
+mailer \- Send Arpanet mail
+.SH SYNOPSIS
+.B /etc/mailer 
+[
+.B \-l
+] [
+.B \-v
+] [file ...]
+.SH DESCRIPTION
+.I Mailer
+is a program to send messages to remote Arpanet sites.  If one or more
+.I file\fRs
+are specified, 
+.I mailer 
+will process 
+those files as its only task.  If no
+.I file
+is specified, 
+.I mailer 
+will attempt to process all files in the queue directory,
+/usr/spool/netmail.
+.PP
+The
+.B \-l
+flag causes output to be placed on standard output suitable
+for a log.
+.PP
+The
+.B \-v
+flag causes output to be placed on the standard output suitable
+for a user (as in the \-v option of
+.I deliver(8).
+The two flags should not be used together.
+.PP
+The format of message files is described in
+.I netmail(5).
+It should be noted that control lines for all of the recipients
+of a single message are maintained at the beginning of the file.
+Due to transient Arpanet failures, it is possible for some or
+all of the recipient lines to be marked as 
+being in an as-yet-undelivered state.  
+When all of the recipients have either accepted or rejected
+the message, it is removed.
+If a message has still not been disposed of after five days,
+it is considered undeliverable.
+.PP
+Messages may also become undeliverable for a number of other reasons,
+such as a "no such user" message from the foreign site.  In any case,
+if a message is undeliverable, it is returned to the sender
+via 
+.I mail(1)
+with a note prepended to explain the problem.  Clearly, more than
+one such returned message may result from a single message file
+with multiple recipients.
+.PP
+.I Mailer
+should be invoked periodically by 
+.I cron(8).
+Ten-minute intervals are not unreasonable.
+.SH FILES
+/usr/spool/netmail
+.br
+/dev/imp*
+.br
+/etc/hosttable
+.SH SEE ALSO
+deliver(8),netmail(5),mail(1),imp(4)

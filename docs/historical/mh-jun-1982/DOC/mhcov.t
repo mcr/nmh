@@ -1,0 +1,29 @@
+.ll 32P
+.nf
+.sp |2.5i
+.ps 18
+.vs 24
+.ft B
+.ce 2
+THE MH MESSAGE HANDLING SYSTEM:
+USER'S MANUAL
+.vs
+.sp .75i
+.ps 12
+.ce
+PREPARED FOR THE AIR FORCE
+.sp 1i
+.ps 14
+.vs 17
+.ce 3
+BRUCE S. BORDEN
+R. STOCKTON GAINES
+NORMAN Z. SHAPIRO
+.vs
+.sp 3.5i
+.ps 16
+.vs 20
+.ft B
+.ce 2
+R-2367-PAF
+OCTOBER 1979

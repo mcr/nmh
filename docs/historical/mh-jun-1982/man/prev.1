@@ -1,0 +1,30 @@
+.TH PREV 1 RAND
+.SH NAME
+prev \- show the previous message
+.SH SYNOPSIS
+.B prev 
+\%[+folder] \%[\-switches\ for\ \fIshowproc\fR] \%[\fB\-help\fR]
+.SH DESCRIPTION
+\fIPrev\fR performs a \fIshow\fR on the previous message in the specified
+(or current) folder.
+Like \fIshow\fR, it passes any switches on to the
+program named by \fIshowproc\fR, which is called to list the message.
+This command
+is exactly equivalent to ``show prev''.
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.SH PROFILE COMPONENTS
+Showproc:	Program to list the message.
+.br
+Path:	To determine the user's MH directory
+.Ps
+Current-Folder:	To find the default current folder
+.SH SEE ALSO
+next(1), show(1)
+.SH DEFAULTS
+showproc:	/usr/ucb/c
+.SH CONTEXT
+If a folder is specified, it will become current, and the
+message that is shown (i.e., the previous message in sequence)
+will become the current message.

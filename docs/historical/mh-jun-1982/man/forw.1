@@ -1,0 +1,77 @@
+.TH FORW 1 RAND
+.SH NAME
+forw \- forward messages
+.SH SYNOPSIS
+forw \%[+folder] \%[msgs] \%[\-editor\ editor] \%[\-form\ formfile]
+\%[\-annotate] \%[\-noannotate]
+\%[\-inplace]  \%[\-noinplace]
+\%[\-help]
+.SH DESCRIPTION
+\fIForw\fR may be used to prepare a message containing other
+messages.
+It constructs the new message from the components file
+or `\-form formfile' (see \fIcomp\fR), with a body composed of the
+message(s) to be forwarded.
+An editor is invoked as in \fIcomp\fR,
+and after editing is complete, the user is prompted before the message
+is sent.
+
+If the `\-annotate' switch is given, each message being
+forwarded will be annotated with the lines
+
+     Forwarded: \*(<<date\*(>>
+     Forwarded: To: names
+     Forwarded: cc: names
+
+where each \*(lqTo:\*(rq and \*(lqcc:\*(rq list contains as many lines as required.
+This annotation will be done only if the message is sent directly
+from \fIforw\fR.
+If the message is not sent immediately from \fIforw\fR,
+\*(lqcomp \-use\*(rq may be used in a later session to re-edit and send
+the constructed message, but the annotations won't take place.
+The `\-inplace' switch permits annotating a message in place in
+order to preserve its links.
+
+See \fIcomp(1)\fR for a description of the `\-editor' switch and for options
+upon exiting from the editor.
+See \fImh-profile(5)\fR for further information
+about the how editors are used by MH.
+.SH FILES
+.ta 2.4i
+/etc/mh/components	The message skeleton
+.br
+or <mh-dir>/components	Rather than the standard skeleton
+.br
+$HOME/\*.mh\(ruprofile	The user profile
+.br
+<mh-dir>/draft	The default message file
+.br
+/usr/bin/send	To send the composed message
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+.Ps
+.br
+Editor:	To override the default editor
+.Ps
+.br
+Current-Folder:	To find the default current folder
+.Ps
+.br
+<lasteditor>\-next:	To name an editor to be used 
+			after exit from <lasteditor>
+.SH SEE ALSO
+dist(1), send(1)
+.SH DEFAULTS
+`+folder' defaults to the current folder
+.br
+`msgs' defaults to cur
+.br
+`\-editor' defaults to /bin/ned
+.br
+`\-noannotate'
+.br
+`\-noinplace'
+.SH CONTEXT
+If a +folder is specified, it will become
+the current folder, and the current message will be set to
+the first message being forward

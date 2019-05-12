@@ -1,0 +1,161 @@
+.TH DELIVER 8 RAND
+.SH NAME
+deliver \- deliver a message
+.SH SYNOPSIS
+.B /etc/mh/deliver 
+[\fB\-deliver\fR user]
+[\fB\-verbose\fR] [\fB\-format\fR] [\fB\-msgid\fR]
+[\fB\-help\fR]  [\fB\-noverbose\fR] [\fB\-noformat\fR] [\fB\-nomsgid\fR] file
+.SH DESCRIPTION
+.I Deliver 
+is the program called by 
+.I send(1)
+to deliver the message in
+.I file
+to a local or remote user.  In fact,
+all of the functions attributed to 
+.I send
+on its manual page are peformed by 
+.I deliver,
+with
+.I send
+acting as a relatively simple preprocessor.  Thus, it is
+.I deliver
+which parses the various header fields, appends From: and 
+Date: lines, and maintains the correct locking on maildrop
+files.  
+.I Deliver
+will not normally be called directly by the user.
+.PP
+.I Deliver
+searches the ``To:'', ``Bcc:'', and ``Fcc:'' header lines of
+the specified message for destination addresses, checks these
+addresses for validity, and formats them so as to conform to 
+Arpanet Mail protocol, unless the 
+.I \-noformat
+flag is set.  This will normally cause ``AT local-site'' to
+be appended to each local destination address, as well
+as any local return addresses..  Destinations are
+of three types:
+.PP
+LOCAL MAIL (e.g. ``To: root''): The message is appended to the 
+appropriate mailbox.  The specified name may be mapped
+into a different user name if it matches an entry in the
+file /etc/MailAlias.  See mh-alias(5) for additional details on the
+aliasing system..
+If the recipient user's home directory contains an 
+executable or shell file named .mh\(rureceive, that program will be
+called via
+
+	execlp (prog, prog, tmpfil, mail, home, alias, 0)
+
+where prog is the receive program, tmpfil is a file in
+/usr/tmp which is the mail to be received, mail is the path of
+the user's mail drop (/usr/spool/mail/name), home is the
+$HOME directory of the user, and alias is the string that matched
+the first in a sequence of local aliases.  File descriptor 3 will have
+tmpfil opened on it read only.  These are all the RECEIVER'S
+parameters, not the sender's.  Also, the environment is set up
+with appropriate values for HOME and USER.
+.PP
+ARPANET MAIL (e.g. ``To: root@bbn-unix''): A copy of the message is 
+left as a uniquely-named file 
+in the Arpanet mail queue directory (/usr/spool/netmail/), 
+with the text prepended
+by a list of the network addresses of the recipients.  The
+format of this queue file is given in 
+.I netmail(5).
+The file is picked up by an Arpanet mailer daemon (
+.I mailer(8)
+)
+for later processing.
+.PP
+UUCP MAIL (e.g. ``To: ucbvax!root''): Uux(1) is forked with the 
+.I file 
+as
+its standard input, so as to execute mail(1) at the remote site.
+Thus, a message with a field such as given in the example would
+be given as standard input with a command line of
+
+	uux \- ucbvax!rmail root
+
+Rmail is assumed to be linked to mail(1) (or an equivalent program
+such as the UC Berkeley or Bell mail programs)
+so as to correctly deliver the
+message at the remote site.
+.PP
+It is possible to have all three types of destinations in the various
+destination fields of the message; each destination is processed
+separately.  It is also possible to mix destinations from the
+two delivery networks.  For example, one might specify a destination
+of ``csvax!root@Berkeley''.  However, there is an ambiguity here as
+to whether 
+.I deliver
+should attempt to use the Arpanet to send the message to Berkeley
+with ``csvax!root'' as the recipient, or whether it should use uux
+to tell csvax to deliver mail to ``root@Berkeley''.  The choice
+is determined by a compile-time constant which tells whether
+or not the local machine is on the Arpanet.  If it is, the message
+is sent via the Arpanet to the remote host, which presumably
+forwards the message via uux.  Otherwise the at-sign is given
+no special treatment,
+and the message is sent via uux.
+.PP
+If the 
+.B \-deliver
+flag is set, 
+.I deliver
+will attempt to send the message to the appropriate user
+with no formatting or header processing.  As this is primarily
+for the use of the 
+.I rmail(1)
+command, use of this flag is restricted to the super-user.
+.ta 2.4i
+.SH FILES
+/usr/spool/mail/*	Recipient mail drop
+.br
+/usr/spool/locks/*	Lockout for the mail drop
+.br
+/usr/spool/netmail/*	Arpanet mail queue
+.br
+/usr/spool/mailt/*      Arpanet temp mail queue
+.br
+/usr/tmp/mh/locsXXXX.tmpTemporary local output file
+.br
+/usr/tmp/mh/uulcXXXX.tmpTemporary uucp output file
+.br
+/etc/MailAliases	Alias list
+.SH PROFILE COMPONENTS
+fileproc:	Used for Fcc: processing
+.SH SEE ALSO
+\fIThe MH Message Handling System: User's Manual\fR
+by B. Borden, R. Gaines, and N. Shapiro
+.br
+\fIStandard for the Format of ARPA Network Test Messages\fR
+by D. Crocker, J. Vittal, K. Pogran, and D. Henderson, Jr.
+.br
+send(1)
+.br
+mail(1)
+.br
+rmail(1)
+.br
+uux(1)
+.br
+netmail(5)
+.br
+mh-mail(5)
+.br
+mh-alias(5)
+.SH DEFAULTS
+.br
+`\-noverbose'
+.br
+`\-format'
+.br
+`\-nomsgid'
+.SH BUGS
+If the message is going through a series of hops (say, via UUCP links),
+the "From" field will not be adequate for a reply.  Deliver should,
+but currently does not, formulate a "Reply-to:" field for such
+compicated cases.

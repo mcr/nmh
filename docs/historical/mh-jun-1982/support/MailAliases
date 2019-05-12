@@ -1,0 +1,13 @@
+; See comments at end of this file
+Everyone: *
+news.*: news
+
+; Blank lines & lines beginning with a ; are ignored.
+; foo: fum      -> simple replacement
+; foo: fum, fie -> list replacement
+; foo: < file   -> list replacement from file
+; foo: = group  -> list replacement from UNIX group
+; foo: *        -> list replacement by ALL users in /etc/passwd
+;                     with uid >= 10
+; foo*: fum     -> matches foo<anything> (incl null)
+

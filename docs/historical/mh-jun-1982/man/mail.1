@@ -1,0 +1,48 @@
+
+.TH MAIL 1 RAND
+.SH NAME
+mail \- send or read mail
+.SH SYNOPSIS
+.B mail
+[[\fB\-subject\fR\ subject] [\fB\-cc\ \fRname ...] [\fB\-help\fR] user ...]
+.SH DESCRIPTION
+.I Mail
+is intended as a replacement for the standard Bell mail program
+(\fIbellmail(1)\fR), compatible with the Rand message-handling
+system, mh.  When invoked without arguments, it simply 
+execs 
+.I inc(1) 
+to incorporate new messages from the user's maildrop.
+When one or more users is specified, a message is read from
+the standard input and spooled to a temporary file.
+.I Mail
+then invokes
+.I deliver(8) 
+with the name of the temporary file as
+its argument to deliver the message to the specified user.
+.PP
+The
+.B subject
+and
+.B cc
+switches can be used to insert the corresponding header components into
+the message to be delivered.
+.PP
+This program is intended for the use of programs 
+such as
+.I at(1),
+which expect
+to automatically send mail to various users.
+Normally, real people will prefer to use 
+.I comp(1) 
+and
+.I send(1) 
+to send messages.
+.SH FILES
+/etc/mh/deliver
+.br
+/tmp/mail*.tmp
+.br
+/usr/tmp/mh/lst*.tmp
+.SH SEE ALSO
+bellmail(1), rmail(1), send(1), inc(1), deliver(8)

@@ -1,0 +1,693 @@
+Only in /usr/src/cmd/mh: Adrparse
+
+
+diff -rb /usr/src/cmd/mh/Bugs mh/Bugs
+215,231d214
+< 5/25/82 phyl
+< 	news bugs:
+< 	1) .mh_receive should have a locking mechanism to guard
+< 	against simultaneous incoming messages.
+< 	2) news/.mh_receive requires its mail directory to be
+< 	its top level directory.  Instead, .mh_receive should
+< 	be a C program that looks at .mh_profile for the proper
+< 	mail path.
+< 	3) The alias string that is passed off to news/.mh_receive
+< 	should be the string that matched news.* rather than the
+< 	1st alias match.  Example:
+< 		/etc/MailAliases
+< 		   fum: news.pktest
+< 		   news.*: news
+< 		To: fum
+< 	execs news/.mh_receive(,,,fum) instead of
+< 	news/.mh_receive(,,,news.pktest)
+Common subdirectories: /usr/src/cmd/mh/DOC and mh/DOC
+Common subdirectories: /usr/src/cmd/mh/Extras and mh/Extras
+
+
+diff -rb /usr/src/cmd/mh/MHgenerate mh/MHgenerate
+49c49
+<    If not, don't define it.  If ARPANET is not defined, and if you want to
+---
+>    If not, don't define it.  If ARPANET is not defined and if you want to
+51,52c51,52
+<    adrparse.h.  If you are on VMUNIX, define that in mh.h and set up
+<    the JOBSLIB define in progs/Makefile.
+---
+>    adrparse.h.  If you are on VMUNIX, define that in mh.h and set up the
+>    JOBSLIB define in progs/Makefile.
+55,58c55,58
+<    /usr/include and modify them for your installation.
+<    If you are going to use mh over uucp and/or ARPANET links, you must
+<    edit your /usr/include/whoami.h to be sure the defines for sysname (uucp)
+<    and HOSTNAME & HOSTNUM (ARPANET) are correct.  If you are not on the
+---
+>    /usr/include or support/ and modify them for your installation.
+>    If you are going to use mh over uucp and/or ARPANET links, you must edit
+>    your /usr/include/whoami.h to be sure the defines for sysname (uucp) and
+>    HOSTNAME & HOSTNUM (ARPANET) are correct.  If you are not on the
+92a93,94
+>    (Ignore the possible error message "nm: sysname.o--no name list")
+> 
+Only in /usr/src/cmd/mh: Makeback
+
+
+diff -rb /usr/src/cmd/mh/Makefile mh/Makefile
+11c11
+< BINDIR  = /usr/randbin
+---
+> BINDIR  = /usr/local
+
+
+diff -rb /usr/src/cmd/mh/Wishlist mh/Wishlist
+484a485
+> 
+512,518d512
+< 5/12/82
+< 	Send to an alias list, less the following exceptions.
+< 
+< 		To: group<except, except...>
+< 
+< 		Cc: csd-mgrs<terry>
+< 					Terry West
+Only in /usr/src/cmd/mh: adrparse.h.sav
+Only in /usr/src/cmd/mh: di.man1
+Only in /usr/src/cmd/mh: diff.05112
+Only in /usr/src/cmd/mh: diff.05132
+Common subdirectories: /usr/src/cmd/mh/dytest and mh/dytest
+Only in /usr/src/cmd/mh: err
+Only in /usr/src/cmd/mh: greep
+Common subdirectories: /usr/src/cmd/mh/man and mh/man
+Only in /usr/src/cmd/mh: mh.h.sav
+Common subdirectories: /usr/src/cmd/mh/misc and mh/misc
+Only in /usr/src/cmd/mh: pktest
+Only in /usr/src/cmd/mh: printmh
+Common subdirectories: /usr/src/cmd/mh/progs and mh/progs
+Only in /usr/src/cmd/mh: randnet
+Common subdirectories: /usr/src/cmd/mh/strings and mh/strings
+Common subdirectories: /usr/src/cmd/mh/subs and mh/subs
+Common subdirectories: /usr/src/cmd/mh/support and mh/support
+Common subdirectories: /usr/src/cmd/mh/Extras/libg and mh/Extras/libg
+Common subdirectories: /usr/src/cmd/mh/Extras/libh and mh/Extras/libh
+Only in /usr/src/cmd/mh/Extras: mhl.bsb
+
+
+diff -rb /usr/src/cmd/mh/dytest/Makefile mh/dytest/Makefile
+11c11
+< JOBSLIB= -ljobs
+---
+> LIBJOBS=#-ljobs
+15c15
+< BINDIR  = /usr/randbin
+---
+> BINDIR  = /usr/local
+60d59
+< ack.c \
+89,91d87
+< ack:    ack.o $(SUBS)
+< 	$(CC) -o ack ack.o $(SUBS)
+< 
+419d414
+< show.o:	 mhl.c
+Only in /usr/src/cmd/mh/dytest: Olson
+Only in /usr/src/cmd/mh/dytest: ack
+Only in /usr/src/cmd/mh/dytest: ack.c
+Only in /usr/src/cmd/mh/dytest: ack.o
+Only in /usr/src/cmd/mh/dytest: err
+Only in /usr/src/cmd/mh/dytest: gimme.c
+Only in /usr/src/cmd/mh/dytest: key.c
+Only in /usr/src/cmd/mh/dytest: key.o
+Only in mh/dytest: mhl.c
+Only in mh/dytest: show.c
+Only in /usr/src/cmd/mh/dytest: test
+Only in /usr/src/cmd/mh/man: test
+Only in /usr/src/cmd/mh/progs: Makeback
+
+
+diff -rb /usr/src/cmd/mh/progs/Makefile mh/progs/Makefile
+11c11
+< JOBSLIB= -ljobs
+---
+> JOBSLIB=#-ljobs
+13c13,16
+< CFLAGS  = -O $(A) # -m -DRAND
+---
+> CFLAGS  = -O $(A) -I/usr/include -I../support # -m -DRAND
+> # On a PDP/11, if the sticky bit is to be set, text must be shareable
+> CCSHARE = -n
+> 
+15c18
+< BINDIR  = /usr/randbin
+---
+> BINDIR  = /usr/local
+92c95
+< 	$(CC) -o comp comp.o $(SUBS) $(STRINGS)
+---
+> 	$(CC) $(CCSHARE) -o comp comp.o $(SUBS) $(STRINGS)
+98,99c101,102
+< 	$(CC) -o deliver deliver.o adrparse.o adrformat.o $(SUBS) $(STRINGS)\
+< 	$(JOBSLIB)
+---
+> 	$(CC) $(CCSHARE) -o deliver deliver.o adrparse.o adrformat.o $(SUBS) \
+> 	$(STRINGS) $(JOBSLIB)
+114c117
+< 	$(CC) -o inc inc.o scansub.o $(SUBS) $(STRINGS)
+---
+> 	$(CC) $(CCSHARE) -o inc inc.o scansub.o $(SUBS) $(STRINGS)
+132c135
+< 	$(CC) -o next nexthdr.o next.o $(SUBS) $(STRINGS)
+---
+> 	$(CC) $(CCSHARE) -o next nexthdr.o next.o $(SUBS) $(STRINGS)
+141c144
+< 	$(CC) -o prompter prompter.o $(SUBS) $(STRINGS)
+---
+> 	$(CC) $(CCSHARE) -o prompter prompter.o $(SUBS) $(STRINGS)
+162c165
+< 	$(CC) -o show show.o $(SUBS) $(STRINGS)
+---
+> 	$(CC) $(CCSHARE) -o show show.o $(SUBS) $(STRINGS)
+207,208c210,211
+< 	-/etc/chown root $(NETDIR)
+< 	-chmod 755  $(NETDIR)
+---
+> 	/etc/chown root $(NETDIR)
+> 	chmod 755  $(NETDIR)
+210,211c213,214
+< 	-/etc/chown root $(LOCKDIR)
+< 	-chmod 777  $(LOCKDIR)
+---
+> 	/etc/chown root $(LOCKDIR)
+> 	chmod 777  $(LOCKDIR)
+233c236
+< 	-chmod a+x $(PROGS)
+---
+> 	chmod a+x $(PROGS)
+272c275
+< adrparse.o:	 /usr/include/whoami.h
+---
+> #adrparse.o:      /usr/include/whoami.h
+275c278
+< adrparse.o:	 /usr/include/imp.h
+---
+> #adrparse.o:      /usr/include/imp.h
+284c287
+< comp.o:	 /usr/include/strings.h
+---
+> #comp.o:  /usr/include/strings.h
+293,294c296,297
+< conflict.o:	 /usr/include/mailsys.h
+< deliver.o:	 /usr/include/whoami.h
+---
+> #conflict.o:      /usr/include/mailsys.h
+> #deliver.o:       /usr/include/whoami.h
+304,305c307,308
+< deliver.o:	 /usr/include/strings.h
+< deliver.o:	 /usr/include/mailsys.h
+---
+> #deliver.o:       /usr/include/strings.h
+> #deliver.o:       /usr/include/mailsys.h
+310c313
+< dist.o:	 /usr/include/strings.h
+---
+> #dist.o:  /usr/include/strings.h
+320c323
+< folder.o:	 /usr/include/strings.h
+---
+> #folder.o:        /usr/include/strings.h
+324c327
+< forw.o:	 /usr/include/strings.h
+---
+> #forw.o:  /usr/include/strings.h
+332c335
+< inc.o:	 /usr/include/strings.h
+---
+> #inc.o:   /usr/include/strings.h
+350c353
+< mhpath.o:	 /usr/include/strings.h
+---
+> #mhpath.o:        /usr/include/strings.h
+357c360
+< news.o:	 /usr/include/strings.h
+---
+> #news.o:  /usr/include/strings.h
+361c364
+< next.o:	 /usr/include/strings.h
+---
+> #next.o:  /usr/include/strings.h
+373,374c376,377
+< prompter.o:	 /usr/include/strings.h
+< repl.o:	 /usr/include/whoami.h
+---
+> #prompter.o:      /usr/include/strings.h
+> #repl.o:  /usr/include/whoami.h
+378c381
+< repl.o:	 /usr/include/strings.h
+---
+> #repl.o:  /usr/include/strings.h
+383c386
+< rmail.o:	 /usr/include/whoami.h
+---
+> #rmail.o:         /usr/include/whoami.h
+390c393
+< rmf.o:	 /usr/include/strings.h
+---
+> #rmf.o:   /usr/include/strings.h
+393c396
+< rmm.o:	 /usr/include/strings.h
+---
+> #rmm.o:   /usr/include/strings.h
+396c399
+< scan.o:	 /usr/include/strings.h
+---
+> #scan.o:  /usr/include/strings.h
+399c402
+< scansub.o:	 /usr/include/whoami.h
+---
+> #scansub.o:       /usr/include/whoami.h
+409c412
+< send.o:	 /usr/include/strings.h
+---
+> #send.o:  /usr/include/strings.h
+413c416
+< show.o:	 /usr/include/strings.h
+---
+> #show.o:  /usr/include/strings.h
+Only in mh/progs: Makefile.bak
+Only in /usr/src/cmd/mh/progs: adrformat.o
+Only in /usr/src/cmd/mh/progs: adrpars.c.3102
+Only in /usr/src/cmd/mh/progs: adrparse.c.sav
+Only in /usr/src/cmd/mh/progs: adrparse.o
+Only in /usr/src/cmd/mh/progs: ali
+Only in /usr/src/cmd/mh/progs: ali.lint
+Only in /usr/src/cmd/mh/progs: ali.o
+Only in /usr/src/cmd/mh/progs: annotate.o
+Only in /usr/src/cmd/mh/progs: comp
+Only in /usr/src/cmd/mh/progs: comp.lint
+Only in /usr/src/cmd/mh/progs: comp.o
+Only in /usr/src/cmd/mh/progs: conflict
+Only in /usr/src/cmd/mh/progs: conflict.lint
+Only in /usr/src/cmd/mh/progs: conflict.o
+Only in /usr/src/cmd/mh/progs: deliver
+Only in /usr/src/cmd/mh/progs: deliver.c.3-1
+Only in /usr/src/cmd/mh/progs: deliver.c.3102
+Only in /usr/src/cmd/mh/progs: deliver.c.sav
+Only in /usr/src/cmd/mh/progs: deliver.lint
+Only in /usr/src/cmd/mh/progs: deliver.o
+
+
+diff -rb /usr/src/cmd/mh/progs/dist.c mh/progs/dist.c
+26c26
+< extern struct swit aleqs[] = {
+---
+> struct swit aleqs[] = {
+Only in /usr/src/cmd/mh/progs: dist.lint
+Only in /usr/src/cmd/mh/progs: err
+Only in /usr/src/cmd/mh/progs: file
+Only in /usr/src/cmd/mh/progs: file.lint
+Only in /usr/src/cmd/mh/progs: file.o
+Only in /usr/src/cmd/mh/progs: folder
+Only in /usr/src/cmd/mh/progs: folder.lint
+Only in /usr/src/cmd/mh/progs: folder.o
+Only in /usr/src/cmd/mh/progs: forw
+Only in /usr/src/cmd/mh/progs: forw.lint
+Only in /usr/src/cmd/mh/progs: forw.o
+Only in /usr/src/cmd/mh/progs: grep.o
+Only in /usr/src/cmd/mh/progs: inc
+Only in /usr/src/cmd/mh/progs: inc.o
+Only in /usr/src/cmd/mh/progs: install-mh
+Only in /usr/src/cmd/mh/progs: install-mh.o
+Only in /usr/src/cmd/mh/progs: install.lint
+Only in /usr/src/cmd/mh/progs: m_send.c
+Only in /usr/src/cmd/mh/progs: mail
+Only in /usr/src/cmd/mh/progs: mail.lint
+Only in /usr/src/cmd/mh/progs: mail.o
+Only in /usr/src/cmd/mh/progs: mhl
+Only in /usr/src/cmd/mh/progs: mhl.lint
+Only in /usr/src/cmd/mh/progs: mhl.o
+Only in /usr/src/cmd/mh/progs: mhpath
+Only in /usr/src/cmd/mh/progs: mhpath.o
+Only in /usr/src/cmd/mh/progs: news
+Only in /usr/src/cmd/mh/progs: news.lint
+Only in /usr/src/cmd/mh/progs: news.o
+Only in /usr/src/cmd/mh/progs: next
+Only in /usr/src/cmd/mh/progs: next.o
+Only in /usr/src/cmd/mh/progs: nexthdr.o
+Only in /usr/src/cmd/mh/progs: pick
+Only in /usr/src/cmd/mh/progs: pick.lint
+Only in /usr/src/cmd/mh/progs: pick.o
+Only in /usr/src/cmd/mh/progs: prev
+Only in /usr/src/cmd/mh/progs: prev.lint
+Only in /usr/src/cmd/mh/progs: prevhdr.o
+Only in /usr/src/cmd/mh/progs: prompter
+Only in /usr/src/cmd/mh/progs: prompter.lint
+Only in /usr/src/cmd/mh/progs: prompter.nutty
+Only in /usr/src/cmd/mh/progs: prompter.o
+Only in /usr/src/cmd/mh/progs: repl
+Only in /usr/src/cmd/mh/progs: repl.c.03122
+Only in /usr/src/cmd/mh/progs: repl.c.ok
+Only in /usr/src/cmd/mh/progs: repl.lint
+Only in /usr/src/cmd/mh/progs: repl.o
+
+
+diff -rb /usr/src/cmd/mh/progs/replsubs.c mh/progs/replsubs.c
+1,5d0
+< /*  This mess pre-dates adrparse.  It's function is to
+<  *  attach the Reply-to or From host to hostless addresses
+<  *  on a reply.
+<  */
+< 
+Only in /usr/src/cmd/mh/progs: rmail
+
+
+diff -rb /usr/src/cmd/mh/progs/rmail.c mh/progs/rmail.c
+31,32d30
+<  *
+<  * 5/8/82: Tack on uu-Date: if msg has no date.  PK.
+35d32
+< /*#define DEBUG 1*/
+42,43d38
+< #define PARSE   1
+< #define NOPARSE 0
+45d39
+< 
+55,56d48
+< char d1[10], d2[10], d3[10], d4[10], d5[10];   /*** ctime() fields ***/
+< 
+68d59
+< 	int badhdr;   /***/
+91,93c82,83
+< /***/           sscanf(lbuf, "%s %s %s %s %s %s %s remote from %s",
+< 		 junk, ufrom, d1, d2, d3, d4, d5, sys);
+< /*              sscanf(lbuf, "%s %s", junk, ufrom);  */
+---
+> 		/* sscanf(lbuf, "%s %s %s %s %s %s %s remote from %s", junk, ufrom, junk, junk, junk, junk, junk, sys); */
+> 		sscanf(lbuf, "%s %s", junk, ufrom);
+136c126
+< 		putmsg(NOPARSE);
+---
+> 		putmsg();
+145c135
+< 	if( !((cp = index(lbuf, ':')) &&  (cp - lbuf <  NAMESZ ))) {
+---
+> 	if( !((cp = index(lbuf, ':')) &&  (cp - lbuf <  NAMESZ )))
+147,149c137,138
+< 		badhdr++;
+< 	}
+< 	putmsg(badhdr?NOPARSE:PARSE);
+---
+> 
+> 	putmsg();
+223a213
+> 
+242c232
+< 	putmsg(NOPARSE);
+---
+> 	putmsg();
+296,297c286
+< putmsg(parse)
+< int parse;
+---
+> putmsg()
+299,305d287
+< 	int dateseen = 0;
+< 
+< 	if(!parse)
+< 		putall();
+< 	else {
+< 		if (uleqn(lbuf, "date:", 5) == 0)
+< 			dateseen++;
+307,324d288
+< 		while (fgets(lbuf, sizeof lbuf, stdin)) {
+< 			if(lbuf[0] == '\n' ) { /* end of hdrs */
+< 				if(!dateseen)
+< 					uudate();
+< 				putall();
+< 			} else {
+< 				if (uleqn(lbuf, "date:", 5) == 0)
+< 					dateseen++;
+< 				fputs(lbuf, out);
+< 			}
+< 		}
+< 	}
+< }
+< 
+< 
+< putall()
+< {
+< 	fputs(lbuf, out);
+342,391d305
+< /*
+<  * Compare strings (at most n bytes) without regard to case.
+<  *   Returns:   s1>s2: >0,  s1==s2: 0,  s1<s2: <0.
+<  */
+< 
+< uleqn(s1, s2, n)
+< register char *s1, *s2;
+< register n;
+< {
+< 
+< 	while (--n >= 0 && (*s1|040) == (*s2|040)) {
+< 		s2++;
+< 		if (*s1++ == '\0')
+< 			return(0);
+< 	}
+< 	return(n<0 ? 0 : (*s1|040) - (*s2|040));
+< }
+< 
+< 
+< uudate()
+< {
+< 	char *prefix();
+< 
+< 	/*                  day    13   Apr  1981 20  :38   -PST */
+< 	fprintf(out, "Date: %sday, %.2s %.3s %.4s %.2s:%.2s-%.3s\n",
+< 		     prefix(d1), d3, d2, d5, d4, d4+3, "???");
+< }
+< 
+< char *
+< prefix(str)
+< char *str;
+< {
+< 	static char *wday[] = {
+< 		"Sun",
+< 		"Mon",
+< 		"Tues",
+< 		"Wednes",
+< 		"Thurs",
+< 		"Fri",
+< 		"Satur",
+< 		0
+< 	};
+< 
+< 	register char **wp;
+< 
+< 	for(wp=wday; wp; wp++)
+< 		if(uleqn(str, *wp, 3) == 0)
+< 			return(*wp);
+< 	return("???");
+< }
+Only in /usr/src/cmd/mh/progs: rmail.c.sav
+Only in /usr/src/cmd/mh/progs: rmail.lint
+Only in /usr/src/cmd/mh/progs: rmail.o
+Only in /usr/src/cmd/mh/progs: rmail.sav
+Only in /usr/src/cmd/mh/progs: rmf
+Only in /usr/src/cmd/mh/progs: rmf.lint
+Only in /usr/src/cmd/mh/progs: rmf.o
+Only in /usr/src/cmd/mh/progs: rmm
+Only in /usr/src/cmd/mh/progs: rmm.lint
+Only in /usr/src/cmd/mh/progs: rmm.o
+Only in /usr/src/cmd/mh/progs: scan
+Only in /usr/src/cmd/mh/progs: scan.o
+Only in /usr/src/cmd/mh/progs: scansub.c.sav
+Only in /usr/src/cmd/mh/progs: scansub.o
+Only in /usr/src/cmd/mh/progs: send
+Only in /usr/src/cmd/mh/progs: send.o
+Only in /usr/src/cmd/mh/progs: show
+Only in /usr/src/cmd/mh/progs: show.o
+Only in /usr/src/cmd/mh/strings: Makeback
+
+
+diff -rb /usr/src/cmd/mh/strings/Makefile mh/strings/Makefile
+39c39,40
+< 	sysed.o
+---
+> 	sysed.o \
+> 	sysname.o
+70c71,72
+< 	   sysed.c
+---
+> 	   sysed.c \
+> 	   sysname.c
+89,90c91,92
+< lockdir.o:	 /usr/include/mailsys.h
+< mailboxes.o:	 /usr/include/mailsys.h
+---
+> #lockdir.o:       /usr/include/mailsys.h
+> #mailboxes.o:     /usr/include/mailsys.h
+91a94
+> #sysname.o:      /usr/include/whoami.h
+Only in /usr/src/cmd/mh/strings: anoyes.o
+Only in /usr/src/cmd/mh/strings: components.o
+Only in /usr/src/cmd/mh/strings: current.o
+Only in /usr/src/cmd/mh/strings: defalt.o
+Only in /usr/src/cmd/mh/strings: distcomps.o
+Only in /usr/src/cmd/mh/strings: draft.o
+Only in /usr/src/cmd/mh/strings: err
+
+
+diff -rb /usr/src/cmd/mh/strings/fileproc.c mh/strings/fileproc.c
+13c13
+< char    *fileproc =     "/usr/randbin/file";
+---
+> char    *fileproc =     "/usr/local/file";
+Only in /usr/src/cmd/mh/strings: fileproc.o
+Only in /usr/src/cmd/mh/strings: foldprot.o
+Only in /usr/src/cmd/mh/strings: installproc.o
+Only in /usr/src/cmd/mh/strings: list
+Only in /usr/src/cmd/mh/strings: listname.o
+Only in /usr/src/cmd/mh/strings: lockdir.o
+
+
+diff -rb /usr/src/cmd/mh/strings/lproc.c mh/strings/lproc.c
+14c14
+< char    *lproc =        "/usr/randbin/c";
+---
+> char    *lproc =        "/usr/ucb/more";
+Only in /usr/src/cmd/mh/strings: lproc.o
+Only in /usr/src/cmd/mh/strings: lsproc.o
+Only in /usr/src/cmd/mh/strings: mailboxes.o
+Only in /usr/src/cmd/mh/strings: mailproc.o
+Only in /usr/src/cmd/mh/strings: mh_deliver.o
+Only in /usr/src/cmd/mh/strings: mh_prof.o
+Only in /usr/src/cmd/mh/strings: mhlformat.o
+Only in /usr/src/cmd/mh/strings: mhlstdfmt.o
+Only in /usr/src/cmd/mh/strings: mhnews.o
+Only in /usr/src/cmd/mh/strings: msgprot.o
+Only in /usr/src/cmd/mh/strings: pfolder.o
+Only in /usr/src/cmd/mh/strings: prproc.o
+
+
+diff -rb /usr/src/cmd/mh/strings/rhosts.c mh/strings/rhosts.c
+19,23d18
+< 	"randvax",
+< 	"vax",
+< 	"graphics",
+< 	"gr",
+< 	"cs-rand",
+Only in /usr/src/cmd/mh/strings: rhosts.o
+
+
+diff -rb /usr/src/cmd/mh/strings/scanproc.c mh/strings/scanproc.c
+13c13
+< char    *scanproc =     "/usr/randbin/scan";
+---
+> char    *scanproc =     "/usr/local/scan";
+Only in /usr/src/cmd/mh/strings: scanproc.o
+
+
+diff -rb /usr/src/cmd/mh/strings/sendproc.c mh/strings/sendproc.c
+14c14
+< char    *sendproc =     "/usr/randbin/send";
+---
+> char    *sendproc =     "/usr/local/send";
+Only in /usr/src/cmd/mh/strings: sendproc.o
+
+
+diff -rb /usr/src/cmd/mh/strings/showproc.c mh/strings/showproc.c
+16c16
+< char    *showproc =     "/usr/randbin/c";                       /* 5/6/79 */
+---
+> char    *showproc =     "/usr/ucb/more";                       /* 5/6/79 */
+Only in /usr/src/cmd/mh/strings: showproc.o
+Only in /usr/src/cmd/mh/strings: stdcomps.o
+Only in /usr/src/cmd/mh/strings: stddcomps.o
+Only in /usr/src/cmd/mh/strings: strings.a
+Only in /usr/src/cmd/mh/strings: sysed.o
+Only in mh/strings: sysname.c
+
+
+diff -rb /usr/src/cmd/mh/subs/Makefile mh/subs/Makefile
+8c8
+< CFLAGS = # -m
+---
+> CFLAGS = -O -I/usr/include -I../support # -m
+161c161
+< m_edit.o:	 /usr/include/strings.h
+---
+> #m_edit.o:        /usr/include/strings.h
+204c204
+< pwd.o:	 /usr/include/strings.h
+---
+> #pwd.o:   /usr/include/strings.h
+Only in mh/subs: Makefile.bak
+Only in /usr/src/cmd/mh/subs: add.o
+Only in /usr/src/cmd/mh/subs: ambigsw.o
+Only in /usr/src/cmd/mh/subs: atooi.o
+Only in /usr/src/cmd/mh/subs: brkstring.o
+Only in /usr/src/cmd/mh/subs: cdate.o
+Only in /usr/src/cmd/mh/subs: cndfree.o
+Only in /usr/src/cmd/mh/subs: concat.o
+Only in /usr/src/cmd/mh/subs: copy.o
+Only in /usr/src/cmd/mh/subs: copyip.o
+Only in /usr/src/cmd/mh/subs: cputc.o
+Only in /usr/src/cmd/mh/subs: done.o
+Only in /usr/src/cmd/mh/subs: err
+Only in /usr/src/cmd/mh/subs: fdcompare.o
+Only in /usr/src/cmd/mh/subs: gans.o
+Only in /usr/src/cmd/mh/subs: getans.o
+Only in /usr/src/cmd/mh/subs: getcpy.o
+Only in /usr/src/cmd/mh/subs: help.o
+Only in /usr/src/cmd/mh/subs: locv.o
+Only in /usr/src/cmd/mh/subs: m_convert.o
+Only in /usr/src/cmd/mh/subs: m_delete.o
+Only in /usr/src/cmd/mh/subs: m_edit.o
+Only in /usr/src/cmd/mh/subs: m_file.o
+Only in /usr/src/cmd/mh/subs: m_find.o
+Only in /usr/src/cmd/mh/subs: m_getcur.o
+Only in /usr/src/cmd/mh/subs: m_getdefs.c1
+Only in /usr/src/cmd/mh/subs: m_getdefs.o
+Only in /usr/src/cmd/mh/subs: m_getfld.o
+Only in /usr/src/cmd/mh/subs: m_getfolder.o
+Only in /usr/src/cmd/mh/subs: m_gmprot.o
+Only in /usr/src/cmd/mh/subs: m_gmsg.o
+Only in /usr/src/cmd/mh/subs: m_maildir.o
+Only in /usr/src/cmd/mh/subs: m_name.o
+Only in /usr/src/cmd/mh/subs: m_replace.o
+Only in /usr/src/cmd/mh/subs: m_send.o
+Only in /usr/src/cmd/mh/subs: m_setcur.o
+Only in /usr/src/cmd/mh/subs: m_update.o
+Only in /usr/src/cmd/mh/subs: makedir.o
+Only in /usr/src/cmd/mh/subs: makename.o
+Only in /usr/src/cmd/mh/subs: mu_atoi.o
+Only in /usr/src/cmd/mh/subs: path.o
+Only in /usr/src/cmd/mh/subs: peekc.o
+Only in /usr/src/cmd/mh/subs: pr_array.o
+Only in /usr/src/cmd/mh/subs: printsw.o
+Only in /usr/src/cmd/mh/subs: putenv.o
+Only in /usr/src/cmd/mh/subs: pwd.o
+Only in /usr/src/cmd/mh/subs: r1bindex.o
+Only in /usr/src/cmd/mh/subs: showfile.o
+Only in /usr/src/cmd/mh/subs: smatch.o
+Only in /usr/src/cmd/mh/subs: ssequal.o
+Only in /usr/src/cmd/mh/subs: subs.a
+Only in /usr/src/cmd/mh/subs: trimcpy.o
+Only in /usr/src/cmd/mh/subs: type.o
+Only in /usr/src/cmd/mh/subs: uleq.o
+Only in /usr/src/cmd/mh/support: err
+Only in mh/support: mailsys.h
+Common subdirectories: /usr/src/cmd/mh/support/news and mh/support/news
+Only in mh/support: strings.h
+
+
+diff -rb /usr/src/cmd/mh/support/news/mh_receive mh/support/news/mh_receive
+6c6
+< 	/usr/randbin/file -link -file $1 +/usr/news/$F
+---
+> 	/usr/local/file -link -file $1 +/usr/news/$F
+8c8
+< 	/usr/randbin/file -link -file $1 +/usr/news/Lost+Found
+---
+> 	/usr/local/file -link -file $1 +/usr/news/Lost+Found
+11c11
+< 	/usr/randbin/file -link -file $1 +/usr/news/Lost+Found
+---
+> 	/usr/local/file -link -file $1 +/usr/

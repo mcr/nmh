@@ -1,3 +1,5 @@
+This directory
+--------------
 The most recent versions of the documents in this directory were
 downloaded from ftp://ftp.vim.org/pub/mail/mh/doc/
 
@@ -14,16 +16,52 @@ were downloaded from ftp://munnari.oz.au/pub/mh/doc/
 designOfMH.pdf was downloaded from
 http://www.dtic.mil/cgi-bin/GetTRDoc?AD=ADA257836
 
-mh-6.8.5/ contains the entire MH 6.8.5, include source code and
-RCS files, and was downloaded from
+
+Subdirectories
+--------------
+SRI-NOSC/ was downloaded from from Warren Toomey's minnie.tuhs.org using:
+  rsync -avz minnie.tuhs.org::UA_Distributions/Early_Networking/NOSC/ NOSC
+  tar xzBpf NOSC/nosc.tar.gz ./mh
+  cp -p NOSC/nosc.txt mh
+  chmod -R go+r mh
+  chmod go+x mh mh/subs.dir
+  find mh -name '*.[ao]' -execdir /bin/rm {} \;
+
+2.9BSD/ was downloaded from from Warren Toomey's minnie.tuhs.org using:
+  rsync -avz minnie.tuhs.org::UA_Distributions/UCB/2.9BSD/ 2.9BSD
+  tar xzBpf usr.tar.gz ./contrib/mh
+  chmod g-w contrib/mh/Makefile
+
+mh-jun-1982/ was downloaded from
+http://bitsavers.trailing-edge.com/bits/Rand/Rand_Software_Distribution_1.7_May82.zip
+
+mh-nov-1983/ was downloaded from
+http://www.tuhs.org/Archive/Distributions/UCB/4.2BSD/new.tar.gz
+
+Other versions of MH are, as of May 2019, available at these locations:
+mh-6.4              http://www.tuhs.org/Archive/Distributions/UCB/4.3BSD/new.tar.gz
+mh-6.5-4.3BSD-Tahoe http://www.tuhs.org/Archive/Distributions/UCB/4.3BSD-Tahoe/new.tar.gz
+mh-6.5-4.3BSD-Reno  http://www.tuhs.org/Archive/Distributions/UCB/4.3BSD-Reno/contrib.tar.gz
+mh-6.8              https://stuff.mit.edu/afs/athena/astaff/source/src-7.7/third/supported/mh.6.8/
+
+mh-6.8.5/ contains the entire MH 6.8.5 sources and RCS files, and was
+downloaded from
 http://iweb.dl.sourceforge.net/project/rand-mh/MH/6.8.5/mh-6.8.5.tgz
-Some obviously unnecessary files were removed.  mh.rf and mh.me
-were renamed to mh-intro.rf and mh-intro.me, respectively, to avoid
-name clashes with other files on case-insensitive file systems.
+Some obviously unnecessary files were removed.  mh.rf and mh.me were
+renamed to mh-intro.rf and mh-intro.me, respectively, to avoid name
+clashes with other files on case-insensitive file systems.
 
-MH source code, versions 6.3 through 6.8.5, is archived under
+
+Other repositories
+------------------
+MH source code, versions 5 through 6.8.5, is archived under
 http://sourceforge.net/projects/rand-mh/files/
+That repository contains other useful MH artifacts including
+the Jerry Peek's MH Book and mailing list archives.
 
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 The README below is retained in its original form for posterity.  All
 of the txt (.doc and .tty) files have been renamed to .txt.  All of
@@ -31,8 +69,8 @@ the postscript (.ps) files have been converted to pdf using ps2pdf.
 
 D. Levine  28 Feb 2012
 
-------------------------------------------------------------------------
-------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 mh/doc/README
 
@@ -52,7 +90,7 @@ Postscript versions are also available:
   changes.ps	- Changes from MH 6.6 to MH 6.8
   mh-gen.ps	- The "READ-ME" file - how to generate MH (aka mh-gen(8))
 
-------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 These are postscript conversions of the MH papers which were written
 using the TeX typesetting language:
@@ -81,7 +119,7 @@ intosh, and printing them on a Laserwriter.  If you are able to generate
 copies of these papers which will print (identically to the originals or
 otherwise) on a Laserwriter, please contact "Bug-MH@ICS.UCI.EDU".
 
-------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 These files are tty-readable conversions of the MH papers which were
 written using the TeX typesetting language:

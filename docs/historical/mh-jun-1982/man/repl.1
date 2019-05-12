@@ -1,0 +1,94 @@
+.TH REPL 1 RAND
+.SH NAME
+repl \- reply to a message
+.SH SYNOPSIS
+\fBrepl\fR \%[+folder] \%[msg] \%[\fB\-editor\fR\ editor]
+\%[\fB\-inplace\fR] \%[\fB\-annotate\fR]
+\%[\fB\-help\fR] \%[\fB\-noinplace\fR]
+\%[\fB\-noannotate\fR]
+.SH DESCRIPTION
+\fIRepl\fR aids a user in producing a reply to an existing
+message.
+In its simplest form (with no arguments), it will set up
+a message-form skeleton in reply to the current message in the
+current folder, invoke the editor, and send the composed
+message if so directed.
+The composed message is constructed as
+follows:
+
+.nf
+.in 1i
+To: <Reply-To> or <From>
+cc: <cc>, <To>
+Subject: Re: <Subject>
+In-reply-to: Your message of <Date>
+.ti +\w'In-reply-to: 'u
+<Message-Id>
+.in .5i
+.fi
+
+where field names enclosed in angle brackets (< >) indicate the
+contents of the named field from the message to which the reply
+is being made.
+Once the skeleton is constructed, an editor is
+invoked (as in \fIcomp\fR, \fIdist\fR, and \fIforw\fR).
+While in the editor,
+the message being replied to is available through a link named
+``@''.
+
+.B NOTE:
+.I repl
+invokes the editor with two file arguments.
+The second is the filename of the message being
+replied to, and is intended
+to be used as an `alternate' file within the editor.
+If the editor used doesn't have this feature, it must
+ignore the extra file argument and edit the first
+file argument.
+
+As in \fIcomp\fR, \fIdist\fR, and \fIforw\fR, the user will be queried
+before the message is sent.
+If `\-annotate' is
+specified, the replied-to message will be annotated with the
+single line
+
+.ti +.5i
+Replied: \*(<<Date\*(>>.
+
+The command
+``comp \-use'' may be used to pick up interrupted editing, as in
+\fIdist\fR and \fIforw\fR; the `\-inplace' switch annotates the message in place,
+so that all folders with links to it will see the annotation.
+
+See \fIcomp(1)\fR for a description of the `\-editor' switch and for options
+upon exiting from the editor.
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.br
+<mh-dir>/draft	The constructed message file
+.br
+/usr/bin/send	To send the composed message
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+.br
+Editor:	To override the default editor
+.br
+Current-Folder:	To find the default current folder
+.SH DEFAULTS
+`+folder' defaults to current
+.br
+`msgs' defaults to cur
+.br
+`\-editor' defaults to /bin/ned
+.br
+`\-noannotate'
+.br
+`\-noinplace'
+.SH SEE ALSO
+comp(1),dist(1), forw(1)
+.SH CONTEXT
+If a `+folder' is specified, it will become the current
+folder, and the current message will be set to the replied-to
+message.
+.sp 2

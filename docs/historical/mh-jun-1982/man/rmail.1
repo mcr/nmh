@@ -1,0 +1,44 @@
+
+.TH RMAIL 1 RAND
+.SH NAME
+rmail \- send mail from a remote site
+.SH SYNOPSIS
+.B mail
+user 
+.SH DESCRIPTION
+.I Rmail
+is intended as an interface between mail sent from foreign
+sites via
+.I uucp(1)
+and the Rand message handling system,
+.I mh(1).
+It reads a message from the standard input and, after creating
+mh-format lines for the sender and recipient user, writes
+it into a temporary file.  It then invokes
+.I deliver(8)
+to complete the mail delivery.
+.PP
+.I Rmail
+is able to understand a series of lines of the form:
+.br
+	From \fIuser\fB ... remote from \fIsite\fR
+.br
+and turn them into the correct "From: \fIsite\fR!\fIuser\fR" form,
+thus allowing effective use of the 
+.I reply(1)
+command.
+.PP
+If the destination 
+.I user
+is in fact a foreign uucp site, no formatting or reprocessing is
+done; 
+.I deliver
+will simply forward the message to the foreign site with the
+appropriate uucp-style header on it.
+.SH FILES
+/etc/mh/deliver
+.br
+/tmp/mail*.tmp
+.br
+.SH SEE ALSO
+bellmail(1),  deliver(8), mail(1), uucp(1)

@@ -1,0 +1,113 @@
+.TH MH\(ruPROFILE 5 RAND
+.SH NAME
+mh\(ruprofile \- User parameters for MH message handler
+.SH DESCRIPTION
+Each user of
+.I mh
+is expected to have a file named
+.B .mh\(ruprofile
+in his or her home directory.  This file contains a set of
+user parameters used by some or all of the
+.I mh
+family of programs.  Each line of the file is of the format
+.TP 15
+\fIprofile-component\fR: \fIvalue\fR
+The currently defined profile components are exemplified below:
+.TP
+Path: Mail
+Locates mh transactions in directory "Mail".
+.TP
+Current-Folder: inbox
+Keeps track of currently open folder.
+.TP
+Editor: /bin/e
+Defines editor to be used by 
+.I comp(1),
+.I repl(1),
+.I forw(1),
+and
+.I dist(1).
+.br
+.B NOTE:
+.I repl(1)
+invokes the editor with two file arguments.
+The second is intended
+to be used as an `alternate' file.
+If the editor used doesn't have this feature, it must
+ignore the extra file argument and edit the first
+file argument.
+.TP
+Msg\-Protect: 644
+Defines octal protection bits for message files.  See 
+.I chmod(1)
+for an explanation of the octal number.
+.TP
+Folder\-Protect: 711
+Defines protection bits for folder directories.
+.TP
+\fIprogram\fR: default switches
+Sets default switches to be used whenever the mh program
+.I program
+is invoked.  For example, one could override the 
+	.I Editor:
+profile component when replying to messages by adding a
+component such as:
+.br
+	repl: -editor /bin/ed
+.TP
+cur\-\fIread-onlyfolder\fR: 172
+Keeps track of the last message seen in the specified read-only
+folder.  In folders to which write access is permitted, the
+current-message value is kept in a file called "cur" within
+that folder.
+.TP
+news\-\fInews-topic\fR: 12
+Keeps track of the last message seen in the specified news topic.
+.TP
+News\-Topics: news topics
+Sets the news topics to be selected by default for the news program.
+.TP
+prompter\-next: ed
+Names the editor to be used on exit from
+.I prompter(1)
+.PP
+The following profile elements are used whenever an mh program
+invokes some other program such as
+.I file(1)
+or
+.I ls(1).
+The mh profile can be used to select alternate versions of these
+programs if the user wishes.  The default values are given in
+the examples.
+.br
+	fileproc: /usr/ucb/file
+.br
+	installproc: /etc/mh/install-mh
+.br
+	lproc: /usr/ucb/c
+.br
+	lsproc: /usr/ucb/ls
+.br
+	mailproc: /usr/ucb/mail
+.br
+	prproc: /bin/pr
+.br
+	scanproc: /usr/ucb/scan
+.br
+	sendproc: /usr/ucb/send
+.br
+	showproc: /usr/ucb/c
+.TP
+	delete-prog: /bin/rm
+Normally, 
+.I rmm(1),
+rather than removing a message in file X will rename the
+file to ,X.  At Rand, a program known as the Midnight Skulker
+comes around once a day and eliminates files whose names begin
+with a comma.  If a user provides a 
+.I delete-prog
+profile entry, however, the specified program will be used
+instead to remove the file.
+.SH FILES
+$HOME/.mh\(ruprofile
+.SH SEE ALS

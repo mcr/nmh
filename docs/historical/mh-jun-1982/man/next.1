@@ -1,0 +1,29 @@
+.TH NEXT 1 RAND
+.SH NAME
+next \- show the next message
+.SH SYNOPSIS
+.B next 
+\%[+folder] \%[\-switches\ for\ \fIshowproc\fR] \%[\-help]
+.SH DESCRIPTION
+\fINext\fR performs a \fIshow\fR on the next message in the
+specified (or current) folder.
+Like \fIshow\fR, it passes any
+switches on to the program \fIshowproc\fR, which is called to list the
+message.
+This command is exactly equivalent to ``show next''.
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+showproc:	Program called to list the message
+.br
+Current-Folder:	To find the default current folder
+.SH DEFAULTS
+showproc:	/usr/ucb/c
+.SH SEE ALSO
+show(1),prev(1)
+.SH CONTEXT
+If a folder is specified, it will become the current folder, and the
+message that is shown (i.e., the next message in sequence)
+will become the current message.

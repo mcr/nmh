@@ -1,0 +1,52 @@
+.TH RMM 1 RAND
+.SH NAME
+rmm \- remove messages
+.SH SYNOPSIS
+.B rmm
+\%[+folder] \%[msgs] \%[
+.B \-help
+]
+.SH DESCRIPTION
+\fIRmm\fR removes the specified messages by renaming the message
+files with preceding commas.
+(This is the Rand-UNIX backup file
+convention.)
+.PP
+If the user has a profile component such as
+.br
+	delete-prog:	/bin/rm
+.br
+then instead of simply renaming the message file,
+.I rmm
+will call the named program to delete the file.
+.PP
+Some users of csh prefer the following:
+.br
+	alias rmm file +d
+.br
+where folder +d is a folder for deleted messages, and
+.br
+	alias mexp 'rm `mhpath +d all`'
+.br
+is used to `exponge' deleted messages.
+.PP
+The current message is not changed by \fIrmm\fR, so a \fInext\fR  will
+advance to the next message in the folder as expected.
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+.br
+Current-Folder:	To find the default current folder
+.br
+Delete-prog:	Optional program to delete the message
+.SH SEE ALSO
+rmf(1)
+.SH DEFAULTS
+.br
+`+folder' defaults to current
+.br
+`msgs' defaults to cur
+.SH CONTEXT
+If a folder is given, it will become current.

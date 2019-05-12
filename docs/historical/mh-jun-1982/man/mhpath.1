@@ -1,0 +1,116 @@
+.TH MHPATH 1 RAND
+.SH NAME
+mhpath \- print full pathnames of MH messages and folders
+.SH SYNOPSIS
+mhpath \%[+folder] \%[msgs] \%[\-help]
+.SH DESCRIPTION
+\fIMhpath\fR expands and sorts the message list \%[msgs] and writes
+the full pathnames of the messages to the standard output
+separated by newlines.
+
+If no ``msgs'' are specified, \fImhpath\fR outputs the folder (directory)
+pathname (current folder default).
+
+Contrasted with other MH commands, a message argument to \fImhpath\fR
+may often be intended for \fIwriting\fR.
+Because of this: 1) the name
+"new" has been added to \fImhpath\fR's list of reserved message names
+(the others are first, last, prev, next, cur, all).
+New is last + 1 (where last is 0 in a messageless folder).
+New may not be used as part of a message range.
+2) Within a message list,
+the following designations may refer to messages that do not exist:
+a single numeric message name,
+the single message name cur, and (obviously) the single message name new.
+All other message designations must refer to at least one existing message.
+3) An empty folder is not in itself an error.
+
+Message numbers greater than 999 as part of a range designation
+are replaced with 999.  Explicit single message numbers greater
+than 999, or message number 0 in any context, are errors.
+
+Examples: The current folder foo contains messages 3 5 6.
+Cur is 4.
+.nf
+\    % mhpath
+\    /r/phyl/Mail/foo
+
+\    % mhpath all
+\    /r/phyl/Mail/foo/3
+\    /r/phyl/Mail/foo/5
+\    /r/phyl/Mail/foo/6
+
+\    % mhpath 1000
+\    Message 1000 out of range 1-999
+
+\    % mhpath 1-1001
+\    /r/phyl/Mail/foo/3
+\    /r/phyl/Mail/foo/5
+\    /r/phyl/Mail/foo/6
+
+\    % mhpath new
+\    /r/phyl/Mail/foo/7
+
+\    % mhpath last new
+\    /r/phyl/Mail/foo/6
+\    /r/phyl/Mail/foo/7
+
+\    % mhpath last-new
+\    Bad message list "last-new".
+
+\    % mhpath cur
+\    /r/phyl/Mail/foo/4
+
+\    % mhpath 1-2
+\    No messages in range "1-2".
+
+\    % mhpath first:2
+\    /r/phyl/Mail/foo/3
+\    /r/phyl/Mail/foo/5
+
+\    % mhpath 1 2
+\    /r/phyl/Mail/foo/1
+\    /r/phyl/Mail/foo/2
+
+\    % mhpath 0
+\    Bad message list "0".
+
+\    % mhpath 0-last
+\    Bad message list "0-last".
+
+\    --Backquoted Operations--
+
+\    % cd `mhpath +inbox`
+
+     From "e":
+\    <CMD> run cat `mhpath cur`
+
+.fi
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+.br
+Current-Folder:	To find the default current folder
+.SH DEFAULTS
+`+folder' defaults to current
+.br
+`msgs' defaults to NULL
+.SH CONTEXT
+The folder and the current message are unaffected.
+.SH BUGS
+Like all MH commands, \fImhpath\fR expands and sorts \%[msgs].
+So don't expect
+.br
+\        mv `mhpath 501 500`
+.br
+to move 501 to 500.
+Quite the reverse.  But
+.br
+\        mv `mhpath 501` `mhpath 500`
+.br
+will do the trick.
+
+Out of range message 0 is treated far more severely than large out of
+range message numbers.

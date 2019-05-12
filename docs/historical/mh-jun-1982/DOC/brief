@@ -1,0 +1,41 @@
+
+
+
+
+	R-2367-AF, The MH Message Handling System: Users Manual,
+	B. S. Borden, R. S. Gaines, N. Z. Shapiro, November 1979.
+
+
+
+PURPOSE: To describe an electronic message handling system.  The report
+outlines the implementation and provides complete user level documentation
+for efficient utilization of a new computer utility.
+
+RELATED TO: Project AIR FORCE work on command and control, ...
+
+
+DISCUSSION:  The MH message handling system was designed and implemented
+to  provide  comprehensive electronic message facilities.  It implements
+no new facilities which are not available in other message systems,  but
+its  close  integration  with  the system's command interpreter lends it
+more power and flexibility than is otherwise available.  Rather  than  a
+standard  implementation  in  which  all  of  the  functions  of message
+handling are implemented in one monolithic program, MH is  a  collection
+of  loosly  coupled  programs,  each  of  which implement one particular
+aspect of message handling.
+     This implementation strategy has been found to be very flexible and
+easy  to  use.  Rather  than  having  to learn a new set of commands and
+conventions for interacting with  the  message  system,  users  use  the
+standard  system  command facility which they are already familiar with.
+Also, each module is relatively small, easy to debug and modify, and new
+modules  are  easy  to  add in a completely transparent manner.  Another
+important design feature of MH is its use of the operating  system  file
+facilities  directly.  That  is,  there  are  no monolithic message data
+bases,  rather  messages  are  stored   as   individual   files   within
+directories, which act as message folders.  Thus, all standard utilities
+are available on the messages without  having  to  code  them  into  the
+message system itself.
+     Finally, each user of MH has a personal profile which allows for
+tailoring of each command.  With these facilities, users are able to
+start using the package immediately, and to enhance their interface as
+they gain knowledge of their own usage patterns.

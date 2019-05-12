@@ -1,0 +1,63 @@
+/*LINTLIBRARY*/
+#include "../mh.h"
+#include "../folder.h"
+#include <stdio.h>
+char    *invo_name;
+
+char    *add(a, b) char *a, *b; { return a; }
+int     ambigsw(a, s) char *a; struct swit *s; { ; }
+int     atooi(s) char *s; { return 1; }
+char    **brkstring(s,b,t) char *s,*b,*t; { return &s; }
+char    *cdate(d) long *d; { return cdate(d); }
+	cndfree(a) char *a; { ; }
+	/*VARARGS3*/
+char    *concat(s1,s2,s3) char *s1,*s2,*s3; { return s1; }
+char    *copy(f,t) char *f,*t; { return f; }
+char    **copyip(f,t) char **f,**t; { return t; }
+	cputc(c,f) FILE *f; { ; }
+/*
+ * done should not be defined here because it is designed to be
+ *  redefined by the parent routines if they need special exit
+ *  processing.  Definition here causes multiply defined messages
+ *  from lint.
+ *
+ *      done(s) { ; }
+ */
+int     fdcompare(f1,f2) { return f1; }
+int     gans(p,s) char *p; struct swit *s; { return 1; }
+char    **getans(p,s) char *p; struct swit *s; { return &p; }
+char    *getcpy(s) char *s; { return s; }
+	help(s,sw) char *s; struct swit *sw; { ; }
+char    *locv(l) long l; { return locv(l); }
+int     m_convert(s) char *s; { return 0; }
+int     m_delete(s) char *s; { return 1; }
+int     m_edit(e,f,u,a) char **e,*f,*a; { return 0; }
+int     m_file(folder, msg, folders, nfolders, prsrvf, setcur)
+	char *folder, *msg; struct st_fold folders[];
+	int nfolders, prsrvf, setcur;
+	{ return 0; }
+char    *m_find(s) char *s; { return s; }
+int     m_getcur(s) char *s; { return 0; }
+	m_getdefs() { ; }
+int     m_getfld(s,n,b,bs,i) char *n,*b; FILE *i; { return 0; }
+char    *m_getfolder() { return m_getfolder(); }
+int     m_gmprot() { return 0; }
+struct msgs *m_gmsg(s) char *s; { return m_gmsg(s); }
+char    *m_mailder(s) char *s; { return s; }
+char    *m_name(i) { return m_name(0); }
+	m_replace(k,v) char *k,*v; { ; }
+int     m_send(a,f) char **a,*f; { return 0; }
+	m_setcur(i) { ; }
+	m_update() { ; }
+int     m_makedir(s) char *s; { return 1; }
+char    *makename(p,s) char *p,*s; { return p; }
+char    *path(n,t) char *n; { return n; }
+int     peekc(i) FILE *i; { return 1; }
+	printsw(s,sw,p) char *s,*p; struct swit *sw; { ; }
+char    *pwd() { return pwd(); }
+char    *r1bindex(s,c) char *s; { return s; }
+int     showfile(f) char *f; { return 1; }
+int     smatch(s,sw) char *s; struct swit *sw; { return 1; }
+char    *trimcpy(s) char *s; { return s; }
+int     type(fd,s) char *s; { return 1; }
+int     uleq(s1,s2) char *s1,*s2; { return 1; }

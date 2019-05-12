@@ -1,0 +1,89 @@
+.TH MH-ALIAS 5 RAND
+.SH NAME
+mh-alias \- alias file for mh message system
+.SH DESCRIPTION
+The Alias file for mail delivery is the file
+
+	/etc/MailAliases
+
+Each line of the alias file has the format:
+
+match : alias
+
+Where:
+
+	alias       :=  simple-list
+.br
+		    |   "<" alias-file
+.br
+		    |   "=" UNIX-group
+.br
+		    |   "*"
+
+.br
+	simple-list :=  simple-name
+.br
+		    |   simple-list, simple-name
+
+.PP
+Alias-file is a fully qualified UNIX file name.  UNIX-group is a
+group name from /etc/group.  A simple-name is a local user login
+name, including only alphanumerics, `.' and `\-'.  Throughout this
+file, case is ignored, except for alias-file names.
+.PP
+In match, a trailing * on a name will match anything. (See example
+below.)
+.PP
+The procedure for mail aliasing is:
+.br
+.HP 3
+1) Build a list of all addresses from the message to be
+delivered, eliminating duplicates.
+.br
+.HP 3
+2) For each line in the alias file, compare "match" against all
+of the existing addresses.  If a match, remove the matched
+name from the address list, and add each new alias name to the
+address list if it is not already on the list.
+.PP
+Since the alias file is read line by line, forward references
+work, but backward references are not recognized, thus, there is
+no recursion.
+.PP
+\fBExample:\fR
+.br
+	Borden: bruce
+.br
+	Bruce: bsb
+.br
+	Wahrman: mike
+.br
+	ASRL: bsb, mike, obrien, giarla
+.br
+	UNIX-committee: < /usr/people/unix-committee
+.br
+	System: = sys
+.br
+	Everyone: *
+.br
+	news.*: news
+	   ...
+.PP
+In the "unix-committee" example, the file "/usr/people/unix-
+committee" contains one simple-name, or a list of comma separated
+simple-names.  A new-line will be treated as a blank in this
+file, s.a.
+.br
+	foo, fie,
+.br
+	fum, fiddle
+.PP
+In the "system" case, the names from the group "sys" will be used
+as the expanded name list.
+.PP
+In the "news.*" case, all names of the form "news.<anything>" will
+be mapped to "news".  This is used for the MH news facility.
+.SH FILES
+/etc/MailAliases
+.SH SEE ALSO
+deliver(8),group(5),ali(1),

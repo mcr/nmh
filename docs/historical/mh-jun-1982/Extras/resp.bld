@@ -1,0 +1,5 @@
+if -r resp rm resp
+load -s resp replsubs annotate subs.a strings.a -O /rnd/borden/libg.a /rnd/borden/libh.a /rnd/borden/libg.a
+if -r resp.out mv resp.out resp
+:					fini
+

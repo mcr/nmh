@@ -1,0 +1,300 @@
+2/16/81 progs Dave Yost:
+	Fixed folder so that it checks value from m_gmsg and complains
+	if the folder is unreadable.  All other commands that call it
+	do this, so it was simply an error of omission.
+
+2/16/81 subs Dave Yost:
+	m_gmsg.c was testing return value of malloc against -1.
+	Tsk.
+
+2/16/81 subs Phyllis Kantar
+	trimcpy.c was scanning profile fields from the left and
+	truncating ('\0') at the first newline.  It now zaps
+	the trailing newline and replaces embedded NL's with blanks.
+
+2/23/81 progs phyl:
+	Fixed annotation so that it annotates only "To:" and "cc:"
+	    In forw.c  doano():
+		    Changed
+			    if(uleq(name, "to") || uleq(name, "cc") == 0) {
+		    to:
+			    if(uleq(name, "to") || uleq(name, "cc") ) {
+
+	Similarly for dist.c
+	Changed /etc/mh/distcomps to read "Distribute*"
+		instead of "Distribution*"
+
+	Also, fixed bug in annotate.c:
+		fprintf(tmp, "%s: %*s", comp, cp-sp, sp);
+			should be
+		fprintf(tmp, "%s: %*.*s", comp, cp-sp, cp-sp, sp);
+
+	Note: none of these fixes affects repl
+
+
+
+3/23/81 progs jdg/day:  changed deliver.c to check for effective uid and gid
+	while it is preventing forgery of mail.  Needed for uucp, when
+	uucico is invoked by a real person instead of uucp itself.
+
+4/7/81  progs Dave-Yost
+	Fixed scansub.c to check for HOSTNAME instead of "rand-unix".
+	A little portability, please.
+
+4/13/81 progs  Dave-Yost
+	Changed deliver to put out a date format like
+	  Monday, 13 Apr 1981 20:46-PST
+	instead of
+	  13 Apr 1981 at 2046-PST
+
+4/13/81 subs Dave Yost
+	modified m_edit.c to exec the editor with altmsg as an extra
+	argument, in case the editor can use it as an alt file.
+
+5/7/81  progs Dave-Yost
+	Changed conflict.c and conflict.8 to ignore /usr/spool/mail
+	files starting with '.'.
+
+5/7/81  progs Dave-Yost
+	conflict isn't smart about the fact that there can be
+	more than one login name on the same uid.  This should
+	be fixed.
+
+5/29/81 progs Phyl
+	Changed /usr/news/.mh_receive to grep for
+
+		'^[Tt][Oo]:.*news\.'
+
+	instead of
+
+		'[Tt][Oo]:'
+
+	However, 'news' will still break when there are multiple news folders
+        in the 'To:' field(s)!
+
+7/2/81  progs Phyl:
+	Changed inc.c and scansub.c so that mail is not lost when
+		the message number exceeds 999.
+
+7/2/81  progs day:
+	mh.h has #define MAXFOLDER 999 and hopefully all occurrences
+	of that magic number have been changed to MAXFOLDER.
+
+7/2/81  progs day:
+        Fixed pick and file so they won't go beyond 999 (MAXFOLDER)
+	into a folder.  file.c and pick.c had virtually identical
+        copies of the same routine to file a message.  Took it out and
+	put it into subs as m_file(), and changed it to have
+        several arguments so there are no connections via globals.
+        Also created ../folder.h which is included by pick.c, file.c,
+        and ../subs/m_file.c.
+
+7/2/81  progs day:
+	Changed the message-name parser (../subs/m_convert.c) to
+	limit message number arguments to 999 (MAXFOLDER).  Thus if you
+	say 'scan 800-10000', this will be interpreted as 'scan 800-999'
+
+7/2/81  progs day:
+	Some very minor changes to satisfy lint.
+
+7/6/81  progs day:
+	Did a make install of all the stuff changed in the last
+	few days.
+
+7/9/81  progs phyl:
+	fixed inc so that "inc -nochangecur" doesn't display a spurious '+'
+	on the 1st incorporated msg.
+
+7/24/81 progs  phyl:
+
+        Fixed rmail to match graphics.  On the Vax, it failed to construct
+        a From: field when the next hop is Arpanet if there was a remote
+	uucp hop remaining.
+
+8/10/81 progs phyl:
+
+	Fixed rmail to block uucp-to-arpanet mail when the originating
+	host is not a Rand sysname.  It also returns mail to the sender
+	when this condition occurs.
+
+	rmail now recognizes "at" as well as "@".
+
+	rmail no longer compares headers against a list of legal headers;
+	rather it tests for proper form "<63-chars-or-less>:"
+
+	m_getfld.c now tests for ':' BEFORE it tests for header length
+	exceeded.
+
+8/10/81 progs strings day:
+
+	remove hostname.c from mh/strings.a.  It was used only by
+	deliver.c for constructing a msgid;  now it uses
+	HOSTNAME (from <whoami.h>)
+
+8/10/81 Dave Yost
+	Put rhosts[] decl in mh.h and added rhosts.c to strings.a
+	rmail is only thing that references it just now.
+
+8/11/81 Dave Yost
+	Added rand proprietary notice to all .c, .h, and Makefiles.
+	Ownership and date on all files left unchanged.
+
+8/11/81 Dave Yost
+	Combined */Log into this file
+
+8/13/81 Phyl
+	Added uucp addresses to deliver's debug printout.
+	(Didn't install).
+
+8/18/81 Phyl
+	Fixed adrparse so that it accepts multiple "at"s in an address:
+	a!b!c at d at e at f  ==> (a!b!c at d at e) at f
+
+	Changed deliver to set a new process group when it is called
+        with the -deliver switch--so that if it sends an interrupt to pid
+        0, it's parent (e.g., srvrftp) won't get blown away.
+	Note that deliver now must be loaded with the jobs library (-ljobs),
+	to access setpgrp().  I added "#define VMUNIX" to mh.h,
+	and #ifdef'd the call to setpgrp.
+
+	Fixed deliver to allow 120 secs (instead of only 30)
+	for a user's .mh_receive to complete.
+
+8/26/81 Mike
+	Fixed "folder" so you can now have up to 300 folders.
+
+9/24/81 phyl
+	fixed scansub.c to incorporate illegal messages correctly:
+		Bug: If the bad message has the bobo in its last line,
+			then inc says [No mail incorporated]
+		FIX: if (state == BODYEOF || state == FILEEOF)
+					  -------------------
+		Bug: spurious chars printed in the body of the bad msg.
+		FIX:    a) \n after the bad component
+			b) if(scnout && state != FILEEOF)
+				     -------------------
+
+10/1/81 phyl
+	fixed mhl bug;  it no longer bombs on "mhl: -option " profile
+	arguments:
+		procargs(ap);           /* Old */
+		procargs(profargs);     /* New */
+
+10/13/81 obrien
+	changed scansub to replace '\f' with blank
+
+11/4/81 day
+	Fixed pick to say '1 hit' instead of `1 hits'.
+
+11/18/81  phyl
+        Accidently did a "make" in /usr/src/cmd/mh on Nov 18.  Most
+        programs reloaded because the new "#define VMUNIX" in mh.h caused
+        strings.a to be remade.  Did not install any of it. err file moved
+        to err.Nov18
+
+1/6/82    phyl
+	o Added scansub dependencies to Makefile
+	o Added rmail.c and scansub.c to CFILES in Makefile
+	o Alphabetized  dependency list in Makefile
+	o ??Are all the Nov 18 binaries suspect?  The Aug 18 .o files?
+	o I ask because--
+	   Nov 18 prompter had strange behavior (didn't respond to <DEL>,
+	   didn't display error messages) which disappeared when
+           recompiled.
+
+1/7/82  phyl
+	o Added cs-rand to rhosts.c.
+	o Re-make all of MH (save old .o files in DOT.o.01072;
+			     save old executables in SAVE.01072)
+
+1/20/82  phyl
+	Fixed scansub.c to terminate a short message body with ">>"
+	on the scan line.
+
+1/25/82  phyl
+	Changed deliver.c, repl.c, send.c to require all 5 characters
+	for -debug switch.
+
+	(didn't "make")
+
+2/19/82  phyl
+	mh.h: added SELECT_EMPTY flag
+
+2/22/82 day
+	mh.h change char to extern char for strings in strings/strings.a
+	progs: install my new inc, scan, and scansub with -time and -numdate
+	progs: change show.c so it includes mhl.c and calls it if
+	showproc is mhl, rather than execing it.
+
+3/10/82  phyl
+	Changed adrparse to return 0 in case of error, instead of exiting.
+	Changed repl to test for adrparse's return value and do the
+                right thing.  It constructs a reply skeleton, omitting the
+                offending addresses from the header.  Instead, unparsable
+                addresses are listed in the skeleton body.  Note, repl
+		normally takes the sender:'s (or from:'s) host as the default
+		to append to hostless addressees.  In the new version,
+		if the sender (or from) field was unparsable, the default
+		host is "?????".
+	Changed deliver to test for adrparse's 0 return value, and exit.
+
+4/22/82  phyl
+	Changed the functions msg_convert() and msg_conv() to convert()
+	and conv(), respectively, to maintain 8-char uniqueness.
+	Linked new source into /usr/dist/1.7
+
+4/23/82 phyl
+	scansub.c: renamed the structure tag 'zone' to 'tzone'
+	for compatibility with lesser C compilers (?). (Anyway,
+	it wouldn't load on the 11/45 under 2.8bsd without that change.)
+	Delete unused reference to locv().
+	Linked new source into /usr/dist/1.7
+
+5/8/82 phyl, guyton
+	scansub.c: no longer reads the full message when called
+	by scan.
+	Linked new source into /usr/dist/1.7
+
+5/8/82 phyl
+	rmail: now tacks on Arpa-style date to dateless uucp mail.
+	Takes date from oldest uucp-From line.  Assumes uudate is
+	in ctime() format.
+
+5/10/82 phyl
+        Fixed bug in deliver that caused mail addresses uuhost1!joe,
+        uuhost2!joe to look like duplicates.  Fix: if uuaddress, compare
+        host names instead of host numbers.
+
+5/12/82
+	Fixed news.
+
+	    Until now it couldn't handle "cc: news.topic", or "To: news.topicA,
+	    news.topicB", or news topics that aren't explicitly in the message
+	    header, or ...).
+
+	    Deliver: fixed it so that aliasing keeps a handle on the
+	    1st (local) alias.  Now deliver can pass this string to
+	    /usr/news/.mh_receive as an argument, rather than have .mh_receive
+	    grep through the message for the news topic.
+	    Deliver: changed aliasing so that, once it finds a match to an
+	    alias whose form is <string>*, it *continues* comparing addresses.
+
+	Deliver: changed it to fflush(stdout) after every printf() sans '\n'.
+
+6/3/82 phyl
+	All references to anoyes were changed from char *
+	to extern struct swit.
+
+	mh.h: delete hostname, layout;  add mailproc; change mypath
+	from extern char * to char *.
+
+	progs/Makefile:  move "chmod 777 MHTMP" down to installroot.
+
+	Deliver: a bug that caused the temp files in /usr/tmp/mh
+	to hang around whenever there was a local delivery error
+	was fixed.
+
+		if(!debug && rmflg > 1)  ==>  if(!debug && rmflg > 0)
+
+	m_gmsg.c:  WAS FIXED TO USE FREAD INSTEAD OF READ on the mail
+	dir

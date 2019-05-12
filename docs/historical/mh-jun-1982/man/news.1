@@ -1,0 +1,101 @@
+.TH NEWS 1 RAND
+.SH NAME
+news \- show news
+.SH SYNOPSIS
+\fBnews\fR \%[topic\ ...]
+\%[\fB\-check\fR]
+\%[\fB\-display\fR]
+\%[\fB\-update\fR]
+\%[\fB\-review\fR\ [topic]]
+\%[\fB\-send\ \fRtopic]
+\%[\fB\-topics\fR]
+\%[\fB\-help\fR]
+.SH DESCRIPTION
+.I News
+is an MH program which checks, displays, reviews, or sends news.
+A pseudo-user called `news' acts as an automated
+custodian for news items on various topics.
+These topics are managed as MH folders in the home directory of news.
+Mail sent to `news.everyone', for instance, will get
+filed in the `everyone' news folder.
+.PP
+You can explicitly select the group of news topics you want
+to check or display by specifying them as arguments to the
+.I news
+command.
+If you don't explicitly select topics in this way,
+the topic `everyone' is selected by default.
+Additional default topics can be selected by listing them on a
+\&``News\-Topics:'' line in your MH profile.
+The MH profile line
+must contain a blank-separated list of topics.
+As a special case, the profile line:
+.br
+    \&``News\-Topics:\ *''
+.br
+means you want to keep track of all news.
+.PP
+\&``\fINews \fB\-topics\fR''
+will show you what topics exist and
+the number of messages in each.
+Topics selected are marked with asterisks.
+\&``\fINews \fB\-help\fR''
+is like
+\&``\fInews \fB\-topics\fR''
+except that it also displays the syntax of the
+.I news
+command.
+.PP
+\&``\fINews \fB\-check\fR''
+will report the existence of unread news in the selected topics.
+.I News
+without any option arguments
+will display all unread news items from
+all selected topics.
+\&``\fINews \fB\-display\fR''
+is identical to
+.I news
+without an argument, but it suppresses the
+no news message (useful in login scripts).
+\&``\fINews \fB\-review\fR [#] [topic]''
+will redisplay the last # (default all) items
+in the selected topics.
+.PP
+News stores in your MH profile the message number of the most recent news
+item it has shown you in each topic.
+\&``\fINews \fB\-update\fR''
+will update your MH profile to indicate no
+outstanding news items to be read.
+.PP
+\&``\fINews \fB\-send\fR topic''
+is identical to
+\&``mail news.topic''.
+The mail sent to news.topic is
+automatically filed in a folder with
+name topic.
+.PP
+Any unrecognized switches to
+.I news
+are sent along to
+.IR l (1)
+for displaying items, or to
+.IR mail (1)
+for sending a news item.
+.SH FILES
+.ta 2.4i
+$HOME/.mh\(ruprofile	The user profile
+.br
+~news/<topics>	The news folders
+.br
+~news/.<topics>	The number of items in <topics>
+.SH PROFILE COMPONENTS
+News-topics:            Topics the user is interested in.
+.br
+News-<topic>:           Current message in news topics
+.SH SEE ALSO
+mh-mail(5), mh(1)
+.SH DEFAULTS
+The topic `everyone' is the default topic.
+.SH CONTEXT
+The current message in each news folder is maintained in the
+user's mh\(ruprofile.

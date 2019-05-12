@@ -1,0 +1,35 @@
+.TH ALI 1 RAND
+.SH NAME
+ali \- list mail aliases
+.SH SYNOPSIS
+.B ali
+[
+.B \-l
+] name ...
+.SH DESCRIPTION
+.I Ali 
+searches the mail alias file for each of the given
+\fIname\fRs.
+It creates a list of users for whom those
+\fIname\fRs
+are aliases, and writes that list on standard output.
+If the
+.B \-l
+option is specified, each username appears on a separate line;
+otherwise, the names are separated by commas and printed on
+as few lines as possible.  Usernames are not repeated on the
+output list.
+.PP
+Each
+.I name
+is processed as described in mh-alias(5).  After
+processing, any resulting names that do not appear
+in the password file are printed with an error message.
+.SH FILES
+/etc/passwd
+.br
+/etc/MailAliases
+.br
+/etc/group
+.SH SEE ALSO
+deliver(8),mh-alias(5)

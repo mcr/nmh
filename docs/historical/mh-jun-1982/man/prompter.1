@@ -1,0 +1,73 @@
+.TH PROMPTER 1 RAND
+.SH NAME
+prompter \- prompting editor front end
+.SH SYNOPSIS
+This program is not called directly but takes the place
+of an editor and acts as an editor front end.
+.br
+\fBprompter\fR \%[\fB\-erase\fR\ chr] \%[\fB\-kill\fR\ chr] \%[\fB\-help\fR]
+.SH DESCRIPTION
+\fIPrompter\fR is an editor which allows rapid composition of
+messages.
+It is particularly useful to network and low-speed
+(less than 2400 baud) users of MH.
+It is an MH program in that
+it can have its own profile entry with switches, but it can't
+be invoked directly as all other MH commands can; it is an editor
+in that it is invoked by an ``\-editor prompter'' switch or by the
+profile entry ``Editor: prompter'', but functionally it is merely
+a text-collector and not a true editor.
+
+\fIPrompter\fR expects to be called from \fIcomp\fR, \fIrepl\fR, \fIdist\fR, or
+\fIforw\fR, with a draft file as an argument.
+For example, ``comp
+\-editor prompter'' will call \fIprompter\fR with the file ``draft'' already set
+up with blank components.
+For each blank component it finds in
+the draft, it prompts the user and accepts a response.
+A
+<RETURN> will cause the whole component to be left out.
+A ``\\''
+preceding a <RETURN> will continue the response on the next line,
+allowing for multiline components.
+
+Any component that is non-blank will be copied and echoed to the
+terminal.
+
+The start of the message body is prompted by a line of
+dashes.
+If the body is non-blank, the prompt is
+.br
+``--------Enter additional text''.
+Message-body typing is terminated with
+a <CTRL-D> (or <OPEN>).
+Control is returned to the calling
+program, where the user is asked ``What now?''.
+See \fIcomp\fR for
+the valid options.
+
+The line editing characters for kill and erase may be
+specified by the user via the arguments ``\-kill chr'' and ``\-erase
+chr'', where chr may be a character; or ``\\nnn'', where nnn is the
+octal value for the character.
+(Again, these may come from the
+default switches specified in the user's profile.)
+
+A <DEL> during message-body typing is equivalent to
+<CTRL-D> for compatibility with NED.
+A <DEL> during
+component typing will abort the command that invoked
+\fIprompter\fR.
+.PP
+The first non-flag argument to
+.I comp
+is taken as the name of the draft file, and
+subsequent non-flag arguments are ignored.
+(`Repl' invokes editors with two file arguments:
+the draft file name and the replied-to message file name.)
+.SH FILES
+None
+.SH PROFILE COMPONENTS
+.ta 2.4i
+prompter-next:	To name the editor to be 
+	used on exit from \fIprom

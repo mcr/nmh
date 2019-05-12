@@ -1,0 +1,193 @@
+.TH MH-MAIL 5 RAND
+.SH NAME
+mh-mail \- Message format for MH
+.SH DESCRIPTION
+.I MH,
+the Rand message-handling system, processes messages in
+a particular format.  It should be noted that neither
+the Berkeley mailer nor the Bell mail program produces
+message files in precisely the correct format for 
+.I mh.
+.PP
+Each user possesses a mail drop box which initially receives
+all messages processed by
+.I deliver(8).
+.I Inc(1)
+will read from that drop box and incorporate the new messages
+found there into the user's own mail folders.   The mail drop
+box consists of one or more messages.  To facilitate the
+separation of messages, each message begins and ends with
+a line consisting of nothing but four Control-A (octal 001)
+characters.
+.PP
+Each message consists of two parts: a header, consisting of
+one or more header lines, and a body, containing the actual
+text of the message.  These parts are separated by an empty
+line, i.e. two consecutive Newline characters.
+Within MH, the header and body may be separated by a line
+consisting of dashes.
+.PP
+Each header item can be viewed as a single logical line of ASCII
+characters.
+If the text of a header item extends across several
+real lines, the continuation lines are indicated by leading
+spaces or tabs.
+.PP
+Each header item is called a component and is composed of a
+keyword or name, along with associated text.
+The keyword begins at the
+left margin, may contain spaces or tabs, may not exceed 63
+characters, and is terminated by a colon (:).
+Certain
+components (as identified by their keywords) must follow rigidly
+defined formats in their text portions.
+.PP
+The text for most formatted components (e.g., ``Date:'' and ``Message-Id:'')
+is produced automatically.
+The only ones entered by the
+user are address fields such as ``To:'', ``cc:'', etc.
+ARPA addresses
+are assigned mailbox names and host computer specifications.
+The
+rough format is ``mailbox at host'', such as ``Borden at Rand-Unix''.
+Multiple addresses are separated by commas.
+A missing host is
+assumed to be the local host.
+.PP 
+Following is a list of header components that are considered
+meaningful to various MH programs.
+.TP 15
+.I Component
+.I Usage
+.br
+.TP
+Date:
+Added by
+.I deliver(8),
+contains date and time of delivery.
+.br
+.ns
+.TP
+From:
+Added by
+.I deliver(8),
+contains the userid of the sender.  But see "Sender:"
+.br
+.ns
+.TP
+Sender:
+Added by
+.I deliver(8)
+in the event that the user has supplied a "From:" line,
+contains the userid of the sender.
+.br
+.ns
+.TP
+To:
+Contains address of recipient of message.
+.br
+.ns
+.TP
+cc:
+Contains addresses of additional recipients.
+.br
+.ns
+.TP
+Bcc:
+Still more recipients.  However, the Bcc line is not
+copied onto the message as delivered, so these recipients
+are not listed.
+.br
+.ns
+.TP
+fcc:
+Causes
+.I deliver(8)
+to copy the message into the specified folder.
+.br
+.ns
+.TP
+Subject:
+Sender's commentary.  It is displayed by
+.I scan(1).
+.br
+.ns
+.TP
+Message-ID:
+A unique message identifier glued on by 
+.I deliver
+if the
+.B \-msgid
+flag is set.
+.br
+.ns
+.TP
+In-Reply-To:
+A commentary line added by 
+.I repl(1)
+when replying to a message.
+.br
+.ns
+.TP
+Replied:
+Reply date added by
+.I repl(1)
+under the "annotate" option.
+.br
+.ns
+.TP
+Forwarded:
+Forwarding date added by
+.I forw(1)
+under the "annotate" option.
+.br
+.ns
+.TP
+Distribute-to:
+New recipients for a redistributed message processed
+by
+.I dist(1).
+.br
+.ns
+.TP
+Distribute-cc:
+Still more recipients.  See "cc:".
+.br
+.ns
+.TP
+Distribute-bcc:
+Even more recipients.  See "bcc:.
+.br
+.ns
+.TP
+Distribute-fcc:
+Copy distributed message into a folder.  See "fcc:".
+.br
+.ns
+.TP
+Distribute-from:
+Added when redistributing a message.
+.br
+.ns
+.TP
+Distribution-date:
+Is to distribute-from as Date: is to From:.
+.br
+.ns
+.TP
+Distribution-id:
+Added if msgid option is in effect.
+.br
+.ns
+.TP
+Distributed:
+Annotation for
+.I dist(1)
+.SH FILES
+/usr/spool/mail/*
+.SH SEE ALSO
+\fIThe MH Message Handling System: User's Manual\fR
+by B. Borden, R. Gaines, and N. Shapiro
+.br
+\fIStandard for the Format of ARPA Network Test Messages\fR
+by D. Crocker, J. Vittal, K. Pogran, and D. Henderson, Jr.

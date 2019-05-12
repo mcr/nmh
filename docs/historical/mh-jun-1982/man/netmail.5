@@ -1,0 +1,39 @@
+.TH NETMAIL 5 RAND
+.SH NAME
+netmail \- Arpanet mail queue
+.SH DESCRIPTION
+Each file in /usr/spool/netmail contains a message to be sent to
+one or more sites on the Arpanet.  They are processed by the
+.I mailer(8)
+daemon.
+The format of a message file is as follows:
+The first line has the sender's name, a space, and the date the
+message was sent (in the form returned by 
+.I cdate(3)
+).  Following lines
+represent addresses and have a code character, a host name, a space,
+and a mailbox name.  The code is '/' if this address has not already
+been handled, '|' if it has.  The addresses end with a blank line.
+The remainder of the file is the text of the message.
+.PP
+.B Example:
+.br
+   jones 10-Jul-80@13:13:13
+.br
+   /usc-isif op-nobody
+.br
+   |rand-ai smith
+.br
+
+.br
+   From: Jones at Rand-Unix
+.br
+   To: op-nobody at Usc-Isif, smith at Rand-Ai
+.br
+
+.br
+   This is a test message.
+.SH FILES
+/usr/spool/netmail/*
+.SH SEE ALSO
+mailer(8),deliver(8)

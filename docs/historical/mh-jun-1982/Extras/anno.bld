@@ -1,0 +1,5 @@
+if -r anno rm anno
+load -s anno annotate subs.a strings.a -O /rnd/borden/libg.a /rnd/borden/libh.a
+if -r anno.out  mv anno.out anno
+:					fini
+

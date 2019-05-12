@@ -1,0 +1,7 @@
+
+
+11/15/80
+
+	_sobuf is defined.  Previously it was in stdio.h
+
+	errno is defined.  Previously it was in errno.h

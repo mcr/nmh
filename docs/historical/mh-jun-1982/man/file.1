@@ -1,0 +1,87 @@
+.TH FILE 1 RAND
+.SH NAME
+file \- file message(s) in (an)other folder(s)
+.SH SYNOPSIS
+\fBfile \%[\fB\-\fRsrc\ +folder] \%[msgs] \%[\fB\-link\fR] \%[\fB\-preserve\fR] \%+folder\ ...
+\%[\fB\-nolink\fR] \%[\fB\-nopreserve\fR]
+\%[\fB\-file\fR\ file] \%[\fB\-nofile\fR] \%[\fB\-help\fR]
+.SH DESCRIPTION
+\fIFile\fR moves (\fImv\fR(1)) or links (\fIln\fR(1)) messages from a
+source folder into one or more destination folders.
+If you think
+of a message as a sheet of paper, this operation is not
+unlike filing the sheet of paper (or copies) in file cabinet
+folders.
+When a message is filed, it is linked into the
+destination folder(s) if possible, and is copied otherwise.
+As long
+as the destination folders are all on the same file system, multiple filing
+causes little storage overhead.
+This facility provides a good way to cross-file or multiply-index
+messages.
+For example, if a message is received from Jones about
+the ARPA Map Project, the command
+
+     file\0cur\0+jones\0+Map
+
+would allow the message to be found in either of the two
+folders `jones' or `Map'.
+
+The option `\-file file' directs \fIfile\fR to use the specified
+file as the source message to be filed, rather than a message from
+a folder.
+
+If a destination folder doesn't exist, \fIfile\fR will ask if you
+want to create one.
+A negative response will abort the file
+operation.
+
+`\-link' preserves the source folder copy of the message
+(i.e., it does a \fIln\fR(1) rather than a \fImv\fR(1)), whereas,
+`\-nolink' deletes the ``filed'' messages from the source
+folder.
+Normally, when a message is filed, it is assigned the
+next highest number available in each of the destination folders.
+Use of the `\-preserve' switch will override this message
+``renaming'', but name conflicts may occur, so
+use this switch cautiously.
+(See \fIpick\fR for more details on
+message numbering.)
+
+If `\-link' is not specified (or `\-nolink' is specified),
+the filed messages will be removed (unlink(2)) from the
+source folder.
+.SH IMPORTANT NOTE
+"File" already exists in many Unix systems as a program to check
+the type of a file.  If the Rand MH system has been installed,
+that program will have been renamed to
+.I filetype(1).
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.SH PROFILE COMPONENTS
+.br
+Path:	To determine the user's MH directory
+.br
+Current-Folder:	To find the default current folder
+.br
+Folder\-Protect:	To set mode when creating a new folder
+.SH SEE ALSO
+show(1), folder(1)
+.SH DEFAULTS
+`\-src +folder' defaults to the current folder
+.br
+`msgs' defaults to cur
+.br
+`\-nolink'
+.br
+`\-nopreserve'
+.br
+`\-nofile'
+.SH CONTEXT
+If `\-src +folder' is given, it will become the
+current folder for future MH commands.
+If neither `\-link' nor
+`all' are specified, the current message in the source
+folder will be set to the last message specified; otherwise, the
+current message won't be changed.

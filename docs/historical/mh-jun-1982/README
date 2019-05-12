@@ -1,0 +1,7 @@
+To install mh, read the file 'MHgenerate'
+
+The documentation is somewhat in transition.
+In the DOC directory you will find the original Rand
+report on mh, but since then we have generated man pages
+which will be found in the 'man' directory and are
+more current.

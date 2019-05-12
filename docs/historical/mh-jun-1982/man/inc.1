@@ -1,0 +1,100 @@
+.TH INC 1 RAND
+.SH NAME
+inc \- incorporate new mail
+.SH SYNOPSIS
+\fBinc\fR \%[+folder] \%[\fB\-audit\ \fRaudit-file] \%[\fB\-help\fR]
+\%[\fB\-changecur\fR] \%[\fB\-nochangecur\fR]
+ \%[\-time] \%[\-notime] \%[\-numdate] \%[\-nonumdate]
+.SH DESCRIPTION
+\fIInc\fR incorporates mail from the user's incoming mail drop
+into an MH folder.
+If `+folder' isn't specified,
+the folder named ``inbox'' in the user's MH directory will be used.
+The
+new messages being incorporated are assigned numbers starting
+with the next highest number in the folder.
+If the specified (or
+default) folder doesn't exist, the user will be queried prior to
+its creation.
+As the messages are processed, a \fIscan\fR  listing
+of the new mail is produced.
+
+If the user's profile contains a ``Msg\-Protect: nnn'' entry, it
+will be used as the protection on the newly created messages,
+otherwise the MH default of 664 will be used.
+During all
+operations on messages, this initially assigned protection will
+be preserved for each message, so \fIchmod\fR(I) may be used to set a
+protection on an individual message, and its protection will be
+preserved thereafter.
+
+If the switch `\-audit audit-file' is specified (usually as a
+default switch in the profile), then \fIinc\fR will append a header
+line and a line per message to the end of the specified
+audit-file with the format:
+
+.nf
+.ti 1i
+\*(<<inc\*(>> date
+.ti 1.5i
+<scan line for first message>
+.ti 1.5i
+<scan line for second message>
+.ti 2.5i
+<etc.>
+.fi
+
+This is useful for keeping track of volume and source of incoming
+mail.
+Eventually, \fIrepl\fR, \fIforw\fR, \fIcomp\fR, and \fIdist\fR may also
+produce audits to this (or another) file, perhaps with
+``Message-Id:'' information to keep an exact correspondence history.
+``Audit-file'' will be in the user's MH directory unless a full
+path is specified.
+
+\fIInc\fR will incorporate even illegally formatted messages into the
+user's MH folder, inserting a blank line prior to the offending
+component and printing a comment identifying the bad message.
+
+In all cases, the \*.mail file will be zeroed.
+
+If the `\-time' switch is selected, the time of the message is shown
+after the date in the scan lines.
+If the `\-numdate' switch is selected,
+the date (and time if `\-time' is selected) of the message
+is shown in the scan lines as one long number
+made up of year, month, day, hour, minute.
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.br
+/usr/spool/mail/*	The user's mail drop
+.br
+<mh-dir>/audit-file	Audit trace file (optional)
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+.br
+Folder\-Protect:	For protection on new folders
+.br
+Msg\-Protect:	For protection on new messages
+.SH SEE ALSO
+deliver(8), mh-mail(5), scan(1), mail(1)
+.SH DEFAULTS
+`+folder' defaults to ``inbox''
+.br
+`-changecur'
+.br
+`\-notime'
+.br
+`\-nonumdate'
+.SH CONTEXT
+The folder into which the message is
+being incorporated will become the
+current folder, and the first message incorporated will be the
+current message unless the
+.B \-nochangecur
+option is specified.
+This leaves the context ready for a \fIshow\fR
+of the first new message.
+.SH BUGS
+The `\-numdate' option ignores tim

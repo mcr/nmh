@@ -1,0 +1,104 @@
+.TH FOLDER 1 RAND
+.SH NAME
+folder, folders \- set/list current folder/message
+.SH SYNOPSIS
+\fBfolder\fR \%[+folder] \%[msg] \%[\fB\-all\fR]
+\%[\fB\-fast\fR] \%[\fB\-nofast\fR] \%[\fB\-up\fR] \%[\fB\-down\fR]
+\%[\fB\-header\fR] \%[\fB\-noheader\fR] \%[\fB\-total\fR]
+\%[\fB\-nototal\fR] \%[\fB\-pack\fR] \%[\fB\-nopack\fR]
+\%[\fB\-help\fR]
+.br
+\fBfolders\fR
+.SH DESCRIPTION
+Since the MH environment is the shell, it is easy to lose
+track of the current folder from day to day.
+\fIFolder\fR will
+list the current folder, the number of messages in it, the
+range of the messages (low-high), and the current message within
+the folder, and will flag a selection list or extra files if they
+exist.
+An example of the output is:
+
+      inbox+ has 16 messages ( 3\- 22); cur= 5.
+
+If a `+folder' and/or `msg' are specified, they will
+become the current folder and/or message.
+An `\-all' switch
+will produce a line for each folder in the user's MH directory,
+sorted alphabetically.
+These folders are preceded by the read-only
+folders, which occur as \*.mh\(ruprofile ``cur\-'' entries.
+For example,
+
+.nf
+.ta .5i 2.5i 3.6i 
+           Folder\ \ 	#\ of\ messages	(\ range\ );\ cur msg (other files)
+   /fsd/rs/m/tacc\ \ has	35\ messages	(1\-\035);\ cur=\ 23.
+/rnd/phyl/Mail/EP\ \ has	82\ messages	(	1\-108);\ cur=\ 82.
+               ff\ \ has	4\ messages	(1\-\0\04);\ cur=\ \01.
+            inbox+\ has	16\ messages	(3\-\022);\ cur=\ \05.
+               mh\ \ has	76\ messages	(1\-\076);\ cur=\ 70.
+            notes\ \ has	2\ messages	(1\-\0\02);\ cur=\ \01.
+             ucom\ \ has	124\ messages	(1\-124);\ cur=\ \06; (select).
+
+	TOTAL=\0339\ messages\0in\0\07\0Folders.
+.re
+.fi
+
+The ``+'' after inbox indicates that it is the current folder.
+The ``(select)'' indicates that the folder ucom has a selection
+list produced by \fIpick\fR.
+If ``others'' had appeared in parentheses at
+the right of a line, it would indicate that there are files in
+the folder directory that don't belong under the MH file naming
+scheme.
+
+The header is output if either an `\-all' or a `\-header' switch
+is specified; it is suppressed by `\-noheader'.
+Also, if \fIfolder\fR
+is invoked by a name ending with ``s'' (e.g., \fIfolders\fR),
+`\-all' is assumed.
+A `\-total' switch will produce only the
+summary line.
+
+If `\-fast' is given, only the folder name (or names in the
+case of `\-all') will be listed.
+(This is faster because the
+folders need not be read.)
+
+The switches `\-up' and `\-down' change the folder to be the
+one above or below the current folder.
+That is, ``folder \-down''
+will set the folder to ``<current\-folder>/select'', and if the
+current folder is a selection-list folder, ``folder \-up'' will
+set the current folder to the parent of the selection-list.
+(See \fIpick(1)\fR for details on selection-lists.)
+
+The `\-pack' switch will compress the message names in a folder, removing
+holes in message numbering.
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.br
+/bin/ls	To fast-list the folders
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+.br
+Current-Folder:	To find the default current folder
+.SH SEE ALSO
+pick(1)
+.SH DEFAULTS
+`+folder' defaults to the current folder
+.br
+`msg' defaults to none
+.br
+`\-nofast'
+.br
+`\-noheader'
+.br
+`\-nototal'
+.br
+`\-nopack'
+.SH CONTEXT
+If `+folder' and/or `msg' are given, they will become the
+current folder and/or message.

@@ -1,0 +1,178 @@
+                      HOW TO GENERATE AN MH
+
+ASSUMPTIONS/RESTRICTIONS:
+
+        All of the code is written for Version  7  C,  and  assumes  the
+existence of appropriate Version 7 /usr/include files.  It also uses the
+Version  7  stdio  package,  which  is  somewhat  different   from   the
+Phototypesetter stdio!
+
+        There is moderate usage of Version 7 UNIX features, including:
+
+		ftime() system call
+		execlp() & execvp() environment exec calls
+		getenv() environment access
+
+also, login has to be changed to add the environment entry  "USER=name".
+This is used during scan listings to see if the message "From" should be
+replaced by "To:name".  This string is NOT used to determine the  "From:
+name" stamp on outgoing mail.
+
+        All of these usages ARE replaceable by subroutines which do  the
+same thing, only slower.  That is, a line of the form:
+
+		homedir = getenv("HOME");
+
+should be replaced by something like:
+
+		homedir = gethome();
+
+and the routine gethome()  written  to  return  the  home  directory  by
+looking through /etc/passwd for the line matching the process' getuid().
+This goes for the environment variable "USER" as well.
+
+The routines execlp() & execvp() are simply fancy exec's, which use  the
+"PATH"  environment  variable  to  determine the search path by which to
+find the executable image.  They can be replaced by routines which use a
+default  search list.  They also call a shell to execute the file in the
+same way the shell handles shell scripts.
+
+
+
+PROCEDURE:
+
+
+1) Read the MH directory tree onto a file system.
+   On our system it lives in the directory "/usr/src/cmd/mh".
+
+2) Edit mh.h, and define ARPANET if you are on the ARPANET.
+   If not, don't define it.  If ARPANET is not defined and if you want to
+   assign your host a name for address formatting, change HOSTNAME in
+   adrparse.h.  If you are on VMUNIX, define that in mh.h and set up the
+   JOBSLIB define in progs/Makefile.
+
+3) Examine the C header files in the "Extras" directory.  Copy  them  to
+   /usr/include or support/ and modify them for your installation.
+   If you are going to use mh over uucp and/or ARPANET links, you must edit
+   your /usr/include/whoami.h to be sure the defines for sysname (uucp) and
+   HOSTNAME & HOSTNUM (ARPANET) are correct.  If you are not on the
+   ARPANET, delete HOSTNAME and HOSTNUM from whoami.h.
+
+4) Examine all of the files in the "strings" directory.  These contain
+   site-dependent strings, such as pathnames for programs used by MH.  Most
+   of the files contain short descriptions of what the strings are.
+   'showproc.c' refers to a program which is found as support/l.c and which
+   is installed as 'c' linked to 'l'.  You may want to use Berkeley's
+   'more' or some other program here.  The BINDIR and MHDIR entries in
+   Makefile and */Makefile must agree with the contents of strings/*.c.
+   Also, the 'file' command in support/news/mh_receive should have the same
+   path as is in strings/fileproc.c.  Make sure BINDIR (/usr/local as
+   distributed) is put into everyone's PATH by login or by shell startup
+   files.
+   Note:  if you are installing mh `unofficially', and you don't have
+   permissions to make directories in /usr/spool/ and /etc/, then make
+   sure the paths in the strings/*.c files and in support/mailsys.h
+   are directories you have permission to make if they don't exist already.
+   In particular, /usr/spool/locks/ must be on the same file system as
+   /usr/spool/mail so that links can be made.  Try /usr/tmp/locks if
+   you can't mkdir /usr/spool/locks/.
+
+5) Install support/putenv.c into your system libc.a,  or  if  you  don't
+   want  it as part of your standard C library, move it into subs. (Both
+   options work equally well for MH!)
+
+6) Copy the file "support/MailAliases" to /etc.  Then you should look at
+   it and see if you want to add any mail aliases.
+
+7) In the top level directory, utter:
+
+	make all
+
+   This will make both of the libraries: strings.a and subs.a,  and  all
+   of the executable modules.
+   (Ignore the possible error message "nm: sysname.o--no name list")
+
+
+8) For the 'news' facility of mh to work, you must:
+	Create a user called 'news' who belongs to the group 'mail',
+	  with password '--none--' in /etc/passwd and /etc/group.
+	Creat a home directory for news: "/usr/news".
+	cd /usr/news
+	/etc/chown news * .??*
+
+9)
+	make onceonly           This renames conflicting bell
+				programs, and makes requisite
+				directories.
+
+	make install            This puts all of the programs,
+				misc files, and man pages
+				into appropriate directories.
+
+10) As SU:
+	cd progs; make installroot
+
+    - If /etc/chown isn't found, try linking /bin/chown to /etc/chown
+
+    - If [ isn't found, try linking /bin/test to /bin/[
+
+    - If "true" isn't found, create the executable NULL file /bin/true.
+
+That's it.  Take a close look at the Makefile--it does LOTS of work.
+Especially note that it renames the V7 `file' program to `filetype'
+because for historical and other reasons, mh has its own `file' command.
+Also, MH has its own versions of `mail' and `rmail'.  If you don't want
+to install everything in standard places, run "make install" with the
+variables MHDIR=newdir and BINDIR=newdir pointing wherever you wish.  If
+you do this, you probably have to change some of the path names in the
+strings files.  For most of them, you can get away with adding profile
+entries to change where the default paths are sought.
+
+If you don't have `make':
+
+     You'll have to use the make file as a template for commands to give
+     by  hand.  Basically  each  section  of  the  make file defines the
+     sequence of shell commands needed to create the object  before  the
+     `:'.  The list immediately after the `:' specifies the dependencies
+     for the object--that is, those objects which either  must  be  made
+     first, or those modules that if they've changed, the object must be
+     rebuilt.  The following lines (up to the next  object)  are  simply
+     shell  commands to be executed.  Make knows how to create .o's from
+     .c's, and the "CFLAGS= -O" at the beginning  tells  it  to  include
+     optimization when it does a c compile.
+
+If you don't have stdio (i.e. some version 7 C compiler):
+
+     Punt.   I  recently  converted  the  whole  package  from  the  old
+     getc/putc/iobuf    subroutines--including    lots    of   upgrades/
+     improvements, it took me about a week.  Expect it to take a  couple
+     of  weeks for someone good to convert back.  Basically, convert the
+     subroutines, then once you've converted one module (start with show
+     or  comp),  you'll  find all the rest VERY similar.  Some day I may
+     split out all of the  system  dependencies,  but  don't  hold  your
+     breath.
+
+
+
+As a last resort:
+
+     Feel free to send mail to me, but please don't expect me  to  spend
+hours  helping.  Collect  your  questions/problems, and get in touch and
+I'll see what I can do.  I can be reached:
+
+	via ARPANET:    Borden at Rand-UNIX
+
+	Mail:           The Rand Corporation
+			1700 Main Street
+			Santa Monica, CA 90406
+
+Bruce Borden
+April, 1980
+
+
+    If you are accessible via the  arpanet  or  via  uucp  mail,  please
+contact the secretary to the Director of the Information Systems Lab at
+Rand, and get on our mh-bugs electronic mailing list.  213/393-0411
+
+Dave Yost
+Februar

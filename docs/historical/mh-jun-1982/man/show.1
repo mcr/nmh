@@ -1,0 +1,74 @@
+.TH SHOW 1 RAND
+.SH NAME
+show \- show (list) messages
+.SH SYNOPSIS
+show \%[+folder] \%[msgs] \%[\-format] \%[\-noformat] \%[\-pr] \%[\-nopr] \%[\-draft] \%[\-help]
+\%[\fIc\fR\ or\ \fIpr\fR\ switches]
+.SH DESCRIPTION
+\fIShow\fR lists each of the specified messages to the standard
+output (typically, the terminal).
+The messages are listed exactly
+as they are, with no reformatting.
+A program named by the \fBshowproc\fR profile component is
+invoked to do the listing, and any switches not recognized by
+\fIshow\fR are passed along to that program.  The default
+program is known as \fIc\fR (also known as \fIl\fR).
+The mh command \fBmhl\fR can be used as a \fBshowproc\fR
+to show messages in a more uniform format.  See mhl(1).
+If the `-noformat' option is specified, `/bin/cat' is used
+instead of \fBshowproc\fR.
+The opposite of this is `-format', which is the default.
+
+If no ``msgs'' are specified, the current message is used.
+If
+more than one message is specified, \fIc\fR will prompt for a
+<return> prior to listing each message.
+
+\fIc\fR will list each message, a page at a time.
+When the end of
+page is reached, \fIc\fR will ring the bell and wait for a <RETURN>
+or <CTRL-D>.
+If a <return> is entered, \fIc\fR will clear the
+screen before listing the next page, whereas <CTRL-D> will not.
+The switches to \fIc\fR are
+`\-p#' to indicate the page length in lines, and `\-w#' to
+indicate the width of the page in characters.
+
+If the standard output is not a terminal, no queries are made,
+and each file is listed with a one-line header and two lines of
+separation.
+
+If `\-pr' is specified, then \fIpr\fR(I) will be invoked rather than
+\fIc\fR, and the switches (other than `\-draft') will be passed
+along.
+``Show \-draft'' will list the file <mh-dir>/draft if it
+exists.
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.br
+/usr/ucb/c	Screen-at-a-time list program
+.br
+/bin/pr	\fIpr\fR(I)
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+.br
+Current-Folder:	To find the default current folder
+.br
+showproc:	Program to show message
+.br
+prproc:		Program to use for ``pr''
+.SH SEE ALSO
+next(1), prev(1), c(1), mhl(1)
+.SH DEFAULTS
+`+folder' defaults to current
+.br
+`msgs' defaults to cur
+.br
+`\-format'
+.br
+`\-nopr'
+.SH CONTEXT
+If a folder is given, it will become the current message.
+The last message
+listed will become the current message.

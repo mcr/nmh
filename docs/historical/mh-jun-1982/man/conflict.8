@@ -1,0 +1,52 @@
+.TH CONFLICT 8 RAND
+.SH NAME
+conflict \- Search for alias/password conflicts
+.SH SYNOPSIS
+.B /etc/mh/conflict
+[\fB\-mail\fR\ name]
+.SH DESCRIPTION
+.I Conflict
+is a program which checks to see that inconsistencies between
+the Rand MH alias file (
+.I mh-alias(5)
+) and the
+.I password(5)
+file have not been introduced.  In particular, a line in the
+alias file may be "tom: jones" (because the user "jones" likes to be
+called Tom), but if "tom" is also a valid user name for someone else, then 
+that user will no longer receive any mail; his mail will be received
+by "jones" instead!
+.PP
+.I Conflict
+also checks for mailboxes in /usr/spool/mail which do not belong
+to a valid user.
+It assumes that no user name will start with `.',
+and thus ignores files in /usr/spool/mail which
+begin with `.'.
+It also checks for entries in the
+.I group(5)
+file which do not belong to a valid user, and for users who do
+not belong to any group in the group file.  This last test is
+local to Rand, and will not be performed unless the \-DRAND flag
+was set at compile time.
+.PP
+If the
+.I \-mail
+flag is set, then the results will be sent to the specified
+.I name.
+Otherwise, the results are sent to the standard output.
+.PP
+.I Conflict 
+should be run under 
+.I Cron(1),
+or whenever system accounting takes place.
+.SH FILES
+/etc/MailAliases
+.br
+/etc/passwd
+.br
+/etc/group
+.br
+/usr/spool/mail/*
+.SH SEE ALSO
+mh-alias(5), passwd(5), group(5), ali(1)

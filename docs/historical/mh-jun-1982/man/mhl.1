@@ -1,0 +1,184 @@
+.TH MHL 1 RAND(DRAFT)
+.SH NAME
+mhl \- Produce formatted listings of MH messages
+.SH SYNOPSIS
+\fBmhl 
+[
+\fB\-clear\fR]
+[\fB\-noclear\fR]
+[\fB\-folder\fR\ folder]
+[\fB\-form\fR\ formfile]
+[\fB\-length\fR\ length] 
+[\fB\-width\fR\ width] 
+[\fB\-help\fR] 
+[file ...]
+.SH DESCRIPTION
+.I Mhl 
+is a formatted message listing program. It can be used as a
+replacement for "c" (the default message lister). As with c, each of
+the messages specified as arguments (or stdin) will be output.  If more
+than one message file is specified, the user will be prompted prior to
+each one, and a <return> or <eot> will begin the output, with <return>
+clearing the screen (if appropriate), and <eot> suppressing the screen
+clear.  An <interrupt> will abort the current message ouput, prompting
+for the next message (if there is one), and a <quit> will terminate the
+program (without core dump).
+.PP
+As in all MH programs, mhl looks for a line "mhl: args" in the user's
+profile, and thus allows tailored defaults.  The switches are:
+.PP
+.ta 1.5i
+.br
+\-clear	Clear screen each page
+.br
+\-noclear	Don't clear screen each page
+.br
+\-folder folder	Use this "folder" name
+.br
+\-form formfile	Name of the format file
+.br
+\-length length	Screen length
+.br
+\-width width	Screen width
+.br
+\-help	Standard help message
+.PP
+All of the functions these switches perform are affected or controlled
+by information elsewhere.  That is, the format file can specify "clear",
+in which case, the command line switches will override.  Also, the
+length and width can be specified in the format file, or default to
+40x80.  The folder is used in constructing a message name (see special
+component "MessageName" below).  If it is not specified in a switch, it
+is taken from the environment variable "mhfolder", which show, next,
+prev, and pick initialize appropriately.
+.PP
+If the form file is not specified, it is taken from the file
+"mhl.format" in the user's MH directory, and if that file doesn't exist,
+it is taken from "/etc/mh/mhl.format". (Same evaluation hierarchy as the
+compose form file.)
+.PP
+Mhl operates in two phases: 1) read and parse the format file, and 2)
+process each message (file).  During phase 1, an internal description of
+the format is produced as a structured list.  In phase 2, this list is
+walked for each message, outputing message information under the format
+constraints from the format file.
+.PP
+The "mhl.format" file contains information controlling screen clearing,
+screen size, wraparound control, transparent text, component ordering,
+and component formatting.  Also, a list of components to ignore may be
+specified, and a couple of "special" components are defined  to  provide
+added  functionality.  Message  output will be in the order specified by
+the order in the format file.
+.PP
+Each line of mhl.format has one of the formats:
+.PP
+	;comment
+.br
+	:cleartext
+.br
+	variable[,variable...]
+.br
+	component:[variable,...]
+.PP
+A line beginning with a ";"  is  a  comment,  and  is  ignored.  A  line
+beginning with a ":" is clear text, and is output exactly as is. (A line
+containing only a ":" produces a blank  line  in  the  output.)  A  line
+beginning  with  "component:"  defines  the  format  for  the  specified
+component, and finally, remaining lines define the global environment.
+.PP
+For example, the line:
+.PP
+width=80,length=40,clearscreen,overflowtext=***,overflowoffset=5
+.PP
+defines the screen size to be 80 columns by 40 rows, specifies that  the
+screen  should  be  cleared  prior  to  each  page,  that  the  overflow
+indentation is 5, and that overflow text should be flagged with "***".
+.PP
+Following are all of the current  variables  and  their  argmuments.  If
+they  follow  a component, they apply only to that component, otherwise,
+their affect is global.  Since the whole format  is  parsed  before  any
+output processing, the last global switch setting for a variable applies
+to the whole message.
+.TP 15
+width=#         
+Screen width, component width
+.TP
+overflowtext=t  
+Text to use at the beginning of an overflow line
+.TP
+overflowoffset=# 
+Positions to indent overflow lines
+.TP
+compwidth=#     
+Positions to indent component text after first line
+.TP
+nocomponent     
+Don't output "component: " for this component
+.TP
+uppercase       
+Output text of this component in all upper case
+.TP
+center          
+Center component on line (works for one-line components only)
+.TP
+clearscreen     
+Clear the screen (form feed) prior to each page
+.TP
+leftadjust      
+Strip off leading spaces & tabs on each line of text
+.TP
+compress        
+Change newlines in text to spaces
+.PP
+Where "=#" indicates a number must be specified, and "=t" indicates that
+arbitrary  text  up  to  end  of line or "," is required.  The variables
+without arguments are ON indicators, with the default in all cases  OFF.
+The  variables  "nocomponent",  center,  leftadjust and compress have no
+affect globally, and clearscreen only affects the global environment.
+.PP
+A line of the form:
+.PP
+ignores=component,...
+.PP
+specifies a list of components which are never output.
+.PP
+The component "MessageName" (case is unimportant) will output the actual
+message  name  (file  name) preceded by "folder:" if one is specified or
+found in the environment.
+.PP
+The component "Extras" will output all of the components of the  message
+which were not matched by explicit components, or included in the ignore
+list.  If this component is not specified, an ignore list is not  needed
+since all non-specified components will be ignored.
+.PP
+If "nocomponent" is NOT specified, then the component name will be output
+as it appears in the format file.
+.PP
+The current default format is:
+.PP
+width=80,length=40,overflowtext=***,overflowoffset=5
+.br
+ignores=msgid,message-id
+.br
+Date:leftadjust,offset=40
+.br
+To:leftadjust
+.br
+Cc:leftadjust
+.br
+:
+.br
+From:leftadjust
+.br
+Subject:leftadjust
+.br
+:
+.br
+extras:leftadjust,nocomponent
+.br
+:
+.br
+body:nocomponent
+.SH FILES
+.SH SEE ALSO
+c(1),

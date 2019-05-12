@@ -1,0 +1,133 @@
+      Several changes have been made recently, primarily to
+adrparse.c, adrformat.c, deliver.c, rmail.c,  and repl.c.  
+These changes permit MH messages to flow between the host
+machine, the Arpanet, and the UUCP system.  A description
+of how all this works is included here.
+
+A. SENDING MAIL
+
+1) Arpanet mail.  When a message is destined for the Arpanet,
+   a single copy of that message is placed in /usr/spool/netmail,
+   headed by a list of remote recipients.  A mailer daemon
+   picks these up and delivers them via the FTP "MAIL" command.
+   If the local site is NOT an Arpanet site, the Arpanet address
+   is simply considered as a local address.  One could, conceivably,
+   have a local user named "a@ucla-s", after all.
+
+2) UUCP mail.  As DELIVER is processing the message, it is producing
+   a SECOND copy of the message in /usr/tmp/mh/uu*.  This copy
+   differs from the normally-delivered copy in that no "format"
+   operation is ever done, and in that no "From: " line is
+   added to the header (the user may still have one if he
+   thinks he knows what he's doing).  For each message destined
+   for a UUCP site, say "site!person", a header is prepended
+   of the form "From <local-user> <date> remote from <local-site>".
+   This message is then given as standard input to a command
+   like "uux - site!rmail person".  Note that "person" may not
+   contain blanks.  If it contains additional uucp routing,
+   the form is "uux - site!rmail (more!person)".  Evidently,
+   without the parens, Uux considers "more!person" to be
+   the name of a remote file.
+
+B. RECEIVING MAIL
+
+1) Arpanet Mail.  Mail from the Arpanet is received by the
+   FTP Server daemon via the MAIL (or MLFL) command.  At
+   present, this server invokes the "rmail" program, which
+   purports to be the name of the standard Unix remote mail
+   program.  Supposedly, this would even work on a system
+   not running MH or anything special.  Right.  Anyhow,
+   the Rmail associated with MH copies its input into a
+   file and gives that file to Deliver, with the special
+   option, "-deliverto <recipient>".  This option is
+   reserved to the super-user and members of Uucp's
+   group (constant DAEMON_GROUP in deliver.c .  It varies
+   between the /45 and the Vax, unfortunately).  If
+   it were not so restricted, anybody could send mail
+   with forged signatures ("From: " lines).  When
+   Deliver is given that option, it does nothing but
+   deliver the file as it sees it to the specified
+   recipient, be it local or remote.  No formatting
+   or additional "From:" or "Date" processing is 
+   performed, although Uucp "From" lines ARE added if needed.
+
+2) UUCP mail.  As noted, Uucp mail happens when some
+   remote site executes Rmail via Uux.  Out there
+   in the real world, the only thing you can expect
+   a message to have is one of those "From <user> <date>"
+   lines at the beginning.  Perhaps several, if 
+   it's been through this process before.  Rmail is
+   able to take these lines and turn them into
+   a sensible line like "From: site1!site2!site3!person".
+   If a reasonable Arpa header follows (and it's pretty
+   crude about "reasonable"), Rmail just prepends that
+   From: line and copies the input into a file and
+   gives it to Deliver as in the Arpanet case.  If not,
+   it adds an extra blank line, thus leaving you
+   with a header consisting of just the From: line.
+   Deliver then sends the formatted-as-best-we-could
+   message to the specified recipient.  
+   In the special case in which the destination is
+   another Uucp site (rmail sitex!person), NO processing
+   is done before invoking Deliver; Deliver will 
+   add the obligatory extra "From" line at the beginning
+   of the Uucp output.
+
+KNOWN problems.  
+
+   When mail is going to somewhere like "graphics!person",
+   and there are "cc:" lines, these "cc:" lines are not
+   formatted in such a way as to allow automatic replies.
+   Note that they would have to be different for local
+   users than they would be for the remote user.
+
+   Similarly, when a message gets sent to someone like
+   "graphics!mike@ucla-s", the "To: " line is going to
+   contain that "graphics!" when it gets to the remote
+   Arpanet site.  This will be wrong, there.  Note again
+   that local users getting a carbon copy will want
+   that information to appear.
+
+   When a message comes from the Arpanet and gets forwarded
+   to Uucp, it arrives at the destination site with
+   a Uucp-style "From xxx remote from yyy" line at the
+   beginning, and an ARPA-style "From: " line which was
+   generated at the original site.  Rmail will cause
+   you to end up with two Arpa-style From lines,
+   "From: yyy!xxx" and the original one.  Repl will be
+   able to start up OK, and will try to reply to both.
+   Unfortunately, NEITHER will be right.  This is rather
+   difficult to fix without modifying the original Arpa
+   header.  Impossible, in fact.
+
+   You can send messages to graphics!person@host.  However
+   if you try to send it to "graphics!person at host", you
+   will indeed execute "graphics!rmail person at host".  
+   This will cause Rmail to choke (too many args).  You never
+   get to hear about it when Uux chokes.
+
+   In general, Rmail should make a better effort to see if
+   things went OK, and send a return message if they didn't.
+   Similarly, the FTP server should make sure Rmail died 
+   happy, and reply with a failure code (412 or something,
+   isn't it?)  when things don't run smoothly.  The
+   Arpanet Mailer, by the way, is pretty good about reporting
+   its failures.  
+
+   Replying to messages from various sources works pretty well.
+   However, people who try to invoke the "-format" option 
+   when no Arpanet is present currently get a screwy result
+   like "at (local)" getting glued to the end of addresses.
+   Frankly, the "format" option should be completely disabled
+   at non-Arpa sites, as near as I can tell.  This applies
+   both to "repl" as well as "send" (deliver).  
+
+   While "Ali" has been changed to understand that Uucp and
+   Arpanet addresses should not be checked for validity,
+   there are common subroutines in Ali and Deliver which
+   are Very Similar, though their calling sequences and
+   usages vary somewhat.  It would be Aesthetically Preferable
+   to break these routines out and put them in "subs".
+
+	Mike Urban
+	3/81

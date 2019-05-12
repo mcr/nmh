@@ -1,0 +1,213 @@
+11/14/79
+	If .mh_profile contains an entry like "show: -pr -a -b -c" and you
+	call "show" with the explicit switch -nopr, then you have those
+	dangling -a -b -c switches that were intended for pr.
+	(Bound the switch list for pr, etc., with a semi-colon?)
+
+2/1/80
+	"file +junk" makes junk a folder, while "file +.junk" makes ".junk"
+	a subfolder. "file" should test for pathname beginning with "./"
+	instead of just '.'
+
+9/15/80
+	When repl gets an adrparse error, it should return to
+	"What now?" instead of aborting. (But see objections in
+	/r/phyl/Mail/MH/16)
+
+	The same goes for comp, dist, forw
+
+9/29/80
+	When send is invoked with no args, and the draft already
+        exists, options to "use draft?" should include "list" along with
+	yes/no
+
+10/21/80
+	Tabs in address lists aren't recognized.
+
+12/23/80
+	Fix and install "dist"
+
+1/14/81
+	inc -nochangecur displays that the first-inc'ed message is the current
+	message, and it's not.  It should also do a scan from cur, I think.
+	(I fixed the 1st bug, but not the scan from cur.   /phyl 7/9/81)
+
+5/28/81
+	'news' will break when there are multiple news folders in the 'To:'
+	field(s)!
+
+
+7/7/81 phyl
+        Re:Log:"3/23/81 jdg/day: changed deliver.c to check for effective
+        uid and gid while it is preventing forgery of mail.  Needed for
+        uucp, when uucico is invoked by a real person instead of uucp
+        itself."
+
+        The real fix should be to check for real uid==0 (srvrftp) or real
+        gid==daemon (any uu program) or effective gid==daemon (human
+        running uucico, and uucico should be SGID daemon).
+
+2/16/81
+	/usr/tmp/mh files are readable by the world.
+	So are /usr/spool/uucp files.
+
+2/21/81
+	A message should not have to exist for you to be able to use
+	its number in a range, as in 'scan cur-last' when cur does
+	not exist.
+
+2/28/81
+	"This RAND-UNIX stuff (adding and removing them from message
+	headers on the vax) is a crock.  Reply strips 'RAND-UNIX' off of
+	addresses, but not 'rand-unix'.  If I type it up myself, deliver
+	rejects either of them."  --guyton
+
+
+4/4/81
+	"The delivery program should not leave headers that the mailer doesn't
+	understand.  Replying to the following header was painful: " --jim
+
+	(Message inbox:1)
+	From: graphics!root
+	Date:  4 Apr 1981 at 2138-PST
+	To: Vax!mh-discussion at RAND-UNIX
+	Cc: greep at SU-ISL
+	Subject: Mail to terminals
+	From: greep at SU-ISL
+
+
+	...AND LOTS OF OTHER MESSAGE HEADER OBJECTIONS
+
+4/7/81
+	scan and inc should check ALIASES and recognize UUCP localhost!me
+	when deciding whether or not the message is from me.
+
+4/16/81
+	Deliver should run one uux per site instead of one per addressee.
+
+6/2/81
+	"rmf" should automatically remove .e* files from the named folder.
+
+7/81
+	deliver fails to recognize "at" when it is preceded by
+	     more than one blank.
+
+	repl tries to parse a Sender [or From] field, and a To
+	     field, without first testing for their existence.
+
+	file protections on rmail/uucico are inconsistent with
+	     deliver's internal user/group tests.
+
+	deliver fails to recognize that localhost!user is indeed user.
+	     (Should it?)
+
+	temporary mail files stay around when the "no such local user"
+	     error occurs--because of a spurious flag test.
+
+	deliver should parenthesize (user at host) as well as (host!user)
+	     when constructing the uux command.
+
+	rmail should direct stderr to a file before invoking deliver.
+
+	rmail should check for unknown local user and send return mail to the
+	     originator. (Can't fix unless no intervening Arpanet addresses.)
+
+	rmail should add a Date: component if there is none.
+
+	mail headers should be reordered.
+
+7/23/81
+	"mail" should be in /bin, not in /usr/randbin. (?)
+
+8/17/81
+	"rmf" should verify that the requested folder is not the current
+	directory.
+
+8/20/81
+	/usr/tmp/mh and /usr/MailAliases should be defined in strings.a
+
+9/1/81
+	repl should remove leading blanks from date and subject fields
+	before putting them in the new in-reply-to and subject fields.
+	(Greep)
+
+9/9/81
+	Adrparse should recognize the full RFC733 syntax; viz, colon
+	as part of the address list.
+
+10/2/81
+	Subject: news bug
+	From: phyl at RAND-UNIX
+
+	The table of news topics overflowed.
+
+        news.c counts all non-dot files in the directory /usr/news to
+        determine the number of news topics.  But mail sent to an UNKNOWN
+        news topic remains in the top level news directory, erroneously
+        getting counted into the total.  Either .mh-receive should stow
+        undeliverable news into another directory, or news.c should count
+        only directory entries.
+
+10/6/81
+	mhl should know about termcap
+
+10/14/81
+	Subject: Mail to "everyone"
+	From: obrien at RAND-UNIX
+
+                An insoluble problem: sending mail to "everyone" (a risky
+        business at best) generates mail to every line in /etc/passwd,
+        including those like "uucp", "unix32v", and such which aren't real
+        people.  An exception list is no help because it gets out of date.
+        Only cure I know of is to go through /usr/spool/mail every now and
+        again and get rid of phony files.
+
+11/10/81
+	Subject: HOSTNUM not necessary
+	From: greep at SU-DSN
+
+        Mh deliver should really not need HOSTNUM (this is in
+         /usr/include/whoami.h) - it can get the number by searching for
+         HOSTNAME in the host table.
+
+11/18/81
+	SUBJECT: folder with a -fast flag doesn't change current folder
+	From: norm at RAND-UNIX
+
+11/81
+	Message lists should not be reordered.  (Norm, Phyl)
+
+12/17/81
+	The alias function doesn't work when a single message contains
+	multiple instances of the address form "foo.*"--ergo, a message
+	cannot be sent to more than one news group.
+
+	Note that /usr/news/.mh_receive won't recognize multiple news
+	groups in a single message either!
+
+12/19/81
+	If a message is addressed to more than one local alias-group,
+	people who are in more than one of the groups receive multiple
+	copies of the message. (I think! --phyl--)
+
+1/5/82
+	If you send a message to a bad uucp host name, it a) gives you
+	an error message, b) queues the mail anyway, and c) deletes the
+	draft because the mail was "correctly sent".  Ha!
+	It should a) give you an error message and b) punt.
+			--Michael W.--
+
+1/19/82
+
+	MH argument parsing should be upgraded to allow
+	folder arguments to have a space between the +
+	and the folder name so you can use shell matching
+	syntax.  Example:
+
+	   % folder + /usr/news/net-g*
+	   % cd !$
+
+	--dave
+
+3/11/82
+	deliver should clean up before exiting. 

@@ -1,0 +1,99 @@
+.TH COMP 1 RAND
+.SH NAME
+comp \- compose a message
+
+.SH SYNOPSIS
+.B comp 
+\%[
+.B \-editor\ \fReditor] \%[
+.B \-form\ \fRformfile] \%[file] \%[
+.B \-use
+] \%[
+.B \-nouse
+] \%[
+.B \-help
+]
+
+.SH DESCRIPTION
+\fIComp\fP is used to create a new message to be mailed.
+If
+\fIfile\fP is not specified, the file named ``draft'' in the user's MH
+directory will be used.
+\fIComp\fR copies a message form to
+the file being composed and then invokes an editor on the
+file.
+The default editor is /bin/e, which may be overridden with
+the `\-editor' switch or with a profile entry ``Editor:''.
+
+The default
+message form contains the following elements:
+
+     To:
+     cc:
+     Subject:
+     ----------
+
+If the file named ``components'' exists in the user's MH directory,
+it will be used instead of this form.
+If `\-form
+formfile' is specified, the specified formfile (from the MH
+directory) will be used as the skeleton.
+The line of dashes
+or a blank line must be left between the header and the
+body of the message for the message to be identified properly when it is
+sent (see \fIsend(1)\fR).
+The switch `\-use' directs \fIcomp\fR to
+continue editing an already started message.
+That is, if a
+\fIcomp\fR (or \fIdist\fR, \fIrepl\fR, or \fIforw\fR) is terminated without
+sending the message, the message can be edited again via
+``comp \-use''.
+
+If the specified file (or draft) already exists, \fIcomp\fR will ask
+if you want to delete it before continuing.
+A reply of \fBNo\fR will abort the
+\fIcomp\fR, \fByes\fR will replace the existing draft with a blank
+skeleton, \fBlist\fR will display the draft, and \fBuse\fR will use it
+for further composition.
+
+Upon exiting from the editor, \fIcomp\fR will ask ``What now?''.
+The valid
+responses are \fBlist\fR, to list the draft on the terminal; \fBquit\fR, to
+terminate the session and preserve the draft; \fBquit delete\fR, to terminate,
+then delete the draft; \fBsend\fR, to send the message; \fBsend verbose\fR, to
+cause the delivery process to be monitored; \fBedit <editor>\fR, to invoke
+<editor> for further editing; and \fBedit\fR, to re-edit using the
+same editor that was used on the preceding round unless a profile
+entry ``<lasteditor>\-next: <editor>'' names an alternative editor.
+
+See \fImh-profile(5)\fR for further information
+about the how editors are used by MH.
+.SH FILES
+.ta 2.4i
+/etc/mh/components		The message skeleton
+.br
+or <mh-dir>/components		Rather than the standard 
+.br
+$HOME/\*.mh\(ruprofile		The user profile
+.br
+<mh-dir>/draft			The default message file
+.br
+/usr/bin/send			To send the composed message
+.SH PROFILE\ ELEMENTS
+Path:			To determine the user's MH directory
+.br
+Editor:			To override the default editor
+.br
+<lasteditor>\-next:	To name an editor to be used 
+			after exit from <lasteditor>
+sendproc:	Program to use to send the message
+.SH SEE ALSO
+send(1), dist(1), repl(1)
+.SH DEFAULTS
+`file' defaults to draft
+.br
+`\-editor' defaults to /bin/e
+.br
+`\-nouse'
+.SH CONTEXT
+\fIComp\fR does not affect either the current folder or the current messa

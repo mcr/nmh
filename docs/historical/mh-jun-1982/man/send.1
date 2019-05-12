@@ -1,0 +1,74 @@
+.TH SEND 1 RAND
+.SH NAME
+send \- send a message
+.SH SYNOPSIS
+send \%[file] \%[\-draft] \%[\-verbose] \%[\-format] \%[\-msgid]
+\%[\-help]  \%[\-noverbose] \%[\-noformat] \%[\-nomsgid]
+.SH DESCRIPTION
+\fISend\fR will cause the specified file (default <mh-dir>/draft) to
+be delivered 
+(via 
+.I deliver(8)
+) to each of the addresses in the ``To:'', ``cc:'', and ``Bcc:''
+fields of the message.
+If `\-verbose' is specified, \fIsend;\fR
+will monitor the delivery of local and net mail.
+\fISend\fR with no
+argument will query whether the draft is the intended file, whereas
+`\-draft' will suppress this question.
+Once the message has
+been mailed (or queued) successfully, the file will be renamed
+with a leading comma, which allows it to be retreived until the
+next draft message is sent.
+If there are errors in the
+formatting of the message, \fIsend;\fR will abort with a (hopefully)
+helpful error message.
+
+If a ``Bcc:'' field is encountered, its addresses will be used for
+delivery, but the ``Bcc:'' field itself will be deleted from all
+copies of the outgoing message.
+
+Prior to sending the message, the fields ``From:  user'', and
+``Date: now'' will be prepended to the message.
+If `\-msgid' is
+specified, then a ``Message-Id:'' field will also be added to the
+message.
+If the message already contains a ``From:'' field, then a
+``Sender: user'' field will be added instead.
+(An already existing
+``Sender:'' field will be deleted from the message.)
+
+If the user doesn't specify `\-noformat', each of the entries in
+the ``To:'' and ``cc:'' fields will be replaced with ``standard'' format
+entries.
+This standard format is designed to be usable by all
+of the message handlers on the various systems around the
+ARPANET.
+
+If an ``Fcc: folder'' is encountered, the message will be copied
+to the specified folder in the format in which it will appear to any
+receivers of the message.
+That is, it will have the prepended
+fields and field reformatting.
+
+If a ``Distribute-To:'' field is encountered, the message
+is handled as a redistribution message (see \fIdist(1)\fR for
+details), with ``Distribution-Date: now'' and ``Distribution-From: user''
+added.
+.SH FILES
+.ta 2.4i
+$HOME/\*.mh\(ruprofile	The user profile
+.SH PROFILE COMPONENTS
+Path:	To determine the user's MH directory
+.SH SEE ALSO
+deliver(8),dist(1),forw(1)
+.SH DEFAULTS
+`file' defaults to draft
+.br
+`\-noverbose'
+.br
+`\-format'
+.br
+`\-nomsgid'
+.SH CONTEXT
+\fISend\fR has no effect on the current message or 

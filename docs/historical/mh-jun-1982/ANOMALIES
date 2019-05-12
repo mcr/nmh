@@ -1,0 +1,12 @@
+"Extras" contains several weird C sources.  They should be checked.
+Still gotta fix Mail
+Gotta make sure the Make onceonly installs /etc/MailAliases and /usr/spool/locks
+Should make a whole subsection for installing the News stuff.  It should
+all be in a subdirectory with its own makefile, in fact, since it basically
+is an entirely separate module from the other stuff.
+
+Berkeley seems to have their own program called "l" in /usr/ucb.  
+
+Some systems purge /usr/tmp in their /etc/rc file, thus destroying the
+/usr/tmp/mh directory.  MH programs which need that directory should attempt
+to make it if it is not there.

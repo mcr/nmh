@@ -1,0 +1,10 @@
+if -r sndmsg.out rm sndmsg.out
+load sndmsg subs.a strings.a -O /rnd/borden/libg.a /rnd/borden/libh.a
+if ! -r sndmsg.out /rnd/borden/bin/skip {
+: strip sndmsg.out
+if $1x = x /rnd/borden/bin/skip {
+cp sndmsg.out /etc/ms.2.78/xsnd
+rm sndmsg.out
+: }
+:					fini
+

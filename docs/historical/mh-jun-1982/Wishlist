@@ -1,0 +1,509 @@
+11/14/79
+	Allow complex boolean expressions in "pick"
+
+11/14/79
+	Add profile switches that will "answer" prompts,
+	sa "Draft exists, delete?"
+
+11/14/79
+	Have the stand-alone "anno" prompt for component and text.
+
+3/19/80
+	More elaborate "<command> -help".  (But see objections in
+	/r/phyl/Mail/MH/2)
+
+10/6/80
+	MH should be able to pass the terminal type to the editor.
+
+10/23/80
+	Mail sent to mailing list aliases should also be sent to "news"
+	(Complex problem--but see BSB's msg /r/phyl/Mail/MH/134)
+
+11/21/80
+	Allow a "delete-after: <date>" component to MH;  have a
+	daemon go thru everyone's MH folders and delete stale
+	messages.  (see /r/phyl/Mail/MH/45...)
+
+11/21/81
+	Add a -noformat option to mhl--to get rid of " at RAND-UNIX"
+	when the message is listed.
+
+1/13/81
+	Have a file "/etc/Newsgroups" with lists of people
+	who should see certain news, so that systems personnel
+	can decide who should see certain topics and not have to
+	alter .mh_profiles.
+
+1/15/81
+	"ali -user" to give the reverse info from "ali aliasname";
+	viz, given a user, what aliases will send mail to him.
+
+1/20/81
+	"repl -form formfile"
+
+	     or
+
+	There could .mh_profile entries that specify the
+	defaults for the various components for messages,
+	and all programs like comp & forw could look to
+	those instead of looking to a 'compform' or the like.
+
+	Examples:
+	From-Component: dave-yost
+	Fcc-Component: inbox
+
+1/26/81
+	Link messages instead of copying them
+
+1/29/81
+	Have "news -folder" change your current folder to the 1st unread
+	news folder, thus allowing you to use all the usual MH commands on it.
+
+2/3/81
+	"news -inc"
+
+2/9/81
+	"All plain files that now reside in 'Mail' should live in a
+        subdirectory like 'Mail/M'.  Now I can unprotect the 'Mail'
+        directory, so that I can selectively grant snoop permission on any
+        folder without fear of making my other miscellaneous files like
+	'draft' vulnerable.  All I have to do is protect 'Mail/M'."  --Dave
+
+2/16/81  FROM BERKELEY
+
+
+    Date: 3 Feb 1981 15:57:05-PST
+    From: CSVAX.kas at Berkeley
+    Message-ID: <601.350091987@CSVAX.Berkeley>
+    To: Day@Rand-Unix, Urban@Rand-Unix
+    Subject: Re: Updated MH to run in 4bsd environment
+    In-reply-to: Your message of 27 Jan 1981 2011-PST (Tuesday).
+    Fcc: mh
+
+    I have finished making the new version of MH run in our 4bsd
+    environment.  That is, our version of MH runs compatibly with
+    the standard v7 mail program, the Berkeley Mail, UNIX sndmsg, msg,
+    and others.  Some of the things I encountered may be of use to
+    you in making your distribution of MH easier to install in 4bsd systems.
+
+    So here they are:
+
+    ali.c           Changed to use a #define for the MailAlias file.
+		    Should really have created a new strings file for it.
+
+    annotate.c      Now uses the character defined by CBACKUP instead of ,
+		    for the backup convention.  We have a line of the form:
+
+		    40 4 * * * find / -name '#*' -atime +3 -exec rm -f {} \;
+
+		    in /usr/lib/crontab and it seemed easier to make MH
+		    obey that than to convince users to use ,
+
+    conflict.c      Used to reference ``struct dir'' which in our system at
+		    least is defined in /usr/include/sys/dir.h as
+		    ``struct direct''
+
+    dist.c          Changed to use CBACKUP, instead of comma
+
+    folder.c        Removed fflush(stdout) after each line of output.  This makes
+                    the program appear to run faster.
+
+    forw.c          Changed to use CBACKUP, not comma
+
+    inc.c           Changed to call a program unixtomh (described later) which
+		    reads mail in standard unix format and converts it to MH
+		    format.  Now has -file filename flag to read messages
+		    from a file (many users already have mbox files full of
+                    unix format mail. they can do inc -file mbox +mbox to
+                    convert this to an MH folder).  Also has -keep to
+                    prefer close(creat(mailboxname, 0600)) to unlink to
+                    help users preserve a non-publically readable mode on
+                    their mail drop.
+
+    mail.c          Renamed mhmail.c to avoid confusion
+
+    mhl.c           Changed to use termlib to clear terminal screen correctly.
+		    Fixed its argument processing so it won't try to open flag
+		    arguments as files.
+
+    news.c          s/struct dir/struct direct/
+
+    rmf.c           Uses CBACKUP instead of comma
+
+    rmm.c           Uses CBACKUP instead of comma
+
+    scan.c          Has -reverse flag to look at headers newest first.  A user
+		    with a HUGE inbox demanded this.
+
+    send.c          Uses CBACKUP instead of comma
+
+    unixtomh.c      Created program to read unix format mail and put it in MH
+		    format.  This is invoked by inc.
+
+    mh.h            Although this is the wrong place to do it, added CBACKUP
+		    #define to give backup character.  Should really be in
+		    strings.
+
+    mailsys.h       Changed path names to end with / to satisfy the assumption
+		    in inc.c that they look that way.
+
+    deliver.c       Now makes temporary file in /tmp, not /usr/tmp/mh,
+		    doesn't check validity of network addressees,
+		    Only outputs From: and Date: in fcc copy of message,
+		    invokes /etc/delivermail on all recipients to actually
+		    deliver the mail, removed putdate() routine in favor
+		    of shared (with unixtomh) version in subs, and now
+		    uses #define MAILALIASES.
+
+    Also, a couple of minor notes:  we do not have a strings.h file in
+    /usr/include, which I assume gave the return types of routines like
+    rindex() and friends.  A number of files include system files as, eg:
+
+    #include <types.h>
+    #include <stat.h>
+
+    this requires that you give the preprocessor flag -I/usr/include/sys
+    for it to be found.  This creates problems for the make depend stuff
+    since include files are not necessarily in /usr/include.  I got around
+    this by simply editing out the header file dependencies from the
+    Makefiles.
+
+    Finally, to get around the conflict between /usr/bin/file and the MH file
+    command, I made a program fakefile which examines its arguments.  If any
+    begin with +, it invokes MH file, else /usr/bin/file.  This seems to
+    work fine.
+
+    I have everything sccs'd so I can send you sccs source, diffs, new source
+    or whatever if you like.
+
+	    Kurt Shoens
+
+
+2/17/81
+	Sort folders by time-received.
+
+2/17/81
+	Whenever a news topic is created, a suitable message to news.everyone
+	should announce that fact and try to sell users on the new topic.
+
+2/18/81
+	"... I've been hacking up an MH to
+	put the attributes in the file names, format n-aaa, where n is
+	the message number, and the a's are the attribute characters,
+	initially, only 's' for 'seen' being implemented.  This is VERY
+	efficient, and only runs into the original problems Norm pointed
+	out...the name is difficult to guess from an environment which
+	does not allow wild-cards, such as inside the editor.
+
+	"Personally, I think the advantage gained is well worth the
+	messiness.  I would like to be able to say "scan unseen",
+	or "file seen +handled", etc.  This can't be done in ANY
+	other fashion under UNIX without losing lots of other important
+	features, such as preservation on copy."
+
+	/Bruce
+
+2/18/81
+	Allow personal alias files.
+
+	Except---
+	"No personal aliases because there ain't no way to reply!
+	The 733 syntax is totally botched on "file inclusion".
+	There should be a meta-syntax for using a file as an
+	address, which deliver programs ALL AROUND THE NET could
+	use for replies."
+	/B
+
+	But---
+	"You could have personal aliases if they were expanded into the
+	message."
+	--dave
+
+2/19/81
+	"Screw -time and -numdate.  How about a -display <string> option,
+	where <string> is a printf-like format that dictates exactly the
+	way you want the scan to look. Something like:
+
+	scan -display '%3(num) %2(mo)/%2(day)/%2(yr) \
+	%2(hour):%2(min)-(timezone) \
+	%10(from) %40(subject)%(incl)(body)'
+
+	"It has been suggested that the 'ls' command should have an option
+	like this, too."
+
+	--dave
+
+2/19/81
+	Scan and inc should display control characters in readable form.
+	(Except, for example, ^G, ^I)
+
+2/23/81
+	encrypted mail
+
+2/23/81
+	Integrate MH file naming conventions with Unix naming conventions.
+	So, for example, when in the editor, you could reference
+	"last" or "+junk/14"
+
+2/24/81
+	"Replied-to" Subject fields should somehow keep track of
+	the "generation" of the replied-to message.
+
+2/26/81 Dave Clemans, SDC
+
+        Because the ISC system is a UNIX V6 variant, and MH is set up for
+        V7, there are a few differences:
+
+	Because of name conflicts between MH programs and ISC programs,
+		mail
+		news
+		file
+        are in the directory /misc/bin.  The version of file in /misc/bin
+        is a preprocessor; if its argument list has an argument with a '+'
+        as its first character, it calls /usr/bin/file.msg, otherwise it
+        calls /bin/file.
+
+        MH wants to look at a few environment variables, which don't exist
+        on UNIX V6.  They are simulated using the global shell variables of
+        the SDC-extended "Harvard" shell.  For people who use the "Harvard"
+        shell (hsh), this procedure is handled automatically.  For people
+        who use the Berkeley C shell (csh) or people who use the ISC shell,
+        a special command has to be run at least once, and possible every
+        time that you log in, depending on how often you change things.
+        What follows is a short description of that command:
+
+	     /misc/bin/mhsetup <login  name>  <home  directory>  <search path>
+
+							  Environment Variable
+		<login name> is your actual login name          USER
+		<home directory> is your login directory        HOME
+		<search path> is the PWB/UNIX style path        PATH
+
+        There also has been a few extensions made to MH at SDC.  A short
+        list of these are:
+
+        a.  Registered mail: send has a -register and a -noregister switch.
+           A receipt is sent back to the sending user when the receiving
+           user types "inc" and a registered message is received. (Done by
+           adding a "Registered" component to the message)
+
+        b.  Fcc:  Multiple folder names are accepted in this component and
+           handled correctly.
+
+        c.  Personal mailing lists:  In addition to the mailing lists
+           accepted by the /etc/MailAliases file, users can maintain
+           private mailing lists.  These are referenced by addresses of the
+           form "<path", where path is the name of the mailing list.  It is
+           looked for first in the current directory, and then in the users
+           Mail directory.  It should have the same format as a list of
+           addresses typed in by hand.
+
+        d.  Automatic forwarding:  If a user has accounts on multiple
+           machines, but only uses one of them on a regular basis, it is
+           possible to have all messages from those other machines
+           automatically forwarded to the machine that is used regularly.
+           The same database hook used by this is also used to provide full
+           names in addresses:
+		(i.e., Full Name <user at host>)
+	   (Done by having a file with one line for each user, of the format:
+		<user>  <flag>  <address>       :<Full Name>
+	   <user> is the local user name
+	   <flag> says whether or not to forward
+	   <address> is the forwarding address
+	   <Full Name> is the users full name)
+
+        e.  Msg/Sndmsg:  There are msg/sndmsg programs in /misc/bin that
+           look very similar to normal ARPAnet msg/sndmsg programs, but
+           which interface to MH.
+
+        f.  Repl: repl has "-fccme" and "-nofccme" switches for making file
+           copies of replies to messages.
+
+        g.  Next/Prev: next and prev have "-pr" and "-nopr" switches.  They
+           have the same effect as the "-pr" and "-nopr" switches in show.
+
+	The "onstruct is recognized and handled correctly.  The only
+	transport mechanism available currently is the Berkeley network (from
+	2BSD).
+	(Hooks do exist to add others, specifically UUCP).  Currently defined
+	host names are:
+		sdc-70          the R&D 11/70 system
+		sdc-net         the 11/45 network support machine
+
+	Two other host names exist for sending mail into the ISC mail system.
+	These are "sdc-70x" and "local".
+
+	For any problems, or for more information, send a message to dgc
+	dgc
+
+	Dave Clemans
+	-----
+
+3/2/81
+	repl -use
+
+3/17/81
+	Delayed mail delivery:  add a "Deliver-date:" header containing
+	the delivery date...
+
+3/18/81
+	"send" in the background
+
+4/5/81
+	Mail to terminals
+
+	"... the sender would decide which of the four possible
+	options to select:
+	1. mail only
+	2. send to terminal only
+	3. send to terminal and also mail
+	4. send to terminal if possible, otherwise mail
+
+	"Furthermore, messages added to your mailbox would indicate whether
+        they were sent as mail or tty messages, so you could discard
+	messages which were intended to be displayed on the the terminal."
+
+	--greep
+
+4/17/81
+	Automatic mail agents, per Dave Farber
+
+4/23/81
+	<command> -nochangedir
+
+5/7/81
+	bcc recipients should SEE the bcc header in their copy of
+	the message
+
+
+5/14/81
+	Repl should have an option that includes
+	the replied-to message in the body of the
+	new message, indented one tabstop, so you
+	can intersperse answers with original text.
+	(But see objections in mail subsequent to the
+	suggestion)
+
+5/26/81
+	scan -name;  folder -name
+	to return full path names of message files
+
+6/1/81
+	You should be able to anti-alias a login id,
+	making the user unknown for mail delivery purposes.
+		username:<NUL>
+
+7/30/81
+	Scansub should insert ">>" if msg body all fits on the scan line.
+
+7/30/81
+	Speed MH up by having 2 interfaces: a monolithic environment
+	for speed in commonly used commands, and the current MH
+	environment for generality.
+
+8/4/81
+	Move all the scattered mail alias files to /usr/MailLists.
+	Also move /etc/MailAliases and /etc/mh to /usr.
+
+8/17/81
+	add a -noreorder switch to request that MH process the msg
+	list in the GIVEN order, not in sorted order.
+
+8/20/81
+	There should be a common LOGFILE to be written by srvrftp,
+	rmail, and deliver.
+
+8/20/81
+	An environment variable should be set so that MH can choose
+	an editor based on your terminal type.
+
+
+
+
+MAIL ROUTING
+
+	Modularize the delivery process so that new networks can
+	be easily incorporated (e.g., SU-DSN is on the arpanet as well as
+	the ethernet)
+
+	Host table lookup:  "joe at destination"
+
+	Etc...
+
+9/12/81
+	From: wales at UCLA-Security (Rich Wales)
+	Subject: mail security and mailing to files/pipes
+
+9/16/81
+	From: greep at SU-DSN
+
+	How about an option in comp (along with "list", "edit", "quit", and
+	"send") to get a new shell? Sometimes I'm in the middle of composing
+	a message and realize there's some program I want to run.
+
+11/3/81
+	From: Dave-Yost at RAND-UNIX
+	Subject: 'message does not exist'
+
+        If I do something with cur and the message pointed to doesn't
+        exist, I think mh should automatically look for the next message.
+        Or at least it should be something I can opt for with an entry in
+        .mh_profile.
+
+	This I don't need:
+	  % show      # look at the current message
+	  % rmm       # decide to junk it
+	  % ...       # do some other work
+	  % show      # show current message if not deleted, else next
+	  Message 18 doesn't exist.
+
+	--dave
+
+11/4/81
+	From: Dave-Yost at RAND-UNIX
+	Subject: mh vs mail or msg or ms or Berkmail or ...
+
+	I'll tell ya, I'm a fan of mh and everything, but
+	mh has GOT to be optionally available as a
+	monolithic program within which you give mh
+	commands.
+
+	(See /r/phyl/Mail/MH for discussion)
+
+11/24/81
+	SUBJECT: An mh argument to specify the profile file
+	From: norm at RAND-UNIX
+
+        What the world needs is for every mh command to have an optional
+        flag, say "-profile", which introduces an alternative file to be
+        used, for all purposes, instead of .mh_profile.
+
+        This capability has a number of obvious and less obvious
+        consequences that would make mh a much more powerful system and
+        seems to have little adverse impact when not used.
+
+
+1/24/82
+	Subject: mail aliases and automatic forwarding
+
+	MH should provide facilities for a user to
+	forward/unforward his mail somewhere easily.
+	This does NOT mean telling him that all he has
+	to do is write a shell procedure and install it
+	in his .mh_receive file.  The MH command I am
+	proposing would do that for you, and do the
+	appropriate locking against race conditions.
+	You need to be able to divert your incoming mail,
+	and to set up other aliases to your login name--
+	in this case, the command should send a message
+	to a system administrator requresting the alias.
+
+	Bell mail allows a user to write, for example,
+		Forward to harpo!ber
+	in the beginning of your mail spool file to
+	forward mail.  (Brian also points out that that is
+	also the ONLY aliasing that they provide.)
+	I don't think this is such a good idea, since
+	it requires knowledge of where the mail spool file is,
+	and is susceptible to a race condition if incoming mail
+	comes in while you are messing with the spool 

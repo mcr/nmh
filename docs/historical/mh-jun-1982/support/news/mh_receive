@@ -1,0 +1,17 @@
+F=`echo  $4 | sed '
+s/news\.//
+'`
+if [ -d /usr/news/$F ] ; then
+	cat /usr/news/.1char >> /usr/news/.$F
+	/usr/local/file -link -file $1 +/usr/news/$F
+elif [ -d /usr/news/Lost+Found ] ; then
+	/usr/local/file -link -file $1 +/usr/news/Lost+Found
+else
+	mkdir /usr/news/Lost+Found
+	/usr/local/file -link -file $1 +/usr/news/Lost+Found
+fi
+
+
+: BUGS: mail directory must be in /usr/news.
+:       .mh_receive should be a C program that
+:       searches news's .mh_profile for the mail path.
