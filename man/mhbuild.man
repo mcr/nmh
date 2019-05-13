@@ -969,13 +969,24 @@ Template for composing contents.
 (RFC 6531)
 .SH DEFAULTS
 .nf
+\-noauto
 \-autoheaderencoding
 \-contentid
 \-headers
 \-maxunencoded 78
-\-nocheck
 \-nodisposition
 \-norfc934mode
 \-noverbose
 \-realsize
+.SH DEFAULTS (with \-auto)
+.nf
+\-autoheaderencoding
+\-contentid
+\-headers
+\-maxunencoded 78
+\-nodisposition
+\-norfc934mode
+\-noverbose
+\-realsize
+\-nodirectives
 .fi

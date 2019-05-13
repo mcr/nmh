@@ -190,24 +190,26 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 	case FLDPLUS:
 	    compnum++;
 
-	    /* abort if draft has Mime-Version or C-T-E header field */
-	    if (strcasecmp (name, VRSN_FIELD) == 0 ||
-		strcasecmp (name, ENCODING_FIELD) == 0) {
+	    /*
+	     * If we are running with autobuild set, then silently
+	     * exit if we find a MIME-Version header.  For any other MIME
+	     * header, return an error.
+	     *
+	     * RFC 2045, Section 9 says that any valid MIME header should
+	     * start with "Content-", so we will match on that rather than
+	     * enumerate all current MIME headers.
+	     *
+	     * Because the headers could be in any order, just check for
+	     * MIME-Version here; check for Content-* later.
+	     */
+
+	    if (strcasecmp (name, VRSN_FIELD) == 0) {
 		if (autobuild) {
 		    fclose(in);
 		    free (ct);
 		    return NULL;
 		}
                 die("draft shouldn't contain %s: field", name);
-	    }
-
-	    /* ignore any Content-Type fields in the header */
-	    if (!strcasecmp (name, TYPE_FIELD)) {
-		while (state == FLDPLUS) {
-		    bufsz = sizeof buf;
-		    state = m_getfld2(&gstate, name, buf, &bufsz);
-		}
-		goto finish_field;
 	    }
 
 	    /* get copies of the buffers */
@@ -364,6 +366,16 @@ finish_field:
 	break;
     }
     m_getfld_state_destroy (&gstate);
+
+    /*
+     * If we see any Content-* headers at this point, it is an error.
+     */
+
+    for (hp = ct->c_first_hf; hp != NULL; hp = hp->next) {
+	if (uprf (hp->name, "Content-")) {
+	    die ("draft shouldn't contain %s: field", hp->name);
+	}
+    }
 
     if (header_encoding != CE_8BIT) {
         /*

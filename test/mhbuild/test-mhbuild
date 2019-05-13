@@ -36,6 +36,113 @@ EOF
 run_test "mhbuild -nodirectives `mhpath last`"
 check "`mhpath last`" "$expected"
 
+start_test "Checking for MIME-Version handling in draft"
+
+cat > "`mhpath new`" <<'EOF'
+From: Somebody <somebody@example.com>
+To: Nobody <nobody@example.com>
+Subject: Test message
+MIME-Version: 1.0
+--------
+This is a test
+EOF
+
+cat >"$expected" <<'EOF'
+From: Somebody <somebody@example.com>
+To: Nobody <nobody@example.com>
+Subject: Test message
+MIME-Version: 1.0
+--------
+This is a test
+EOF
+
+run_test "mhbuild `mhpath last`" "mhbuild: draft shouldn't contain MIME-Version: field"
+check "`mhpath last`" "$expected" 'keep first'
+
+cat >"$expected" <<'EOF'
+From: Somebody <somebody@example.com>
+To: Nobody <nobody@example.com>
+Subject: Test message
+MIME-Version: 1.0
+--------
+This is a test
+EOF
+
+run_test "mhbuild -auto `mhpath last`"
+check "`mhpath last`" "$expected"
+
+start_test "Checking for arbitrary Content header handling in draft"
+
+cat > "`mhpath new`" <<'EOF'
+From: Somebody <somebody@example.com>
+To: Nobody <nobody@example.com>
+Subject: Test message
+Content-Fart: nothing
+--------
+This is a test
+EOF
+
+cat >"$expected" <<'EOF'
+From: Somebody <somebody@example.com>
+To: Nobody <nobody@example.com>
+Subject: Test message
+Content-Fart: nothing
+--------
+This is a test
+EOF
+
+run_test "mhbuild `mhpath last`" "mhbuild: draft shouldn't contain Content-Fart: field"
+check "`mhpath last`" "$expected" 'keep first'
+
+cat >"$expected" <<'EOF'
+From: Somebody <somebody@example.com>
+To: Nobody <nobody@example.com>
+Subject: Test message
+Content-Fart: nothing
+--------
+This is a test
+EOF
+
+run_test "mhbuild -auto `mhpath last`" "mhbuild: draft shouldn't contain Content-Fart: field"
+check "`mhpath last`" "$expected"
+
+start_test "Checking for out-of-order Content header handling in draft"
+
+cat > "`mhpath new`" <<'EOF'
+From: Somebody <somebody@example.com>
+To: Nobody <nobody@example.com>
+Subject: Test message
+Content-Fart: nothing
+MIME-Version: 1.0
+--------
+This is a test
+EOF
+
+cat >"$expected" <<'EOF'
+From: Somebody <somebody@example.com>
+To: Nobody <nobody@example.com>
+Subject: Test message
+Content-Fart: nothing
+MIME-Version: 1.0
+--------
+This is a test
+EOF
+
+run_test "mhbuild `mhpath last`" "mhbuild: draft shouldn't contain MIME-Version: field"
+check "`mhpath last`" "$expected" 'keep first'
+
+cat >"$expected" <<'EOF'
+From: Somebody <somebody@example.com>
+To: Nobody <nobody@example.com>
+Subject: Test message
+Content-Fart: nothing
+MIME-Version: 1.0
+--------
+This is a test
+EOF
+
+run_test "mhbuild -auto `mhpath last`"
+check "`mhpath last`" "$expected"
 
 finish_test
 exit $failed
