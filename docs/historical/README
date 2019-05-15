@@ -40,9 +40,12 @@ http://www.tuhs.org/Archive/Distributions/UCB/4.2BSD/new.tar.gz
 
 Other versions of MH are, as of May 2019, available at these locations:
 mh-6.4              http://www.tuhs.org/Archive/Distributions/UCB/4.3BSD/new.tar.gz
+mh-6.5/             http://www.maths.tcd.ie/~dwmalone/tcdmh-6.5.tar.gz
 mh-6.5-4.3BSD-Tahoe http://www.tuhs.org/Archive/Distributions/UCB/4.3BSD-Tahoe/new.tar.gz
 mh-6.5-4.3BSD-Reno  http://www.tuhs.org/Archive/Distributions/UCB/4.3BSD-Reno/contrib.tar.gz
+mh-6.6/             http://www.maths.tcd.ie/~dwmalone/tcdmh-6.6.tar.gz
 mh-6.8              https://stuff.mit.edu/afs/athena/astaff/source/src-7.7/third/supported/mh.6.8/
+mh-6.8.3/           http://www.maths.tcd.ie/~dwmalone/tcdmh-6.8.3.tar.gz
 
 mh-6.8.5/ contains the entire MH 6.8.5 sources and RCS files, and was
 downloaded from
