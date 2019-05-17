@@ -655,7 +655,6 @@ main (int argc, char **argv)
 		break;
 
 	    case SCNMSG:
-	    case SCNENC:
 	    default:
 		if (aud)
 		    fputs (charstring_buffer (scanl), aud);
@@ -717,7 +716,6 @@ main (int argc, char **argv)
 		break;
 
 	    case SCNMSG:
-	    case SCNENC:
 		/*
 		 *  Run the external program hook on the message.
 		 */
@@ -799,7 +797,6 @@ main (int argc, char **argv)
 		break;
 
 	    case SCNMSG:
-	    case SCNENC:
 	    default:
 		/*
 		 *  Run the external program hook on the message.

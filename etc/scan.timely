@@ -1,4 +1,4 @@
-%4(msg)%<(cur)+%| %>%<{replied}-%?{encrypted}E%| %>\
+%4(msg)%<(cur)+%| %>%<{replied}-%| %>\
 %(void(rclock{date}))\
 %<(gt 15768000)%03(month{date})%(void(year{date}))%02(modulo 100)\
 %?(gt 604800)%02(mday{date})%03(month{date})\

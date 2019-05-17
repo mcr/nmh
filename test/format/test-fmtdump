@@ -85,12 +85,8 @@ L1:	LS_COMP, comp "replied"
 	IF_S continue else goto L2
 	CHAR '-'
 	GOTO L3
-L2:	LS_COMP, comp "encrypted"
-	IF_S continue else goto L4
-	CHAR 'E'
-L3:	GOTO L5
-L4:	CHAR ' '
-L5:	PARSEDATE, c_name "date", c_type <DATE>
+L2:	CHAR ' '
+L3:	PARSEDATE, c_name "date", c_type <DATE>
 	LV_MON, c_name "date", c_type <DATE>
 	NUMF, width 2, fill '0'
 	CHAR '/'
@@ -98,35 +94,35 @@ L5:	PARSEDATE, c_name "date", c_type <DATE>
 	LV_MDAY, c_name "date", c_type <DATE>
 	NUMF, width 2, fill '0'
 	LS_COMP, comp "date", c_type <DATE>
-	IF_S continue else goto L6
+	IF_S continue else goto L4
 	CHAR ' '
-	GOTO L7
-L6:	CHAR '*'
-L7:	MYMBOX, c_name "from", c_type <ADDR>
+	GOTO L5
+L4:	CHAR '*'
+L5:	MYMBOX, c_name "from", c_type <ADDR>
 	LV_COMPFLAG, comp "from", c_type <ADDR>
-	IF_V_NE 0 continue else goto L8
+	IF_V_NE 0 continue else goto L6
 	LS_COMP, comp "to", c_type <ADDR>
-	IF_S continue else goto L8
+	IF_S continue else goto L6
 	LIT "To:"
 	PARSEADDR, c_name "to", c_type <ADDR>
 	LS_FRIENDLY, c_name "to", c_type <ADDR>
 	LS_DECODE
 	STRF, width 14, fill ' '
-L8:	IF_V_EQ 0 continue else goto L9
+L6:	IF_V_EQ 0 continue else goto L7
 	PARSEADDR, c_name "from", c_type <ADDR>
 	LS_FRIENDLY, c_name "from", c_type <ADDR>
 	LS_DECODE
 	STRF, width 17, fill ' '
-L9:	LIT "  "
+L7:	LIT "  "
 	LS_COMP, comp "subject"
 	LS_DECODE
 	STR
 	LS_COMP, comp "body"
-	IF_S continue else goto L10
+	IF_S continue else goto L8
 	LIT "<<"
 	COMP, comp "body"
 	LIT ">>"
-L10:	CHAR '\n'
+L8:	CHAR '\n'
 	DONE
 EOF
 
@@ -146,12 +142,8 @@ L1:	LS_COMP, comp "replied"
 	IF_S continue else goto L2
 	CHAR '-'
 	GOTO L3
-L2:	LS_COMP, comp "encrypted"
-	IF_S continue else goto L4
-	CHAR 'E'
-L3:	GOTO L5
-L4:	CHAR ' '
-L5:	PARSEDATE, c_name "date", c_type <DATE>
+L2:	CHAR ' '
+L3:	PARSEDATE, c_name "date", c_type <DATE>
 	LV_MON, c_name "date", c_type <DATE>
 	NUMF, width 2, fill '0'
 	CHAR '/'
@@ -159,37 +151,37 @@ L5:	PARSEDATE, c_name "date", c_type <DATE>
 	LV_MDAY, c_name "date", c_type <DATE>
 	NUMF, width 2, fill '0'
 	LS_COMP, comp "date", c_type <DATE>
-	IF_S continue else goto L6
+	IF_S continue else goto L4
 	CHAR ' '
-	GOTO L7
-L6:	CHAR '*'
-L7:	MYMBOX, c_name "from", c_type <ADDR>
+	GOTO L5
+L4:	CHAR '*'
+L5:	MYMBOX, c_name "from", c_type <ADDR>
 	LV_COMPFLAG, comp "from", c_type <ADDR>
-	IF_V_NE 0 continue else goto L8
+	IF_V_NE 0 continue else goto L6
 	LS_COMP, comp "to", c_type <ADDR>
-	IF_S continue else goto L8
+	IF_S continue else goto L6
 	LIT "To:"
 	PARSEADDR, c_name "to", c_type <ADDR>
 	LS_FRIENDLY, c_name "to", c_type <ADDR>
 	LS_DECODE
 	LS_UNQUOTE
 	STRF, width 14, fill ' '
-L8:	IF_V_EQ 0 continue else goto L9
+L6:	IF_V_EQ 0 continue else goto L7
 	PARSEADDR, c_name "from", c_type <ADDR>
 	LS_FRIENDLY, c_name "from", c_type <ADDR>
 	LS_DECODE
 	LS_UNQUOTE
 	STRF, width 17, fill ' '
-L9:	LIT "  "
+L7:	LIT "  "
 	LS_COMP, comp "subject"
 	LS_DECODE
 	STR
 	LS_COMP, comp "body"
-	IF_S continue else goto L10
+	IF_S continue else goto L8
 	LIT "<<"
 	COMP, comp "body"
 	LIT ">>"
-L10:	CHAR '\n'
+L8:	CHAR '\n'
 	DONE
 EOF
 

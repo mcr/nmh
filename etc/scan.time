@@ -1,4 +1,4 @@
-%4(msg)%<(cur)+%| %>%<{replied}-%?{encrypted}E%| %>\
+%4(msg)%<(cur)+%| %>%<{replied}-%| %>\
 %02(mon{date})/%02(mday{date}) \
 %02(hour{date}):%02(min{date})%3(tzone{date})\
 %<{date} %|*%>\

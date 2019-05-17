@@ -57,7 +57,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 {
     static bool deja_vu;
     static int tty_width;
-    int i, compnum, encrypted, state;
+    int i, compnum, state;
     char *cp, *tmpbuf, *startbody, **nxtbuf;
     char *saved_c_text = NULL;
     struct comp *cptr;
@@ -96,9 +96,6 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	cptr = fmt_findcomp("folder");
 	if (cptr && folder)
 	    cptr->c_text = mh_xstrdup(folder);
-	if (fmt_addcompentry("encrypted")) {
-		ncomps++;
-	}
 	cptr =  fmt_findcomp("dtimenow");
 	if (cptr)
 	    cptr->c_text = getcpy(dtimenow (0));
@@ -343,9 +340,6 @@ finished:
     if (noisy)
 	fputs (charstring_buffer (*scanl), stdout);
 
-    cptr = fmt_findcomp ("encrypted");
-    encrypted = cptr && cptr->c_text;
-
     /* return dynamically allocated buffers to pool */
     while ((cptr = *savecomp++)) {
 	cptr->c_text = NULL;
@@ -354,7 +348,7 @@ finished:
     if (scnout && (ferror(scnout) || fclose (scnout) == EOF))
 	DIEWRERR();
 
-    return state != FILEEOF ? SCNERR : encrypted ? SCNENC : SCNMSG;
+    return state != FILEEOF ? SCNERR : SCNMSG;
 }
 
 

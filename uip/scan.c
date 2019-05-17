@@ -195,7 +195,7 @@ main (int argc, char **argv)
 			  hdrflag ? file : NULL, 0L, 1, &scanl);
 	    if (scanl)
 		charstring_clear(scanl);
-	    if (state != SCNMSG && state != SCNENC)
+	    if (state != SCNMSG)
 		break;
 	}
 	charstring_free (scanl);
@@ -283,7 +283,6 @@ main (int argc, char **argv)
 			msgnum == mp->curmsg, unseen,
 			folder, 0L, 1, &scanl)) {
 		case SCNMSG: 
-		case SCNENC: 
 		case SCNERR: 
 		    break;
 

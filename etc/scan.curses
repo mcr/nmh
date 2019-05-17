@@ -25,10 +25,9 @@
 %4(msg)\
 %;
 %; If it's the current message, output a '+' in the next column, otherwise
-%; a space.  Also use '-' if it's got a "Replied" header and 'E' if it's
-%; encrypted (not currently supported)
+%; a space.  Also use '-' if it's got a "Replied" header.
 %;
-%<(cur)+%| %>%<{replied}-%?{encrypted}E%| %>\
+%<(cur)+%| %>%<{replied}-%| %>\
 %;
 %; Output the date, but mark it with a '*' if it's missing and was synthesized.
 %; Note the use of 02 to make sure the date is padded with a leading zero.
