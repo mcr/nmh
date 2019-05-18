@@ -14,21 +14,12 @@
  * default format for `scan' and `inc'
  */
 
-#ifndef	UK
 #define	FORMAT	\
 "%4(msg)%<(cur)+%| %>%<{replied}-%| %>\
 %02(mon{date})/%02(mday{date})%<{date} %|*%>\
 %<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>\
 %<(zero)%17(decode(friendly{from}))%>  \
 %(decode{subject})%<{body}<<%{body}>>%>\n"
-#else
-#define	FORMAT	\
-"%4(msg)%<(cur)+%| %>%<{replied}-%| %>\
-%02(mday{date})/%02(mon{date})%<{date} %|*%>\
-%<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>\
-%<(zero)%17(decode(friendly{from}))%>  \
-%(decode{subject})%<{body}<<%{body}>>%>\n"
-#endif
 
 #define	WIDTH  78
 

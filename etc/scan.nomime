@@ -1,8 +1,7 @@
 %; scan.nomime
 %;
-%; This file is a modification of the standard (non-UK version)
-%; format for scan, that doesn't do any RFC-2047 decoding of
-%; header components.
+%; This file is a modification of the standard format for scan,
+%; that doesn't do any RFC-2047 decoding of header components.
 %;
 %4(msg)%<(cur)+%| %>%<{replied}-%| %>\
 %02(mon{date})/%02(mday{date})%<{date} %|*%>\

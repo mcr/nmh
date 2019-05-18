@@ -1,8 +1,8 @@
 %; scan.default
 %;
 %; This file is supplied for reference only; it shows the default
-%; format string (for non-UK sites) which was compiled into the
-%; command "scan".  See the source file "h/scansbr.h" for details.
+%; format string which was compiled into the command "scan".  See
+%; the source file "h/scansbr.h" for details.
 %;
 %4(msg)%<(cur)+%| %>%<{replied}-%| %>\
 %02(mon{date})/%02(mday{date})%<{date} %|*%>\
