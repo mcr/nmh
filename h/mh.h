@@ -229,13 +229,13 @@ struct swit {
 
 #define DEFINE_SWITCH_ENUM(name) \
     enum { \
-    	name ## _SWITCHES \
+	name ## _SWITCHES \
 	LEN_ ## name \
     }
 
 #define DEFINE_SWITCH_ARRAY(name, array) \
     static struct swit array[] = { \
-    	name ## _SWITCHES \
+	name ## _SWITCHES \
 	{ NULL, 0, 0 } \
     }
 

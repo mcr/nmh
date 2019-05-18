@@ -48,7 +48,7 @@ argsplit(char *command, char **file, int *argp)
     bool space = false;
     bool metachar = false;
     for (p = command; *p; p++) {
-    	if (*p == ' ' || *p == '\t') {
+	if (*p == ' ' || *p == '\t') {
 		space = true;
 	} else if (strchr(METACHARS, *p)) {
 		metachar = true;
@@ -63,7 +63,7 @@ argsplit(char *command, char **file, int *argp)
      */
 
     if (!space && !metachar) {
-    	argvarray[0] = mh_xstrdup(r1bindex(command, '/'));
+	argvarray[0] = mh_xstrdup(r1bindex(command, '/'));
 	argvarray[1] = NULL;
 	*file = mh_xstrdup(command);
 	if (argp)
@@ -77,7 +77,7 @@ argsplit(char *command, char **file, int *argp)
      */
 
     if (space && !metachar) {
-    	char **split;
+	char **split;
 	p = mh_xstrdup(command);
 	split = brkstring(p, " \t", NULL);
 	if (split[0] == NULL) {
@@ -123,7 +123,7 @@ argsplit(char *command, char **file, int *argp)
     argvarray[4] = NULL;
 
     if (argp)
-    	*argp = 4;
+	*argp = 4;
 
     return argvarray;
 }
@@ -140,7 +140,7 @@ arglist_free(char *command, char **argvarray)
     free(command);
 
     if (argvarray != NULL) {
-    	for (i = 0; argvarray[i] != NULL; i++)
+	for (i = 0; argvarray[i] != NULL; i++)
 	    free(argvarray[i]);
 	free(argvarray);
     }
@@ -172,7 +172,7 @@ argsplit_msgarg(struct msgs_array *msgs, char *command, char **program)
      */
 
     for (i = 0; i < argp; i++) {
-    	app_msgarg(msgs, vec[i]);
+	app_msgarg(msgs, vec[i]);
     }
 
     free(vec);
@@ -210,7 +210,7 @@ argsplit_insert(struct msgs_array *msgs, char *command, char **program)
     }
 
     for (i = msgs->size - 1; i >= 0; i--)
-    	msgs->msgs[i + argp] = msgs->msgs[i];
+	msgs->msgs[i + argp] = msgs->msgs[i];
 
     msgs->size += argp;
 
@@ -219,7 +219,7 @@ argsplit_insert(struct msgs_array *msgs, char *command, char **program)
      */
 
     for (i = 0; i < argp; i++)
-    	msgs->msgs[i] = vec[i];
+	msgs->msgs[i] = vec[i];
 
     free(vec);
 }

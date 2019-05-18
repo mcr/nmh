@@ -59,7 +59,7 @@ annotate (char *file, char *comp, char *text, bool inplace, bool datesw, int del
 
     if (stat(file, &s) == -1) {
         inform("can't get access and modification times for %s", file);
-    	preserve_actime_and_modtime = 0;
+	preserve_actime_and_modtime = 0;
     }
 
     b.actime = s.st_atime;

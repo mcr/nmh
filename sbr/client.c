@@ -79,7 +79,7 @@ client (char *server, char *service, char *response, int len_response,
 	    flags = fcntl(sd, F_GETFD, 0);
 
 	    if (flags != -1)
-	    	fcntl(sd, F_SETFD, flags | FD_CLOEXEC);
+		fcntl(sd, F_SETFD, flags | FD_CLOEXEC);
 
 	    return sd;
 	}

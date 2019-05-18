@@ -51,5 +51,5 @@ AC_ARG_ENABLE([lockdir],
   AS_IF([test "x$enableval" = xyes],[
     AC_MSG_ERROR([--enable-lockdir requires an argument])])
   AC_DEFINE_UNQUOTED([LOCKDIR], ["$enableval"],
-  		     [Directory to store dot-locking lock files])
+		     [Directory to store dot-locking lock files])
 ])])

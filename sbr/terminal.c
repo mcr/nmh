@@ -47,12 +47,12 @@ initialize_terminfo(void)
     int errret, rc;
 
     if (termstatus)
-    	return;
+	return;
 
     rc = setupterm(NULL, fileno(stdout), &errret);
 
     if (rc != 0 || errret != 1) {
-    	termstatus = -1;
+	termstatus = -1;
 	return;
     }
     termstatus = 1;
@@ -173,14 +173,14 @@ get_term_stringcap(char *capability)
     initialize_terminfo();
 
     if (termstatus == -1)
-    	return NULL;
+	return NULL;
 
     termcbufp = termcbuf;
 
     parm = tigetstr(capability);
 
     if (parm == (char *) -1 || parm == NULL) {
-    	return NULL;
+	return NULL;
     }
 
     tputs(parm, 1, termbytes);
@@ -215,14 +215,14 @@ get_term_stringparm(char *capability, long arg1, long arg2)
     initialize_terminfo();
 
     if (termstatus == -1)
-    	return NULL;
+	return NULL;
 
     termcbufp = termcbuf;
 
     parm = tigetstr(capability);
 
     if (parm == (char *) -1 || parm == NULL) {
-    	return NULL;
+	return NULL;
     }
 
     parm = tparm(parm, arg1, arg2, 0, 0, 0, 0, 0, 0, 0);
@@ -253,7 +253,7 @@ get_term_numcap(char *capability)
     initialize_terminfo();
 
     if (termstatus == -1)
-    	return -1;
+	return -1;
 
     return tigetnum(capability);
 }
@@ -274,7 +274,7 @@ termbytes(TPUTS_PUTC_ARG c)
 
     if ((offset = termcbufp - termcbuf) - 1 >= termcbufsz) {
         termcbufsz += 64;
-    	termcbuf = mh_xrealloc(termcbuf, termcbufsz);
+	termcbuf = mh_xrealloc(termcbuf, termcbufsz);
 	termcbufp = termcbuf + offset;
     }
 

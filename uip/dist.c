@@ -200,30 +200,30 @@ main (int argc, char **argv)
 
 		case FROMSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    from = addlist(from, cp);
 		    continue;
 		case TOSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    to = addlist(to, cp);
 		    continue;
 		case CCSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    cc = addlist(cc, cp);
 		    continue;
 		case FCCSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    fcc = addlist(fcc, cp);
 		    continue;
 
 		case WIDTHSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if ((outputlinelen = atoi(cp)) < 10)
-		    	die("impossible width %d", outputlinelen);
+			die("impossible width %d", outputlinelen);
 		    continue;
 
 		case ATFILESW:
@@ -328,7 +328,7 @@ try_it_again:
     dat[4] = 0;
 
     if (!form)
-    	form = distcomps;
+	form = distcomps;
 
     in = build_form(form, NULL, dat, from, to, cc, fcc, NULL, msgnam);
 

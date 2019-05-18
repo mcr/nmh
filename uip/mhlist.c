@@ -184,10 +184,10 @@ main (int argc, char **argv)
 		continue;
 
 	    case CHGSW:
-	    	chgflag = true;
+		chgflag = true;
 		continue;
 	    case NCHGSW:
-	    	chgflag = false;
+		chgflag = false;
 		continue;
 
 	    case VERBSW: 

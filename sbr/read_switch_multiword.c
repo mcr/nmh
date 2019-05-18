@@ -42,7 +42,7 @@ read_switch_multiword (const char *prompt, const struct swit *ansp)
 	cp = ansbuf;
 	while ((i = getchar ()) != '\n') {
 	    if (i == EOF) {
-	    	/*
+		/*
 		 * If we get an EOF, return
 		 */
 		if (feof(stdin))
@@ -56,11 +56,11 @@ read_switch_multiword (const char *prompt, const struct swit *ansp)
 
 		if (ferror(stdin)) {
 		    if (errno == EINTR) {
-		    	clearerr(stdin);
+			clearerr(stdin);
 			continue;
 		    }
 		    fprintf(stderr, "\nError %s during read\n",
-		    	    strerror(errno));
+			    strerror(errno));
 		    siglongjmp (sigenv, 1);
 		}
 

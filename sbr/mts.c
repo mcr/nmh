@@ -220,7 +220,7 @@ LocalName (int flag)
     struct addrinfo hints, *res;
 
     if (flag < 0 || flag > 1)
-    	return NULL;
+	return NULL;
 
     buf = buffer[flag];
 
@@ -328,7 +328,7 @@ char *
 getlocalmbox (void)
 {
     if (username[0] == '\0')
-    	getuserinfo();
+	getuserinfo();
 
     return localmbox;
 }
@@ -402,7 +402,7 @@ getuserinfo (void)
     if ((cp = getenv ("SIGNATURE")) && *cp)
 	strncpy (fullname, cp, sizeof(fullname));
     else if ((cp = context_find("Signature")))
-    	strncpy (fullname, cp, sizeof(fullname));
+	strncpy (fullname, cp, sizeof(fullname));
 
     fullname[sizeof(fullname) - 1] = '\0';
 

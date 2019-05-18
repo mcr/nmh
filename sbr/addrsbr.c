@@ -233,10 +233,10 @@ auxformat (struct mailname *mp, int extras)
 	    strncpy (addr, FENDNULL(mp->m_mbox), sizeof(addr));
 	else if (mp->m_type != UUCPHOST) {
 	    if (mp->m_host)
-	    	snprintf (addr, sizeof(addr), "%s%s@%s", FENDNULL(mp->m_path),
+		snprintf (addr, sizeof(addr), "%s%s@%s", FENDNULL(mp->m_path),
 			  FENDNULL(mp->m_mbox), mp->m_host);
 	    else snprintf (addr, sizeof(addr), "%s%s", FENDNULL(mp->m_path),
-	    		   FENDNULL(mp->m_mbox));
+			   FENDNULL(mp->m_mbox));
 	} else
 	    snprintf (addr, sizeof(addr), "%s!%s", mp->m_host, mp->m_mbox);
 
@@ -312,7 +312,7 @@ ismymbox (struct mailname *np)
 	    /* Sigh, it turns out that the address parser gets messed up
 	     * if you don't call getname() until it returns NULL. */
 	    while (getname(am) != NULL)
-	    	;
+		;
 	}
 
 	if ((am = context_find ("alternate-mailboxes")) == NULL)

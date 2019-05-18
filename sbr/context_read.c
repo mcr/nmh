@@ -43,7 +43,7 @@ context_read (void)
     char			*nd;		/* nmh directory pointer */
     struct	stat		st;		/* stat() results */
     struct	passwd	        *pw;		/* getpwuid() results */
-    FILE        		*ib;		/* profile and context file pointer */
+    FILE			*ib;		/* profile and context file pointer */
     int failed_to_lock = 0;
 
     /*

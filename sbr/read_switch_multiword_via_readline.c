@@ -37,7 +37,7 @@ read_switch_multiword_via_readline(char *prompt, struct swit *ansp)
     rl_cmds = ansp;
 
     for (;;) {
-    	ans = readline(prompt);
+	ans = readline(prompt);
 	/*
 	 * If we get an EOF, return
 	 */
@@ -59,10 +59,10 @@ read_switch_multiword_via_readline(char *prompt, struct swit *ansp)
 	cpp = brkstring(ansbuf, " ", NULL);
 	switch (smatch(*cpp, ansp)) {
 	    case AMBIGSW:
-	    	ambigsw(*cpp, ansp);
+		ambigsw(*cpp, ansp);
 		continue;
 	    case UNKWNSW:
-	    	printf(" -%s unknown. Hit <CR> for help.\n", *cpp);
+		printf(" -%s unknown. Hit <CR> for help.\n", *cpp);
 		continue;
 	    default:
 		return cpp;
@@ -83,7 +83,7 @@ nmh_completion(const char *text, int start, int end)
     NMH_UNUSED (end);
 
     if (start == 0)
-    	return rl_completion_matches(text, nmh_command_generator);
+	return rl_completion_matches(text, nmh_command_generator);
 
     return NULL;
 }
@@ -96,12 +96,12 @@ nmh_command_generator(const char *text, int state)
     char buf[256];
 
     if (!state) {
-    	list_index = 0;
+	list_index = 0;
 	len = strlen(text);
     }
 
     while ((name = rl_cmds[list_index].sw)) {
-    	list_index++;
+	list_index++;
 	strncpy(buf, name, sizeof(buf));
 	buf[sizeof(buf) - 1] = '\0';
 	p = *brkstring(buf, " ", NULL);

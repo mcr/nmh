@@ -18,10 +18,10 @@ get_default_editor(void)
     char *str;
 
     if (default_editor)
-    	return default_editor;
+	return default_editor;
 
     if (!(str = context_find("editor")) && !(str = getenv("VISUAL")) &&
-    	!(str = getenv("EDITOR"))) {
+	!(str = getenv("EDITOR"))) {
 	str = "prompter";
     }
 

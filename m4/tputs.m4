@@ -13,7 +13,7 @@ AC_DEFUN([NMH_TPUTS_PUTC_ARG],
   [for tputs_arg1 in 'const char *' 'char *'; do
     for tputs_putc_arg in 'int' 'char'; do
       AC_COMPILE_IFELSE(
-      	[AC_LANG_PROGRAM(
+	[AC_LANG_PROGRAM(
 [AC_INCLUDES_DEFAULT
 #include <curses.h>
 #include <term.h>

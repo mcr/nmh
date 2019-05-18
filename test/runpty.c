@@ -57,7 +57,7 @@ main(int argc, char *argv[])
     starttime = time(NULL);
 
     for (;;) {
-    	fd_set readfds;
+	fd_set readfds;
 	struct timeval tv;
 
 	FD_ZERO(&readfds);

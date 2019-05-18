@@ -35,7 +35,7 @@ folder_free (struct msgs *mp)
     /* Close/free the sequence file if it is open */
 
     if (mp->seqhandle)
-    	lkfclosedata (mp->seqhandle, mp->seqname);
+	lkfclosedata (mp->seqhandle, mp->seqname);
 
     free(mp->seqname);
 

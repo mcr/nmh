@@ -244,7 +244,7 @@ again: ;
 	case LX_END: 
 	    return DONE;
 
-	case LX_LBRK: 		/* sigh (2) */
+	case LX_LBRK:		/* sigh (2) */
 	    goto get_addr;
 
 	case LX_AT:		/* sigh (3) */
@@ -303,7 +303,7 @@ again: ;
 			    }
 		    }
 
-		case LX_DOT: 	/* sigh (1) */
+		case LX_DOT:	/* sigh (1) */
 		    pers = add (".", pers);
 		    goto more_phrase;
 
@@ -349,7 +349,7 @@ again: ;
 		    return NOTOK;
 	    }
 
-	case LX_SEMI: 		/* no host */
+	case LX_SEMI:		/* no host */
 	case LX_COMA: 
 	case LX_END: 
 	    ingrp = glevel;
@@ -400,7 +400,7 @@ route_addr (char *buffer)
 	    return domain (buffer);
 
 	case LX_SEMI:	/* if in group */
-	case LX_RBRK: 		/* no host */
+	case LX_RBRK:		/* no host */
 	case LX_COMA:
 	case LX_END: 
 	    return OK;
@@ -461,7 +461,7 @@ domain (char *buffer)
 		host = add (buffer, host);
 		continue;
 
-	    case LX_AT: 	/* sigh (0) */
+	    case LX_AT:		/* sigh (0) */
 		mbox = add (host, add ("%", mbox));
 		free (host);
 		host = NULL;

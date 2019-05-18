@@ -150,7 +150,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	     */
 
 	    for (endofcharset = startofmime;
-	    		*endofcharset != '*' && endofcharset < pp;
+			*endofcharset != '*' && endofcharset < pp;
 							endofcharset++)
 		;
 

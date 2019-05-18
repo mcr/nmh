@@ -177,7 +177,7 @@ char *
 addlist (char *list, const char *item)
 {
     if (list)
-    	list = add (", ", list);
+	list = add (", ", list);
 
     return add (item, list);
 }

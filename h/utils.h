@@ -86,7 +86,7 @@ bool contains8bit(const char *start, const char *end);
  * See if file has any 8-bit bytes.
  * Arguments include:
  *
- * fd    	- file descriptor
+ * fd		- file descriptor
  * eightbit	- address of result, will be set to 1 if the file contains
  *                any 8-bit bytes, 0 otherwise.
  *

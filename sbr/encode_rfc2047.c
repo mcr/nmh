@@ -83,13 +83,13 @@ encode_rfc2047(const char *name, char **value, int encoding,
 	if (isascii((unsigned char) *p)) {
 	    asciicount++;
 	    if (qpspecial((unsigned char) *p))
-	    	qpspecialcount++;
+		qpspecialcount++;
 	} else
 	    eightbitcount++;
     }
 
     if (eightbitcount == 0)
-    	return 0;
+	return 0;
 
     /*
      * Some rules from RFC 2047:
@@ -108,10 +108,10 @@ encode_rfc2047(const char *name, char **value, int encoding,
      */
 
     if (charset == NULL)
-    	charset = write_charset_8bit();
+	charset = write_charset_8bit();
 
     if (strcasecmp(charset, "US-ASCII") == 0) {
-    	inform("Cannot use US-ASCII with 8 bit characters in header");
+	inform("Cannot use US-ASCII with 8 bit characters in header");
 	return 1;
     }
 
@@ -121,7 +121,7 @@ encode_rfc2047(const char *name, char **value, int encoding,
      */
 
     for (i = 0; address_headers[i]; i++) {
-    	if (strcasecmp(name, address_headers[i]) == 0)
+	if (strcasecmp(name, address_headers[i]) == 0)
 	    return field_encode_address(name, value, encoding, charset);
     }
 
@@ -143,14 +143,14 @@ encode_rfc2047(const char *name, char **value, int encoding,
     switch (encoding) {
 
     case CE_BASE64:
-    	return field_encode_base64(name, value, charset);
+	return field_encode_base64(name, value, charset);
 
     case CE_QUOTED:
 	return field_encode_quoted(name, value, charset, asciicount,
 				   eightbitcount + qpspecialcount, 0);
 
     default:
-    	inform("Internal error: unknown RFC-2047 encoding type");
+	inform("Internal error: unknown RFC-2047 encoding type");
 	return 1;
     }
 }
@@ -180,10 +180,10 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 
     bool newline = true;
     while (*p != '\0') {
-    	/*
+	/*
 	 * Start a new line, if it's time
 	 */
-    	if (newline) {
+	if (newline) {
 	    /*
 	     * If it's the start of the header, we don't need to pad it
 	     *
@@ -215,12 +215,12 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 		for (i = 0; i < prefixlen; i++)
 		    *q++ = ' ';
 	    } else {
-	    	/*
+		/*
 		 * A bit of a hack here; the header can contain multiple
 		 * spaces (probably at least one) until we get to the
 		 * actual text.  Copy until we get to a non-space.
 		 */
-	    	output = mh_xmalloc(outlen);
+		output = mh_xmalloc(outlen);
 		q = output;
 		while (is_fws(*p))
 		    *q++ = *p++;
@@ -246,7 +246,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	    ascii--;
 	} else if (isascii((unsigned char) *p) &&
 		   (phraserules ? qphrasevalid((unsigned char) *p) :
-		   			!qpspecial((unsigned char) *p))) {
+					!qpspecial((unsigned char) *p))) {
 	    *q++ = *p;
 	    ascii--;
 	} else {
@@ -331,7 +331,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
      */
 
     while (*p == ' ' || *p == '\t')
-    	p++;
+	p++;
 
     /*
      * If we had a zero-length prefix, then just encode the whole field
@@ -343,7 +343,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
      */
 
     while (prefixlen && ((base64len(strlen(p)) + 7 + charsetlen +
-    			  prefixlen) > ENCODELINELIMIT)) {
+			  prefixlen) > ENCODELINELIMIT)) {
 
 	/*
 	 * Our very first time, don't pad the line in the front
@@ -387,7 +387,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
 
 	if (numencode <= 0) {
 	    inform("Internal error: tried to encode %d characters "
-	    	   "in base64", numencode);
+		   "in base64", numencode);
 	    return 1;
 	}
 
@@ -407,10 +407,10 @@ field_encode_base64(const char *name, char **value, const char *charset)
 	     */
 
 	    while (numencode > 0 && ((*(p + numencode) & 0xc0) == 0x80))
-	    	numencode--;
+		numencode--;
 
 	    if (numencode == 0) {
-	    	inform("Internal error: could not find start of "
+		inform("Internal error: could not find start of "
 		       "UTF-8 character when base64 encoding header");
 		return 1;
 	    }
@@ -461,10 +461,10 @@ field_encode_base64(const char *name, char **value, const char *charset)
     q = output + curlen;
 
     q += snprintf(q, outlen - (q - output), "%s=?%s?B?",
-    		  prefixlen ? " " : "", charset);
+		  prefixlen ? " " : "", charset);
 
     if (writeBase64raw((unsigned char *) p, strlen(p),
-    		       (unsigned char *) q) != OK) {
+		       (unsigned char *) q) != OK) {
 	inform("Internal error: base64 encoding of header failed");
 	return 1;
     }
@@ -472,7 +472,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
     strcat(q, "?=");
 
     if (prefixlen)
-    	strcat(q, "\n");
+	strcat(q, "\n");
 
     free(*value);
 
@@ -494,14 +494,14 @@ utf8len(const char *p)
     int len = 1;
 
     if (*p == '\0')
-    	return 0;
+	return 0;
 
     if (isascii((unsigned char) *p) || (((unsigned char) *p) & 0xc0) == 0x80)
-    	return 0;
+	return 0;
 
     p++;
     while ((((unsigned char) *p++) & 0xc0) == 0x80)
-    	len++;
+	len++;
 
     return len;
 }
@@ -520,7 +520,7 @@ unfold_header(char **value, int len)
     char *p = str, *q = *value;
 
     while (*q != '\0') {
-    	if (*q == '\n') {
+	if (*q == '\n') {
 	    /*
 	     * When we get a newline, skip to the next non-whitespace
 	     * character and add a space to replace all of the whitespace
@@ -529,9 +529,9 @@ unfold_header(char **value, int len)
 	     * for the header; we put it back in the encoding routine.
 	     */
 	    while (is_fws(*q))
-	    	q++;
+		q++;
 	    if (*q == '\0')
-	    	break;
+		break;
 
 	    *p++ = ' ';
 	} else {
@@ -582,7 +582,7 @@ field_encode_address(const char *name, char **value, int encoding,
     output = add(" ", output);
 
     for (groupflag = 0; (mp = getname(*value)); ) {
-    	if ((mn = getm(mp, NULL, 0, errbuf, sizeof(errbuf))) == NULL) {
+	if ((mn = getm(mp, NULL, 0, errbuf, sizeof(errbuf))) == NULL) {
 	    inform("%s: %s", errbuf, mp);
 	    errflag = true;
 	    continue;
@@ -613,7 +613,7 @@ field_encode_address(const char *name, char **value, int encoding,
 	     */
 
 	    if (encoding == CE_UNKNOWN)
-	    	encoding = pref_encoding(asciichars, specialchars,
+		encoding = pref_encoding(asciichars, specialchars,
 					 eightbitchars);
 
 	    /*
@@ -626,14 +626,14 @@ field_encode_address(const char *name, char **value, int encoding,
 	    switch (encoding) {
 
 	    case CE_BASE64:
-	    	if (field_encode_base64(NULL, &mn->m_pers, charset)) {
+		if (field_encode_base64(NULL, &mn->m_pers, charset)) {
 		    errflag = true;
 		    goto out;
 		}
 		break;
 
 	    case CE_QUOTED:
-	    	if (field_encode_quoted(NULL, &mn->m_pers, charset, asciichars,
+		if (field_encode_quoted(NULL, &mn->m_pers, charset, asciichars,
 					eightbitchars + specialchars, 1)) {
 		    errflag = true;
 		    goto out;
@@ -668,7 +668,7 @@ field_encode_address(const char *name, char **value, int encoding,
 
 	if (mn->m_note[0] != '(' || mn->m_note[len - 1] != ')') {
 	    inform("Internal error: Invalid note field \"%s\"",
-	    	   mn->m_note);
+		   mn->m_note);
 	    errflag = true;
 	    goto out;
 	}
@@ -683,20 +683,20 @@ field_encode_address(const char *name, char **value, int encoding,
 	     */
 
 	    if (encoding == CE_UNKNOWN)
-	    	encoding = pref_encoding(asciichars, specialchars,
+		encoding = pref_encoding(asciichars, specialchars,
 					 eightbitchars);
 
 	    switch (encoding) {
 
 	    case CE_BASE64:
-	    	if (field_encode_base64(NULL, &tmpbuf, charset)) {
+		if (field_encode_base64(NULL, &tmpbuf, charset)) {
 		    errflag = true;
 		    goto out;
 		}
 		break;
 
 	    case CE_QUOTED:
-	    	if (field_encode_quoted(NULL, &tmpbuf, charset, asciichars,
+		if (field_encode_quoted(NULL, &tmpbuf, charset, asciichars,
 					eightbitchars + specialchars, 1)) {
 		    errflag = true;
 		    goto out;
@@ -771,13 +771,13 @@ do_reformat:
 	if (column != prefixlen) {
 	    if (len + column + 2 > OUTPUTLINELEN) {
 
-	    	if ((size_t) (prefixlen + 3) < tmpbufsize)
+		if ((size_t) (prefixlen + 3) < tmpbufsize)
 		    tmpbuf = mh_xrealloc(tmpbuf, tmpbufsize = prefixlen + 3);
 
 		snprintf(tmpbuf, tmpbufsize, ",\n%*s", column = prefixlen, "");
 		output = add(tmpbuf, output);
 	    } else {
-	    	output = add(", ", output);
+		output = add(", ", output);
 		column += 2;
 	    }
 	}
@@ -826,7 +826,7 @@ scanstring(const char *string, int *asciilen, int *eightbitchars,
     *specialchars = 0;
 
     for (; *string != '\0'; string++) {
-    	if ((isascii((unsigned char) *string))) {
+	if ((isascii((unsigned char) *string))) {
 	    (*asciilen)++;
 	    /*
 	     * So, a space is not a valid phrase character, but we're counting
@@ -834,7 +834,7 @@ scanstring(const char *string, int *asciilen, int *eightbitchars,
 	     * encoded as an underscore.
 	     */
 	    if (!qphrasevalid((unsigned char) *string) && *string != ' ')
-	    	(*specialchars)++;
+		(*specialchars)++;
 	} else {
 	    (*eightbitchars)++;
 	}
@@ -873,5 +873,5 @@ pref_encoding(int ascii, int specials, int eightbits)
      */
 
     return base64len(ascii + eightbits) < (ascii - specials +
-    			(specials + eightbits) * 3) ? CE_BASE64 : CE_QUOTED;
+			(specials + eightbits) * 3) ? CE_BASE64 : CE_QUOTED;
 }

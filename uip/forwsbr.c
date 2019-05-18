@@ -67,7 +67,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
      */
 
     if ((tmp = fopen(inputfile, "r")) == NULL)
-    	adios (inputfile, "Unable to open");
+	adios (inputfile, "Unable to open");
 
     /* Get new format string */
     nfs = new_fs (form, NULL, NULL);
@@ -100,7 +100,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
-	    	/*
+		/*
 		 * If we find a component that we're interested in, save
 		 * a copy.  We don't do all of that weird buffer switching
 		 * that replout does.
@@ -124,10 +124,10 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 	    case FMTERR:
 	    case BODY:
 	    case FILEEOF:
-	    	goto finished;
+		goto finished;
 
 	    default:
-	    	die("m_getfld2() returned %d", state);
+		die("m_getfld2() returned %d", state);
 	}
     }
 
@@ -146,37 +146,37 @@ finished:
 
     cptr = fmt_findcomp ("digest");
     if (cptr) {
-    	COMPFREE(cptr);
+	COMPFREE(cptr);
 	cptr->c_text = getcpy(digest);
     }
     cptr = fmt_findcomp ("nmh-date");
     if (cptr) {
-    	COMPFREE(cptr);
+	COMPFREE(cptr);
 	cptr->c_text = getcpy(dtimenow (0));
     }
     cptr = fmt_findcomp ("nmh-from");
     if (cptr) {
-    	COMPFREE(cptr);
+	COMPFREE(cptr);
 	cptr->c_text = getcpy(from);
     }
     cptr = fmt_findcomp ("nmh-to");
     if (cptr) {
-    	COMPFREE(cptr);
+	COMPFREE(cptr);
 	cptr->c_text = getcpy(to);
     }
     cptr = fmt_findcomp ("nmh-cc");
     if (cptr) {
-    	COMPFREE(cptr);
+	COMPFREE(cptr);
 	cptr->c_text = getcpy(cc);
     }
     cptr = fmt_findcomp ("nmh-subject");
     if (cptr) {
-    	COMPFREE(cptr);
+	COMPFREE(cptr);
 	cptr->c_text = getcpy(subject);
     }
     cptr = fmt_findcomp ("fcc");
     if (cptr) {
-    	COMPFREE(cptr);
+	COMPFREE(cptr);
 	cptr->c_text = getcpy(fcc);
     }
 

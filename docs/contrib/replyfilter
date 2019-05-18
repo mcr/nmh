@@ -577,7 +577,7 @@ sub process_multipart
 
 			if ($subtype eq 'alternative' && ! defined $altout &&
 			    $type eq 'text/plain') {
-			    	$altout = 1;
+				$altout = 1;
 			}
 
                         #

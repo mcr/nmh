@@ -625,7 +625,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 	fprintf (stderr, "%s: %s\n", TYPE_FIELD, cp);
 
     if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
-    				   &ci->ci_comment) == NOTOK)
+				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     for (dp = cp; istoken (*dp); dp++)
@@ -647,7 +647,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 	cp++;
 
     if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
-    				   &ci->ci_comment) == NOTOK)
+				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     if (*cp != '/') {
@@ -661,7 +661,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 	cp++;
 
     if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
-    				   &ci->ci_comment) == NOTOK)
+				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     for (dp = cp; istoken (*dp); dp++)
@@ -684,11 +684,11 @@ magic_skip:
 	cp++;
 
     if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
-    				   &ci->ci_comment) == NOTOK)
+				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     if ((status = parse_header_attrs (ct->c_file, TYPE_FIELD, &cp,
-    				      &ci->ci_first_pm, &ci->ci_last_pm,
+				      &ci->ci_first_pm, &ci->ci_last_pm,
 				      &ci->ci_comment)) != OK) {
 	return status == NOTOK ? NOTOK : OK;
     }
@@ -776,7 +776,7 @@ magic_skip:
      */
 
     if (magic && *cp == '*') {
-    	/*
+	/*
 	 * See if it's a CTE we match on
 	 */
 	struct k2v *kv;
@@ -874,7 +874,7 @@ get_dispo (char *cp, CT ct, int buildflag)
 	fprintf (stderr, "%s: %s\n", DISPO_FIELD, cp);
 
     if (*cp == '(' && get_comment (ct->c_file, DISPO_FIELD, &cp, NULL) ==
-    							NOTOK) {
+							NOTOK) {
 	free(dispoheader);
 	return NOTOK;
     }
@@ -891,7 +891,7 @@ get_dispo (char *cp, CT ct, int buildflag)
 	return NOTOK;
 
     if ((status = parse_header_attrs (ct->c_file, DISPO_FIELD, &cp,
-    				      &ct->c_dispo_first, &ct->c_dispo_last,
+				      &ct->c_dispo_first, &ct->c_dispo_last,
 				      NULL)) != OK) {
 	if (status == NOTOK) {
 	    free(dispoheader);
@@ -903,7 +903,7 @@ get_dispo (char *cp, CT ct, int buildflag)
     }
 
     if (buildflag)
-    	free(dispoheader);
+	free(dispoheader);
     else
 	ct->c_dispo = dispoheader;
 
@@ -1572,7 +1572,7 @@ params_external (CT ct, int composing)
 	    e->eb_url = u = mh_xmalloc(strlen(pm->pm_value) + 1);
 
 	    for (; *p != '\0'; p++) {
-	    	if (! isspace((unsigned char) *p))
+		if (! isspace((unsigned char) *p))
 		    *u++ = *p;
 	    }
 
@@ -2414,7 +2414,7 @@ openFTP (CT ct, char **file)
 	vec[vecp++] = e->eb_name;
 	vec[vecp++] = ce->ce_file,
 	vec[vecp++] = e->eb_mode && !strcasecmp (e->eb_mode, "ascii")
-	    		? "ascii" : "binary";
+			? "ascii" : "binary";
 	vec[vecp] = NULL;
 
 	fflush (stdout);
@@ -2589,15 +2589,15 @@ openURL (CT ct, char **file)
     pid_t child_id;
 
     if ((urlprog = context_find(nmhaccessurl)) && *urlprog == '\0')
-    	urlprog = NULL;
+	urlprog = NULL;
 
     if (! urlprog) {
-    	content_error(NULL, ct, "No entry for nmh-access-url in profile");
-    	return NOTOK;
+	content_error(NULL, ct, "No entry for nmh-access-url in profile");
+	return NOTOK;
     }
 
     switch (openExternal(e->eb_parent, ce, file, &fd)) {
-    	case NOTOK:
+	case NOTOK:
 	    return NOTOK;
 
 	case OK:
@@ -2608,7 +2608,7 @@ openURL (CT ct, char **file)
     }
 
     if (!e->eb_url) {
-    	content_error(NULL, ct, "missing url parameter");
+	content_error(NULL, ct, "missing url parameter");
 	return NOTOK;
     }
 
@@ -2626,17 +2626,17 @@ openURL (CT ct, char **file)
     }
 
     if ((ce->ce_fp = fopen(ce->ce_file, "w+")) == NULL) {
-    	content_error(ce->ce_file, ct, "unable to fopen for read/writing");
+	content_error(ce->ce_file, ct, "unable to fopen for read/writing");
 	return NOTOK;
     }
 
     switch (child_id = fork()) {
     case NOTOK:
-    	adios ("fork", "unable to");
+	adios ("fork", "unable to");
 	/* NOTREACHED */
 
     case OK:
-    	argsplit_msgarg(&args, urlprog, &program);
+	argsplit_msgarg(&args, urlprog, &program);
 	app_msgarg(&args, e->eb_url);
 	app_msgarg(&args, NULL);
 	dup2(fileno(ce->ce_fp), 1);
@@ -2648,7 +2648,7 @@ openURL (CT ct, char **file)
 	/* NOTREACHED */
 
     default:
-    	if (pidXwait(child_id, NULL)) {
+	if (pidXwait(child_id, NULL)) {
 	    ce->ce_unlink = 1;
 	    return NOTOK;
 	}
@@ -3059,7 +3059,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		continue;
 	    }
             if (*vp == '*' && vp == up - 1) {
-	    	encoded = true;
+		encoded = true;
 	    } else if (partial) {
 		if (isdigit((unsigned char) *vp))
 		    index = *vp - '0' + index * 10;
@@ -3092,7 +3092,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	     * parameter).
 	     */
 	    if (index == 0) {
-	    	vp = dp;
+		vp = dp;
 		while (*vp != '\'' && !isspace((unsigned char) *vp) &&
 							*vp != '\0')
 		    vp++;
@@ -3222,7 +3222,7 @@ bad_quote:
 	    valptr = mh_xmalloc(len + 1);
 
 	    if (*dp == '"') {
-	    	int i;
+		int i;
 		for (cp = dp + 1, vp = valptr, i = 0; i < len; i++) {
 		    if (*cp == '\\') {
 			cp++;
@@ -3231,7 +3231,7 @@ bad_quote:
 		}
 		cp++;
 	    } else {
-	    	strncpy(valptr, cp = dp, len);
+		strncpy(valptr, cp = dp, len);
 		cp += len;
 	    }
 
@@ -3305,7 +3305,7 @@ bad_quote:
 
 	    if (index == 0 && encoded) {
                 free(pp->charset);
-	    	pp->charset = charset;
+		pp->charset = charset;
                 free(pp->lang);
 		pp->lang = lang;
 	    }
@@ -3329,7 +3329,7 @@ bad_quote:
      */
 
     for (pp = phead; pp != NULL; ) {
-    	char *p, *q;
+	char *p, *q;
 	size_t tlen = 0;
 	int pindex = 0;
 	for (sp = pp->sechead; sp != NULL; sp = sp->next) {
@@ -3492,7 +3492,7 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 
 	if (index > 0) {
 	    q += snprintf(q, sizeof(line) - (q - line), "%s*%d",
-	    		  params->pm_name, index);
+			  params->pm_name, index);
 	} else {
 	    strncpy(q, params->pm_name, sizeof(line) - (q - line));
 	    q += strlen(q);
@@ -3500,10 +3500,10 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 
 	if (encode)
 	    i = encode_param(params, q, sizeof(line) - (q - line),
-	    		     strlen(params->pm_value + valoff), valoff, index);
+			     strlen(params->pm_value + valoff), valoff, index);
 	else
 	    i = normal_param(params, q, sizeof(line) - (q - line),
-	    		     strlen(params->pm_value + valoff), valoff);
+			     strlen(params->pm_value + valoff), valoff);
 
 	if (i == 0) {
             free(paramout);
@@ -3631,7 +3631,7 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
 		len += 3;
 		maxfit -= 3;
 	    } else {
-	    	len++;
+		len++;
 		maxfit--;
 	    }
 	    /*
@@ -3644,7 +3644,7 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
 		fitlimit++;
 	}
     } else {
-    	/*
+	/*
 	 * Calculate the string length, but add room for quoting \
 	 * and " if necessary.  Also account for quotes at beginning
 	 * and end.
@@ -3653,7 +3653,7 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
 	    switch (*p) {
 	    case '"':
 	    case '\\':
-	    	len++;
+		len++;
 		maxfit--;
 	    /* FALLTHRU */
 	    default:
@@ -3802,7 +3802,7 @@ add_param(PM *first, PM *last, char *name, char *value, int nocopy)
 	(*last)->pm_next = pm;
 	*last = pm;
     } else {
-    	*first = pm;
+	*first = pm;
 	*last = pm;
     }
 
@@ -3847,7 +3847,7 @@ get_param(PM first, const char *name, char replace, int fetchonly)
     while (first != NULL) {
 	if (strcasecmp(name, first->pm_name) == 0) {
 	    if (fetchonly)
-	    	return first->pm_value;
+		return first->pm_value;
             return getcpy(get_param_value(first, replace));
 	}
 	first = first->pm_next;
@@ -3884,7 +3884,7 @@ get_param_value(PM pm, char replace)
      */
 
     if (!pm->pm_charset || check_charset(pm->pm_charset,
-    					 strlen(pm->pm_charset))) {
+					 strlen(pm->pm_charset))) {
 	return pm->pm_value;
     }
 

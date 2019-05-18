@@ -130,14 +130,14 @@ static int day_map[] = {
                        SKIPA(); }
 #define SETMON()     { cp++; \
                        tw.tw_mon = month_map[(((unsigned char) cp[0]) + ((unsigned char) cp[1])) & 0x1f]; \
-  		       SKIPA(); }
+		       SKIPA(); }
 #define SETMON_NUM() { tw.tw_mon = atoi(cp)-1; \
-  		       SKIPD(); }
+		       SKIPD(); }
 #define SETYEAR()    { tw.tw_year = atoi(cp); \
-  		       SKIPD(); }
+		       SKIPD(); }
 #define SETDAY()     { tw.tw_mday = atoi(cp); \
                        tw.tw_flags |= TW_SUCC; \
-  		       SKIPD(); }
+		       SKIPD(); }
 #define SETTIME()    { tw.tw_hour = atoi(cp); \
                        cp += 2; \
                        SKIPTOD(); \

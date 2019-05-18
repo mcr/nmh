@@ -161,7 +161,7 @@ lkfopendata(const char *file, const char *mode, int *failed_to_lock)
     int fd;
 
     if (oflags == -1) {
-    	errno = EINVAL;
+	errno = EINVAL;
 	return NULL;
     }
 
@@ -185,7 +185,7 @@ lkfopenspool(const char *file, const char *mode)
     int fd;
 
     if (oflags == -1) {
-    	errno = EINVAL;
+	errno = EINVAL;
 	return NULL;
     }
 
@@ -215,7 +215,7 @@ lkclosedata(int fd, const char *name)
     int rc = close(fd);
 
     if (datalocktype == DOT_LOCKING)
-    	lkclose_dot(fd, name);
+	lkclose_dot(fd, name);
 
     return rc;
 }
@@ -226,13 +226,13 @@ lkfclosedata(FILE *f, const char *name)
     int fd, rc;
 
     if (f == NULL)
-    	return 0;
+	return 0;
     
     fd = fileno(f);
     rc = fclose(f);
 
     if (datalocktype == DOT_LOCKING)
-    	lkclose_dot(fd, name);
+	lkclose_dot(fd, name);
 
     return rc;
 }
@@ -243,7 +243,7 @@ lkclosespool(int fd, const char *name)
     int rc = close(fd);
 
     if (spoollocktype == DOT_LOCKING)
-    	lkclose_dot(fd, name);
+	lkclose_dot(fd, name);
 
     return rc;
 }
@@ -254,13 +254,13 @@ lkfclosespool(FILE *f, const char *name)
     int fd, rc;
 
     if (f == NULL)
-    	return 0;
+	return 0;
     
     fd = fileno(f);
     rc = fclose(f);
 
     if (spoollocktype == DOT_LOCKING)
-    	lkclose_dot(fd, name);
+	lkclose_dot(fd, name);
 
     return rc;
 }
@@ -301,23 +301,23 @@ lkopen (const char *file, int access, mode_t mode, enum locktype ltype,
     switch (ltype) {
 
     case FCNTL_LOCKING:
-    	return lkopen_fcntl(file, access, mode, failed_to_lock);
+	return lkopen_fcntl(file, access, mode, failed_to_lock);
 
     case DOT_LOCKING:
-    	return lkopen_dot(file, access, mode, failed_to_lock);
+	return lkopen_dot(file, access, mode, failed_to_lock);
 
 #ifdef HAVE_FLOCK
     case FLOCK_LOCKING:
-    	return lkopen_flock(file, access, mode, failed_to_lock);
+	return lkopen_flock(file, access, mode, failed_to_lock);
 #endif /* HAVE_FLOCK */
 
 #ifdef HAVE_LOCKF
     case LOCKF_LOCKING:
-    	return lkopen_lockf(file, access, mode, failed_to_lock);
+	return lkopen_lockf(file, access, mode, failed_to_lock);
 #endif /* HAVE_FLOCK */
 
     default:
-    	die("Internal locking error: unsupported lock type used!");
+	die("Internal locking error: unsupported lock type used!");
     }
 
     return -1;
@@ -359,7 +359,7 @@ lkopen_fcntl(const char *file, int access, mode_t mode, int *failed_to_lock)
      */
 
     for (i = 0; i < LOCK_RETRIES; i++) {
-    	if ((fd = open(file, access, mode)) == -1)
+	if ((fd = open(file, access, mode)) == -1)
 	    return -1;
 
 	flk.l_start = 0;
@@ -397,10 +397,10 @@ lkopen_flock(const char *file, int access, mode_t mode, int *failed_to_lock)
      */
 
     locktype = (((access & O_ACCMODE) == O_RDONLY) ? LOCK_SH : LOCK_EX) |
-    							LOCK_NB;
+							LOCK_NB;
 
     for (i = 0; i < LOCK_RETRIES; i++) {
-    	if ((fd = open(file, access, mode)) == -1)
+	if ((fd = open(file, access, mode)) == -1)
 	    return -1;
 
 	if (flock(fd, locktype) != -1)
@@ -441,12 +441,12 @@ lkopen_lockf(const char *file, int access, mode_t mode, int *failed_to_lock)
     access &= ~O_APPEND;
 
     if ((access & O_ACCMODE) == O_RDONLY) {
-    	access &= ~O_RDONLY;
+	access &= ~O_RDONLY;
 	access |= O_RDWR;
     }
 
     for (i = 0; i < LOCK_RETRIES; i++) {
-    	if ((fd = open(file, access, mode)) == -1)
+	if ((fd = open(file, access, mode)) == -1)
 	    return -1;
 
 	if (lockf(fd, F_TLOCK, 0) != -1) {
@@ -454,7 +454,7 @@ lkopen_lockf(const char *file, int access, mode_t mode, int *failed_to_lock)
 	     * Seek to end if requested
 	     */
 	    if (saved_access & O_APPEND) {
-	    	lseek(fd, 0, SEEK_END);
+		lseek(fd, 0, SEEK_END);
 	    }
 	    return fd;
 	}
@@ -747,7 +747,7 @@ static enum locktype
 init_locktype(const char *lockname)
 {
     if (strcasecmp(lockname, "fcntl") == 0) {
-    	return FCNTL_LOCKING;
+	return FCNTL_LOCKING;
     }
     if (strcasecmp(lockname, "lockf") == 0) {
 #ifdef HAVE_LOCKF
@@ -764,7 +764,7 @@ init_locktype(const char *lockname)
 #endif /* HAVE_FLOCK */
     }
     if (strcasecmp(lockname, "dot") == 0) {
-    	return DOT_LOCKING;
+	return DOT_LOCKING;
     }
     die("Unknown lock type: \"%s\"", lockname);
     /* NOTREACHED */

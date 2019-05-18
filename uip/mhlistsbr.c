@@ -136,9 +136,9 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug,
     PM pm;
 
     if (toplevel > 0)
-    	printf (LSTFMT2a, atoi (r1bindex (FENDNULL(ct->c_file), '/')));
+	printf (LSTFMT2a, atoi (r1bindex (FENDNULL(ct->c_file), '/')));
     else
-    	printf(toplevel < 0 ? "part " : "     ");
+	printf(toplevel < 0 ? "part " : "     ");
 
     snprintf (buffer, sizeof(buffer), "%s/%s", FENDNULL(ci->ci_type),
 		FENDNULL(ci->ci_subtype));
@@ -193,7 +193,7 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug,
 
 	for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
 	    printf ("\t     %s=\"%s\"\n", pm->pm_name,
-	    	    get_param_value(pm, '?'));
+		    get_param_value(pm, '?'));
 	}
 
 	/*

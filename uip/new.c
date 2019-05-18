@@ -135,7 +135,7 @@ get_msgnums(char *folder, char *sequences[])
     seqfile = concat(m_maildir(folder), "/", mh_seq, NULL);
 
     if (seqfile == NULL)
-    	return NULL;
+	return NULL;
 
     if ((fp = lkfopendata (seqfile, "r", & failed_to_lock)) == NULL) {
 	if (failed_to_lock)

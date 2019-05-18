@@ -21,7 +21,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
     int		status;			/* exit or other child process status */
     char	**vec;			/* argument vector for child process */
     int		vecp;			/* Vector index */
-    char 	*program;		/* Name of program to execute */
+    char	*program;		/* Name of program to execute */
 
     static bool	did_message;            /* set if we've already output a message */
 

@@ -179,12 +179,12 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max)
 	     */
 
 	    if (char_len < 0) {
-	    	altstr = "?";
+		altstr = "?";
 		char_len = mbtowc(&wide_char, altstr, 1);
 	    }
 
 	    if (char_len <= 0) {
-	    	break;
+		break;
 	    }
 
 	    w = wcwidth(wide_char);
@@ -936,15 +936,15 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		    buffer[sizeof(buffer)-1] = '\0';
 	            str = buffer;
 	            if (*str == '(')
-	            	str++;
+			str++;
 	            sp = str + strlen(str) - 1;
 	            if (*sp == ')') {
-	            	*sp-- = '\0';
-	        	while (sp >= str)
-	            	    if (*sp == ' ')
-	            		*sp-- = '\0';
-	            	    else
-	            		break;
+			*sp-- = '\0';
+			while (sp >= str)
+			    if (*sp == ' ')
+				*sp-- = '\0';
+			    else
+				break;
 	            }
                     str = memmove(buffer, str, strlen(str) + 1);
 	        } else if (!(str = get_x400_friendly (mn->m_mbox,
@@ -976,7 +976,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 
 		/* UNQUOTEs RFC-2822 quoted-string and quoted-pair */
 	case FT_LS_UNQUOTE:
-	    if (str) {	  	
+	    if (str) {
 		if (str != buffer)
 		    strncpy(buffer, str, sizeof(buffer));
 		/* strncpy doesn't NUL-terminate if it fills the buffer */
@@ -1050,7 +1050,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    indent = strlen (sp);
 	    wid -= indent;
 	    if (wid <= 0) {
-	    	die("putaddr -- num register (%d) must be greater "
+		die("putaddr -- num register (%d) must be greater "
 			    "than label width (%d)", value, indent);
 	    }
 	    while ((c = *sp++) && charstring_chars (scanlp) < max) {

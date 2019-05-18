@@ -168,7 +168,7 @@ main (int argc, char **argv)
 
 	    case CHECKSW:
 	    case NCHECKSW:
-	    	/* Currently a NOP */
+		/* Currently a NOP */
 		continue;
 
 	    case HEADSW:

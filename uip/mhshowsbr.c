@@ -281,7 +281,7 @@ show_switch (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
 		 */
 		default:
 		    return show_content (ct, alternate, textonly,
-		    			 inlineonly, fmt);
+					 inlineonly, fmt);
 	    }
 
 	case CT_TEXT:
@@ -384,7 +384,7 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked, struct format *
     }
 
     if (parse_display_string (ct, cp, &xstdin, &xlist, file, buffer,
-    			      sizeof(buffer) - 1, 0)) {
+			      sizeof(buffer) - 1, 0)) {
 	inform("Buffer overflow constructing show command, continuing...");
 	return NOTOK;
     }

@@ -8,7 +8,7 @@
 /*
  *  Under sendmail, users should add the line
  *
- * 	"| /usr/local/nmh/lib/slocal"
+ *	"| /usr/local/nmh/lib/slocal"
  *
  *  to their $HOME/.forward file.
  *
@@ -501,7 +501,7 @@ usr_delivery (int fd, char *delivery, int su)
 		 * If previous condition failed, don't
 		 * do this - else fall through
 		 */
- 		if (!next)
+		if (!next)
 		    continue;
 		/* FALLTHRU */
 

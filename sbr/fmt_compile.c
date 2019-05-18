@@ -71,13 +71,13 @@ static int infunction;			/* function nesting cnt  */
 extern struct mailname fmt_mnull;
 
 /* ftable->type (argument type) */
-#define	TF_COMP    0  	    /* component expected                 */
-#define	TF_NUM     1  	    /* number expected                    */
-#define	TF_STR     2  	    /* string expected                    */
-#define	TF_EXPR    3  	    /* component or func. expected        */
-#define	TF_NONE    4  	    /* no argument                        */
-#define	TF_MYBOX   5 	    /* special - get current user's mbox  */
-#define	TF_NOW     6  	    /* special - get current unix time    */
+#define	TF_COMP    0	    /* component expected                 */
+#define	TF_NUM     1	    /* number expected                    */
+#define	TF_STR     2	    /* string expected                    */
+#define	TF_EXPR    3	    /* component or func. expected        */
+#define	TF_NONE    4	    /* no argument                        */
+#define	TF_MYBOX   5	    /* special - get current user's mbox  */
+#define	TF_NOW     6	    /* special - get current unix time    */
 #define	TF_EXPR_SV 7	    /* like expr but save current str reg */
 #define	TF_NOP     8	    /* like expr but no result            */
 #define TF_MYNAME  9        /* special - get current name of user */
@@ -128,7 +128,7 @@ extern struct mailname fmt_mnull;
 struct ftable {
     char *name;		/* function name                  */
     char type;		/* argument type                  */
-    char f_type; 	/* fmt type                       */
+    char f_type;	/* fmt type                       */
     char extra;		/* arg. type dependent extra info */
     char flags;
 };
@@ -229,7 +229,7 @@ static struct ftable functable[] = {
      { "getmymbox",  TF_COMP,	FT_STR,		FT_GETMYMBOX,	0 },
      { "getmyaddr",  TF_COMP,	FT_LS_ADDR,	FT_GETMYADDR,	TFL_PUTS },
 
-     { "unquote",    TF_EXPR, 	FT_LS_UNQUOTE,	0,		TFL_PUTS },
+     { "unquote",    TF_EXPR,	FT_LS_UNQUOTE,	0,		TFL_PUTS },
 
      { "bold",       TF_BOLD,	FT_LS_LIT,	0,		TFL_PUTS },
      { "underline",  TF_UNDERLN,FT_LS_LIT,	0,		TFL_PUTS },
@@ -399,7 +399,7 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
     usr_fstring = fstring;
 
     if (reset_comptable || !comptable_initialized) {
-    	free_comptable();
+	free_comptable();
 	comptable_initialized = true;
     }
 
@@ -667,41 +667,41 @@ do_func(char *sp)
 	break;
 
     case TF_MYNAME:
-    	LS(t->f_type, getfullname());
+	LS(t->f_type, getfullname());
 	break;
 
     case TF_MYHOST:
-    	LS(t->f_type, LocalName(0));
+	LS(t->f_type, LocalName(0));
 	break;
 
     case TF_LMBOX:
-    	LS(t->f_type, getlocalmbox());
+	LS(t->f_type, getlocalmbox());
 	break;
 
     case TF_BOLD:
-    	LS(t->f_type, get_term_stringcap("bold"));
+	LS(t->f_type, get_term_stringcap("bold"));
 	break;
 
     case TF_UNDERLN:
-   	LS(t->f_type, get_term_stringcap("smul"));
+	LS(t->f_type, get_term_stringcap("smul"));
 	break;
 
     case TF_STNDOUT:
-    	LS(t->f_type, get_term_stringcap("smso"));
+	LS(t->f_type, get_term_stringcap("smso"));
 	break;
 
     case TF_RESET:
-    	LS(t->f_type, get_term_stringcap("sgr0"));
+	LS(t->f_type, get_term_stringcap("sgr0"));
 	break;
 
     case TF_HASCLR:
-    	LV(t->f_type, get_term_numcap("colors") > 1);
+	LV(t->f_type, get_term_numcap("colors") > 1);
 	break;
 
     case TF_FGCOLR:
     case TF_BGCOLR: {
 	struct colormap *cmap = colortable;
-    	char *code;
+	char *code;
 
 	sp = cp - 1;
 	while (c && c != ')')
@@ -710,7 +710,7 @@ do_func(char *sp)
 
 	while (cmap->colorname != NULL) {
 	    if (strcasecmp(sp, cmap->colorname) == 0)
-	    	break;
+		break;
 	    cmap++;
 	}
 
@@ -728,7 +728,7 @@ do_func(char *sp)
 
 	if (! code)
 	    code = get_term_stringparm(t->type == TF_FGCOLR ? "setf" : "setb",
-	    			       cmap->nonansinum, 0);
+				       cmap->nonansinum, 0);
 
 	LS(t->f_type, code);
 	break;
@@ -944,18 +944,18 @@ fmt_free(struct format *fmt, int reset_comptable)
     struct format *fp = fmt;
 
     if (fp) {
-    	while (! (fp->f_type == FT_DONE && fp->f_value == 0)) {
+	while (! (fp->f_type == FT_DONE && fp->f_value == 0)) {
 	    if (fp->f_flags & FF_STRALLOC)
-	    	free(fp->f_text);
+		free(fp->f_text);
 	    if (fp->f_flags & FF_COMPREF)
-	    	free_component(fp->f_comp);
+		free_component(fp->f_comp);
 	    fp++;
 	}
 	free(fmt);
     }
 
     if (reset_comptable)
-    	free_comptable();
+	free_comptable();
 }
 
 /*
@@ -1022,7 +1022,7 @@ fmt_addcompentry(char *component)
     FINDCOMP(cm, component);
 
     if (cm)
-    	return 0;
+	return 0;
 
     NEWCOMP(cm, component);
 
@@ -1088,9 +1088,9 @@ fmt_appendcomp(int bucket, char *component, char *text)
     struct comp *cptr;
 
     if (bucket != -1) {
-    	for (cptr = wantcomp[bucket]; cptr; cptr = cptr->c_next)
+	for (cptr = wantcomp[bucket]; cptr; cptr = cptr->c_next)
 	    if (strcasecmp(component, FENDNULL(cptr->c_name)) == 0)
-	    	cptr->c_text = add(text, cptr->c_text);
+		cptr->c_text = add(text, cptr->c_text);
     }
 }
 
@@ -1124,7 +1124,7 @@ free_comptable(void)
     struct comp *cm, *cm2;
 
     for (i = 0; i < DIM(wantcomp); i++) {
-    	cm = wantcomp[i];
+	cm = wantcomp[i];
 	while (cm != NULL) {
 	    cm2 = cm->c_next;
 	    free_component(cm);
@@ -1145,13 +1145,13 @@ static void
 free_component(struct comp *cm)
 {
     if (--cm->c_refcount <= 0) {
-    	/* Shouldn't ever be NULL, but just in case ... */
+	/* Shouldn't ever be NULL, but just in case ... */
         free(cm->c_name);
         free(cm->c_text);
 	if (cm->c_type & CT_DATE)
 	    free(cm->c_tws);
 	if (cm->c_type & CT_ADDR && cm->c_mn && cm->c_mn != &fmt_mnull)
 	    mnfree(cm->c_mn);
-    	free(cm);
+	free(cm);
     }
 }

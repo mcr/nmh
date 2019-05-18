@@ -837,7 +837,7 @@ retry:
 	     * At that point, just give up.
 	     */
 	    netsec_err(errstr, "Internal error: wanted to printf() a total of "
-	    	       "%d bytes, but our buffer size was only %d bytes",
+		       "%d bytes, but our buffer size was only %d bytes",
 		       rc, nsc->ns_outbufsize);
 	    return NOTOK;
 	}
@@ -926,7 +926,7 @@ netsec_flush(netsec_context *nsc, char **errstr)
 		if (nsc->ns_snoop_savebuf) {
 		    cb_len += strlen(nsc->ns_snoop_savebuf);
 		    nsc->ns_snoop_savebuf = mh_xrealloc(nsc->ns_snoop_savebuf,
-		    				outlen);
+							outlen);
 		    ptr = nsc->ns_snoop_savebuf;
 		} else {
 		    ptr = snoopoutbuf;
@@ -1260,7 +1260,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 			       &xoauth_client_res, &xoauth_client_res_len,
 			       nsc->ns_snoop ? stderr : NULL) != OK) {
 	    netsec_err(errstr, "Internal error: Unable to get OAuth2 "
-	    	       "bearer token");
+		       "bearer token");
 	    return NOTOK;
 	}
 
@@ -1359,7 +1359,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
      */
 
     rc = sasl_client_start(nsc->sasl_conn,
-    			   nsc->sasl_mech ? nsc->sasl_mech : mechlist, NULL,
+			   nsc->sasl_mech ? nsc->sasl_mech : mechlist, NULL,
 			   (const char **) &saslbuf, &saslbuflen,
 			   &chosen_mech);
 
@@ -1383,7 +1383,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
      */
 
     while (rc == SASL_CONTINUE) {
-    	/*
+	/*
 	 * Call our SASL callback, which will handle the details of
 	 * reading data from the network.
 	 */
@@ -1720,7 +1720,7 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 
 	if (! ssl_bio) {
 	    netsec_err(errstr, "Unable to create a SSL BIO: %s",
-	    	       ERR_error_string(ERR_get_error(), NULL));
+		       ERR_error_string(ERR_get_error(), NULL));
 	    SSL_free(ssl);
 	    return NOTOK;
 	}
@@ -1845,7 +1845,7 @@ netsec_err(char **errstr, const char *fmt, ...)
     int rc = 127;
 
     if (! errstr)
-    	return;
+	return;
 
     do {
 	errbufsize = rc + 1;
