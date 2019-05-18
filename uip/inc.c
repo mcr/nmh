@@ -477,55 +477,55 @@ main (int argc, char **argv)
 	}
 	if (stat (newmail, &s1) == NOTOK || s1.st_size == 0)
 	    die("no mail to incorporate");
- 	if (s1.st_mode & S_IFDIR) {
- 	    DIR *md;
- 	    struct dirent *de;
- 	    struct stat ms;
- 	    int i;
- 	    i = 0;
- 	    cp = concat (newmail, "/new", NULL);
- 	    if ((md = opendir(cp)) == NULL)
- 		die("unable to open %s", cp);
- 	    while ((de = readdir (md)) != NULL) {
- 		if (de->d_name[0] == '.')
- 		    continue;
- 		if (i >= num_maildir_entries) {
- 		    if ((Maildir = realloc(Maildir, sizeof(*Maildir) * (2*i+16))) == NULL)
- 			die("not enough memory for %d messages", 2*i+16);
- 		    num_maildir_entries = 2*i+16;
- 		}
- 		Maildir[i].filename = concat (cp, "/", de->d_name, NULL);
- 		if (stat(Maildir[i].filename, &ms) != 0)
- 	           adios (Maildir[i].filename, "couldn't get delivery time");
- 		Maildir[i].mtime = ms.st_mtime;
- 		i++;
- 	    }
- 	    free (cp);
- 	    closedir (md);
- 	    cp = concat (newmail, "/cur", NULL);
- 	    if ((md = opendir(cp)) == NULL)
- 		die("unable to open %s", cp);
- 	    while ((de = readdir (md)) != NULL) {
- 		if (de->d_name[0] == '.')
- 		    continue;
- 		if (i >= num_maildir_entries) {
- 		    if ((Maildir = realloc(Maildir, sizeof(*Maildir) * (2*i+16))) == NULL)
- 			die("not enough memory for %d messages", 2*i+16);
- 		    num_maildir_entries = 2*i+16;
- 		}
- 		Maildir[i].filename = concat (cp, "/", de->d_name, NULL);
- 		if (stat(Maildir[i].filename, &ms) != 0)
- 	           adios (Maildir[i].filename, "couldn't get delivery time");
- 		Maildir[i].mtime = ms.st_mtime;
- 		i++;
- 	    }
- 	    free (cp);
- 	    closedir (md);
- 	    if (i == 0)
- 	        die("no mail to incorporate");
- 	    num_maildir_entries = i;
- 	    qsort (Maildir, num_maildir_entries, sizeof(*Maildir), maildir_srt);
- 	}
+	if (s1.st_mode & S_IFDIR) {
+	    DIR *md;
+	    struct dirent *de;
+	    struct stat ms;
+	    int i;
+	    i = 0;
+	    cp = concat (newmail, "/new", NULL);
+	    if ((md = opendir(cp)) == NULL)
+		die("unable to open %s", cp);
+	    while ((de = readdir (md)) != NULL) {
+		if (de->d_name[0] == '.')
+		    continue;
+		if (i >= num_maildir_entries) {
+		    if ((Maildir = realloc(Maildir, sizeof(*Maildir) * (2*i+16))) == NULL)
+			die("not enough memory for %d messages", 2*i+16);
+		    num_maildir_entries = 2*i+16;
+		}
+		Maildir[i].filename = concat (cp, "/", de->d_name, NULL);
+		if (stat(Maildir[i].filename, &ms) != 0)
+	           adios (Maildir[i].filename, "couldn't get delivery time");
+		Maildir[i].mtime = ms.st_mtime;
+		i++;
+	    }
+	    free (cp);
+	    closedir (md);
+	    cp = concat (newmail, "/cur", NULL);
+	    if ((md = opendir(cp)) == NULL)
+		die("unable to open %s", cp);
+	    while ((de = readdir (md)) != NULL) {
+		if (de->d_name[0] == '.')
+		    continue;
+		if (i >= num_maildir_entries) {
+		    if ((Maildir = realloc(Maildir, sizeof(*Maildir) * (2*i+16))) == NULL)
+			die("not enough memory for %d messages", 2*i+16);
+		    num_maildir_entries = 2*i+16;
+		}
+		Maildir[i].filename = concat (cp, "/", de->d_name, NULL);
+		if (stat(Maildir[i].filename, &ms) != 0)
+	           adios (Maildir[i].filename, "couldn't get delivery time");
+		Maildir[i].mtime = ms.st_mtime;
+		i++;
+	    }
+	    free (cp);
+	    closedir (md);
+	    if (i == 0)
+	        die("no mail to incorporate");
+	    num_maildir_entries = i;
+	    qsort (Maildir, num_maildir_entries, sizeof(*Maildir), maildir_srt);
+	}
 
 	cp = mh_xstrdup(newmail);
 	newmail = cp;
@@ -596,7 +596,7 @@ main (int argc, char **argv)
 	    fprintf (aud, "<<inc>> %s -ms %s\n", dtimenow(0), from);
 	else {
 	    if (host)
-	    	fprintf (aud, "<<inc>> %s -host %s -user %s\n", dtimenow(0),
+		fprintf (aud, "<<inc>> %s -host %s -user %s\n", dtimenow(0),
 			 host, user);
 	    else
 		fprintf (aud, "<<inc>> %s\n", dtimenow (0));
@@ -759,7 +759,7 @@ main (int argc, char **argv)
 		size_t nrd;
 
 		if ((sf = fopen (sp, "r")) == NULL)
-	    	    adios (sp, "unable to read for copy");
+		    adios (sp, "unable to read for copy");
 		if ((pf = fopen (cp, "w+")) == NULL)
 		    adios (cp, "unable to write for copy");
 		while ((nrd = fread(buf, 1, sizeof(buf), sf)) > 0)
@@ -874,7 +874,7 @@ main (int argc, char **argv)
     if (msgnum == hghnum) {
 	inform("no messages incorporated, continuing...");
     } else {
-    	/*
+	/*
 	 * Lock the sequence file now, and loop to set the right flags
 	 * in the folder structure
 	 */

@@ -373,7 +373,7 @@ remove_files (int filep, char **files)
 
     /* If rmmproc is defined, we use that */
     if (rmmproc) {
-    	vec = argsplit(rmmproc, &program, &vecp);
+	vec = argsplit(rmmproc, &program, &vecp);
 	files++;		/* Yes, we need to do this */
 	for (i = 0; i < filep; i++)
 		vec[vecp++] = files[i];

@@ -236,7 +236,7 @@ WhatNow (int argc, char **argv)
     msgnam = (cp = getenv ("mhaltmsg")) && *cp ? mh_xstrdup(cp) : NULL;
 
     if ((cp = getenv ("mhatfile")) && *cp)
-    	atfile = atoi(cp);
+	atfile = atoi(cp);
 
     if ((cp = getenv ("mhuse")) && *cp)
 	use = atoi (cp);
@@ -248,7 +248,7 @@ WhatNow (int argc, char **argv)
 
     /* start editing the draft, unless -noedit was given */
     if (!nedit && editfile (&ed, NULL, drft, use, NULL, msgnam,
-    			    NULL, 1, atfile) < 0)
+			    NULL, 1, atfile) < 0)
 	done (1);
 
     for (;;) {
@@ -279,7 +279,7 @@ WhatNow (int argc, char **argv)
 	    if (*++argp)
 		ed = *argp++;
 	    if (editfile (&ed, argp, drft, NOUSE, NULL, msgnam,
-	    		  NULL, 1, atfile) == NOTOK)
+			  NULL, 1, atfile) == NOTOK)
 		done (1);
 	    break;
 
@@ -456,7 +456,7 @@ WhatNow (int argc, char **argv)
                     trim_suffix_c(shell, '\n');
 
 		    if (*shell == '/') {
-		    	strncpy(file, shell, sizeof(file));
+			strncpy(file, shell, sizeof(file));
 			file[sizeof(file) - 1] = '\0';
 		    } else {
 			snprintf(file, sizeof(file), "%s/%s", cwd, shell);
@@ -663,7 +663,7 @@ popen_in_dir(const char *dir, const char *cmd, const char *type)
  * EDIT
  */
 
-static bool reedit;    		/* have we been here before?     */
+static bool reedit;		/* have we been here before?     */
 static char *edsave = NULL;	/* the editor we used previously */
 
 

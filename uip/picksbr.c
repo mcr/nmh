@@ -616,8 +616,8 @@ gcompile (struct nexus *n, char *astr)
 		do {
 		    if (c == '-' && *sp != '\0' && *sp != ']') {
 			for (c = ep[-1]+1; c < *sp; c++) {
-		    	    *ep++ = c;
-		    	    cclcnt++;
+			    *ep++ = c;
+			    cclcnt++;
 			    if (c == '\0' || ep >= dp)
 				goto cerror;
 			}

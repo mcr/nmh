@@ -241,7 +241,7 @@ static short fccind = 0;	/* index into fccfold[] */
 static short outputlinelen = OUTPUTLINELEN;
 
 static int pfd = NOTOK;		/* fd to write annotation list to        */
-static bool recipients; 	/* how many people will get a copy       */
+static bool recipients;		/* how many people will get a copy	 */
 static int unkadr = 0;		/* how many of those were unknown        */
 static int badadr = 0;		/* number of bad addrs                   */
 static bool badmsg;		/* message has bad semantics             */
@@ -261,7 +261,7 @@ static char *user=NULL;		/* Authenticate as this user             */
 static char *port="submission";	/* Name of server port for SMTP submission */
 static int tlsflag=0;		/* Flags to control TLS settings	 */
 static int fromcount=0;		/* Count of addresses on From: header	 */
-static bool seensender; 	/* Have we seen a Sender: header?	 */
+static bool seensender;		/* Have we seen a Sender: header?	 */
 
 static unsigned msgflags = 0;	/* what we've seen */
 
@@ -701,11 +701,11 @@ main (int argc, char **argv)
      */
 
     if (msgflags & MEFM) {
-    	envelope = efrom;
+	envelope = efrom;
     } else if (seensender) {
-    	envelope = sender;
+	envelope = sender;
     } else {
-    	envelope = from;
+	envelope = from;
     }
 
     if (tls == -1) {
@@ -788,7 +788,7 @@ main (int argc, char **argv)
     (void) m_unlink (tmpfil);
 
     if (verbose) {
-    	if (partno)
+	if (partno)
 	    printf ("Partial Message #%s Processed\n", partno);
 	else
 	    puts("Message Processed");
@@ -1164,9 +1164,9 @@ finish_headers (FILE *out)
 	     */
 
 	    if (fromcount > 1 && !seensender) {
-	    	if (efrom[0] == '\0') {
+		if (efrom[0] == '\0') {
 		    inform("Envelope-From cannot be blank when there "
-		    	    "is multiple From: addresses\nand no Sender: "
+			    "is multiple From: addresses\nand no Sender: "
 			    "header");
 		    badmsg = true;
 		} else {
@@ -1214,9 +1214,9 @@ finish_headers (FILE *out)
 	     */
 
 	    if (fromcount > 1 && !seensender) {
-	    	if (efrom[0] == '\0') {
+		if (efrom[0] == '\0') {
 		    inform("Envelope-From cannot be blank when there "
-		    	    "is multiple Resent-From: addresses and no "
+			    "is multiple Resent-From: addresses and no "
 			    "Resent-Sender: header");
 		    badmsg = true;
 		} else {
@@ -1853,7 +1853,7 @@ do_an_address (struct mailname *lp, int talk)
 	    snprintf (addr, sizeof(addr), "%s!%s", lp->m_host, lp->m_mbox);
 	    break;
 
-	default: 		/* let SendMail decide if the host is bad  */
+	default:		/* let SendMail decide if the host is bad  */
 	    mbox = lp->m_mbox;
 	    host = lp->m_host;
 	    snprintf (addr, sizeof(addr), "%s at %s", mbox, host);

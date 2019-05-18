@@ -68,7 +68,7 @@ int nmsgs;
 
 char *subjsort;                 /* sort on subject if != 0 */
 time_t datelimit = 0;
-bool submajor;  		/* if true, sort on subject-major */
+bool submajor;			/* if true, sort on subject-major */
 bool verbose;
 int allmsgs = 1;
 int check_failed = 0;

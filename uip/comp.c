@@ -167,7 +167,7 @@ main (int argc, char **argv)
 		    use = NOUSE;
 		    continue;
 
-		case FILESW: 	/* compatibility */
+		case FILESW:	/* compatibility */
 		    if (file)
 			die("only one file at a time!");
 		    if (!(file = *argp++) || *file == '-')
@@ -300,7 +300,7 @@ main (int argc, char **argv)
     } else {
 	struct comp *cptr;
 
-    	if (! form)
+	if (! form)
 	    form = components;
 
         cp = new_fs(form, NULL, NULL);
@@ -314,33 +314,33 @@ main (int argc, char **argv)
 	if (from) {
 	    cptr = fmt_findcomp("from");
 	    if (cptr)
-	    	cptr->c_text = from;
+		cptr->c_text = from;
 	}
 	if (to) {
 	    cptr = fmt_findcomp("to");
 	    if (cptr)
-	    	cptr->c_text = to;
+		cptr->c_text = to;
 	}
 	if (cc) {
 	    cptr = fmt_findcomp("cc");
 	    if (cptr)
-	    	cptr->c_text = cc;
+		cptr->c_text = cc;
 	}
 	if (fcc) {
 	    cptr = fmt_findcomp("fcc");
 	    if (cptr)
-	    	cptr->c_text = fcc;
+		cptr->c_text = fcc;
 	}
 	if (subject) {
 	    cptr = fmt_findcomp("subject");
 	    if (cptr)
-	    	cptr->c_text = subject;
+		cptr->c_text = subject;
 	}
     }
 
 try_it_again:
     strncpy (drft, build ? m_maildir ("draft")
-    			: m_draft (dfolder, file, use, &isdf), sizeof(drft));
+			: m_draft (dfolder, file, use, &isdf), sizeof(drft));
 
     /*
      * Check if we have an existing draft

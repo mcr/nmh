@@ -132,13 +132,13 @@ main (int argc, char **argv)
 		continue;
 
 	    case MIMESW:
-	    	mimesw = 2;
+		mimesw = 2;
 		continue;
 	    case NMIMESW:
-	    	mimesw = 0;
+		mimesw = 0;
 		continue;
 	    case AUTOMIMESW:
-	    	mimesw = 1;
+		mimesw = 1;
 		continue;
 
 	    case QIETSW: 
@@ -265,7 +265,7 @@ find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
      */
 
     if (*mimesw > 0) {
-    	content = parse_mime(msgnam);
+	content = parse_mime(msgnam);
 	if (! content && *mimesw == 2)
 	    return 0;
 	if (content) {
@@ -275,9 +275,9 @@ find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
 	    find_mime_parts(content, smsgs, &msgp);
 	    free_content(content);
 	    if (msgp == 1 && *mimesw == 2)
-	    	adios (msgnam, "does not have any message/rfc822 parts");
+		adios (msgnam, "does not have any message/rfc822 parts");
 	    if (msgp > 1) {
-	    	*mimesw = 1;
+		*mimesw = 1;
 		return msgp - 1;
 	    }
 	}
@@ -289,7 +289,7 @@ find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
 	adios (msgnam, "unable to read message");
 
     for (msgp = 0, pos = 0L; msgp <= MAXFOLDER;) {
-    	/*
+	/*
 	 * We're either at the beginning of the whole message, or
 	 * we're just past the delimiter of the last message.
 	 * Swallow lines until we get to something that's not a newline
@@ -361,7 +361,7 @@ find_mime_parts (CT content, struct smsg *smsgs, int *msgp)
      */
 
     if (content->c_type == CT_MESSAGE &&
-    			content->c_subtype == MESSAGE_RFC822) {
+			content->c_subtype == MESSAGE_RFC822) {
 	smsgs[*msgp].s_start = content->c_begin;
 	smsgs[*msgp].s_stop = content->c_end;
 	(*msgp)++;
@@ -373,7 +373,7 @@ find_mime_parts (CT content, struct smsg *smsgs, int *msgp)
      */
 
     if (content->c_type == CT_MULTIPART) {
-    	m = (struct multipart *) content->c_ctparams;
+	m = (struct multipart *) content->c_ctparams;
 
 	for (part = m->mp_parts; part; part = part->mp_next)
 	    find_mime_parts(part->mp_part, smsgs, msgp);
@@ -577,7 +577,7 @@ cpybrst (FILE *in, FILE *out, char *ifile, char *ofile, int len, int mime)
 		break;
 
 	    case S4:
-	   	fputc (c, out);
+		fputc (c, out);
 		break;
 	}
     }

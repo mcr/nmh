@@ -190,7 +190,7 @@ main (int argc, char **argv)
 		snoop = true;
 		continue;
 	    case NOSNOOPSW:
-	    	snoop = false;
+		snoop = false;
 		continue;
 	    case SASLSW:
 		sasl = true;
@@ -203,7 +203,7 @@ main (int argc, char **argv)
 		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case AUTHSERVICESW:
-	    	if (!(oauth_svc = *argp++) || *oauth_svc == '-')
+		if (!(oauth_svc = *argp++) || *oauth_svc == '-')
 		    die("missing argument to %s", argp[-2]);
 		continue;
 	    case TLSSW:
@@ -753,7 +753,7 @@ send_imap_command(netsec_context *nsc, bool noflush, char **errstr,
 	vsnprintf(cmd->prefix, sizeof(cmd->prefix), fmt, ap);
 	va_end(ap);
 
-    	p = strchr(cmd->prefix, ' ');
+	p = strchr(cmd->prefix, ' ');
 
 	if (p)
 	    *p = '\0';

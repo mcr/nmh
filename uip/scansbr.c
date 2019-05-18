@@ -24,7 +24,7 @@ static struct comp *datecomp;		/* pntr to "date" comp             */
 static struct comp *bodycomp;		/* pntr to "body" pseudo-comp      *
 					 * (if referenced)                 */
 static int ncomps = 0;			/* # of interesting components     */
-static char **compbuffers = 0; 		/* buffers for component text      */
+static char **compbuffers = 0;		/* buffers for component text      */
 static struct comp **used_buf = 0;	/* stack for comp that use buffers */
 
 static int dat[5];			/* aux. data for format routine    */
@@ -227,7 +227,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		if (outnum == 0) {
 		    state = FILEEOF; /* stop now if scan cmd */
 		    if (bodycomp && startbody == NULL)
-		    	startbody = tmpbuf;
+			startbody = tmpbuf;
 		    goto finished;
 		}
                 if (scnout) {
@@ -266,7 +266,7 @@ body:;
 
 	    case LENERR: 
 	    case FMTERR: 
-	    	if (innum)
+		if (innum)
 		    fprintf (stderr, "??Format error (message %d) in ",
 			     outnum ? outnum : innum);
 		else

@@ -181,7 +181,7 @@ alias (char *file)
     while (vfgets (fp, &ap) == OK) {
 	bp = ap;
 	switch (*(pp = scanp (bp))) {
-	    case '<': 		/* recurse a level */
+	    case '<':		/* recurse a level */
 		if (!*(cp = getp (pp + 1))) {
 		    akerrst = "'<' without alias-file";
 		    fclose (fp);
@@ -192,8 +192,8 @@ alias (char *file)
 		    return i;
 		}
 		continue;
-	    case ':': 		/* comment */
-	    case ';': 
+	    case ':':		/* comment */
+	    case ';':
 	    case '#':
 	    case 0: 
 		continue;
@@ -223,11 +223,11 @@ alias (char *file)
 	}
 
 	switch (*(pp = scanp (ap))) {
-	    case 0: 		/* EOL */
+	    case 0:		/* EOL */
 		fclose (fp);
 		return AK_ERROR;
 
-	    case '<': 		/* read values from file */
+	    case '<':		/* read values from file */
 		if (!*(cp = getp (pp + 1))) {
 		    fclose (fp);
 		    return AK_ERROR;
@@ -238,7 +238,7 @@ alias (char *file)
 		}
 		break;
 
-	    default: 		/* list */
+	    default:		/* list */
 		while ((cp = getalias (pp)))
 		    add_aka (ak, cp);
 		break;

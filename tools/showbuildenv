@@ -63,7 +63,7 @@ case ${os} in
 	header Compilers:
 	cc -v 2>&1 | offset
 
-  	header Installed packages:
+	header Installed packages:
         #### pkg(7) or pkg_info(1) might not always be available.
 	(pkg info 2>/dev/null | offset) || true
 	(pkg_info 2>/dev/null | offset) || true

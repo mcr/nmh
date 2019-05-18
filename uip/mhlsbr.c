@@ -781,7 +781,7 @@ evalvar (struct mcomp *c1)
 
 	if (! c1->c_name  ||  strcasecmp (c1->c_name, "body")) {
 	    inform("format filters are currently only supported on "
-	    	    "the \"body\" component");
+		    "the \"body\" component");
 	    return 1;
 	}
 
@@ -906,9 +906,9 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 		fp = stdin;
 	    }
 	    if (fstat(fileno(fp), &st) == 0) {
-	    	filesize = st.st_size;
+		filesize = st.st_size;
 	    } else {
-	    	filesize = 0;
+		filesize = 0;
 	    }
 	    cp = folder ? concat (folder, ":", fname2, NULL) : mh_xstrdup(fname2);
 	    if (ontty != PITTY)
@@ -917,7 +917,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
             free (cp);
 
 	    for (ap = arglist_head; ap; ap = ap->a_next) {
-	    	fmt_free(ap->a_fmt, 0);
+		fmt_free(ap->a_fmt, 0);
 		ap->a_fmt = NULL;
 	    }
 
@@ -1074,7 +1074,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    }
 		    if (dobody && (!c1->c_name  ||
 				   !strcasecmp (c1->c_name, "body"))) {
-		    	if (c1->c_flags & FMTFILTER && state == BODY &&
+			if (c1->c_flags & FMTFILTER && state == BODY &&
 							formatproc != NULL) {
 			    filterbody(c1, buf, sizeof(buf), state, gstate);
 			} else {
@@ -1733,7 +1733,7 @@ compile_filterargs (void)
     fmt_free(NULL, 1);
 
     while (arg) {
-    	fmt_compile(arg->a_nfs, &arg->a_fmt, 0);
+	fmt_compile(arg->a_nfs, &arg->a_fmt, 0);
 	arg = arg->a_next;
     }
 
@@ -1771,7 +1771,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
     }
 
     if (pipe(fdoutput) < 0) {
-    	die("Unable to create output pipe");
+	die("Unable to create output pipe");
     }
 
     /*
@@ -1794,7 +1794,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
 
     switch (writerpid = fork()) {
     case 0:
-    	/*
+	/*
 	 * Our child process - just write to the filter input (fdinput[1]).
 	 * Close all other descriptors that we don't need.
 	 */
@@ -1826,7 +1826,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
 	 */
 	_exit(0);
     case -1:
-    	die("Unable to fork for filter writer process");
+	die("Unable to fork for filter writer process");
 	break;
     }
 
@@ -1841,7 +1841,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
 	int i, dat[5], argp;
 
     case 0:
-    	/*
+	/*
 	 * Configure an argument array for us
 	 */
 
@@ -1896,7 +1896,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
 	break;
 
     case -1:
-    	die("Unable to fork format program");
+	die("Unable to fork format program");
     }
 
     /*
@@ -1914,12 +1914,12 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
     holder.c_text = buf;
 
     while ((cc = read(fdoutput[0], buf, bufsz - 1)) > 0) {
-    	buf[cc] = '\0';
-    	putcomp(c1, &holder, BODYCOMP);
+	buf[cc] = '\0';
+	putcomp(c1, &holder, BODYCOMP);
     }
 
     if (cc < 0) {
-    	die("reading from formatproc");
+	die("reading from formatproc");
     }
 
     /*
@@ -1928,22 +1928,22 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state,
      */
 
     if (waitpid(filterpid, &waitstat, 0) < 0) {
-    	if (errno != ECHILD) {
+	if (errno != ECHILD) {
 	    adios("filterproc", "Unable to determine status");
 	}
     } else {
-    	if (! (WIFEXITED(waitstat) && WEXITSTATUS(waitstat) == 0)) {
+	if (! (WIFEXITED(waitstat) && WEXITSTATUS(waitstat) == 0)) {
 	    pidstatus(waitstat, stderr, "filterproc");
 	}
     }
 
     if (waitpid(writerpid, &waitstat, 0) < 0) {
-    	if (errno != ECHILD) {
+	if (errno != ECHILD) {
 	    adios("writer process", "Unable to determine status");
 	    done(1);
 	}
     } else {
-    	if (! (WIFEXITED(waitstat) && WEXITSTATUS(waitstat) == 0)) {
+	if (! (WIFEXITED(waitstat) && WEXITSTATUS(waitstat) == 0)) {
 	    pidstatus(waitstat, stderr, "writer process");
 	    done(1);
 	}

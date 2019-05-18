@@ -441,8 +441,8 @@ try_it_again:
 	if (!form)
 	    form = digestcomps;
     } else {
-    	if (!form)
-    	    form = forwcomps;
+	if (!form)
+	    form = forwcomps;
     }
 
     dat[0] = digest ? issue : msgnum;
@@ -453,7 +453,7 @@ try_it_again:
 
 
     in = build_form (form, digest, dat, from, to, cc, fcc, subject,
-    		     file ? file : fwdmsg);
+		     file ? file : fwdmsg);
 
     if ((out = creat (drft, m_gmprot ())) == NOTOK)
 	adios (drft, "unable to create");

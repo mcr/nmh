@@ -187,10 +187,10 @@ main (int argc, char **argv)
 			number = 1;
 		    
 		    else {
-		    	if (strcmp(*argp, "all") == 0)
-		    	    number = -1;
+			if (strcmp(*argp, "all") == 0)
+			    number = -1;
 
-		    	else if (!(number = atoi(*argp)))
+			else if (!(number = atoi(*argp)))
 			    die("missing argument to %s", argp[-1]);
 
 			argp++;

@@ -122,7 +122,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	break;
 
     default:
-    	if (pidXwait(child, buildmimeproc))
+	if (pidXwait(child, buildmimeproc))
 	    return NOTOK;
 	break;
     }
@@ -347,7 +347,7 @@ alert (char *file, int out)
 	    perror (mailproc);
 	    _exit(1);
 
-	default: 		/* no waiting... */
+	default:		/* no waiting... */
 	    break;
     }
 }
@@ -390,7 +390,7 @@ anno (int fd, struct stat *st)
 
     child_id = debugsw ? NOTOK : fork ();
     switch (child_id) {
-	case NOTOK: 		/* oops */
+	case NOTOK:		/* oops */
 	    if (!debugsw)
 		inform("unable to fork, so doing annotations by hand...");
 	    if (cwd == NULL)
@@ -420,7 +420,7 @@ anno (int fd, struct stat *st)
 	    }
 	    break;
 
-	default: 		/* no waiting... */
+	default:		/* no waiting... */
 	    close (fd);
 	    break;
     }
@@ -592,7 +592,7 @@ setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
 
         if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
 	    if (! mh_oauth_get_service_info(auth_svc, &svc, errbuf,
-	    				    sizeof(errbuf)))
+					    sizeof(errbuf)))
 		die("Unable to retrieve oauth profile entries: %s",
 		      errbuf);
 

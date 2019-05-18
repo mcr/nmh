@@ -388,7 +388,7 @@ three_print:
     }
 
     if (c != '\n')
-    	putc ('\n', out);
+	putc ('\n', out);
 
     (*ct->c_ceclosefnx) (ct);
     free (bufp);

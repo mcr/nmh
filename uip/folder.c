@@ -72,12 +72,12 @@ DEFINE_SWITCH_ARRAY(FOLDER, switches);
 
 static bool fshort;	        /* output only folder names                 */
 static int fcreat   = 0;	/* should we ask to create new folders?     */
-static bool fpack;      	/* are we packing the folder?               */
-static bool fverb;      	/* print actions taken while packing folder */
+static bool fpack;		/* are we packing the folder?               */
+static bool fverb;		/* print actions taken while packing folder */
 static int fheader  = 0;	/* should we output a header?               */
-static bool frecurse;   	/* recurse through subfolders               */
+static bool frecurse;		/* recurse through subfolders               */
 static int ftotal   = 0;	/* should we output the totals?             */
-static bool all;        	/* should we output all folders             */
+static bool all;		/* should we output all folders             */
 
 static int total_folders = 0;	/* total number of folders                  */
 

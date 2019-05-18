@@ -468,7 +468,7 @@ try_it_again:
     }
 
     replout (in, msg, drft, mp, outputlinelen, mime, form, filter,
-    	     fcc, fmtproc);
+	     fcc, fmtproc);
     fclose (in);
 
     {

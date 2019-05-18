@@ -271,7 +271,7 @@ main (int argc, char **argv)
 		if (listsw)
 		    puts(m_name (msgnum));
 	    } else {
-	    	app_msgnum(&nums, msgnum);
+		app_msgnum(&nums, msgnum);
 	    }
 	    if (fp)
 		fclose (fp);
@@ -305,7 +305,7 @@ main (int argc, char **argv)
      */
 
     for (msgnum = 0; msgnum < nums.size; msgnum++) {
-    	unset_selected(mp2, nums.msgnums[msgnum]);
+	unset_selected(mp2, nums.msgnums[msgnum]);
 	mp2->numsel--;
     }
 

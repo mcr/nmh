@@ -121,7 +121,7 @@ pop_start_tls(void)
      */
 
     if (command("STLS") == NOTOK)
-    	return NOTOK;
+	return NOTOK;
 
     if (netsec_negotiate_tls(nsc, &errstr) != OK) {
 	snprintf(response, sizeof(response), "%s", errstr);
@@ -304,7 +304,7 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 		    if (check_mech(server_mechs, sizeof(server_mechs)) != OK)
 			return NOTOK;
 		    if (netsec_negotiate_sasl(nsc, server_mechs,
-		    			      &errstr) != OK) {
+					      &errstr) != OK) {
 			strncpy(response, errstr, sizeof(response));
 			response[sizeof(response) - 1] = '\0';
 			free(errstr);

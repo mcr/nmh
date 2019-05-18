@@ -467,7 +467,7 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 		arglist[argnum++] = formatproc;
 		break;
 	    case 0:
-	    	arglist[argnum++] = "-nofmtproc";
+		arglist[argnum++] = "-nofmtproc";
 		break;
 	    }
 
@@ -535,7 +535,7 @@ fix_addresses (char *str)
 
             /* With AD_NAME, errors are not reported to user. */
             if ((mp = getm (cp, dfhost, dftype, error,
-	    		    sizeof(error))) == NULL) {
+			    sizeof(error))) == NULL) {
                 const char *no_at_sign = "no at-sign after local-part";
 
                 adr_nodep->escape_local_part =

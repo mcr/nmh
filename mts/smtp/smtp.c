@@ -157,7 +157,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
      */
 
     if (tls & S_INITTLS) {
-    	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
+	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
 	    sm_end(NOTOK);
 	    return sm_nerror(errstr);
 	}
@@ -386,7 +386,7 @@ sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
 	     */
 
 	    if (sasl) {
-        	char *server_mechs;
+		char *server_mechs;
 		if (! (server_mechs = EHLOset("AUTH"))) {
 		    sm_end(NOTOK);
 		    return sm_ierror("SMTP server does not support SASL");
@@ -813,7 +813,7 @@ again: ;
     rc = sizeof(sm_reply.text) - 1;
 
     for (more = false; (buffer = netsec_readline(nsc, &buflen,
-    						 &errstr)) != NULL ; ) {
+						 &errstr)) != NULL ; ) {
 
 	if (doingEHLO
 	        && has_prefix(buffer, "250")

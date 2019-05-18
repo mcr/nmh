@@ -126,7 +126,7 @@ static char *test_concataddr(char *, char *);
 static int insert(struct mailname *);
 static void mlistfree(void);
 
-static bool nodupcheck; 	/* If set, no check for duplicates */
+static bool nodupcheck;		/* If set, no check for duplicates */
 static bool ccme;		/* Should I cc myself? */
 static struct mailname mq;	/* Mail addresses to check for duplicates */
 static char *dummy = "dummy";
@@ -164,7 +164,7 @@ main (int argc, char **argv)
 	     * save the component name and the next argument for the text.
 	     */
 	    if (*++cp == '-') {
-	    	if (*++cp == '\0')
+		if (*++cp == '\0')
 		    die("missing component name after --");
 		app_msgarg(&compargs, cp);
 		/* Grab next argument for component text */
@@ -194,11 +194,11 @@ main (int argc, char **argv)
 		case OUTSIZESW:
                     outputsize_given = true;
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    if (strcmp(cp, "max") == 0)
 			outputsize = INT_MAX;
 		    else if (strcmp(cp, "width") == 0)
-		    	outputsize = sc_width();
+			outputsize = sc_width();
 		    else
 			outputsize = atoi(cp);
 		    continue;
@@ -261,27 +261,27 @@ main (int argc, char **argv)
 
 		case WIDTHSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    colwidth = atoi(cp);
 		    continue;
 		case MSGNUMSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    msgnum = atoi(cp);
 		    continue;
 		case MSGCURSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    msgcur = atoi(cp);
 		    continue;
 		case MSGSIZESW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    msgsize = atoi(cp);
 		    continue;
 		case UNSEENSW:
 		    if (!(cp = *argp++) || *cp == '-')
-		    	die("missing argument to %s", argp[-2]);
+			die("missing argument to %s", argp[-2]);
 		    msgunseen = atoi(cp);
 		    continue;
 
@@ -301,7 +301,7 @@ main (int argc, char **argv)
 
 	if (mode == MESSAGE && !files && (*cp == '+' || *cp == '@')) {
 	    if (folder)
-	    	die("only one folder at a time!");
+		die("only one folder at a time!");
             folder = pluspath (cp);
 	} else
 	    app_msgarg(&msgs, cp);
@@ -327,7 +327,7 @@ main (int argc, char **argv)
     */
 
    if (mode == RAW && form == NULL && format == NULL) {
-   	die("You must specify a format with -form or -format when "
+	die("You must specify a format with -form or -format when "
 	       "using -raw");
    }
 
@@ -364,7 +364,7 @@ main (int argc, char **argv)
      */
 
     if (!dupaddrs || trace) {
-    	ZERO(&cb);
+	ZERO(&cb);
 	cbp = &cb;
 
 	if (!dupaddrs) {
@@ -435,23 +435,23 @@ process_addresses(struct format *fmt, struct msgs_array *addrs,
     struct comp *c;
 
     if (dat[0] == -1)
-    	dat[0] = 0;
+	dat[0] = 0;
     if (dat[1] == -1)
-    	dat[1] = 0;
+	dat[1] = 0;
     if (dat[2] == -1)
-    	dat[2] = 0;
+	dat[2] = 0;
     if (dat[4] == -1)
-    	dat[4] = 0;
+	dat[4] = 0;
 
     for (i = 0; i < addrs->size; i++) {
-    	(q = &pq)->pq_next = NULL;
+	(q = &pq)->pq_next = NULL;
 	while ((cp = getname(addrs->msgs[i]))) {
 	    NEW0(p);
 	    if ((mp = getm(cp, NULL, 0, error, sizeof(error))) == NULL) {
-	    	p->pq_text = mh_xstrdup(cp);
+		p->pq_text = mh_xstrdup(cp);
 		p->pq_error = mh_xstrdup(error);
 	    } else {
-	    	p->pq_text = getcpy(mp->m_text);
+		p->pq_text = getcpy(mp->m_text);
 		mnfree(mp);
 	    }
 	    q = (q->pq_next = p);
@@ -521,21 +521,21 @@ process_messages(struct format *fmt, struct msgs_array *comps,
     }
 
     if (! folder)
-    	folder = getfolder(1);
+	folder = getfolder(1);
 
     maildir = m_maildir(folder);
 
     if (chdir(maildir) < 0)
-    	adios(maildir, "unable to change directory to");
+	adios(maildir, "unable to change directory to");
 
     if (!(mp = folder_read(folder, 1)))
-    	die("unable to read folder %s", folder);
+	die("unable to read folder %s", folder);
 
     if (mp->nummsg == 0)
-    	die("no messages in %s", folder);
+	die("no messages in %s", folder);
 
     for (i = 0; i < msgs->size; i++)
-    	if (!m_convert(mp, msgs->msgs[i]))
+	if (!m_convert(mp, msgs->msgs[i]))
 	    done(1);
     seq_setprev(mp);			/* set the Previous-Sequence */
 
@@ -549,7 +549,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
      */
 
     if (dat[4] == -1) {
-    	if ((cp = context_find(usequence)) && *cp) {
+	if ((cp = context_find(usequence)) && *cp) {
 	    char **ap, *dp;
 
 	    dp = mh_xstrdup(cp);
@@ -563,19 +563,19 @@ process_messages(struct format *fmt, struct msgs_array *comps,
     }
 
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
-    	if (is_selected(mp, msgnum)) {
+	if (is_selected(mp, msgnum)) {
 	    if ((in = fopen(cp = m_name(msgnum), "r")) == NULL) {
-	    	admonish(cp, "unable to open message");
+		admonish(cp, "unable to open message");
 		continue;
 	    }
 
 	    fmt_freecomptext();
 
 	    if (num == -1)
-	    	dat[0] = msgnum;
+		dat[0] = msgnum;
 
 	    if (cur == -1)
-	    	dat[1] = msgnum == mp->curmsg;
+		dat[1] = msgnum == mp->curmsg;
 
 	    /*
 	     * Check to see if this is in the unseen sequence
@@ -635,11 +635,11 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
      */
 
     if (dat[0] == -1)
-    	dat[0] = 0;
+	dat[0] = 0;
     if (dat[1] == -1)
-    	dat[1] = 0;
+	dat[1] = 0;
     if (dat[4] == -1)
-    	dat[4] = 0;
+	dat[4] = 0;
 
     /*
      * Read in the message and process the components
@@ -716,18 +716,18 @@ process_raw(struct format *fmt, struct msgs_array *text, charstring_t buffer,
     struct comp *c;
 
     if (dat[0] == -1)
-    	dat[0] = 0;
+	dat[0] = 0;
     if (dat[1] == -1)
-    	dat[1] = 0;
+	dat[1] = 0;
     if (dat[2] == -1)
-    	dat[2] = 0;
+	dat[2] = 0;
     if (dat[4] == -1)
-    	dat[4] = 0;
+	dat[4] = 0;
 
     c = fmt_findcomp("text");
 
     for (i = 0; i < text->size; i++) {
-    	if (c != NULL) {
+	if (c != NULL) {
             free(c->c_text);
 	    c->c_text = getcpy(text->msgs[i]);
 	}
@@ -756,13 +756,13 @@ test_trace(void *context, struct format *fmt, int num, char *str,
     dumpone(fmt);
 
     if (num != ctx->num) {
-    	printf("num=%d", num);
+	printf("num=%d", num);
 	ctx->num = num;
 	changed = true;
     }
 
     if (str != ctx->str) {
-    	if (changed)
+	if (changed)
             putchar(' ');
         changed = true;
 	fputs("str=", stdout);
@@ -774,10 +774,10 @@ test_trace(void *context, struct format *fmt, int num, char *str,
         putchar('\n');
 
     if (strcmp(outbuf, ctx->outbuf) != 0) {
-    	fputs("outbuf=", stdout);
+	fputs("outbuf=", stdout);
 	litputs(outbuf);
 	putchar('\n');
-    	free(ctx->outbuf);
+	free(ctx->outbuf);
 	ctx->outbuf = mh_xstrdup(outbuf);
     }
 }

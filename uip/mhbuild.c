@@ -143,12 +143,12 @@ main (int argc, char **argv)
 		done (0);
 
 	    case AUTOSW:
-	    	/* -auto implies -nodirectives */
+		/* -auto implies -nodirectives */
 		autobuild = true;
 		directives = false;
 		continue;
 	    case NAUTOSW:
-	    	/*
+		/*
 		 * We're turning directives back on since this is likely here
 		 * to override a profile entry
 		 */
@@ -158,7 +158,7 @@ main (int argc, char **argv)
 
 	    case CHECKSW:
 	    case NCHECKSW:
-	    	/* Currently a NOP */
+		/* Currently a NOP */
 		continue;
 
 	    case HEADSW:
@@ -204,7 +204,7 @@ main (int argc, char **argv)
 		continue;
 
 	    case HEADERENCSW: {
-	    	int encoding;
+		int encoding;
 
 		if (!(cp = *argp++) || *cp == '-')
 		    die("missing argument to %s", argp[-2]);
@@ -230,7 +230,7 @@ main (int argc, char **argv)
 	    }
 
 	    case AUTOHEADERENCSW:
-	    	header_encoding = CE_UNKNOWN;
+		header_encoding = CE_UNKNOWN;
 		continue;
 
 	    case MAXUNENCSW:
@@ -345,7 +345,7 @@ main (int argc, char **argv)
 
     /* build the content structures for MIME message */
     ct = build_mime (compfile, autobuild, dist, directives, header_encoding,
-    		     maxunencoded, verbosw);
+		     maxunencoded, verbosw);
 
     /*
      * If ct == NULL, that means -auto was set and we found a MIME version
