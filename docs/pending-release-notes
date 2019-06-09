@@ -33,6 +33,8 @@ DEPRECATED FEATURES
 BUG FIXES
 ---------
 
+- Fixed bcc to work with sendmail/pipe, and better documented that dcc
+  doesn't work with it [Bug 55700].
 - An -attendee switch has been added to mhical(1), for use when more than one
   (or zero) attendees match a user's mailbox.
 - Fixed inc(1) and %(me) function escape to not obey Local-Mailbox profile

@@ -230,14 +230,16 @@ will abort with a
 If a \*(lqBcc:\*(rq field is encountered, its addresses will be used for
 delivery, and the \*(lqBcc:\*(rq field will be removed from the message
 sent to sighted recipients.  The blind recipients will receive an entirely
-new message with a minimal set of headers.  Included in the body of the
-message will be a copy of the message sent to the sighted recipients.
+new message with a minimal set of headers. The body of this new message
+will contain a copy of the message sent to the sighted recipients, either
+marked up with the indicator text "Blind-Carbon-Copy" or encapsulated
+as a MIME digest.
 .PP
 If a \*(lqDcc:\*(rq field is encountered and the
 .B sendmail/pipe
 mail transport method is not in use, its addresses will be used for
 delivery, and the \*(lqDcc:\*(rq field will be removed from the message.  The
-blind recipients will receive the same message sent to the sighted
+blind recipients will receive exactly the same message as the sighted
 recipients.  *WARNING* Recipients listed in the \*(lqDcc:\*(rq field receive no
 explicit indication that they have received a \*(lqblind copy\*(rq.
 This can cause blind recipients to
@@ -249,6 +251,12 @@ will generate a reply only to the sender of the original message,
 it takes extra effort in most mailers to reply to the included
 message, and so would usually only be done deliberately, rather
 than by accident.
+.PP
+If the
+.B sendmail/pipe
+mail transport method is used, then messages containing
+a \*(lqDcc:\*(rq field are rejected.
+
 .PP
 If
 .B \-filter

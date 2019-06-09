@@ -43,7 +43,5 @@ if [ $found_dasht -eq 0 ]; then
   done
 else
   # sendmail/pipe
-
-  #### This will delete any lines in the message body that start with Bcc:!
-  sed -e '/^[Bb][Cc][Cc]:/d' | $deliver
+  $deliver
 fi

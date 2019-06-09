@@ -868,6 +868,12 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	badmsg = true;
 	return;
     }
+    if (hdr->flags & HDCC && sm_mts == MTS_SENDMAIL_PIPE)
+    {
+       inform("Dcc header is not supported with sendmail/pipe");
+       badmsg = true;
+       return;
+    }
     msgflags |= (hdr->set & ~(MVIS | MINV));
 
     if (hdr->flags & HSUB)
@@ -1262,8 +1268,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out,
 
     if (mp->m_mbox == NULL || ((flags & HTRY) && !insert (mp)))
 	return 0;
-    if (sm_mts != MTS_SENDMAIL_PIPE &&
-        ((flags & (HBCC | HDCC | HEFM)) || mp->m_ingrp))
+    if ((flags & (HBCC | HDCC | HEFM)) || mp->m_ingrp)
 	return 1;
 
     if (!nameoutput) {
@@ -1495,7 +1500,33 @@ make_bcc_file (int dashstuff)
 	fprintf (out, "Message-ID: %s\n", message_id (tclock, 0));
     if (subject)
 	fprintf (out, "Subject: %s", subject);
-    fprintf (out, "BCC:\n");
+
+    /* for sendmail/pipe, insert all bcc recipients here so that the email can be routed based on the bcc: header */
+    if (sm_mts == MTS_SENDMAIL_PIPE)
+    {
+       char *allbcc = NULL;
+       struct mailname *lp;
+
+       for (lp = localaddrs.m_next; lp; lp = lp->m_next)
+	  if (lp->m_bcc)
+	     allbcc = allbcc? add(concat(", ", lp->m_mbox, NULL), allbcc)
+		: mh_xstrdup(lp->m_mbox);
+       for (lp = netaddrs.m_next; lp; lp = lp->m_next)
+	  if (lp->m_bcc)
+	     allbcc = allbcc? add(
+		concat(", ", lp->m_mbox, "@", lp->m_host, NULL),
+		allbcc)
+		: concat(lp->m_mbox, "@", lp->m_host, NULL);
+       if (allbcc)
+       {
+	  fprintf (out, "BCC: %s\n",allbcc);
+	  free(allbcc);
+       }
+    }
+    else
+    {
+       fprintf (out, "BCC:\n");
+    }
 
     /*
      * Use MIME encapsulation for Bcc messages

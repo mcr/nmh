@@ -40,6 +40,7 @@ QUIT
 EOF
 
 # check invalid -mts selection
+start_test 'invalid -mts selection'
 run_test "send -draft -mts invalid" \
 "post: unsupported mts selection \"invalid\"
 send: message not delivered to anyone"
@@ -57,12 +58,15 @@ MHMTSCONF="$mts_fakesendmail"
 test_sendmail ()
 {
   run_prog send -draft -mts "$1"
+  send_status=$?
   shift
 
   # fakesendmail drops the message and any cc's into this mbox.
-  mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox
-  inc -silent -file "$mbox"
-  rm -f "$mbox"
+  if [ $send_status -eq 0 ]; then
+    mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox
+    inc -silent -file "$mbox"
+    rm -f "$mbox"
+  fi
 
   n=1
   for expected in "$@"; do
@@ -83,6 +87,7 @@ test_sendmail ()
 }
 
 # check -mts sendmail/smtp
+start_test '-mts sendmail/smtp'
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
@@ -109,6 +114,7 @@ test_sendmail sendmail/smtp "${testname}.expected"
 # check -mts sendmail/pipe
 # Dots are not stuffed because sendmail/pipe causes sendmail to be
 # invoked with -i.
+start_test '-mts sendmail/pipe'
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
@@ -132,7 +138,8 @@ EOF
 
 test_sendmail sendmail/pipe "${testname}.expected"
 
-# check Bcc
+# check Bcc with sendmail/pipe
+start_test 'Bcc with sendmail/pipe'
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
@@ -159,6 +166,7 @@ cat > "${testname}.expected2" <<EOF
 From: Mr Nobody <nobody@example.com>
 Date:
 Subject: Test
+BCC: bcc@example.com
 
 ------- Blind-Carbon-Copy
 
@@ -178,6 +186,25 @@ EOF
 test_sendmail sendmail/pipe "${testname}.expected1" "${testname}.expected2"
 
 
+# check Dcc with sendmail/pipe:  it is unsupported
+start_test 'Dcc with sendmail/pipe'
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: nobody@example.com
+Dcc: dcc@example.com
+
+.
+EOF
+
+cat > "${testname}.expected1" <<EOF
+post: Dcc header is not supported with sendmail/pipe
+post: re-format message and try again
+send: message not delivered to anyone
+EOF
+
+! test_sendmail sendmail/pipe 2>"${testname}.actual1"
+check "${testname}.actual1" "${testname}.expected1"
+
 rm -f ${MHMTSCONF}
 
+finish_test
 exit ${failed:-0}
