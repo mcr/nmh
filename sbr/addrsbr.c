@@ -293,7 +293,7 @@ ismymbox (struct mailname *np)
      */
     if (am == NULL) {
 	mq.m_next = NULL;
-	mq.m_mbox = getusername ();
+	mq.m_mbox = getusername (0);
 
 	if ((am = context_find ("local-mailbox"))) {
 
@@ -316,7 +316,7 @@ ismymbox (struct mailname *np)
 	}
 
 	if ((am = context_find ("alternate-mailboxes")) == NULL)
-	    am = getusername();
+	    am = getusername(0);
 	else {
 	    mp = mq.m_next ? mq.m_next : &mq;
 	    oops = false;

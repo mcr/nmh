@@ -17,9 +17,9 @@ extern char *uucplfil;
 extern char *spoollocking;
 
 #define	MAILDIR	(mmdfldir && *mmdfldir ? mmdfldir : getenv ("HOME"))
-#define	MAILFIL	(mmdflfil && *mmdflfil ? mmdflfil : getusername ())
+#define	MAILFIL	(mmdflfil && *mmdflfil ? mmdflfil : getusername (1))
 
-char *getusername(void);
+char *getusername(int);
 char *getfullname(void);
 char *getlocalmbox(void);
 

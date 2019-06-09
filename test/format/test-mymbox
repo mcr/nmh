@@ -13,11 +13,11 @@ fi
 
 setup_test
 
-#### Use ap to get the username.  That will either be what's in the
-#### Local-Mailbox profile component, which we don't use in the test
-#### suite, or the user's login name.  ap will escape (quote) it if
-#### needed.
-user=`run_prog ${MH_LIBEXEC_DIR}/ap -format '%(me)' 0`
+#### Remove existing Local-Mailbox: profile component, if any.
+grep -v 'Local-Mailbox: ' "$MH" > "$MH".new
+mv -f "$MH".new "$MH"
+
+user=`id -nu`
 set +e
 host=`${MH_OBJ_DIR}/test/getcanon`
 set -e
@@ -31,10 +31,7 @@ run_test "${MH_LIBEXEC_DIR}/ap -format %(mymbox{text}) nosuchuser@nosuchhost.bla
 
 myname="Random User <random@user.something.com>"
 
-#### Remove existing Local-Mailbox: profile component, if any.  Then
-#### add one.
-grep -v 'Local-Mailbox: ' "$MH" > "$MH".new
-mv -f "$MH".new "$MH"
+#### Add Local-Mailbox profile component.
 echo "Local-Mailbox: ${myname}" >> "$MH"
 
 run_test "echo \
@@ -42,7 +39,10 @@ run_test "echo \
          1 "Local-Mailbox test"
 
 output=`run_prog ${MH_LIBEXEC_DIR}/ap -format '%(mymbox{text})' "${user}@${host}"`
-run_test "echo $output" 0 "Local-mailbox overriding user@host test"
+run_test "echo $output" 0 "Local-Mailbox overriding user@host test"
+
+#### Test getusername() when there is a Local-Mailbox profile component.
+run_test 'fmttest -raw -format %(me) ""' "${user}"
 
 # Add an Alternate-Mailbox.  This caused ismymbox() to lose the
 # Local-Mailbox, Bug #36635: -nocc me doesn't account for

@@ -75,7 +75,7 @@ nmh_get_credentials (const char *host, const char *user)
     creds->pass = NULL;
 
     if (cred_style == NULL  ||  ! strcmp (cred_style, "legacy")) {
-	creds->user = user == NULL  ?  mh_xstrdup(getusername ())  :  mh_xstrdup(user);
+	creds->user = user == NULL  ?  mh_xstrdup(getusername (1))  :  mh_xstrdup(user);
     } else if (! strncasecmp (cred_style, "file:", 5) ||
 	       ! strncasecmp (cred_style, "file-nopermcheck:", 17)) {
         /*

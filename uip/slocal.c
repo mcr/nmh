@@ -285,9 +285,9 @@ main (int argc, char **argv)
     }
 
     if (addr == NULL)
-	addr = getusername ();
+	addr = getusername (1);
     if (user == NULL) {
-	user = getusername ();
+	user = getusername (1);
     }
     if ((pw = getpwnam (user)) == NULL)
 	die("no such local user as %s", user);

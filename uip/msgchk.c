@@ -254,7 +254,7 @@ main (int argc, char **argv)
 				      snoop, sasl, saslmech, tlsflag, auth_svc);
 	}
     } else {
-	if (user == NULL) user = getusername ();
+	if (user == NULL) user = getusername (1);
 	if (vecp == 0) {
 	    char *home;
 

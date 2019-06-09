@@ -51,9 +51,12 @@ char *uucplfil = "";
 
 char *spoollocking = DEFAULT_LOCKING;
 
-/* Cache the username, fullname, and mailbox of the user */
+/* Cache the username, fullname, mailbox name, and mailbox of the user */
 static char username[BUFSIZ];
 static char fullname[BUFSIZ];
+/* mboxname comes from a Local-Mailbox profile component, or if that
+   doesn't exist, the username. */
+static char mboxname[BUFSIZ];
 static char localmbox[2*BUFSIZ+3];
 
 /*
@@ -180,11 +183,11 @@ tailor_value (char *s)
 
 		case 0: s--;
 		    /* FALLTHRU */
-		case QUOTE: 
+		case QUOTE:
 		    *bp = QUOTE;
 		    break;
 
-		default: 
+		default:
 		    if (!isdigit ((unsigned char) *s)) {
 			*bp++ = QUOTE;
 			*bp = *s;
@@ -291,15 +294,19 @@ SystemName (void)
 
 /*
  * Get the username of current user
+ *
+ * If flag is 0, then attempt to extract username from Local-Mailbox profile
+ *   component, if present.
+ * If flag is 1, then only use the "proper" local hostname.
  */
 
 char *
-getusername (void)
+getusername (int flag)
 {
     if (username[0] == '\0')
 	getuserinfo();
 
-    return username;
+    return flag == 0 ? mboxname : username;
 }
 
 
@@ -334,7 +341,7 @@ getlocalmbox (void)
 }
 
 /*
- * Find the user's username and full name, and cache them.
+ * Find and cache the user's username, full name, and local mbox.
  */
 
 static void
@@ -352,8 +359,13 @@ getuserinfo (void)
 	return;
     }
 
-
     /* username */
+    if (username[0] == '\0') {
+	strncpy (username, pw->pw_name, sizeof(username));
+    }
+    username[sizeof(username) - 1] = '\0';
+
+    /* localmbox and mboxname */
     /* If there's a Local-Mailbox profile component, try to extract
        the username from it.  But don't try very hard, this assumes
        the very simple User Name <user@name.com> form.
@@ -369,20 +381,20 @@ getuserinfo (void)
 	if (left_angle_bracket	&&  at_sign  &&	 right_angle_bracket) {
 	    if (at_sign > left_angle_bracket  &&
 		at_sign - left_angle_bracket < BUFSIZ) {
-		strncpy(username, left_angle_bracket + 1,
+		strncpy(mboxname, left_angle_bracket + 1,
 			at_sign - left_angle_bracket - 1);
 	    }
 	}
+    } else {
+	snprintf(localmbox, sizeof(localmbox), "%s <%s@%s>", fullname,
+		 username, LocalName(0));
     }
-
-    if (username[0] == '\0') {
-	strncpy (username, pw->pw_name, sizeof(username));
+    localmbox[sizeof(localmbox) - 1] = '\0';
+    if (mboxname[0] == '\0') {
+	strncpy (mboxname, username, sizeof(mboxname));
     }
-
-    username[sizeof(username) - 1] = '\0';
-
-    escape_local_part(username, sizeof(username));
-
+    mboxname[sizeof(mboxname) - 1] = '\0';
+    escape_local_part(mboxname, sizeof(mboxname));
 
     /* fullname */
     np = pw->pw_gecos;
@@ -403,19 +415,8 @@ getuserinfo (void)
 	strncpy (fullname, cp, sizeof(fullname));
     else if ((cp = context_find("Signature")))
 	strncpy (fullname, cp, sizeof(fullname));
-
     fullname[sizeof(fullname) - 1] = '\0';
-
     escape_display_name(fullname, sizeof(fullname));
-
-
-    /* localmbox, if not using Local-Mailbox */
-    if (localmbox[0] == '\0') {
-	snprintf(localmbox, sizeof(localmbox), "%s <%s@%s>", fullname,
-		 username, LocalName(0));
-    }
-
-    localmbox[sizeof(localmbox) - 1] = '\0';
 }
 
 static const char*

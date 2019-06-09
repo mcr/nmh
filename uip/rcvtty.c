@@ -151,9 +151,9 @@ main (int argc, char **argv)
     if ((md = vecp ? message_fd (vec) : header_fd ()) == NOTOK)
 	exit(1);
 
-    user = getusername();
-
 #if HAVE_GETUTXENT
+    user = getusername(1);
+
     setutxent();
     while ((utp = getutxent()) != NULL) {
         if (utp->ut_type == USER_PROCESS && utp->ut_user[0] != 0

@@ -663,7 +663,7 @@ do_func(char *sp)
 	break;
 
     case TF_MYBOX:
-	LS(t->f_type, getusername());
+	LS(t->f_type, getusername(1));
 	break;
 
     case TF_MYNAME:

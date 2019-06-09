@@ -337,7 +337,7 @@ alert (char *file, int out)
 
 	    arglist = argsplit(mailproc, &program, &argp);
 
-	    arglist[argp++] = getusername();
+	    arglist[argp++] = getusername(1);
 	    arglist[argp++] = "-subject";
 	    arglist[argp++] = buf;
 	    arglist[argp] = NULL;
