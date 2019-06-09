@@ -102,7 +102,7 @@ client (char *server, char *service, char *response, int len_response,
 
     if (res->ai_next)
 	snprintf(response, len_response, "no servers available (use -snoop "
-		 "for details");
+		 "for details)");
     else
 	snprintf(response, len_response, "Connection to \"%s\" failed: %s",
 		 server, strerror(errno));
