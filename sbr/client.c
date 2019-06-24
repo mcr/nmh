@@ -103,9 +103,18 @@ client (char *server, char *service, char *response, int len_response,
     if (res->ai_next)
 	snprintf(response, len_response, "no servers available (use -snoop "
 		 "for details)");
-    else
-	snprintf(response, len_response, "Connection to \"%s\" failed: %s",
-		 server, strerror(errno));
+    else {
+	char port[NI_MAXSERV];
+
+	if (getnameinfo(res->ai_addr, res->ai_addrlen, NULL, 0, port,
+			sizeof port, NI_NUMERICSERV)) {
+	    strncpy(port, "unknown", sizeof port);
+	    port[sizeof(port) - 1] = '\0';
+	}
+
+	snprintf(response, len_response, "Connection to \"%s:%s\" failed: %s",
+		 server, port, strerror(errno));
+    }
 
     freeaddrinfo(res);
 
