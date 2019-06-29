@@ -52,7 +52,7 @@ void netsec_set_userid(netsec_context *ns_context, const char *userid);
 /*
  * Set the hostname of the server we're connecting to.  This is used
  * by the Cyrus-SASL library and by the TLS code.  This must be called
- * before netsec_negotiate_tls() or netsec_set_sasl_params().
+ * before netsec_set_tls() or netsec_set_sasl_params().
  *
  * Arguments:
  *
@@ -399,9 +399,8 @@ int netsec_set_oauth_service(netsec_context *ns_context, const char *service);
  *
  * Note: callers still have to call netsec_tls_negotiate() to start
  * TLS negotiation at the appropriate point in the protocol.  The
- * remote hostname (controlled by netsec_set_hostname()) should have
- * already been set before this function is called unless certificate
- * verification is disabled.
+ * remote hostname (controlled by netsec_set_hostname()) is required
+ * to be set before calling this function.
  *
  * Arguments
  *
@@ -418,7 +417,7 @@ int netsec_set_tls(netsec_context *context, int tls, int noverify,
 
 /*
  * Start TLS negotiation on this protocol.  This connection should have
- * netsec_set_tls() called on it.
+ * netsec_set_tls() already called on it.
  *
  * Arguments:
  *

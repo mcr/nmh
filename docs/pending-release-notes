@@ -8,6 +8,8 @@ NEW FEATURES
   historical practice and reduce packaging dependencies on external programs.
 - A new -checkbase64 switch to mhfixmsg(1).
 - inc(1)/msgchk(1) now support STARTTLS for the POP protocol.
+- All TLS-supported protocols now will send the SNI (server name indicator)
+  TLS extension.
 
 -----------------
 OBSOLETE FEATURES

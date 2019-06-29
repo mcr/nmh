@@ -1624,6 +1624,11 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 	    return NOTOK;
 	}
 
+	if (!nsc->ns_hostname) {
+	    netsec_err(errstr, "Internal error: hostname not set");
+	    return NOTOK;
+	}
+
 	/*
 	 * Create the SSL structure which holds the data for a single
 	 * TLS connection.
@@ -1681,6 +1686,12 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 	SSL_set_connect_state(ssl);
 
 	/*
+	 * Use the hostname to set the Server Name Indicator extension
+	 */
+
+	SSL_set_tlsext_host_name(ssl, nsc->ns_hostname);
+
+	/*
 	 * If noverify is NOT set, then do certificate validation.
 	 * Turning on SSL_VERIFY_PEER will verify the certificate chain
 	 * against locally stored root certificates (the locations are
@@ -1696,12 +1707,6 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 #endif /* HAVE_X509_VERIFY_PARAM_SET1_HOST */
 
 	    SSL_set_verify(ssl, SSL_VERIFY_PEER, NULL);
-	    if (! nsc->ns_hostname) {
-		netsec_err(errstr, "Internal error: hostname not set and "
-			   "certification verification enabled");
-		SSL_free(ssl);
-		return NOTOK;
-	    }
 
 #ifdef HAVE_X509_VERIFY_PARAM_SET1_HOST
 	    param = SSL_get0_param(ssl);
