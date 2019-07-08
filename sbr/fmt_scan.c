@@ -579,20 +579,25 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	case FT_LS_ORDINAL:
 	    {
 		int digit = value % 10;
+		int seconddigit = (value / 10) % 10;
 		const char *suffix;
 
-		switch (digit) {
-		case 1:
-		    suffix = "st";
-		    break;
-		case 2:
-		    suffix = "nd";
-		    break;
-		case 3:
-		    suffix = "rd";
-		    break;
-		default:
+		if (seconddigit == 1) {
 		    suffix = "th";
+		} else {
+		    switch (digit) {
+		    case 1:
+			suffix = "st";
+			break;
+		    case 2:
+			suffix = "nd";
+			break;
+		    case 3:
+			suffix = "rd";
+			break;
+		    default:
+			suffix = "th";
+		    }
 		}
 
 		strncpy(buffer, suffix, sizeof(buffer));
