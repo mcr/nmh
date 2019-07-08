@@ -1083,6 +1083,7 @@ f_typestr(int t)
 	X(LS_PRETTY);
 	X(LS_KILO);
 	X(LS_KIBI);
+	X(LS_ORDINAL);
 	X(LV_SEC);
 	X(LV_MIN);
 	X(LV_HOUR);

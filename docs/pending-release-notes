@@ -10,6 +10,9 @@ NEW FEATURES
 - inc(1)/msgchk(1) now support STARTTLS for the POP protocol.
 - All TLS-supported protocols now will send the SNI (server name indicator)
   TLS extension.
+- A new mh-format function %(ordinal) has been implemented to output the
+  appropriate ordinal suffix for numbers.  Example: "%(num 22)%(ordinal)"
+  will output "22nd".
 
 -----------------
 OBSOLETE FEATURES

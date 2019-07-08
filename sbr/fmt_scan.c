@@ -576,6 +576,29 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		str = buffer;
 	    }
 	    break;
+	case FT_LS_ORDINAL:
+	    {
+		int digit = value % 10;
+		const char *suffix;
+
+		switch (digit) {
+		case 1:
+		    suffix = "st";
+		    break;
+		case 2:
+		    suffix = "nd";
+		    break;
+		case 3:
+		    suffix = "rd";
+		    break;
+		default:
+		    suffix = "th";
+		}
+
+		strncpy(buffer, suffix, sizeof(buffer));
+		str = buffer;
+	    }
+	    break;
 	case FT_NUMF:
 	    cpnumber (scanlp, value, fmt->f_width, fmt->f_fill,
 		      max - charstring_chars (scanlp));

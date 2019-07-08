@@ -386,6 +386,7 @@ f_typestr(int t)
 	case FT_LS_PRETTY: return "LS_PRETTY";
 	case FT_LS_KILO: return "LS_KILO";
 	case FT_LS_KIBI: return "LS_KIBI";
+	case FT_LS_ORDINAL: return "LS_ORDINAL";
 	case FT_LV_SEC: return "LV_SEC";
 	case FT_LV_MIN: return "LV_MIN";
 	case FT_LV_HOUR: return "LV_HOUR";
