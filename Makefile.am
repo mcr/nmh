@@ -96,6 +96,7 @@ TESTS = \
     test/mhbuild/test-utf8-body \
     test/mhfixmsg/test-mhfixmsg \
     test/mhical/test-mhical \
+    test/mhl/test-format \
     test/mhl/test-mhl-flags \
     test/mhl/test-rfc6532 \
     test/mhlist/test-ext-params \

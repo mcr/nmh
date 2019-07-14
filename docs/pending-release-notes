@@ -13,6 +13,7 @@ NEW FEATURES
 - A new mh-format function %(ordinal) has been implemented to output the
   appropriate ordinal suffix for numbers.  Example: "%(num 22)%(ordinal)"
   will output "22nd".
+- show and mhl now decode more addresses in header fields.
 
 -----------------
 OBSOLETE FEATURES

@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# Test mhl.headers, at least.
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
+
+setup_test
+mhl="${MH_LIBEXEC_DIR}/mhl"
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
+
+# check decode of To: and Cc:
+start_test "decode of To: and Cc:"
+cat >"$expected" <<EOF
+Resent-To: Encoded ! <encoded_exclamation@example.com>
+Date:    Sat, 13 Jul 2019 16:02:39
+To:      Encoded + <encoded_plus@example.com>,
+	 Encoded # <encoded_hash@example.com>
+cc:      Encoded - <encoded_minus@example.com>
+From:    Encoded * <encoded_asterisk@example.com>
+Subject: encoded addresses
+
+
+EOF
+
+cat >"`mhpath new`" <<EOF
+Resent-To: "Encoded =?utf-8?Q?=21?=" <encoded_exclamation@example.com>
+To: "Encoded =?utf-8?Q?=2b?=" <encoded_plus@example.com>,
+    "Encoded =?utf-8?Q?=23?=" <encoded_hash@example.com>
+Cc: "Encoded =?utf-8?Q?=2d?=" <encoded_minus@example.com>
+From: "Encoded =?utf-8?Q?=2a?=" <encoded_asterisk@example.com>
+Date: Sat, 13 Jul 2019 16:02:39
+Subject: encoded addresses
+EOF
+
+"$mhl" -nomoreproc -form mhl.headers `mhpath last` >"$actual"
+check "$expected" "$actual"
+
+finish_test
+exit $failed

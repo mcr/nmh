@@ -6,9 +6,12 @@
 overflowtext="***",overflowoffset=5
 leftadjust,compwidth=9
 ignores=msgid,message-id,received,content-type,content-transfer-encoding,content-id
+Resent-To:formatfield="%(unquote(decode{text}))"
+Resent-cc:formatfield="%(unquote(decode{text}))"
+Resent-From:formatfield="%(unquote(decode{text}))"
 Date:formatfield="%<(nodate{text})%{text}%|%(pretty{text})%>"
-To:
-cc:
+To:formatfield="%(unquote(decode{text}))"
+cc:formatfield="%(unquote(decode{text}))"
 From:formatfield="%(unquote(decode{text}))"
 Subject:decode
 :
