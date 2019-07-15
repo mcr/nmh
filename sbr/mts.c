@@ -365,6 +365,28 @@ getuserinfo (void)
     }
     username[sizeof(username) - 1] = '\0';
 
+    /* fullname */
+    np = pw->pw_gecos;
+
+    /* Get the user's real name from the GECOS field.  Stop once we hit a ',',
+       which some OSes use to separate other 'finger' information in the GECOS
+       field, like phone number. */
+    for (cp = fullname; *np != '\0' && *np != ','; *cp++ = *np++)
+	continue;
+    *cp = '\0';
+
+    /* The $SIGNATURE environment variable overrides the GECOS field's idea of
+       your real name. If SIGNATURE isn't set, use the Signature profile
+       setting if it exists.
+       Note that post(8) uses context_foil(), so it won't see the profile
+       component. */
+    if ((cp = getenv ("SIGNATURE")) && *cp)
+	strncpy (fullname, cp, sizeof(fullname));
+    else if ((cp = context_find("Signature")))
+	strncpy (fullname, cp, sizeof(fullname));
+    fullname[sizeof(fullname) - 1] = '\0';
+    escape_display_name(fullname, sizeof(fullname));
+
     /* localmbox and mboxname */
     /* If there's a Local-Mailbox profile component, try to extract
        the username from it.  But don't try very hard, this assumes
@@ -395,28 +417,6 @@ getuserinfo (void)
     }
     mboxname[sizeof(mboxname) - 1] = '\0';
     escape_local_part(mboxname, sizeof(mboxname));
-
-    /* fullname */
-    np = pw->pw_gecos;
-
-    /* Get the user's real name from the GECOS field.  Stop once we hit a ',',
-       which some OSes use to separate other 'finger' information in the GECOS
-       field, like phone number. */
-    for (cp = fullname; *np != '\0' && *np != ','; *cp++ = *np++)
-	continue;
-    *cp = '\0';
-
-    /* The $SIGNATURE environment variable overrides the GECOS field's idea of
-       your real name. If SIGNATURE isn't set, use the Signature profile
-       setting if it exists.
-       Note that post(8) uses context_foil(), so it won't see the profile
-       component. */
-    if ((cp = getenv ("SIGNATURE")) && *cp)
-	strncpy (fullname, cp, sizeof(fullname));
-    else if ((cp = context_find("Signature")))
-	strncpy (fullname, cp, sizeof(fullname));
-    fullname[sizeof(fullname) - 1] = '\0';
-    escape_display_name(fullname, sizeof(fullname));
 }
 
 static const char*
