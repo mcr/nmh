@@ -22,6 +22,8 @@ actual="$MH_TEST_DIR/$$.actual"
 start_test "decode of To: and Cc:"
 cat >"$expected" <<EOF
 Resent-To: Encoded ! <encoded_exclamation@example.com>
+Resent-cc: Encoded , <encoded_comma@example.com>
+Resent-From: Encoded . <encoded_period@example.com>
 Date:    Sat, 13 Jul 2019 16:02:39
 To:      Encoded + <encoded_plus@example.com>,
 	 Encoded # <encoded_hash@example.com>
@@ -34,6 +36,8 @@ EOF
 
 cat >"`mhpath new`" <<EOF
 Resent-To: "Encoded =?utf-8?Q?=21?=" <encoded_exclamation@example.com>
+Resent-cc: "Encoded =?utf-8?Q?=2c?=" <encoded_comma@example.com>
+Resent-From: "Encoded =?utf-8?Q?=2e?=" <encoded_period@example.com>
 To: "Encoded =?utf-8?Q?=2b?=" <encoded_plus@example.com>,
     "Encoded =?utf-8?Q?=23?=" <encoded_hash@example.com>
 Cc: "Encoded =?utf-8?Q?=2d?=" <encoded_minus@example.com>
