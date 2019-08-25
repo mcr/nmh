@@ -7,12 +7,15 @@
  */
 
 #include "h/mh.h"
+#include "sbr/context_find.h"
 #include "m_getfld.h"
 #include "trimcpy.h"
 #include "getcpy.h"
 #include "readconfig.h"
 #include "error.h"
 #include "h/utils.h"
+
+static void checkconfig();
 
 struct procstr {
     char *procname;
@@ -125,34 +128,7 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
     }
 
     if (opp == NULL) {
-	/* Check for duplicated non-null profile entries.  Except
-	   allow multiple profile entries named "#", because that's
-	   what mh-profile(5) suggests using for comments.
-
-	   Only do this check on the very first call from
-	   context_read(), when opp is NULL.  That way, entries in
-	   mhn.defaults can be overridden without triggering
-	   warnings.
-
-	   Note that mhn.defaults, $MHN, $MHBUILD, $MHSHOW, and
-	   $MHSTORE all put their entries into just one list, m_defs,
-	   the same list that the profile uses. */
-
-	struct node *np;
-	for (np = m_defs; np; np = np->n_next) {
-	    /* Yes, this is O(N^2).  The profile should be small enough so
-	       that's not a performance problem. */
-	    if (*np->n_name && strcmp("#", np->n_name)) {
-		struct node *np2;
-		for (np2 = np->n_next; np2; np2 = np2->n_next) {
-		    if (! strcasecmp (np->n_name, np2->n_name)) {
-			inform("multiple \"%s\" profile components in %s, "
-			    "ignoring \"%s\", continuing...",
-			    np->n_name, defpath, np2->n_field);
-		    }
-		}
-	    }
-	}
+        checkconfig();
     }
 
     opp = npp;
@@ -173,4 +149,59 @@ add_profile_entry (const char *key, const char *value)
     newnode->n_context = 0;
     newnode->n_next = m_defs;
     m_defs = newnode;
+}
+
+
+/* Check profile for issues to warn about. */
+void
+checkconfig() {
+    /* Check for duplicated non-null profile entries.  Except
+       allow multiple profile entries named "#", because that's
+       what mh-profile(5) suggests using for comments.
+
+       Only do this check on the very first call from
+       context_read(), when opp is NULL.  That way, entries in
+       mhn.defaults can be overridden without triggering
+       warnings.
+
+       Note that mhn.defaults, $MHN, $MHBUILD, $MHSHOW, and
+       $MHSTORE all put their entries into just one list, m_defs,
+       the same list that the profile uses. */
+    struct node *np;
+    bool has_post = false;
+    bool post_warning_disabled = false;
+    for (np = m_defs; np; np = np->n_next) {
+        if (*np->n_name) {
+            if (isatty(fileno(stderr))) {
+                /* Check for post component in profile. */
+                if (strcasecmp(np->n_name, "post") == 0) {
+                    has_post = true;
+                } else if (strcasecmp(np->n_name, "postproc") == 0  &&
+                           np->n_field != NULL) {
+                    post_warning_disabled = true;
+                }
+            }
+
+            if (strcmp("#", np->n_name)) {
+                /* Yes, this is O(N^2).  The profile should be small enough so
+                   that's not a performance problem. */
+                struct node *np2;
+                for (np2 = np->n_next; np2; np2 = np2->n_next) {
+                    if (! strcasecmp (np->n_name, np2->n_name)) {
+                        inform("multiple \"%s\" profile components in %s, "
+                               "ignoring \"%s\", continuing...",
+                            np->n_name, defpath, np2->n_field);
+                    }
+                }
+            }
+        }
+    }
+
+    if (has_post  &&  ! post_warning_disabled) {
+        inform("post profile component will be ignored.  To suppress "
+               "this warning,\n"
+               "either remove it, comment it with #:, or "
+               "add the following to %s:\npostproc: %s\n",
+               defpath, postproc);
+    }
 }

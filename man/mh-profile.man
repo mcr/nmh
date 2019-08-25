@@ -510,6 +510,7 @@ version.  The version reference is of the form:
 Version: %nmhversion%
 .fi
 .RE
+.RE
 .SS "Process Profile Entries"
 The following profile elements are used whenever an
 .B nmh
@@ -676,6 +677,16 @@ post a message to the mail transport system.  It is also called by
 and
 .BR \-library )
 to do address verification.
+.PP
+If the profile contains a
+.B post
+component and a
+.B postproc
+component is not present, a warning message that the
+.B post
+component will be ignored will be displayed by every
+.B nmh
+program that reads the profile and has its stderr associated with a terminal.
 .RE
 .PP
 .BR rmmproc :

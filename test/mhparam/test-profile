@@ -1,0 +1,53 @@
+#!/bin/sh
+######################################################
+#
+# Test profile parser warning messages.
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "${MH_OBJ_DIR}/test/common.sh"
+
+setup_test
+require_runpty_to_simulate_tty
+
+actual="${MH_TEST_DIR}/test-profile$$.actual"
+expected="$MH_TEST_DIR/test-profile$$.expected"
+
+start_test 'without post component in profile'
+set +e
+run_test 'mhparam post' ''
+set -e
+
+start_test 'disabled post warning'
+echo 'post: -snoop' >>"$MH"
+run_test 'mhparam post' '-snoop'
+
+start_test 'with no postproc component in profile'
+grep -v '^postproc: ' "$MH" >"$MH.new"
+cat >"$expected" <<EOF
+mhparam: post profile component will be ignored.  To suppress this warning,
+either remove it, comment it with #:, or add the following to $MH.new:
+postproc: ${nmhlibexecdir}/post
+
+-snoop
+EOF
+MH="$MH.new" run_without_input "${actual}" mhparam post
+check "$expected" "$actual"
+rm -f "$MH.new"
+
+start_test 'multiple profile components'
+printf 'repeated-component: 1\nrepeated-component: 2\n' >>"$MH"
+run_test 'mhparam moreproc' \
+         "mhparam: multiple \"repeated-component\" profile components in $MH,"\
+" ignoring \"2\", continuing...
+cat"
+
+finish_test
+exit ${failed}

@@ -21,10 +21,10 @@
 /*
  * static prototypes
  */
+static void read_mts(const char *path);
 static char *tailor_value (char *);
 static void getuserinfo (void);
-static const char *get_mtsconf_pathname(void);
-static const char *get_mtsuserconf_pathname(void);
+static const char *get_optional_env_var(const char *name, const char *fallback);
 static void mts_read_conf_file (FILE *fp);
 
 /*
@@ -38,8 +38,6 @@ static void mts_read_conf_file (FILE *fp);
 /*
  * nmh mail transport interface customization file
  */
-static char *mtsconf = nmhetcdir(/mts.conf);
-
 static char *localname   = "";
 static char *localdomain = "";
 static char *systemname  = "";
@@ -137,23 +135,36 @@ save_mts_method (const char *value)
 void
 mts_init (void)
 {
-    const char *cp;
-    FILE *fp;
-    static int inited = 0;
+    static bool deja_vu;
+    const char *path;
 
-    if (inited++ || (fp = fopen (get_mtsconf_pathname(), "r")) == NULL)
-	return;
-    mts_read_conf_file(fp);
-    fclose (fp);
+    if (deja_vu)
+        return;
+    deja_vu = true;
 
-    cp = get_mtsuserconf_pathname();
-    if (cp != NULL &&
-            ((fp = fopen (get_mtsuserconf_pathname(), "r")) != NULL)) {
-        mts_read_conf_file(fp);
-        fclose (fp);
-    }
+    path = get_optional_env_var("MHMTSCONF", NMHETCDIR "/mts.conf");
+    read_mts(path);
+
+    path = get_optional_env_var("MHMTSUSERCONF", NULL);
+    if (path)
+        read_mts(path);
 
     save_mts_method (mts_method);
+}
+
+
+static void read_mts(const char *path)
+{
+    FILE *fp;
+
+    fp = fopen(path, "r");
+    if (!fp)
+        adios(path, "error opening mts.conf:");
+    mts_read_conf_file(fp);
+    if (ferror(fp))
+        adios(path, "error reading mts.conf:");
+    if (fclose(fp))
+        adios(path, "error closing mts.conf:");
 }
 
 
@@ -419,25 +430,16 @@ getuserinfo (void)
     escape_local_part(mboxname, sizeof(mboxname));
 }
 
-static const char*
-get_mtsconf_pathname (void)
+
+static const char *
+get_optional_env_var(const char *name, const char *fallback)
 {
-    const char *cp = getenv ( "MHMTSCONF" );
-    if (cp != NULL && *cp != '\0') {
-        return cp;
-    }
-    return mtsconf;
+    const char *v = getenv(name);
+    if (v)
+        return v;
+    return fallback;
 }
 
-static const char*
-get_mtsuserconf_pathname (void)
-{
-    const char *cp = getenv ( "MHMTSUSERCONF" );
-    if (cp != NULL && *cp != '\0') {
-        return cp;
-    }
-    return NULL;
-}
 
 static void
 mts_read_conf_file (FILE *fp)

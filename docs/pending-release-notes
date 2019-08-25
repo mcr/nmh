@@ -14,6 +14,15 @@ NEW FEATURES
   appropriate ordinal suffix for numbers.  Example: "%(num 22)%(ordinal)"
   will output "22nd".
 - show and mhl now decode more addresses in header fields.
+- Added warning from all programs that read the profile if the profile
+  contains a post entry, which is ignored, but does not contain a
+  postproc entry.  In other words, if you get this warning and want
+  to suppress it, your options include:
+  1) Remove your post profile entry.
+  2) Make your post profile entry a comment by prepending it with the #:
+     comment indicator.
+  3) Add a postproc entry that points to the post that you use.  That can
+     be viewed with "mhparam postproc".
 
 -----------------
 OBSOLETE FEATURES
