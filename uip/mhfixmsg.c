@@ -437,7 +437,7 @@ main (int argc, char **argv)
 
                 if (copy_input_to_output (file, infp, outfile, outfp) != OK) {
                     inform("unable to copy message to %s, "
-                            "it might be lost\n", outfile);
+                            "it might be lost", outfile);
                 }
 
                 fclose (infp);
@@ -516,7 +516,7 @@ main (int argc, char **argv)
                         if (copy_input_to_output (input_filename, infp,
                                                   outfile, outfp) != OK) {
                             inform("unable to copy message to %s, "
-                                "it might be lost\n", outfile);
+                                "it might be lost", outfile);
                         }
 
                         fclose (infp);
@@ -608,7 +608,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
             }
             outfile = mh_xstrdup (tempfile);
         } else {
-            die("missing both input and output filenames\n");
+            die("missing both input and output filenames");
         }
     } /* else *outfp was defined by caller */
 
@@ -663,7 +663,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
            to the output. */
         if (copy_input_to_output (input_filename, *infp, outfile,
                                   *outfp) != OK) {
-            inform("unable to copy message to %s, it might be lost\n",
+            inform("unable to copy message to %s, it might be lost",
                     outfile);
         }
     }
@@ -1077,7 +1077,9 @@ fix_types (CT ct, svector_t fixtypes, int *message_mods)
                                     }
                                     break;
                                 }
-                                inform("did not find %s in %s", type, hf->value);
+                                char *hf_value = cpytrim (hf->value);
+                                inform("did not find %s in %s", type, hf_value);
+                                free (hf_value);
                             }
                         }
                     }
@@ -1419,8 +1421,10 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain)
                                     remove_parameter (hf->value, "type");
                                     break;
                                 }
+                                char *hf_value = cpytrim (hf->value);
                                 inform("did not find multipart/"
-                                    "related in header %s", hf->value);
+                                    "related in header %s", hf_value);
+                                free (hf_value);
                             }
                         }
                     } else {
@@ -1554,8 +1558,7 @@ build_text_plain_part (CT encoded_part)
 
         /* This m_mktemp2() call closes the temp file. */
         if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
-            inform("unable to create temporary file in %s",
-                    get_temp_dir());
+            inform("unable to create temporary file in %s", get_temp_dir());
         } else {
             tmp_plain_file = mh_xstrdup (tempfile);
             if (reformat_part (tp_part, tmp_plain_file,
@@ -2929,7 +2932,9 @@ decode_header_field_bodies (CT ct, int *message_mods)
                     ++*message_mods;
                 }
             } else {
-                inform("failed to decode %s parameter %s", hf->name, hf->value);
+                char *hf_value = cpytrim (hf->value);
+                inform("failed to decode %s parameter %s", hf->name, hf_value);
+                free (hf_value);
                 status = NOTOK;
             }
         }
@@ -3021,9 +3026,6 @@ fix_filename_encoding (CT ct)
                 replace_substring (&hf->value, semicolon_loc, new_params);
                 free((void *)new_params); /* Cast away const.  Sigh. */
                 free((void *)params);
-            } else {
-                inform("did not find semicolon in %s:%s\n",
-                        hf->name, hf->value);
             }
         }
     }
