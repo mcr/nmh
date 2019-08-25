@@ -281,6 +281,36 @@ run_test() {
   fi
 }
 
+#### Run a command but don't wait for user input.  We switched from script(1)
+#### to our own utility, runpty.  Check that it makes the command look like
+#### it's connected to a terminal below.
+#### The single argument is the name of the file in which to place the output.
+run_without_input() {
+    actual=$1
+    shift
+    runpty="${MH_OBJ_DIR}/test/runpty"
+
+    #### Create a command to use as a shell for script.
+    cmd="${MH_TEST_DIR}/Mail/cmd"
+    cat >"${cmd}" <<EOF
+#! /bin/sh
+$*
+EOF
+    chmod +x "${cmd}"
+
+    "${runpty}" "${actual}" "${cmd}"
+}
+
+#### Ensure that runpty makes the program look like it's connected to a
+#### terminal.  The welcome message code in sbr/utils.c needs that.
+require_runpty_to_simulate_tty() {
+  actual="${MH_TEST_DIR}/test-runpty"
+  run_without_input "${actual}" \
+                    'if test -t 0  -a  -t 1  -a  -t 2; then echo tty; fi'
+  grep tty "${actual}" >/dev/null || test_skip "runpty doesn't simulate tty"
+  rm -f "$actual"
+}
+
 #### check_exit() runs the command in $2..., capturing stdout and
 #### stderr, and then tests its exit status with the test(1) condition
 #### in $1.  If that fails, the captured stdout and stderr are
