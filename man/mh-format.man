@@ -414,6 +414,15 @@ It returns true if any address matches. However, it also returns true
 if the \*(lq\fIcomp\fR\*(rq header is not present in the message.
 If needed, the (\fInull\fR\^) function can be used to explicitly
 test for this case.)
+.PP
+The \fIfriendly\fR\^{\fIcomp\fR\^}) call will return any double-quoted
+\*(lqpersonal name\*(rq (that is, anything before <>), then it will return
+that.  If there's no personal name but there is a
+\*(lqnote\*(rq (comments string after an email address), it will return
+that.  If there is neither of those, it will try to parse the email address as an X400 directory
+name and try to extract out a few of the fields from it to return. If that
+fails (likely, as X400 is long dead) it will just return the bare email address.
+
 .SS Formatting
 When a function or component escape is interpreted and the result will
 be printed immediately, an optional field width can be specified to
